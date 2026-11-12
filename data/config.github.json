@@ -178,7 +178,7 @@
   },
   "webhook": {
     "enabled": false,
-    "url_env": "HORIZON_WEBHOOK_URL",
+    "url_env": null,
     "delivery": "summary_and_items",
     "overview_position": "last",
     "platform": "feishu",
