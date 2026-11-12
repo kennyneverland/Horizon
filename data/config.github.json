@@ -120,6 +120,27 @@
         "enabled": true,
         "category": "linux-kernel",
         "profile": "tech-news"
+      },
+      {
+        "name": "Bloomberg Markets",
+        "url": "https://feeds.bloomberg.com/markets/news.rss",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
+      },
+      {
+        "name": "Bloomberg Technology",
+        "url": "https://feeds.bloomberg.com/technology/news.rss",
+        "enabled": true,
+        "category": "tech-news",
+        "profile": "tech-news"
+      },
+      {
+        "name": "Reuters Business",
+        "url": "https://news.google.com/rss/search?q=site:reuters.com+business+when:1d&hl=en-US&gl=US&ceid=US:en",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
       }
     ],
     "reddit": {
