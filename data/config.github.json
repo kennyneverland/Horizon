@@ -187,7 +187,7 @@
     "time_window_hours": 24
   },
   "digest": {
-    "max_items": null,
+    "max_items": 20,
     "profile_order": [
       "tech-news",
       "tech-blog",
