@@ -1,9 +1,9 @@
 {
   "ai": {
-    "provider": "deepseek",
-    "model": "deepseek-v4-flash",
-    "base_url": "https://api.deepseek.com",
-    "api_key_env": "DEEPSEEK_API_KEY",
+    "provider": "ali",
+    "model": "qwen3.8-flash",
+    "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "api_key_env": "DASHSCOPE_API_KEY",
     "temperature": 0.3,
     "max_tokens": 8192,
     "throttle_sec": 1,
@@ -154,7 +154,10 @@
           "channel": "zaihuapd",
           "enabled": true,
           "fetch_limit": 20,
-          "profile": ["tech-news", "finance-news"]
+          "profile": [
+            "tech-news",
+            "finance-news"
+          ]
         }
       ]
     }
