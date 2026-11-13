@@ -138,7 +138,7 @@
       {
         "name": "Bloomberg Business",
         "url": "https://feeds.bloomberg.com/business/news.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "business",
         "profile": "finance-news"
       }
