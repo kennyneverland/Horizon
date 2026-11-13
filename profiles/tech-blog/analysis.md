@@ -1,6 +1,6 @@
 # Evaluation goal
 
-Evaluate whether a technology blog post rewards careful reading and gives technical readers durable understanding they can transfer to other work. Score the article itself, not the reputation of its author or publisher.
+Evaluate whether a technology blog post rewards careful reading and gives readers durable understanding they can transfer to other work. Score the article itself, not the reputation of its author or publisher.
 
 # Scoring rubric
 
@@ -13,5 +13,18 @@ Evaluate whether a technology blog post rewards careful reading and gives techni
 # Evaluation guidance
 
 Consider the clarity of the motivating problem, originality of the central insight, technical depth, quality of evidence, honesty about tradeoffs and limitations, practical specificity, and long-term usefulness. Distinguish measured results from vendor claims and author opinion. Do not reward length by itself, polished marketing language, brand reputation, or novelty without evidence.
+
+# Reader priorities
+
+The reader follows the AI and computing industry commercially. Within the 7-10 bands, prefer posts that connect engineering decisions to cost, scale, reliability economics, competitive advantage, or organizational practice — for example inference-serving cost analysis, infrastructure tradeoffs at scale, or lessons about how AI products are actually built and operated.
+
+# Exclusions
+
+Score these at 5 or below:
+
+- Release notes, changelog summaries, and version announcements.
+- Tutorials that only restate official documentation.
+- Personal debugging logs without a transferable lesson.
+- Deep dives into a single library's internals with no broader engineering consequence.
 
 Use three to five specific topic tags.

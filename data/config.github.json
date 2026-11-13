@@ -19,15 +19,15 @@
     "default_profile": "tech-news",
     "profile_settings": {
       "tech-news": {
-        "threshold": 7.0,
+        "threshold": 7.5,
         "topic_dedup": true
       },
       "tech-blog": {
-        "threshold": 4.0,
+        "threshold": 6.0,
         "topic_dedup": false
       },
       "finance-news": {
-        "threshold": 6.5,
+        "threshold": 6.0,
         "topic_dedup": true
       }
     }
@@ -201,19 +201,19 @@
     "group_by": "profile",
     "category_groups": {
       "tech-news": {
-        "limit": 12,
+        "limit": 8,
         "categories": [
           "tech-news"
         ]
       },
       "tech-blog": {
-        "limit": 4,
+        "limit": 2,
         "categories": [
           "tech-blog"
         ]
       },
       "finance-news": {
-        "limit": 14,
+        "limit": 18,
         "categories": [
           "finance-news"
         ]
