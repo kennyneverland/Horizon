@@ -228,39 +228,19 @@
     ]
   },
   "webhook": {
-    "enabled": false,
-    "url_env": null,
-    "delivery": "summary_and_items",
+    "enabled": true,
+    "url_env": "HORIZON_WEBHOOK_URL",
+    "delivery": "summary",
     "overview_position": "last",
-    "platform": "feishu",
-    "layout": "collapsible",
+    "platform": "generic",
+    "layout": "markdown",
     "fallback_layout": "markdown",
     "languages": [
       "zh"
     ],
     "request_body": {
-      "msg_type": "interactive",
-      "card": {
-        "schema": "2.0",
-        "config": {
-          "wide_screen_mode": true
-        },
-        "header": {
-          "title": {
-            "tag": "plain_text",
-            "content": "#{message_title}"
-          },
-          "template": "blue"
-        },
-        "body": {
-          "elements": [
-            {
-              "tag": "markdown",
-              "content": "#{summary}"
-            }
-          ]
-        }
-      }
+      "title": "#{message_title}",
+      "desp": "#{summary?limit=25000&split=---}"
     },
     "headers": ""
   }
