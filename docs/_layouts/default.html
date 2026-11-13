@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     {%- if page.lang == "zh" and page.date %}
     <title>Kenny's Horizon {{ page.date | date: "%Y-%m-%d" }} 日报 | {{ site.title }}</title>
+    {%- elsif page.title %}
+    <title>{{ page.title }} | {{ site.title }}</title>
+    {%- else %}
+    <title>{{ site.title }}</title>
     {%- endif %}
     {% seo title=false %}
     <link rel="preconnect" href="https://fonts.gstatic.com">
