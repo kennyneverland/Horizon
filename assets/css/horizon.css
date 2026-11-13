@@ -354,13 +354,20 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .main-content > ol {
-    font-size: 1.02rem !important;
-    padding: 0.7em 0.8em 0.7em 1.7em !important;
-    line-height: 1.75 !important;
+    font-size: 0.98rem !important;
+    padding: 0.7em 0.7em 0.7em 1.55em !important;
+    line-height: 1.72 !important;
   }
 
   .main-content > ol > li {
     padding: 0.26em 0 !important;
+  }
+
+  /* Keep the score badge from being pushed onto its own line in the TOC */
+  .main-content > ol .score-badge {
+    font-size: 0.6em !important;
+    padding: 0.06em 0.36em !important;
+    margin-left: 0.18em !important;
   }
 
   .score-badge {
