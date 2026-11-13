@@ -134,6 +134,20 @@
         "enabled": true,
         "category": "tech-news",
         "profile": "tech-news"
+      },
+      {
+        "name": "Bloomberg Politics",
+        "url": "https://feeds.bloomberg.com/politics/news.rss",
+        "enabled": true,
+        "category": "policy",
+        "profile": "finance-news"
+      },
+      {
+        "name": "Bloomberg Economics",
+        "url": "https://feeds.bloomberg.com/economics/news.rss",
+        "enabled": true,
+        "category": "macro",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
