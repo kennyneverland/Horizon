@@ -116,7 +116,7 @@
       },
       {
         "name": "LWN.net",
-        "url": "https://lwn.net/headlines/full_text?key=${LWN_KEY}",
+        "url": "https://lwn.net/headlines/rss",
         "enabled": true,
         "category": "linux-kernel",
         "profile": "tech-news"
