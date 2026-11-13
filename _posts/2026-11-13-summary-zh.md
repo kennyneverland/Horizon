@@ -5,472 +5,472 @@ date: 2026-11-13
 lang: zh
 ---
 
-> 从 108 条内容中筛选出 21 条重要资讯。
+> 从 121 条内容中筛选出 20 条重要资讯。
 
 ---
 
 **科技新闻**
-1. [Rust 1.100 发布：稳定 never 类型与 Cargo 改进](#item-tech-news-1) ⭐️ 9.0/10
-2. [PostgreSQL 22 年类型混淆成 RCE 路径](#item-tech-news-2) ⭐️ 8.0/10
-3. [谷歌被称发布 Gemini 4 Hydrogen 模型](#item-tech-news-3) ⭐️ 8.0/10
-4. [黄仁勋结束 NVIDIA CEO 任期，涉中国间谍指控](#item-tech-news-4) ⭐️ 7.0/10
-5. [Edge0-145B 本地模型宣称前沿能力，Mac 支持待验证](#item-tech-news-5) ⭐️ 7.0/10
-6. [苹果 Foundation Models 框架支持本地与 PCC 推理](#item-tech-news-6) ⭐️ 7.0/10
-7. [llm-gemini 0.37 与 Gemini 4 Hydrogen 定价发布](#item-tech-news-7) ⭐️ 7.0/10
-8. [VulnCheck 质疑 Glasswing 修复进展](#item-tech-news-8) ⭐️ 7.0/10
-9. [C++26 因契约特性争议首次未获 ISO 批准](#item-tech-news-9) ⭐️ 7.0/10
-10. [马来西亚调查 Megaspeed 进口 AI 芯片是否再出口](#item-tech-news-10) ⭐️ 7.0/10
-11. [UMAP 0.6 发布：新初始化与更快大规模降维](#item-tech-news-11) ⭐️ 7.0/10
-12. [Isaacus 开源 NLI 法律冲突检测流水线](#item-tech-news-12) ⭐️ 7.0/10
+1. [Rust 1.100 发布：稳定 never 类型与 Cargo 依赖卫生](#item-tech-news-1) ⭐️ 8.0/10
+2. [Anthropic IPO 据报超额认购六倍，拟募资或创纪录](#item-tech-news-2) ⭐️ 8.0/10
+3. [彭博称 Nvidia 罢免 CEO 黄仁勋，硅谷震动](#item-tech-news-3) ⭐️ 8.0/10
+4. [Google Antigravity 讨论 Gemini 4 Hydrogen 与编排器](#item-tech-news-4) ⭐️ 7.0/10
+5. [Apple Foundation Models 框架支持本地与 PCC 推理](#item-tech-news-5) ⭐️ 7.0/10
+6. [黄仁勋辞职传闻涉中国出口管制，证据未证实](#item-tech-news-6) ⭐️ 7.0/10
+7. [PostgreSQL 类型混淆被称转化为 RCE](#item-tech-news-7) ⭐️ 7.0/10
+8. [Edge0-145B 宣称 29GB 内存本地运行](#item-tech-news-8) ⭐️ 7.0/10
+9. [llm-gemini 0.37 与 Gemini 4 Hydrogen 定价](#item-tech-news-9) ⭐️ 7.0/10
+10. [OpenAI 发布 Codex Security CLI 与 TypeScript SDK](#item-tech-news-10) ⭐️ 7.0/10
+11. [addyosmani/agent-skills 提供 AI 编码代理技能](#item-tech-news-11) ⭐️ 7.0/10
+12. [Glasswing 分析：发现多但修复少，维护者负担加重](#item-tech-news-12) ⭐️ 7.0/10
 
 **财经新闻**
-1. [中国批准首个口服 GLP-1 减重药](#item-finance-news-1) ⭐️ 8.0/10
-2. [SpaceX 拟投资逾 740 亿美元建设得州与亚利桑那 AI 园区](#item-finance-news-2) ⭐️ 8.0/10
-3. [黄仁勋辞职或加剧中美芯片管制担忧](#item-finance-news-3) ⭐️ 7.0/10
-4. [美联储称 2027 年 10 月会议将不会投票决定利率](#item-finance-news-4) ⭐️ 7.0/10
+1. [英伟达宣布黄仁勋辞任 CEO，克雷斯任临时 CEO](#item-finance-news-1) ⭐️ 9.0/10
+2. [AI 股收窄跌幅，投资者评估英伟达 CEO 离任影响](#item-finance-news-2) ⭐️ 8.0/10
+3. [SpaceX 拟投逾 740 亿美元建得州与亚利桑那 AI 园区](#item-finance-news-3) ⭐️ 8.0/10
+4. [黄仁勋辞职与作证或加剧中美科技紧张](#item-finance-news-4) ⭐️ 7.0/10
 5. [特朗普涉伊朗言论推高油价](#item-finance-news-5) ⭐️ 7.0/10
-6. [印度拟禁止私募股权控制多家非银行放贷机构](#item-finance-news-6) ⭐️ 7.0/10
-7. [印度 Clean Max 拟投 53 亿美元建设 AI 算力供电设施](#item-finance-news-7) ⭐️ 7.0/10
-8. [中国拟 150 亿美元投资土耳其太阳能和风电项目](#item-finance-news-8) ⭐️ 7.0/10
-9. [思科因 AI 网络需求上调全年营收预期](#item-finance-news-9) ⭐️ 7.0/10
+6. [印度 Clean Max 拟投 53 亿美元清洁能源供 AI 算力设施](#item-finance-news-6) ⭐️ 7.0/10
+7. [思科上调年度营收预期](#item-finance-news-7) ⭐️ 7.0/10
+8. [美国 2027 财年 10 月预算赤字创纪录](#item-finance-news-8) ⭐️ 7.0/10
 
 ---
 
 ## 科技新闻
 
 <a id="item-tech-news-1"></a>
-### [Rust 1.100 发布：稳定 never 类型与 Cargo 改进](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/) ⭐️ 9.0/10
+### [Rust 1.100 发布：稳定 never 类型与 Cargo 依赖卫生](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/) ⭐️ 8.0/10
 
-Rust 1.100.0 已发布，官方说明包含 never 类型稳定、Allocator API 核心部分以及 Cargo 报告未使用依赖等变化。社区补充称该版本还涉及自定义分配器、最小发布年龄配置（依赖冷却期）和 cargo install 默认使用 crate tarball 中现有 lockfile。启用相关配置时，解析器会忽略比设定年龄更年轻的版本，除非这些版本已出现在 Cargo.lock 中；cargo install 的 --locked 选项也变为 no-op。
+Rust 1.100.0 已发布，官方博客列出的主要变化包括 never 类型稳定、核心 Allocator API 部分落地，以及 Cargo 报告未使用依赖。这些变化属于语言与工具链层面的正式更新，而非仅宣布计划。评论还补充提到依赖冷却期配置、cargo install 默认使用锁文件等行为，但这些细节需以官方发布说明核实。
 
 hackernews · mbStavola · 11月12日 18:39 · [社区讨论](https://news.ycombinator.com/item?id=50472038)
 
-**「背景」** Rust 1.100 同时涉及语言特性和 Cargo 工具链，所谓稳定化指相关能力从实验或不稳定状态进入正式渠道；例如 min-publish-age 依赖解析允许通过配置让 Cargo 暂不选取刚发布的新版本。
+**「背景」** Rust 的版本发布长期采用渐进稳定策略：never type 和自定义分配器等底层特性此前处于实验或不完整状态，1.100 将其纳入稳定语言与标准库能力。Cargo 的未使用依赖警告和依赖冷却配置则是在既有依赖解析机制上增加构建卫生约束，用于更早发现清单冗余并控制新发布依赖被自动采用。
 
-**「影响」** 对使用 Cargo 的项目而言，默认未使用依赖警告会增加清理 Cargo.toml 的维护工作；若启用依赖冷却期，解析器会避开刚发布版本，而 cargo install 的 --locked 不再改变默认行为可能影响安装流程。
+**「影响」** 对 Rust 项目维护者而言，未使用依赖报告可在 Cargo.toml 中直接暴露多余依赖，便于清理依赖树；不过既有项目可能因此新增警告，若 CI 将警告视为错误，开发者需要评估是否移除依赖或调整 lint 配置。
 
-**「社区讨论」** 社区普遍将 Rust 1.100 视为重大发布，重点讨论 never 类型、自定义分配器、依赖冷却期和 cargo install 默认使用 lockfile。也有评论指出 bool::toggle、Box::map、str::trim\_prefix 等稳定 API 未在博客中列出，并询问编译速度及临时文件清理问题。
+**「社区讨论」** 评论将 never 类型、自定义分配器、依赖冷却期和 cargo install 锁文件行为视为亮点，并指出 bool::toggle\(\)、Box::map\(\) 等稳定 API 未在博客中提及。同时有开发者抱怨编译耗时和大量临时文件，形成对发布内容与实际开发体验的不同关注点。
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/">Announcing Rust 1 . 100 . 0 | Rust Blog</a></li>
-
-</ul>
-</details>
-
-**标签**: `#rust`, `#programming-languages`, `#open-source`, `#software-engineering`, `#cargo`
+**标签**: `#Rust`, `#programming languages`, `#open source`, `#developer tooling`, `#software engineering`
 
 ---
 
 <a id="item-tech-news-2"></a>
-### [PostgreSQL 22 年类型混淆成 RCE 路径](https://mehmetince.net/part-3-6-how-i-ended-up-turning-a-22-year-old-postgresql-type-confusion-primitive-into-rce-cve-2026-6460/) ⭐️ 8.0/10
+### [Anthropic IPO 据报超额认购六倍，拟募资或创纪录](https://www.bloomberg.com/news/videos/2026-11-13/anthropic-ipo-said-to-be-six-times-oversubscribed-video) ⭐️ 8.0/10
 
-一篇技术分析称，一个存在约 22 年的 PostgreSQL 类型混淆原语被扩展为远程代码执行路径，并与 CVE-2026-6460 关联。该叙述面向数据库内核、漏洞研究和运维人员，重点是从类型混淆到可利用执行链的推导过程。现有可见信息未确认远程攻击是否无需认证，社区评论认为其更像已认证数据库账户的权限提升。
+据彭博援引知情人士称，Anthropic 的 IPO 已收到约六倍于可发售股份的认购订单，显示投资者对这家 Claude AI 模型公司的上市兴趣升温。公司文件显示，Anthropic 及其联合创始人拟在 IPO 中最多募资 644 亿美元，并在私募配售中再募集 260 亿美元。两项融资若按文件完成，将超过 SpaceX 的 IPO，成为史上最大规模上市融资。
 
-hackernews · ozirus · 11月12日 18:22 · [社区讨论](https://news.ycombinator.com/item?id=50471761)
+rss · Bloomberg Technology · 11月13日 06:54
 
-**「背景」** CVE-2026-6460 是 PostgreSQL 的类型混淆漏洞，主要经由 ALTER ... SET DATA TYPE 触发，允许对象创建者以数据库进程所属操作系统用户身份执行任意代码。该漏洞还存在 ALTER TABLE ... ADD COLUMN; ROLLBACK; ALTER TABLE ... ADD COLUMN 等其他 DDL 攻击路径。
+**「融资机制与规模背景」** 超额认购指投资者申购数量超过可发行股份，通常反映市场对该次上市的需求较强。私募配售则是向特定投资者出售股份，与公开发行共同构成 Anthropic 此次融资的总规模。由于 Anthropic 是 Claude 模型的开发公司，其 IPO 规模也被视为观察大型 AI 公司资本化进程的重要指标。
 
-**「影响」** 若该利用链成立，拥有数据库账户的攻击者可能借助类型混淆扩大权限并影响 PostgreSQL 服务进程所在主机，因此共享或多租户数据库环境应重点检查账户权限边界。运维人员需要关注官方安全通告、补丁和缓解措施，并评估最小化数据库服务权限的兼容性影响。
+**「影响」** 对投资者而言，这意味着一个可能超过 SpaceX IPO 规模的新股认购机会；对 Anthropic 而言，若 IPO 与私募配售均完成，公司及其联合创始人最多可新增 904 亿美元资金。
 
-**「社区讨论」** 评论者对“RCE”标签存在分歧：logophobia 和 jmuguy 认为这更像已认证数据库账户的权限提升，主要影响多租户数据库。amluto 则聚焦 PostgreSQL 内部 Datum 与类型 ID 分离存储带来的风险，其他评论称赞文章展示了数据库内核和零日发现过程。
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.postgresql.org/support/security/CVE-2026-6460/">PostgreSQL: CVE-2026-6460: PostgreSQL type confusion after ...</a></li>
-<li><a href="https://app.opencve.io/cve/CVE-2026-6460">CVE-2026-6460 - Vulnerability Details - OpenCVE</a></li>
-
-</ul>
-</details>
-
-**标签**: `#PostgreSQL`, `#security research`, `#type confusion`, `#RCE`, `#database internals`
+**标签**: `#AI commercialization`, `#IPO`, `#Anthropic`, `#capital markets`, `#AI industry`
 
 ---
 
 <a id="item-tech-news-3"></a>
-### [谷歌被称发布 Gemini 4 Hydrogen 模型](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/) ⭐️ 8.0/10
+### [彭博称 Nvidia 罢免 CEO 黄仁勋，硅谷震动](https://www.bloomberg.com/news/articles/2026-11-12/-dark-day-silicon-valley-mourns-nvidia-s-decision-to-oust-ceo) ⭐️ 8.0/10
 
-Telegram 来源称，谷歌推出面向日常编程和智能体工作流的 Gemini 4 Hydrogen 模型，并向开发者、企业和普通用户开放。该来源给出的价格为每百万输入 token 1.5 美元、输出 7.5 美元。来源还称其相较 Gemini 3.8 Flash 速度提升 2.5 倍，Terminal-Bench 4.1 得分从 18.2% 升至 57%，默认档在 Artificial Analysis 指数上超过 Argon；这些均为供应商或转述主张，尚未独立验证。
+彭博报道，两名知情人士称 Nvidia 董事会已罢免 CEO 黄仁勋。报道称，罢免与两段婚外情有关，其中一名女性被疑为中国从事间谍活动，另一段涉及一名员工。该决定在硅谷引发强烈反应，风险投资人和创始人批评董事会并担忧更广泛的行业影响。
 
-telegram · zaihuapd · 11月13日 02:02
+rss · Bloomberg Technology · 11月12日 19:07
 
-**「背景」** 在谷歌的 Gemini 4 模型体系中，Carbon 和 Argon 被定位为面向深度、长程推理的前沿模型，而 Hydrogen 则针对日常编码和智能体工作流的快速执行。此次发布将更早的 Gemini 3.8 Flash 作为比较对象，突出其在速度和相关基准上的提升。
+**「背景」** 据彭博报道，英伟达董事会在黄仁勋被指涉及两段私生活风波后将其罢免，其中一段关系涉及一名被怀疑为中国从事间谍活动的女性。黄仁勋此前一直担任英伟达 CEO，因此他的去留被视为理解该公司治理和 AI 业务稳定性的关键背景。
 
-**「影响」** 如果这些参数准确，开发者可用统一价格评估其在编程和智能体任务中的成本与速度收益；但在采用前应通过谷歌官方文档确认可用性、定价、基准测试条件和与现有 Gemini Flash 工作流的兼容性。
+**「影响」** 对依赖 Nvidia 芯片的 AI 开发者、云厂商和企业客户而言，这一尚未由 Nvidia 官方确认的高管变动报道会立即引发对算力供应连续性、市场信心和安全合规审查的关注。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity">Gemini 4 Hydrogen and Orchestrator | Google Antigravity Blog</a></li>
-<li><a href="https://deepmind.google/models/model-cards/gemini-4-hydrogen/">Gemini 4 Hydrogen - Model Card — Google DeepMind</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/-dark-day-silicon-valley-mourns-nvidia-s-decision-to-oust-ceo">‘Dark Day’: Silicon Valley Mourns Nvidia’s Decision to Oust ...</a></li>
+<li><a href="https://www.cnbc.com/2026/11/12/jensen-huang-nvidia-affair-ceo.html">Jensen Huang: Analysts weigh in on Nvidia&#x27;s future - CNBC</a></li>
 
 </ul>
 </details>
 
-**标签**: `#AI models`, `#developer tools`, `#inference pricing`, `#benchmarking`, `#Google`
+**标签**: `#Nvidia`, `#AI hardware`, `#China security`, `#corporate governance`, `#semiconductors`
 
 ---
 
 <a id="item-tech-news-4"></a>
-### [黄仁勋结束 NVIDIA CEO 任期，涉中国间谍指控](https://apnews.com/article/nvidia-megaspeed-china-singapore-huang-5403f152a601cf82ce939f1d24fffa0f) ⭐️ 7.0/10
+### [Google Antigravity 讨论 Gemini 4 Hydrogen 与编排器](https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) ⭐️ 7.0/10
 
-据多家媒体报道，黄仁勋结束 NVIDIA 首席执行官任期；路透社称他被董事会罢免，AP 标题则称其辞职。报道将原因指向两段婚外情指控，其中一名女性被指涉嫌为中国从事间谍活动，另一段涉及一名员工，而黄仁勋此前曾否认指控并试图留任。当前来源摘录未给出继任者、官方声明全文或独立证实的调查结果。
+Google 的 Antigravity 博客条目围绕 Gemini 4 Hydrogen 和 orchestrator 展开，面向使用 Google AI 编码代理的开发者。现有材料没有给出正文，因此无法判断它是已发布能力、预告还是博客说明，也没有版本、可用范围、兼容条件或实测性能。社区评论提到 Hydrogen 可能属于新的 Flash 类模型、Argon/Carbon 速度较慢、1 月 1 日起 Google 模型价格可能翻倍，但这些均为评论观点，需要以官方页面核实。
 
-hackernews · lldb · 11月12日 13:52 · [社区讨论](https://news.ycombinator.com/item?id=50467087)
+hackernews · jonbaer · 11月12日 18:52 · [社区讨论](https://news.ycombinator.com/item?id=50472260)
 
-**「背景」** 黄仁勋是英伟达联合创始人兼首席执行官，也是该公司在 AI 计算热潮中的核心领导者。路透社和《纽约时报》称，他在婚外情指控曝光后于 2026 年 11 月 12 日辞职，其中一段关系涉及疑似为中国从事间谍活动的女性；英伟达董事会确认了这次辞职，并引发行业震动。
+**「背景」** Google Antigravity 是面向编码与代理工作流的 Gemini 使用场景；公开材料称，Gemini 4 Hydrogen 被定位为更快的执行模型，Orchestrator 则把 Carbon 的推理能力与 Hydrogen 的执行能力结合。这些能力被描述为面向 Google AI Pro/Ultra 付费订阅，其中 Orchestrator 供 Ultra 使用，企业则可通过 API、模型选择器和 Google Sheets 中的 Gemini 使用。
 
-**「治理与监管影响」** 黄仁勋辞职并由首席财务官 Colette Kress 临时接任，使 NVIDIA 的治理连续性和对华业务合规风险成为市场关注焦点。由于相关报道涉及被指与中国间谍活动有关的婚外情，且美国议员称黄仁勋愿意接受国会质询，客户、投资者和 AI 算力供应链伙伴需要关注后续监管沟通是否影响出口许可、对华销售预期以及 NVIDIA 在 AI 基础设施供应中的稳定性。
+**「影响」** 对开发者而言，采用前需要确认 Gemini 4 Hydrogen 的模型层级、Antigravity 兼容性和 orchestrator 的缓存/token 计费；若评论提到的 1 月 1 日 Google 模型价格翻倍属实，编码代理的成本评估也需要重新计算。
 
-**「社区讨论」** 评论将焦点从个人丑闻转向出口管制与地缘政治：有人认为真正风险是 NVIDIA 被指规避对华芯片禁令，也有人强调黄仁勋的公众形象对 AI 产业信心至关重要；另有评论质疑爆料时机，但均未提供可核实证据。
+**「社区讨论」** 社区评论主要围绕命名、速度和成本：有人称 Argon/Carbon 太慢并转向 3.8 Flash，也有人提到 1 月 1 日起 Google 模型价格可能翻倍。另一派讨论把 orchestrator 类比为 Anthropic advisor 模式和 GitHub HydraFusion 多模型流水线，但质疑缓存与 token 计费如何工作。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.reuters.com/business/retail-consumer/nvidia-ceo-jensen-huang-step-down-big-blow-ai-boom-2026-11-12/">Nvidia CEO Jensen Huang resigns in blow to AI boom he helped ...</a></li>
-<li><a href="https://www.nytimes.com/live/2026/11/12/business/nvidia-jensen-huang-resigns">Jensen Huang Resigns as Nvidia CEO After Affairs: Live ...</a></li>
-<li><a href="https://www.theverge.com/ai-artificial-intelligence/1031689/jensen-huang-fired-nvidia">Nvidia CEO Jensen Huang resigns amid spy, affair... | The Verge</a></li>
-<li><a href="https://www.bbc.com/news/live/c6zjry11v8w1t">Huang agrees to appear before Congress, US lawmakers... - BBC News</a></li>
+<li><a href="https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/">Gemini 4 Hydrogen and Orchestrator | Google Antigravity Blog</a></li>
+<li><a href="https://thehype.news/gemini-4-hydrogen/">Gemini 4 Hydrogen : Benchmarks, Price and Availability</a></li>
+<li><a href="https://interestingengineering.com/ai-robotics/google-gemini-4-hydrogen-coding-benchmark">Google launches Gemini 4 Hydrogen for faster coding and agentic...</a></li>
 
 </ul>
 </details>
 
-**标签**: `#NVIDIA`, `#AI hardware`, `#China AI supply chain`, `#export controls`, `#leadership change`
+**标签**: `#Gemini`, `#AI coding agents`, `#model orchestration`, `#inference pricing`, `#Google Antigravity`
 
 ---
 
 <a id="item-tech-news-5"></a>
-### [Edge0-145B 本地模型宣称前沿能力，Mac 支持待验证](https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer) ⭐️ 7.0/10
+### [Apple Foundation Models 框架支持本地与 PCC 推理](https://developer.apple.com/foundation-models-framework/) ⭐️ 7.0/10
 
-Edge0 发布博客，宣称推出可在个人电脑运行的 145B 参数模型 Edge0-145B，面向希望本地部署大模型和 agent/工具调用工作流的用户。该模型称通过共享专家矩阵减少权重存储与移动；社区转述博客称每组 64 个专家共享两个大矩阵，峰值内存约 29GB。由于缺少独立基准和完整发布细节，其前沿能力表现与 macOS 可用情况仍待验证。
+Apple 的 Foundation Models 框架面向开发者提供设备端和 Private Cloud Compute 上的 AI 推理支持。评论引用 Apple 文档称，参与 App Store Small Business Program 且首次下载量少于 200 万的开发者，可在 Apple Intelligence 可用地区将 Private Cloud Compute 上的 Apple Foundation Models 用于 App Store 分发应用，并通过 TestFlight 或 ad hoc 测试，无需支付云端 API 费用。社区还提到该框架可在 Apple Silicon 本地使用，例如在 8GB M1 上通过终端辅助纠错和建议命令。
 
-hackernews · sroussey · 11月12日 23:06 · [社区讨论](https://news.ycombinator.com/item?id=50475713)
+hackernews · kermatt · 11月12日 21:13 · [社区讨论](https://news.ycombinator.com/item?id=50474361)
 
-**「背景」** 传统端侧大模型受显存、带宽和参数规模限制，通常需要在模型能力与本地可运行性之间取舍；145B 参数模型过去主要面向数据中心或云端推理。Edge0 此次将 Edge0-145B 与 Edge0-120B、统一推理框架和部署工具开源，并报告 29GB 峰值内存、超过 1,100 tokens/s 的提示处理和 80+ tokens/s 的生成速度，试图把编码、推理和 agent 能力带到个人电脑。
+**「背景」** Apple Foundation Models framework 是面向开发者的 AI 接口，允许应用调用 Apple 提供的基础模型，并涉及设备端推理与 Private Cloud Compute 服务端模型。2026 年 WWDC26 指南和相关报道指出，参与 App Store Small Business Program 且首次 App Store 下载少于 200 万的开发者，可无云 API 费用使用 Private Cloud Compute 上的下一代 Apple Foundation Models，并获得增强 AI 能力与更长上下文窗口。
 
-**「影响」** 如果这些内存与专家共享优化属实，本地 145B 推理的硬件门槛可能从服务器级设备下降到高端个人电脑；但社区称已发布内容似乎仅支持 CUDA，因此 Mac 用户和跨平台团队应先确认实际运行时、平台支持和基准再投入部署。
+**「影响」** 对开发者而言，最直接的影响是可在满足 Small Business Program、下载量门槛、Apple Intelligence 可用地区以及 App Store 或 TestFlight/ad hoc 分发等条件时，免费访问 Private Cloud Compute 推理；不符合条件的开发者仍需要评估其他云端或本地推理成本。本地 Apple Silicon 使用则受设备内存和模型适配限制，评论中的 8GB M1 经验只能说明轻量终端场景可行，不能推广为所有模型或任务都能稳定运行。
 
-**「社区讨论」** 评论中有人质疑 Edge0-145B 可能是现有模型量化或品牌化后的版本，也有人赞赏 145B 参数仅 29GB 峰值内存的优化和 Blender 工具调用演示。另一组讨论指出博客反复宣称 macOS day-one support，但已发布内容似乎只有 CUDA，Mac 支持的时间和可用性仍不清楚。
+**「社区讨论」** 讨论中最有用的观点是引用 Apple 文档，把免费 PCC 访问限定在 Small Business Program 且首次下载量少于 200 万的开发者，并强调需要 Apple Intelligence 可用和 App Store/TestFlight/ad hoc 分发。另有用户认为 Apple CoreAI 仓库把开源权重模型适配到 Swift 原生运行，以及 8GB M1 终端纠错体验“超出预期”，但这些属于个人观察或社区看法，不是官方性能承诺。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer">Edge0-145B: Open-Source On-Device AI with 145B Parameters</a></li>
-<li><a href="https://daily.dev/posts/edge0-145b-frontier-ai-capabilities-on-your-own-computer-lb0gy6vjq">Edge0-145B: Frontier AI Capabilities on Your Own Computer</a></li>
-<li><a href="https://explainx.ai/blog/edge0-145b-open-on-device-laptop-agent-model-november-2026">Edge0-145B: 145B Open Weights on One GPU | explainx.ai Blog</a></li>
+<li><a href="https://developer.apple.com/private-cloud-compute/">Private Cloud Compute - Apple Developer</a></li>
+<li><a href="https://developer.apple.com/wwdc26/guides/apple-intelligence/">WWDC26 Apple Intelligence guide - Apple Developer</a></li>
+<li><a href="https://techcrunch.com/2026/06/08/apple-bets-cheaper-ai-will-woo-small-developers/">Apple bets cheaper AI will woo small developers - TechCrunch</a></li>
 
 </ul>
 </details>
 
-**标签**: `#local AI inference`, `#large language models`, `#model optimization`, `#AI agents`, `#frontier models`
+**标签**: `#Apple Foundation Models`, `#Private Cloud Compute`, `#on-device inference`, `#AI developer tools`, `#inference cost`
 
 ---
 
 <a id="item-tech-news-6"></a>
-### [苹果 Foundation Models 框架支持本地与 PCC 推理](https://developer.apple.com/foundation-models-framework/) ⭐️ 7.0/10
+### [黄仁勋辞职传闻涉中国出口管制，证据未证实](https://apnews.com/article/nvidia-megaspeed-china-singapore-huang-5403f152a601cf82ce939f1d24fffa0f) ⭐️ 7.0/10
 
-苹果 Foundation Models 框架向开发者提供在设备本地或通过 Private Cloud Compute 运行基础模型的接口。评论引述的 Apple 文档称，注册 App Store Small Business Program 且首次 App Store 下载少于 200 万的开发者，可在支持 Apple Intelligence 的地区将 PCC 推理用于 App Store 分发应用，并免云 API 费用；该能力也可通过 TestFlight 或 ad hoc 分发测试。当前条目未提供完整源文，因此上述条件以评论所引述的官方页面信息为准。
+Hacker News 讨论指向多家媒体报道称 NVIDIA CEO 黄仁勋辞职，并涉及中国、新加坡及出口管制相关指控。当前来源内容仅显示链接标题和讨论评论，未提供可独立核实的 NVIDIA 官方声明、辞职日期、原因或调查结论。因此该事件仍应视为未经完全证实的领导层变动传闻。
 
-hackernews · kermatt · 11月12日 21:13 · [社区讨论](https://news.ycombinator.com/item?id=50474361)
+hackernews · lldb · 11月12日 13:52 · [社区讨论](https://news.ycombinator.com/item?id=50467087)
 
-**「背景」** Apple 的 Foundation Models framework 是面向开发者的模型调用层，重点是把 Apple 基础模型接入 Swift 应用，并支持设备端推理与 Private Cloud Compute。根据 Apple 开发者页面，参与 App Store 小型企业计划且首次下载少于 200 万次的开发者，可在 Private Cloud Compute 上以零云端 API 成本使用下一代 Apple Foundation Models。
+**「背景」** 黄仁勋自 1993 年英伟达创立以来长期担任首席执行官，被视为推动 AI 算力生态发展的核心人物。此次辞职源于多家媒体报道其婚外情，其中一名对象被美国情报机构指认为疑似中国间谍；英伟达将由首席财务官 Colette Kress 临时接任，直至选出正式继任者。
 
-**「影响」** 对开发者而言，接入 Private Cloud Compute 的关键限制从单纯模型能力转向资格与分发条件：需要确认 Small Business Program 注册状态、首次下载数是否低于 200 万，以及应用所在市场是否支持 Apple Intelligence。满足条件的小型开发者可把 PCC 作为 App Store 应用的推理后端并避免云 API 费用，不满足条件者仍应按付费云推理规划成本。
+**「影响」** 如果 NVIDIA 官方确认黄仁勋辞职，依赖 NVIDIA 平台的企业和开发者需要关注继任安排、合规调查和供应连续性，但不应基于未证实传闻立即调整采购或技术路线。
 
-**「社区讨论」** 评论主要讨论本地模型工具链与接入方式：有人称 macOS 27 预装 fm CLI 可无限制调用本地模型，但 guardrails 较重；也有人认为 Apple CoreAI 仓库把开放权重模型适配到 Swift 原生运行，M1 8GB 已足够。另有评论提醒 Claude 已支持 App Attest 数月，开发者不应只关注 Apple 框架。
+**「社区讨论」** 部分评论者认为讨论焦点应是 NVIDIA 是否规避出口管制以及为何此时曝光，而非私人关系；另一些评论者强调，即使指控未经证实，黄仁勋作为 NVIDIA 稳定象征的感知风险也足以影响 AI 经济信心。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://developer.apple.com/apple-intelligence/">Apple Intelligence - Apple Developer</a></li>
+<li><a href="https://www.techpowerup.com/354732/nvidia-co-founder-and-ceo-jensen-huang-officially-resigns?cp=12">NVIDIA Co-Founder and CEO Jensen Huang Officially Resigns</a></li>
+<li><a href="https://www.theguardian.com/technology/2026/nov/12/nvidia-ceo-jensen-huang-resigns">Jensen Huang resigns as Nvidia CEO after alleged... | The Guardian</a></li>
+<li><a href="https://www.nytimes.com/live/2026/11/12/business/nvidia-jensen-huang-resigns">Jensen Huang Resigns as Nvidia CEO After Affairs: Live Updates</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Apple Foundation Models`, `#on-device AI`, `#Private Cloud Compute`, `#developer tools`, `#inference cost`
+**标签**: `#NVIDIA`, `#Jensen Huang`, `#AI hardware`, `#export controls`, `#China AI supply chain`
 
 ---
 
 <a id="item-tech-news-7"></a>
-### [llm-gemini 0.37 与 Gemini 4 Hydrogen 定价发布](https://simonwillison.net/2026/Nov/12/llm-gemini/) ⭐️ 7.0/10
+### [PostgreSQL 类型混淆被称转化为 RCE](https://mehmetince.net/part-3-6-how-i-ended-up-turning-a-22-year-old-postgresql-type-confusion-primitive-into-rce-cve-2026-6460/) ⭐️ 7.0/10
 
-llm-gemini 0.37 已发布，Simon Willison 同时记录了 Google 在 2026 年 11 月 12 日推出 Gemini 4 Hydrogen。Hydrogen 定价为每百万输入 token 1.50 美元、缓存输入 0.075 美元、输出 7.50 美元；同属 Gemini 4 的 Carbon 和 Argon 在 2026 年 11 月 30 日前为 2.00/0.10/10.00 美元，12 月 1 日起翻倍。Google 称 Argon 与 Carbon 价格相同，但响应更快、每轮 token 消耗更低，Hydrogen 则是新的免费层级模型，并将驱动 Google Search 的 AI 功能。Willison 的对比显示，Hydrogen 生成的“鹈鹕骑自行车”图像明显更简单，但成本和耗时也更低。
+对 PostgreSQL 管理员和安全研究人员而言，Hacker News 上的一篇漏洞利用文章声称，一个存在 22 年的类型混淆原语可被转化为远程代码执行（RCE），文章链接标注 CVE-2026-6460。由于未提供原文内容，该说法仍需按作者披露的利用条件和验证状态理解。社区评论将技术路径描述为在表上创建 prepared statement、随后修改表并执行未同步更新的语句，从而触发类型混淆。
 
-rss · Simon Willison · 11月12日 22:55
+hackernews · ozirus · 11月12日 18:22 · [社区讨论](https://news.ycombinator.com/item?id=50471761)
 
-**「背景」** Gemini 4 系列包含 Carbon、Argon 等更高端模型，Hydrogen 是其中新推出的低成本成员；llm-gemini 0.37 则是面向 Google Gemini 模型的工具更新。
+**「背景」** 这一讨论围绕 CVE-2026-6460：PostgreSQL 在 ALTER ... SET DATA TYPE 等路径下存在类型混淆，官方描述称对象创建者可借此以数据库进程的操作系统用户身份执行任意代码。作者称该修复属于包含 52 个 CVE 的发布，是类型混淆问题的伞形修复，并引入复合属性版本化。
 
-**「影响」** 对于通过 LLM 插件选择 Gemini 4 模型的开发者，12 月 1 日的价格翻倍会显著改变成本测算；若任务对输出质量要求不高且需要更低延迟，Hydrogen 可作为免费层级或 Google Search AI 场景的候选，但其当前价格仍比 Claude Haiku 5.5 和 GPT-6 Luna 高约 15 倍。
+**「影响」** 如果攻击确实需要已认证数据库账户，它更接近权限提升而非未认证远程攻击；管理员应重点评估多租户 PostgreSQL 环境中的账户权限、prepared statement 缓存行为和表结构变更暴露面。
 
-**标签**: `#AI pricing`, `#Gemini models`, `#LLM tooling`, `#inference cost`, `#model releases`
+**「社区讨论」** 社区讨论中最有价值的分歧是，一些评论者认为这更像需要数据库访问权限的权限提升，而非真正 RCE，并主要影响多租户数据库。另一条评论则称赞利用思路，并将其概括为 prepared statement 在表变更后未更新而触发类型混淆。
+
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://www.postgresql.org/support/security/CVE-2026-6460/">PostgreSQL : CVE - 2026 - 6460 : PostgreSQL type confusion after...</a></li>
+<li><a href="https://mehmetince.net/part-3-6-how-i-ended-up-turning-a-22-year-old-postgresql-type-confusion-primitive-into-rce-cve-2026-6460/">Part 3/6 | How I Ended Up Turning a 22-Year-Old PostgreSQL ...</a></li>
+<li><a href="https://security-tracker.debian.org/tracker/CVE-2026-6460">CVE - 2026 - 6460</a></li>
+
+</ul>
+</details>
+
+**标签**: `#PostgreSQL`, `#database security`, `#CVE`, `#open source`, `#software engineering`
 
 ---
 
 <a id="item-tech-news-8"></a>
-### [VulnCheck 质疑 Glasswing 修复进展](https://lwn.net/Articles/1107173/) ⭐️ 7.0/10
+### [Edge0-145B 宣称 29GB 内存本地运行](https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer) ⭐️ 7.0/10
 
-VulnCheck 的 Patrick Garrity 分析了 Anthropic 的 Project Glasswing 自 4 月 7 日启动以来的数据，认为其漏洞发现成果与发布叙事不匹配。在 Anthropic 报告的 37,966 项发现中，仅 7,349 项公开、217 项标记修复，而重复项有 1,654 项、撤回项有 419 项；Garrity 还称这些发现对应的 CVE 只占今年总量的一小部分，且几乎没有被利用。Glasswing 的账本显示真实阳性率从启动时的 90.8% 升至 94.2%，但 VulnCheck 认为该口径与撤回和重复数量超过修复数量的情况相冲突。
+Edge0 在博客中宣称推出 Edge0-145B，一个 145B 参数模型，称可在兼容个人电脑（例如 MacBook Pro）上运行，峰值内存约 29GB。其介绍称通过共享矩阵在保持专家数量不变的情况下减少权重存储与移动：每组 64 个专家共享两个大矩阵，每个专家保留少量差异参数。这些能力目前主要来自 Edge0 的宣称，社区还质疑其是否可能是 Qwen 3.8 Flash Next 等模型的量化或品牌化变体。
 
-rss · LWN.net · 11月12日 16:26
+hackernews · sroussey · 11月12日 23:06 · [社区讨论](https://news.ycombinator.com/item?id=50475713)
 
-**「背景」** Project Glasswing 是 Anthropic 自 4 月 7 日启动的 AI 辅助漏洞发现项目，公开目标是帮助开源维护者发现安全问题。VulnCheck 的评估依据的是该项目披露的 findings 统计，包括公开披露、已修复、重复、撤回以及真阳性率等口径。
+**「背景」** Edge0-145B 是 Edge0 开源的 145B 参数端侧模型，与 Edge0-120B、统一推理框架和部署工具一同发布，厂商称其可在兼容个人电脑上运行编码、推理和 agent 能力。大模型本地运行通常受权重存储、内存/显存占用和推理速度限制，因此 Edge0 报告约 29GB 峰值内存、80+ tokens/s 生成和 1100+ tokens/s prompt 处理，是判断其是否真正适合个人设备的关键指标。
 
-**「影响」** 对开源维护者和安全团队而言，Glasswing 的主要负担可能不是确认漏洞，而是分诊大量未公开、重复或撤回的发现。评估这类 AI 辅助安全工具时，应更关注已修复项、可验证 CVE 和实际利用情况，而不是原始发现数量或真实阳性率。
+**「影响」** Edge0-145B 声称以约 29GB 峰值内存运行 145B 参数模型，因此本地推理开发者在采用前需要验证目标笔记本是否满足该内存条件，并确认它是否为 Qwen 3.8 Flash Next 等稀疏激活或量化变体的重新品牌版本。若用于工具调用场景，应先在本地硬件上测试精度、稳定性和内存占用，而不是直接假设具备同等前沿能力。
 
-**标签**: `#AI security`, `#vulnerability discovery`, `#open source`, `#Anthropic Glasswing`, `#maintainer workload`
+**「社区讨论」** 评论中，有人认可 145B 参数与约 29GB 峰值内存的组合，也赞赏 Blender 工具使用示例；但也有人怀疑它只是 Qwen 3.8 Flash Next 或类似模型的量化品牌版。另有讨论指出，所谓个人电脑可能并不普通，且智能体生成的设计仍可能需要人工清理。
+
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer">Edge0-145B: Open-Source On-Device AI with 145B Parameters</a></li>
+<li><a href="https://dev.to/shakeelahmed/a-145b-open-model-that-runs-on-your-laptop-edge0-145b-explained-31a2">A 145B Open Model That Runs on Your Laptop: Edge0-145B ...</a></li>
+<li><a href="https://daily.dev/posts/edge0-145b-frontier-ai-capabilities-on-your-own-computer-lb0gy6vjq">Edge0-145B: Frontier AI Capabilities on Your Own Computer</a></li>
+<li><a href="https://www.mindstudio.ai/blog/qwen-3-8-flash-next-strata-1000-build">Qwen 3 . 8 Flash Next on a $1,000 Dual-3060 PC: Quantization Tested</a></li>
+<li><a href="https://ollama.com/library/qwen3.8-flash-next">qwen 3 . 8 - flash - next</a></li>
+
+</ul>
+</details>
+
+**标签**: `#local-inference`, `#model-efficiency`, `#inference-cost`, `#AI-agents`, `#model-release`
 
 ---
 
 <a id="item-tech-news-9"></a>
-### [C++26 因契约特性争议首次未获 ISO 批准](https://lwn.net/Articles/1105400/) ⭐️ 7.0/10
+### [llm-gemini 0.37 与 Gemini 4 Hydrogen 定价](https://simonwillison.net/2026/Nov/12/llm-gemini/) ⭐️ 7.0/10
 
-ISO 于 10 月 23 日首次拒绝批准 WG21 提交的 C++26 标准文档，使该标准的未来出现不确定性。争议围绕拟新增的 contracts 特性，该特性计划在函数签名中加入前条件与后条件。自 1998 年以来，ISO 已批准七次 C++ 语言修订，此次否决尚属首次。
+llm-gemini 0.37 发布，Simon Willison 同时指出 Google 已推出 Gemini 4 系列中最低成本的 Hydrogen 模型。Hydrogen 定价为每百万输入 token $1.50、缓存输入 $0.075、输出 $7.50；Carbon 和 Argon 在 2026 年 11 月 30 日前同为 $2.00/$0.10/$10.00，但 12 月 1 日起翻倍为 $4.00/$0.20/$20.00。Google 称 Argon 比 Carbon 响应更快、每轮 token 更少，而 Hydrogen 将作为新的免费层模型并驱动 Google Search 的 AI 功能。
 
-rss · LWN.net · 11月12日 14:29
+rss · Simon Willison · 11月12日 22:55
 
-**「背景」** C++ 标准由 ISO/IEC JTC1/SC22/WG21 制定并提交 ISO 表决。C++26 此前被讨论可能包含调试头文件、线性代数头文件和文本编码头文件等特性，而“契约”功能涉及为函数添加前置条件和后置条件。
+**「背景」** Gemini 4 是 Google 的模型家族，包含 Carbon、Argon 和 Hydrogen；Hydrogen 被定位为低成本成员。Carbon 与 Argon 在 2026 年 11 月 30 日前定价相同，并计划从 12 月 1 日起价格翻倍，这使 Hydrogen 的相对低价要到 12 月才更明显。
 
-**「C++26 批准受阻影响工具链规划」** ISO 首次拒绝批准 C++26，使编译器、标准库和依赖新语言修订的工具链失去明确跟进时间表；开发团队短期内仍需基于 C++23 或草案特性工作，而函数前置/后置条件相关的 contracts 设计可能延迟、修改或被移除，影响系统软件中以标准方式表达接口约束的规划。公开反对移除 Contracts 的讨论表明，该特性是否保留已成为影响 C++26 批准进程的关键争议点。
+**「影响」** 对开发者而言，12 月 1 日起 Carbon 和 Argon 价格翻倍，需要重新评估按 token 计费的应用成本；对普通用户而言，Hydrogen 成为免费层并驱动 Google Search AI 功能，意味着更低成本访问，但 Simon 的生成测试显示其输出明显简化，可能不适合需要高质量复杂输出的任务。
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://open-std.org/jtc1/sc22/wg21/">ISO /IEC JTC1/SC22/ WG 21 - The C++ Standards Committee - ISOCPP</a></li>
-<li><a href="https://lwn.net/Articles/979870/">New features in C+ + 26 [LWN.net]</a></li>
-<li><a href="https://vue-hackernews-ssr-5cavbdjcta-ew.a.run.app/item/50237198">Vue HN 2.0 | Do not remove Contracts from C+ + 26 [pdf]</a></li>
-
-</ul>
-</details>
-
-**标签**: `#C++`, `#standardization`, `#software engineering`, `#contracts`, `#ISO`
+**标签**: `#Gemini 4`, `#llm-gemini`, `#model pricing`, `#inference cost`, `#AI tooling`
 
 ---
 
 <a id="item-tech-news-10"></a>
-### [马来西亚调查 Megaspeed 进口 AI 芯片是否再出口](https://www.bloomberg.com/news/articles/2026-11-13/malaysia-checks-whether-chips-were-reexported-by-megaspeed-unit) ⭐️ 7.0/10
+### [OpenAI 发布 Codex Security CLI 与 TypeScript SDK](https://github.com/openai/codex-security) ⭐️ 7.0/10
 
-马来西亚称正在调查新加坡 Megaspeed International Pte 旗下单位进口到马来西亚的 AI 芯片是否随后被再出口。此次审查加强了对一家处于丑闻中心公司的监管关注，该丑闻导致英伟达的 Jensen Huang 辞职。
+OpenAI 提供 Codex Security CLI 和 TypeScript SDK，npm 包名为 @openai/codex-security，用于帮助开发者查找、验证和修复代码中的安全漏洞。该工具支持扫描整个仓库、指定路径或 Git 变更，并可生成补丁、验证已有修复、导出 SARIF/JSON/CSV，以及接入 CI、容器和 GitHub Action。CLI 运行环境要求 Node.js 22.13.0+（22.x）、24.x 或 26.x，以及 Python 3.10+；Python 3.10 还需 tomli。部分网络安全请求和受保护发现需要 Trusted Access for Cyber，Codex Security Cloud 为可选连接。
 
-rss · Bloomberg Technology · 11月13日 03:21
+rss · GitHub Trending - Daily · 11月13日 08:20
 
-**「背景」** 2026 年，英伟达首席执行官黄仁勋因涉华间谍丑闻辞职，相关报道显示该事件引发了对 AI 芯片供应链与出口管制风险的额外关注。
+**「背景」** Codex Security 是 Codex 会话中的安全插件/工作流，并通过 CLI、TypeScript SDK 和 GitHub Action 扩展到终端与自动化。其 GitHub Releases 提到 0.9.0 源包因 macOS 签名中断未发布到 npm，并建议已签名 CLI/SDK 使用 0.9.1，而 npm 页面当前显示最新版本为 0.1.29，说明不同发布渠道的版本信息需以具体安装页面为准。
 
-**「影响」** 对依赖 Megaspeed 或相关渠道获取 AI 芯片的组织而言，这一调查可能意味着更严格的进口、再出口和最终用途文件核查。
+**「影响」** 团队可把 Codex Security 作为仓库级或 CI 安全扫描入口，并将结果接入 Linear、Jira、GitHub 或导出 SARIF/JSON/CSV；落地前需确认 Node.js 版本、Python 依赖、登录或 API 密钥配置，以及部分请求所需的 Trusted Access for Cyber 限制。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://en.wikipedia.org/wiki/Nvidia_alleged_spying_scandal">Nvidia alleged spying scandal - Wikipedia</a></li>
-<li><a href="https://techcrunch.com/2026/11/12/nvidia-ceo-jensen-huangs-affair-with-alleged-chinese-spy-a-timeline/">The unfolding Jensen Huang scandal: a timeline | TechCrunch</a></li>
+<li><a href="https://github.com/openai/codex-security/releases">Releases · openai/codex-security · GitHub</a></li>
+<li><a href="https://www.npmjs.com/package/@openai/codex-security">@openai/codex-security - npm</a></li>
 
 </ul>
 </details>
 
-**标签**: `#AI chips`, `#export controls`, `#supply chain`, `#Nvidia`, `#regulatory scrutiny`
+**标签**: `#openai`, `#codex`, `#security-tooling`, `#developer-tools`, `#ai-code-generation`
 
 ---
 
 <a id="item-tech-news-11"></a>
-### [UMAP 0.6 发布：新初始化与更快大规模降维](https://www.reddit.com/r/MachineLearning/comments/1xudaah/umap_06_new_initialization_new_optimizers_and/) ⭐️ 7.0/10
+### [addyosmani/agent-skills 提供 AI 编码代理技能](https://github.com/addyosmani/agent-skills) ⭐️ 7.0/10
 
-UMAP 0.6 已发布，面向使用 UMAP-learn 进行大规模降维和可视化的 Python 用户，引入递归初始化、新优化器和更快的最近邻搜索。作者称在 300 万篇 arXiv 论文上可在 5 分钟内完成，而 UMAP 0.5 尚未完成最近邻搜索；邻居搜索约快 4 倍，固定随机种子时可利用多核复现，而 0.5 的 seeded 运行单线程耗时 52 分钟。新初始化和优化器目前需设置 compatibility\_layout=False 启用，因为它们会改变输出，未来版本才会默认开启。
+GitHub Trending 于 2026-11-13 收录 addyosmani/agent-skills，仓库 README 描述其为 AI 编码代理提供 25 个工程技能和 9 个开发生命周期命令。可用命令包括 /spec、/plan、/build、/test、/constraints、/review、/webperf、/code-simplify 和 /ship，并通过 npx skills add、Claude Code 插件市场或各代理本地目录安装。README 说明 /build auto 会在批准计划后自主实现任务，但仍逐任务测试和提交；单独安装一个技能时只复制 skills/&lt;name&gt;/，不会获得 references/ 共享清单，且同名内置命令在 Claude Code 中需改用 /agent-skills:review。
 
-reddit · r/MachineLearning · /u/lmcinnes · 11月12日 13:51
+rss · GitHub Trending - Daily · 11月13日 08:20
 
-**「背景」** UMAP 常用于将高维数据降维到二维或三维，以便可视化和分析。此前 0.5 版本在大尺度数据上主要依赖 Spectral/PCA 初始化和较保守的优化器，因此最近邻搜索、布局收敛速度和可复现性成为主要瓶颈。
+**「背景」** 该项目依托“技能包”这一做法，把资深工程师的开发流程、质量门禁和审查清单打包成 AI 编码代理可安装的命令与规则，而不是直接扩展模型能力。它通过 Vercel 的 skills CLI 以及 Claude Code、Cursor 等代理的原生集成分发，使这些工作流能在不同编码代理中复用。
 
-**「影响」** 对处理百万级数据集的用户，0.6 把等待从数十分钟降到数分钟，并改善细簇结构解析和 kNN 召回。现有 pipeline 若要保持旧版默认行为，需显式关闭 compatibility\_layout；未来默认切换后，可视化布局和依赖布局的下游分析结果可能改变。
+**「影响」** 对采用 AI 编码代理的开发者而言，该仓库把规格、计划、测试、审查、Web 性能和发布门禁等资深工程流程封装成可跨 70+ 代理安装的技能，但安装方式会改变可用文件：需要共享清单时应整仓安装或手动复制 references/，并在 Cursor、Antigravity CLI 等工具中按各自目录和命名空间配置。
 
-**标签**: `#dimensionality-reduction`, `#open-source`, `#machine-learning`, `#python-library`, `#performance`
+**标签**: `#AI coding agents`, `#developer tools`, `#software engineering workflows`, `#agent skills`, `#GitHub trending`
 
 ---
 
 <a id="item-tech-news-12"></a>
-### [Isaacus 开源 NLI 法律冲突检测流水线](https://www.reddit.com/r/MachineLearning/comments/1xuzv6d/how_to_make_a_legorastyle_legal_conflict_detector/) ⭐️ 7.0/10
+### [Glasswing 分析：发现多但修复少，维护者负担加重](https://lwn.net/Articles/1107173/) ⭐️ 7.0/10
 
-Isaacus 法律工程师 Tabs 发布了一个 MIT 开源法律冲突检测流水线，面向法律工程师和开发者，使用 encoder 模型与 NLI 比较两份法律文档的条款偏差和缺口。流程将文档拆成条款树、嵌入条款、用零样本分类器过滤非条款项，按余弦相似度至少 0.5 保留每个条款最相关的三对，并用重排器和 NLI 分类器评分，最后把同主题高冲突项标为偏差、无同主题匹配项标为缺口。作者称，逐条比较 133 条款文档对需要 17,689 次 API 调用，而其最长样本文档对可在 20 秒内完成；可选 LLM 只在冲突判定后用于摘要或改写。该发布未提供独立基准、召回率或生产部署验证。
+VulnCheck 在 LWN 发布的分析称，Anthropic 的 Project Glasswing 自 4 月 7 日启动以来报告了 37,966 项发现，但其中仅 7,349 项已公开、217 项被标记为已修复。该分析还指出，1,654 项被标记为重复、419 项被撤回，重复数量约为修复数量的 7.5 倍，并质疑项目账本中 94.2% 的真实阳性率与实际修复进展不一致。对开源维护者而言，Glasswing 的漏洞分诊负担并未如项目承诺般明显减轻。
 
-reddit · r/MachineLearning · /u/ladyofcode · 11月13日 05:48
+rss · LWN.net · 11月12日 16:26
 
-**「背景」** Legora 被描述为面向律师的协作式 AI，用于加快合同审查、法律研究、起草和咨询。因此，帖文中的“Legora-style”冲突检测器指的是类似的法律文档条款级差异或冲突审查工具。该方案采用 NLI 和 encoder models 等非生成式模型，而不是让大模型直接生成结论，以应对条款级 pairwise 比较的成本和生成式模型可能带来的幻觉问题。
+**「背景」** Project Glasswing 是 Anthropic 的 AI 漏洞发现项目，于 4 月 7 日启动，目标是帮助发现软件安全问题。VulnCheck 的 Patrick Garrity 随后统计其自启动以来的发现、修复、重复和撤回情况，因此这篇报道关注项目实际产出与开源维护者分诊负担之间的关系。
 
-**「影响」** 对需要审阅法律 playbook 或合同条款的开发者和法律团队，该项目提供了可修改的开源参考实现，使 clause-level 非生成式比较成为可尝试的低成本路线；但由于缺少准确率、召回率和延迟基准，它更适合作为原型或内部工具，而非可直接替代专业法律审查的产品。
+**「影响」** 该分析提示，依赖 Glasswing 生成漏洞线索或 CVE 候选项的团队，可能需要额外验证重复项、撤回项和未公开项，并把更多资源投入维护者分诊，而不是直接获得可立即修复的漏洞清单。
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://legora.com/">Legora</a></li>
-<li><a href="https://www.spellbook.com/briefs/legora-vs-legalon">Legora vs LegalOn: Pricing, Features &amp; More (2026 Review)</a></li>
-
-</ul>
-</details>
-
-**标签**: `#legal-ai`, `#open-source`, `#NLI`, `#inference-cost`, `#document-review`
+**标签**: `#AI security`, `#vulnerability management`, `#Anthropic Glasswing`, `#open source maintainers`, `#software supply chain`
 
 ---
 
 ## 财经新闻
 
 <a id="item-finance-news-1"></a>
-### [中国批准首个口服 GLP-1 减重药](https://www.reuters.com/business/healthcare-pharmaceuticals/china-approves-eli-lillys-weight-loss-pill-orforglipron-2026-11-12/) ⭐️ 8.0/10
+### [英伟达宣布黄仁勋辞任 CEO，克雷斯任临时 CEO](https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition) ⭐️ 9.0/10
 
-中国国家药监局批准礼来口服 GLP-1 减重药奥氟格列隆钙片（商品名穆优达）为 1 类新药，用于肥胖或超重且伴至少一种体重相关合并症的成人，使其成为国内首个获批的口服 GLP-1 减重药。该药每日一次、不受饮食饮水限制，但其 2 型糖尿病适应证仍在审评，价格和上市时间尚未公布。
+英伟达宣布，黄仁勋已辞去总裁、CEO 及董事职务并立即生效，现任执行副总裁兼 CFO 科莱特·克雷斯出任临时 CEO 并继续兼任 CFO，董事会已启动永久继任者搜寻；公司称运营、客户承诺和产品路线不会中断，三季度财报仍按原计划于 11 月 17 日发布。
 
-telegram · zaihuapd · 11月12日 10:09
+telegram · zaihuapd · 11月12日 13:52
 
-**「背景」** 此前中国减重药市场以诺和诺德等公司的每周注射 GLP-1 产品为主；GLP-1 是一类用于控制血糖和体重的药物，礼来获批的奥氟格列隆为国内首个口服剂型。
+**「背景」** 黄仁勋自 1993 年起担任英伟达 CEO，被视为 AI 基础设施热潮的关键人物；英伟达此次同时任命首位董事会主席，意味着领导层变动伴随治理结构调整。
 
-**「影响」** 中国减重药市场将出现口服与每周注射剂型的直接竞争，诺和诺德、辉瑞、信达生物以及本土在研口服 GLP-1 企业需面对产品差异化压力。
+**「影响」** 黄仁勋辞职消息公布后，英伟达股价周四下跌 4.34%，市场重新审视其 AI 基础设施供应链与治理连续性。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.reuters.com/business/healthcare-pharmaceuticals/china-approves-eli-lillys-weight-loss-pill-orforglipron-2026-11-12/">Eli Lilly becomes first drugmaker to have a GLP-1 weight-loss ...</a></li>
-<li><a href="https://www.scmp.com/business/companies/article/3374229/eli-lilly-beats-novo-nordisk-china-approval-first-oral-glp-1-weight-loss-drug">Eli Lilly beats Novo Nordisk to China approval for first oral ...</a></li>
-<li><a href="https://pharmaphorum.com/news/lilly-beats-novo-china-oral-glp-1-obesity">Lilly beats Novo to China with an oral GLP-1 for obesity</a></li>
-<li><a href="https://www.linkedin.com/pulse/from-21-employees-obesity-drug-nda-chinas-oral-glp-1-dark-horse-4xt4c">From 21 Employees to an Obesity Drug NDA: China ’s Oral ...</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition">NVIDIA Announces CEO Transition | NVIDIA Newsroom</a></li>
+<li><a href="https://www.techpowerup.com/354732/nvidia-co-founder-and-ceo-jensen-huang-officially-resigns?cp=12">NVIDIA Co-Founder and CEO Jensen Huang Officially Resigns</a></li>
+<li><a href="https://edition.cnn.com/2026/11/12/tech/jensen-huang-nvidia-resigns">CFO Colette Kress to serve as interim leader after Nvidia CEO ...</a></li>
+<li><a href="https://www.cnbc.com/2026/11/12/nvidia-nvda-jensen-huang-second-affair.html">Nvidia stock closes down over 4% after CEO Jensen Huang ...</a></li>
+<li><a href="https://www.theguardian.com/technology/2026/nov/12/jensen-huang-built-an-ai-kingdom-now-hes-gone-will-nvidias-ramparts-be-breached">Jensen Huang built an AI kingdom. Now he’s gone, will Nvidia ...</a></li>
 
 </ul>
 </details>
 
-**标签**: `#GLP-1`, `#China drug approval`, `#obesity treatment`, `#Eli Lilly`, `#pharma competition`
+**标签**: `#NVIDIA`, `#AI supply chain`, `#corporate leadership`, `#A-share themes`, `#semiconductors`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [SpaceX 拟投资逾 740 亿美元建设得州与亚利桑那 AI 园区](https://news.google.com/rss/articles/CBMixAFBVV95cUxQdlQwLUxxTENmenRpSFFXVlNUeVkzeURtNWxCZ1RuVEQwdENKV0g3MndreVZsZFYwVGtpT3Q3SDJZU0pHTGI1WFFYWERreFJmbzVjaUtOR2NjUURRMTVHNVlKdGE0VkdRVzRvekpIcHdmRGdOV2kwRXVmbWl1blRIV1VKSjQ4c19FSVFTUWZNM2ptQ0ZaMW96a2UyTFphWjNsSnc3ZmJZdWhHNWpiS19hTDhYSk9vNkpkeng1N3prZ1Y3b1lI?oc=5) ⭐️ 8.0/10
+### [AI 股收窄跌幅，投资者评估英伟达 CEO 离任影响](https://news.google.com/rss/articles/CBMiuwFBVV95cUxOTDc4NU9Ycko1b01GTVdRT1lMVzJWaEhrLS1OSU92el9GTTRMSEhyTW5VbThOZEhoVGNCbHNBU19EZS1UUlNiTW0wVU41RUdBVkJpQlNRazBvaHJFQ2VnT2FJU183NE9ub1RKQU5wMFp6N1luX3lrMFZubFVIaHJ0TWhZRVkyUzhJVjBsaDRlMEpKNUFLeWtITVhLRVhqOERFMzh0azNJeVlqVzI0ZUowcnV4Z3VYMUdXcFY0?oc=5) ⭐️ 8.0/10
 
-路透社报道，SpaceX 计划在得克萨斯州和亚利桑那州的人工智能园区投资超过 740 亿美元。该数字是报道中的计划投资额，尚未说明建设时间表或最终落地规模。
+路透标题称，AI 股票在投资者评估英伟达 CEO 离任影响后收窄跌幅；该摘要未给出具体股价、跌幅或离任细节。
 
-google\_news · Reuters · 11月12日 20:23
+google\_news · Reuters · 11月12日 20:57
 
-**「背景」** SpaceX 拟在得克萨斯州 Starbase 和亚利桑那州科奇斯县建设“超级计算园区”，即大型数据中心，这是其扩大 AI 计算布局的一部分。
+**「背景」** 英伟达长期由黄仁勋主导，其个人形象与 AI 行业叙事高度绑定，因此其离职消息会直接影响投资者对 AI 供应链和板块估值的预期。
+
+**「影响」** 英伟达处于 AI 芯片供应链核心，CEO 退出引发的担忧可能外溢至全球芯片和 AI 基础设施相关股票，促使投资者重新评估该链条的信心。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.reuters.com/business/media-telecom/spacex-invest-over-74-billion-supercompute-facilities-texas-arizona-2026-11-12/">SpaceX plans over $74 billion investment in Texas, Arizona AI ...</a></li>
+<li><a href="https://www.abc.net.au/news/2026-11-13/asx-markets-business-news-live-updates-nov-13/107337368">Markets live: ASX to fall as Nvidia shares dive after Jensen...</a></li>
+<li><a href="https://www.theguardian.com/business/live/2026/nov/09/nvidia-jensen-huang-scandal-investigation-ai-industry-tech-stocks-recovery-slump-latest-news-updates">Nvidia ’s value tumbles after ‘honeytrap’ investigation... | The Guardian</a></li>
+<li><a href="https://www.globaltimes.cn/page/202611/1374224.shtml">Analysis: Nvidia CEO ’s exit highlights mounting... - Global Times</a></li>
+<li><a href="https://www.theguardian.com/technology/live/2026/nov/12/nvidia-ceo-jensen-huang-affairs-share-price-plunges-live-latest?page=with:block-6af53b548f08bed8cbc53c06">Nvidia turmoil continues as Jensen Huang resigns over... | The Guardian</a></li>
 
 </ul>
 </details>
 
-**标签**: `#SpaceX`, `#AI infrastructure`, `#capital expenditure`, `#data centers`, `#Reuters`
+**标签**: `#Nvidia`, `#AI stocks`, `#leadership change`, `#AI supply chain`, `#market reaction`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [黄仁勋辞职或加剧中美芯片管制担忧](https://www.cnbc.com/2026/11/13/jensen-huang-nvidia-us-china-relations.html) ⭐️ 7.0/10
+### [SpaceX 拟投逾 740 亿美元建得州与亚利桑那 AI 园区](https://news.google.com/rss/articles/CBMixAFBVV95cUxQdlQwLUxxTENmenRpSFFXVlNUeVkzeURtNWxCZ1RuVEQwdENKV0g3MndreVZsZFYwVGtpT3Q3SDJZU0pHTGI1WFFYWERreFJmbzVjaUtOR2NjUURRMTVHNVlKdGE0VkdRVzRvekpIcHdmRGdOV2kwRXVmbWl1blRIV1VKSjQ4c19FSVFTUWZNM2ptQ0ZaMW96a2UyTFphWjNsSnc3ZmJZdWhHNWpiS19hTDhYSk9vNkpkeng1N3prZ1Y3b1lI?oc=5) ⭐️ 8.0/10
 
-英伟达前 CEO 黄仁勋周四辞职，并同意在 11 月 26 日前就所谓中国间谍关系向国会作证。CNBC 援引分析师称，此事可能促使美国国会年底前收紧对华芯片出口管制，但核心指控尚未证实。
+据路透社报道，SpaceX 计划投资逾 740 亿美元，在得克萨斯州和亚利桑那州建设人工智能园区。
 
-rss · CNBC Finance · 11月13日 02:56
+google\_news · Reuters · 11月12日 20:23
 
-**「背景」** 美国自 2022 年起限制英伟达对华销售先进芯片，特朗普政府 2025 年又放宽多项限制；当前中美关系处于脆弱的贸易休战中，该事件因此被放大。
+**「背景」** 据路透社报道，SpaceX 计划投资逾 740 亿美元建设得克萨斯州 Starbase 和亚利桑那州科奇斯县的人工智能/超级计算园区；其中亚利桑那园区约 500 亿美元，并拟采用干式冷却以减少用水。
 
-**「影响」** 分析师预计，若美国收紧芯片出口管制，AI 和半导体供应链可能承压，中国也可能以稀土或芯片材料供应作为反制。
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://interestingengineering.com/ai-robotics/spacex-arizona-supercomputing-campus-dry-cooling">SpaceX &#x27;s 6-gigawatt campus will use dry cooling, skip groundwater use</a></li>
+<li><a href="https://www.finam.ru/publications/item/spacex-vlozhit-74-mlrd-v-sozdanie-superkompyuternykh-kompleksov-v-tekhase-i-arizone-20261112-2203/">SpaceX вложит $ 74 млрд в создание... — Финам</a></li>
 
-**标签**: `#US-China relations`, `#export controls`, `#Nvidia`, `#AI semiconductors`, `#domestic chips`
+</ul>
+</details>
+
+**标签**: `#SpaceX`, `#AI infrastructure`, `#capital expenditure`, `#data centers`, `#global technology`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [美联储称 2027 年 10 月会议将不会投票决定利率](https://www.cnbc.com/2026/11/12/in-policy-switch-fed-says-its-october-2027-meeting-will-not-see-a-vote-on-interest-rates.html) ⭐️ 7.0/10
+### [黄仁勋辞职与作证或加剧中美科技紧张](https://www.cnbc.com/2026/11/13/jensen-huang-nvidia-us-china-relations.html) ⭐️ 7.0/10
 
-美联储负责设定利率的联邦公开市场委员会（FOMC）宣布，2027 年 10 月 26 日至 27 日的会议不会就利率调整投票，也不会发布会后声明，而是用于讨论广泛货币政策战略问题；这是主席凯文·沃什减少央行市场足迹、重组政策审议的一部分。
+英伟达前 CEO 黄仁勋周四辞职，并同意在 11 月 26 日感恩节前就涉嫌中国间谍丑闻向国会作证；CNBC 引述分析师称，国会可能在今年年底前收紧对华半导体出口管制。
 
-rss · CNBC Finance · 11月12日 19:05
+rss · CNBC Finance · 11月13日 02:56
 
-**「背景」** 按通常安排，FOMC 每年召开约八次会议并投票决定利率；2027 年将有七次投票会议，年终会议也从 12 月改到 11 月，而沃什计划把 2028 年的不投票决定利率的会议增加到两次。
+**「背景」** 英伟达前 CEO 黄仁勋因被指与一名据称涉嫌为中国从事情报活动的女性有不当关系而辞职，公司首席财务官 Colette Kress 临时接任，黄仁勋同意在 11 月 26 日前赴国会作证。此事发生在中美围绕芯片出口管制和 AI 供应链持续博弈的背景下，也正值美国国会加强对华科技政策审查之际。
 
-**标签**: `#Federal Reserve`, `#Monetary Policy`, `#FOMC`, `#Interest Rates`, `#Market Communication`
+**「影响」** 分析师预计，黄仁勋事件可能促使美国国会收紧对华先进芯片出口审查，并波及向客户提供受限芯片的离岸数据中心，同时增加中国以稀土等供应反制的风险，令芯片出口商、数据中心运营方和半导体/AI 投资者面临更高政策不确定性。
+
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://www.theguardian.com/technology/2026/nov/13/nvidia-scandal-sparks-us-national-security-concerns-china">Nvidia scandal sparks US national security furore and... | The Guardian</a></li>
+<li><a href="https://techcrunch.com/2026/11/12/nvidia-ceo-jensen-huangs-affair-with-alleged-chinese-spy-a-timeline/">The unfolding Jensen Huang scandal: a timeline | TechCrunch</a></li>
+<li><a href="https://www.cnbc.com/2026/11/12/nvidia-trump-jensen-chip-export-controls-china-xi-.html">Nvidia fallout revives push for chip curbs ahead of China summit</a></li>
+<li><a href="https://www.nytimes.com/2025/05/29/business/china-us-export-controls.html">Export Controls Are Endangering the Fragile U.S.- China Truce - The...</a></li>
+
+</ul>
+</details>
+
+**标签**: `#US-China tech policy`, `#Nvidia`, `#semiconductor export controls`, `#AI supply chain`, `#rare earths`
 
 ---
 
 <a id="item-finance-news-5"></a>
 ### [特朗普涉伊朗言论推高油价](https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html) ⭐️ 7.0/10
 
-布伦特原油结算价周四上涨 3.3%，收于每桶 95.82 美元；WTI 原油结算价上涨 2.6%，收于每桶 88.74 美元。特朗普称不需要与伊朗达成协议，并声称美国控制霍尔木兹海峡。
+布伦特原油结算价上涨 3.3%至 95.82 美元/桶，美国西德克萨斯中质原油（WTI）上涨 2.6%至 88.74 美元/桶；此前特朗普称无需与伊朗达成协议，并声称美国控制霍尔木兹海峡，重新引发市场对中东供应中断的担忧。
 
 rss · CNBC Finance · 11月13日 00:01
 
-**「背景」** 此前，特朗普在美国中期选举后表示不太可能再次打击伊朗，使油价承压；11 月 WTI 和布伦特分别下跌 16%和 20%。霍尔木兹海峡是中东石油出口的关键通道。
+**「背景」** 霍尔木兹海峡是全球关键石油和液化天然气（LNG）海运通道，2025 年约 2000 万桶石油及石油产品每日经此运输，短暂中断也会显著冲击油价。
 
-**标签**: `#oil prices`, `#geopolitics`, `#Iran`, `#Strait of Hormuz`, `#energy markets`
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://www.iea.org/about/oil-security-and-emergency-response/strait-of-hormuz">Strait of Hormuz - About - IEA</a></li>
+<li><a href="https://www.bbc.com/news/articles/c78n6p09pzno">Iran war: What is the Strait of Hormuz and why does it matter?</a></li>
+
+</ul>
+</details>
+
+**标签**: `#Oil prices`, `#Geopolitical risk`, `#Energy markets`, `#Middle East conflict`, `#Commodities`
 
 ---
 
 <a id="item-finance-news-6"></a>
-### [印度拟禁止私募股权控制多家非银行放贷机构](https://news.google.com/rss/articles/CBMizgFBVV95cUxPaUotYjFJTTF3amV0VWJmdDl3V00xWlVZdTd2VkFzek1GZ2hQbndleXV5XzMxOVdFRU03dmNWWDFXbHVtQ3daOEM3WFV1VHJoc0V0d3pYMEN5VU9vR1p5dmJwaDNBRWlVLWcxeEVSSHBrX2lSQVphdHJSdjM1b1Z6QlY0YjVmRlBtT2dWM1pocm1nclI3SXVISkpqakVJb1Bpb25LRTBEZTVNbl84WmtyRko1YWdkazJZcHFRbVBTejk0bjE3SF9JeG9KOTU5QQ?oc=5) ⭐️ 7.0/10
+### [印度 Clean Max 拟投 53 亿美元清洁能源供 AI 算力设施](https://news.google.com/rss/articles/CBMixwFBVV95cUxPbUd5azlyc2VuWEFpbXhjNFBHM0I1SGRVRld4QVJHdUpxcHNaYlppRXFpRGZZdHlMWVR2TVAtbTd5bnV6WV9DNHliaWlteTM2S0xaYjBJT3BCODhrck9uNWVnVXJEcEZWZWNvbXZfUDkyNzB1a1IxYzduM2tIRFlIa0lod1FXbUNzTUozbHdSdjhnV3NqdURJYzk1WGd4TURSM0F6SmlTM2VyajNJWlphQ3VYdzctckxJX1p1aWIzUmp2S2hwRVQw?oc=5) ⭐️ 7.0/10
 
-据路透社引述消息人士，印度计划禁止私募股权公司同时控制多家非银行放贷机构（NBFC，即受监管但并非银行的放贷公司）。报道未说明具体生效时间、监管门槛或受影响机构范围。
+路透社报道，印度 Clean Max 计划投资 53 亿美元建设清洁能源，为 AI 计算设施供电。
 
-google\_news · Reuters · 11月12日 08:14
+google\_news · Reuters · 11月12日 13:39
 
-**「背景」** 印度央行（RBI）正在制定提案，拟限制私募股权基金同时控股多家非银行放贷机构；这类机构可放贷但不吸收存款，受央行监管。
+**「背景」** 人工智能计算设施需要大量电力；有研究警告，到 2027 年 AI 行业可能消耗相当于荷兰规模的电力，这为清洁能源企业投资 AI 计算供电提供了背景。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.reuters.com/legal/government/india-ban-private-equity-firms-controlling-multiple-non-bank-lenders-sources-say-2026-11-12/">India to ban private equity firms from controlling multiple ...</a></li>
-<li><a href="https://www.business-standard.com/finance/news/rbi-to-ban-private-equity-firms-from-controlling-multiple-non-bank-lenders-126111200692_1.html">RBI to ban private equity firms from controlling multiple non ...</a></li>
-<li><a href="https://www.thehindubusinessline.com/money-and-banking/rbi-weighs-banning-private-equity-firms-from-controlling-multiple-non-bank-lenders/article71692907.ece">RBI weighs banning private equity firms from controlling ...</a></li>
+<li><a href="https://www.bbc.com/news/technology-67053139">Warning AI industry could use as much energy as the Netherlands</a></li>
 
 </ul>
 </details>
 
-**标签**: `#India`, `#private equity`, `#non-bank lenders`, `#financial regulation`, `#Reuters`
+**标签**: `#AI infrastructure`, `#clean energy`, `#capital expenditure`, `#India`, `#AI supply chain`
 
 ---
 
 <a id="item-finance-news-7"></a>
-### [印度 Clean Max 拟投 53 亿美元建设 AI 算力供电设施](https://news.google.com/rss/articles/CBMixwFBVV95cUxPbUd5azlyc2VuWEFpbXhjNFBHM0I1SGRVRld4QVJHdUpxcHNaYlppRXFpRGZZdHlMWVR2TVAtbTd5bnV6WV9DNHliaWlteTM2S0xaYjBJT3BCODhrck9uNWVnVXJEcEZWZWNvbXZfUDkyNzB1a1IxYzduM2tIRFlIa0lod1FXbUNzTUozbHdSdjhnV3NqdURJYzk1WGd4TURSM0F6SmlTM2VyajNJWlphQ3VYdzctckxJX1p1aWIzUmp2S2hwRVQw?oc=5) ⭐️ 7.0/10
+### [思科上调年度营收预期](https://news.google.com/rss/articles/CBMiwAFBVV95cUxPcDgteG5IeXZjU1k1UDdhbFkyZlVCaHI1d0pPdGp2elFReVRRclN6dWhTM2NuSUk3cGdUSnRRU2c4aWpCcS14blFsN3hLTTNCSktQbXpTUVgxRjVJV1R1YldHdEVYMXJvVHg3TzJiOXhEM0owM08ySlI1bmNkMG5GQXhnQl9iVExNWlN1Z0ZweFk3YldGWDltNFpnekdDZWpVcTJ3QTFlUUxNWXlLX0NjLUhvTjRtNzlrYnlXdXJiTmc?oc=5) ⭐️ 7.0/10
 
-据路透社报道，印度 Clean Max 计划投资 53 亿美元建设清洁能源设施，为 AI 计算设施供电。
+据路透社报道，思科因 AI 网络设备需求强劲上调全年营收预测，但报道未给出具体金额或增幅。
 
-google\_news · Reuters · 11月12日 13:39
+google\_news · Reuters · 11月12日 23:18
 
-**「背景」** Clean Max Enviro Energy Solutions 是印度可再生能源公司，此次计划投资约 5000 亿卢比（约 53 亿美元）建设综合绿色能源园区，并为一个 2 吉瓦 AI 计算设施供电。
+**「背景」** 思科此次上调的是 2027 财年展望，其财年与常见日历年不同；增长主要来自云服务商和企业客户对数据中心及网络设备的投资。思科还与英伟达扩大 AI 网络合作，以支持这一需求。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.reuters.com/business/energy/indias-clean-max-plans-53-billion-clean-energy-investment-power-ai-computing-2026-11-12/">India&#x27;s Clean Max plans $5.3 billion clean energy investment ...</a></li>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/clean-max-to-invest-5-3-billion-in-india-green-energy-complex">Clean Max to Invest $5.3 Billion in India Green Energy ...</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/articles/cisco-shares-climb-4-strong-214347073.html">Cisco shares climb 4% on strong earnings beat and raised outlook</a></li>
+<li><a href="https://mezha.net/eng/bukvy/b4bfbf59_cisco_forecasts_stronger/">Cisco Forecasts Stronger 2027 Revenue as AI Network Demand ...</a></li>
+<li><a href="https://www.linkedin.com/posts/notreload-ai_cisco-lifts-forecast-as-ai-spending-boosts-activity-7394488950117142528-H-Wm">Cisco Systems reports strong Q results, raises outlook due to AI and...</a></li>
 
 </ul>
 </details>
 
-**标签**: `#AI infrastructure`, `#clean energy`, `#capital expenditure`, `#data centers`, `#India`
+**标签**: `#Cisco`, `#AI networking`, `#revenue guidance`, `#Reuters`, `#AI supply chain`
 
 ---
 
 <a id="item-finance-news-8"></a>
-### [中国拟 150 亿美元投资土耳其太阳能和风电项目](https://news.google.com/rss/articles/CBMiwwFBVV95cUxNeHFseHMwZlVRRk1CcEs5LXZqUlVhVTg0SlpxTENObDFaV3d1djRReVJTNjBWNHhic0VBSWdBOXBPekt2ajZFWS1hakNmcmRUWGd6dnJTeGlwQ0VQNUh6OE9qclNYZVFWaGs0QW8tb2RRbTM1SndDeDg2LWl4SkFQdm5aM3oxLTZ4LWpZWFRBdVk0a0Rjb1ZsWWFtV05zUkdkS0ktbENpNWxfMFN6QmFuQmRLMkdpcF9mMVN4UjQwLTRlNGM?oc=5) ⭐️ 7.0/10
+### [美国 2027 财年 10 月预算赤字创纪录](https://news.google.com/rss/articles/CBMiugFBVV95cUxPSDdFRmlLcWNxcWNRVHRGN05hM2dMcmpEeW1IY1gyVkM0R2NPQVpfWU1ObHZMX08xZHFFYXhGbllpTW9abFR2SGxoNUprSFdxYTR1OXF1N3d2RGRNNGRzelRRdzhSOF8tMmM2U2I3clNQR0trbDZrLWN4QlVyNXlKOTJsdXp2NU5aWUxHR3AyQndrNFc5dFhBQS1MWHdZZHQ5c0thakE1b1Y1OTdhcFNHb1U1cmlZbjNyQWc?oc=5) ⭐️ 7.0/10
 
-据路透社报道，土耳其一位部长称，中国已签署一项初步协议，拟投资 150 亿美元在土耳其建设太阳能和风能电厂。
+据路透社报道，美国在 2027 财年首月（10 月）录得 4040 亿美元预算赤字，创该月份纪录。
 
-google\_news · Reuters · 11月12日 09:17
+google\_news · Reuters · 11月12日 20:18
 
-**「背景」** 该消息由土耳其能源部长公布，协议为初步性质，项目范围除总容量 7,000 兆瓦的光伏和风电外，还包括储能与输电设施。
+**「背景」** 美国联邦财政年度从 10 月开始，财政部按月度公布预算执行数据；创纪录赤字出现在收入下降、支出大幅增加的背景下。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.reuters.com/business/energy/china-signs-preliminary-deal-invest-15-bln-solar-wind-power-plants-turkey-2026-11-12/">China signs preliminary deal to invest $15 bln in solar and ...</a></li>
-<li><a href="https://esgnews.com/china-turkey-solar-wind-investment/">China’s $15 Billion Solar and Wind Investment in Turkey - ESG ...</a></li>
-<li><a href="https://theinsightinternational.com/china-signs-preliminary-deal-for-15-billion-solar-and-wind-investment-in-turkey/">China signs preliminary deal for $15 billion of solar, wind ...</a></li>
+<li><a href="https://www.forexfactory.com/news/1436074-us-starts-2027-fiscal-year-with-record-october">US starts 2027 fiscal year with record October budget deficit of $ 404 ...</a></li>
+<li><a href="https://fiscaldata.treasury.gov/americas-finance-guide/federal-spending/">Federal Spending | U . S . Treasury Fiscal Data</a></li>
 
 </ul>
 </details>
 
-**标签**: `#China outbound investment`, `#renewable energy`, `#solar power`, `#wind power`, `#Turkey energy infrastructure`
-
----
-
-<a id="item-finance-news-9"></a>
-### [思科因 AI 网络需求上调全年营收预期](https://news.google.com/rss/articles/CBMiwAFBVV95cUxPcDgteG5IeXZjU1k1UDdhbFkyZlVCaHI1d0pPdGp2elFReVRRclN6dWhTM2NuSUk3cGdUSnRRU2c4aWpCcS14blFsN3hLTTNCSktQbXpTUVgxRjVJV1R1YldHdEVYMXJvVHg3TzJiOXhEM0owM08ySlI1bmNkMG5GQXhnQl9iVExNWlN1Z0ZweFk3YldGWDltNFpnekdDZWpVcTJ3QTFlUUxNWXlLX0NjLUhvTjRtNzlrYnlXdXJiTmc?oc=5) ⭐️ 7.0/10
-
-思科（Cisco）上调全年营收预期，称人工智能网络设备需求强劲；路透报道未披露具体数字。
-
-google\_news · Reuters · 11月12日 23:18
-
-**「背景」** 此前，思科第一财季业绩好于华尔街预期，企业建设人工智能基础设施带动其网络设备和网络安全工具需求，促使公司上调全年收入预测。
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.reuters.com/business/media-telecom/cisco-raises-annual-revenue-forecast-strong-ai-networking-demand-2026-11-12/">Cisco lifts annual revenue forecast on strong AI networking ...</a></li>
-
-</ul>
-</details>
-
-**标签**: `#Cisco`, `#AI networking`, `#earnings guidance`, `#technology`, `#supply chain`
+**标签**: `#US fiscal deficit`, `#Treasury budget`, `#macroeconomic data`, `#interest rates`, `#Reuters`
 
 ---
