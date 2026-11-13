@@ -137,7 +137,12 @@ class RSSScraper(BaseScraper):
         for ordinal, entry in enumerate(feed.entries, start=1):
             try:
                 published_at = self._parse_date(entry)
-                if not published_at or published_at < since:
+                # Some feeds (e.g. GitHub Trending) publish entries without any
+                # date field. Treat those as fresh instead of silently dropping
+                # every item from the feed.
+                if published_at is None:
+                    published_at = datetime.now(timezone.utc)
+                if published_at < since:
                     continue
 
                 feed_id = str(source.url).split("//")[1].replace("/", "_")
@@ -217,7 +222,7 @@ class RSSScraper(BaseScraper):
             entry: Feed entry data
 
         Returns:
-            str: Extracted text content
+            str: Extracted content
         """
         content = entry.get("content", [])
         if not isinstance(content, (list, tuple)):
