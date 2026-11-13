@@ -124,7 +124,7 @@
       {
         "name": "Bloomberg Markets",
         "url": "https://feeds.bloomberg.com/markets/news.rss",
-        "enabled": true,
+        "enabled": false,
         "category": "finance",
         "profile": "finance-news"
       },
