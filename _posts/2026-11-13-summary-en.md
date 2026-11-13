@@ -5,394 +5,391 @@ date: 2026-11-13
 lang: en
 ---
 
-> From 111 items, 17 important content pieces were selected
+> From 106 items, 17 important content pieces were selected
 
 ---
 
 **Technology News**
-1. [PostgreSQL Type-Confusion Primitive Raised as Potential CVE-2026-6460 RCE](#item-tech-news-1) ⭐️ 8.0/10
-2. [Hacker News Debates Anthropic IPO Terms and Compute Commitments](#item-tech-news-2) ⭐️ 8.0/10
-3. [Rust 1.100 Stabilizes Never Type, Allocator API, Cargo Unused Dependency Warnings](#item-tech-news-3) ⭐️ 8.0/10
-4. [smolmaxxing claims 16B LLMs run on sub-1GB devices](#item-tech-news-4) ⭐️ 7.0/10
-5. [NVIDIA CEO Jensen Huang Reportedly Resigns After China Spy Reports](#item-tech-news-5) ⭐️ 7.0/10
-6. [Apple Foundation Models Framework: Developer AI and PCC Access](#item-tech-news-6) ⭐️ 7.0/10
-7. [Google&\#x27;s Gemini 4 Hydrogen Appears, Raising Naming and Pricing Questions](#item-tech-news-7) ⭐️ 7.0/10
-8. [llm-gemini 0.37 and Gemini 4 Hydrogen pricing](#item-tech-news-8) ⭐️ 7.0/10
-9. [ISO Refuses to Ratify C++26 Over Contracts Feature](#item-tech-news-9) ⭐️ 7.0/10
-10. [Huang&\#x27;s Nvidia Exit Seen Opening AI Chip Competition](#item-tech-news-10) ⭐️ 7.0/10
-11. [UMAP 0.6 Adds Faster Search, New Initialization, and Opt-In Optimizers](#item-tech-news-11) ⭐️ 7.0/10
-12. [Gemma 3 Study Finds Unused Spatial Map in Model](#item-tech-news-12) ⭐️ 7.0/10
-13. [Apple Details Secure Exclaves for iPhone 18 Pro Privacy Indicators](#item-tech-news-13) ⭐️ 7.0/10
-14. [Unverified Blackwell Fingerprint Claim Covers Six Chinese AI Models](#item-tech-news-14) ⭐️ 7.0/10
+1. [NVIDIA board removes CEO Jensen Huang amid China allegations](#item-tech-news-1) ⭐️ 8.0/10
+2. [Rust 1.100.0 Stabilizes Never Type and Core Allocator API](#item-tech-news-2) ⭐️ 8.0/10
+3. [PostgreSQL 22-Year-Old Type-Confusion Primitive Described as CVE-2026-6460 RCE](#item-tech-news-3) ⭐️ 8.0/10
+4. [Malaysia Investigates Megaspeed Unit Over Possible AI Chip Re-Exports](#item-tech-news-4) ⭐️ 8.0/10
+5. [Google Antigravity Adds Gemini 4 Hydrogen and Orchestrator Mode](#item-tech-news-5) ⭐️ 7.0/10
+6. [Microsoft 365 outage disrupts email and chat for over nine hours](#item-tech-news-6) ⭐️ 7.0/10
+7. [Apple Foundation Models Framework Highlights On-Device and Private Cloud Compute Access](#item-tech-news-7) ⭐️ 7.0/10
+8. [Open-source effort runs 16B LLMs on sub-1GB devices](#item-tech-news-8) ⭐️ 7.0/10
+9. [llm-gemini 0.37 release and Gemini 4 Hydrogen pricing](#item-tech-news-9) ⭐️ 7.0/10
+10. [VulnCheck Finds Anthropic Glasswing AI Findings Mostly Unfixed and Duplicated](#item-tech-news-10) ⭐️ 7.0/10
+11. [ISO Declines to Ratify C++26 Over Contracts Controversy](#item-tech-news-11) ⭐️ 7.0/10
+12. [Nvidia Leadership Exit May Open AI Chip Competition](#item-tech-news-12) ⭐️ 7.0/10
 
 **Financial News**
-1. [Nvidia CEO Resignation Raises U.S.-China Chip Policy Risks](#item-finance-news-1) ⭐️ 8.0/10
-2. [China approves first oral GLP-1 weight-loss drug](#item-finance-news-2) ⭐️ 7.0/10
-3. [UForce raises $700 million at $6 billion valuation](#item-finance-news-3) ⭐️ 7.0/10
+1. [Nvidia CEO Jensen Huang resigns](#item-finance-news-1) ⭐️ 9.0/10
+2. [Nvidia CEO Resignation Raises U.S.-China Chip Control Risks](#item-finance-news-2) ⭐️ 8.0/10
+3. [China Approves Eli Lilly&\#x27;s First Oral GLP-1 Weight-Loss Pill](#item-finance-news-3) ⭐️ 8.0/10
+4. [Fed to skip rate vote at October 2027 meeting](#item-finance-news-4) ⭐️ 7.0/10
+5. [Ukraine-founded drone startup UForce raises $700 million](#item-finance-news-5) ⭐️ 7.0/10
 
 ---
 
 ## Technology News
 
 <a id="item-tech-news-1"></a>
-### [PostgreSQL Type-Confusion Primitive Raised as Potential CVE-2026-6460 RCE](https://mehmetince.net/part-3-6-how-i-ended-up-turning-a-22-year-old-postgresql-type-confusion-primitive-into-rce-cve-2026-6460/) ⭐️ 8.0/10
+### [NVIDIA board removes CEO Jensen Huang amid China allegations](https://apnews.com/article/nvidia-megaspeed-china-singapore-huang-5403f152a601cf82ce939f1d24fffa0f) ⭐️ 8.0/10
 
-A technical write-up describes how a 22-year-old PostgreSQL type-confusion primitive could be turned into a potential remote code execution chain, referenced in the article URL as CVE-2026-6460. The central debate is whether the result is true RCE or primarily privilege escalation from an authenticated database account, which would matter most for multi-tenant PostgreSQL deployments. The supplied material does not include the article body, so affected versions, patch status, and exact exploitation prerequisites are not confirmed.
+Reports linked from the Hacker News item say NVIDIA’s board removed CEO Jensen Huang after allegations of two affairs, including one with a woman suspected of spying for China. The item frames the change as tied to China export-control concerns, but the supplied source material mostly presents the allegations and removal as reported, not independently confirmed. Huang reportedly appeared broken and used phrases like “whatever” and “I don’t care” before surrendering his position.
 
-hackernews · ozirus · Nov 12, 18:22 · [Discussion](https://news.ycombinator.com/item?id=50471761)
+hackernews · lldb · Nov 12, 13:52 · [Discussion](https://news.ycombinator.com/item?id=50467087)
 
-**「Background」** PostgreSQL’s security advisory for CVE-2026-6460 describes a type confusion that can let an object creator execute arbitrary code as the operating-system user running the database, primarily through ALTER ... SET DATA TYPE and other DDL paths. The linked write-up presents the finding as part 3 of a six-part series and frames the underlying primitive as a 22-year-old PostgreSQL type-confusion issue.
+**「Background」** Huang’s resignation followed public reports that he had extramarital affairs, including one involving a woman identified by U.S. intelligence as a suspected Chinese spy. Those revelations prompted calls in Congress for him to resign and were tied to broader scrutiny of Nvidia’s AI-chip business and export-control compliance.
 
-**「Impact」** Database operators should upgrade PostgreSQL to 18.7, 17.12, 16.16, 15.20, or 14.25, because unpatched versions can allow an authenticated user with permissions to create or alter database objects to execute arbitrary code on the host through type-confusion-inducing DDL commands. This makes shared or multi-tenant PostgreSQL environments especially exposed, while limiting object-creation and alteration privileges can reduce risk until patching is complete.
+**「Impact」** The reported removal introduces uncertainty for NVIDIA’s customers, investors, and partners because the company’s leadership stability is closely tied to AI compute supply and China export-control scrutiny.
 
-**「Community discussion」** Commenters argued that the issue may be better described as privilege escalation than broad remote code execution if it requires authenticated database access, especially in multi-tenant environments. Others praised the detailed write-up, while one commenter criticized PostgreSQL’s internal Datum and type-id handling as a risky design pattern.
+**「Community discussion」** Commenters debated whether the reported ouster was primarily about personal conduct, national-security/export-control risk, or a broader strategic fight; one argued perception of leadership stability matters for the AI economy, while another said the alleged export-ban circumvention, not the affairs, was the real risk.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://mehmetince.net/part-3-6-how-i-ended-up-turning-a-22-year-old-postgresql-type-confusion-primitive-into-rce-cve-2026-6460/">Part 3/6 | How I Ended Up Turning a 22-Year-Old PostgreSQL ...</a></li>
-<li><a href="https://www.postgresql.org/support/security/CVE-2026-6460/">PostgreSQL: CVE-2026-6460: PostgreSQL type confusion after ...</a></li>
-<li><a href="https://access.redhat.com/security/cve/cve-2026-6460">CVE-2026-6460 - Red Hat Customer Portal</a></li>
-<li><a href="https://app.opencve.io/cve/CVE-2026-6460">CVE-2026-6460 - Vulnerability Details - OpenCVE</a></li>
+<li><a href="https://www.cnbc.com/2026/11/11/nvidia-jensen-huang-congress-resign-ai-chips.html">Jensen Huang affair rocks D.C., brings calls from Congress to resign</a></li>
+<li><a href="https://www.theguardian.com/technology/live/2026/nov/13/nvidia-jensen-huang-to-testify-before-congress-live-latest-updates">Nvidia ’s Jensen Huang expected to testify before... | The Guardian</a></li>
+<li><a href="https://www.nytimes.com/live/2026/11/12/business/nvidia-jensen-huang-resigns">Jensen Huang Resigns as Nvidia CEO After Affairs: Live Updates</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#postgresql`, `#database-security`, `#exploit-research`, `#open-source`, `#privilege-escalation`
+**Tags**: `#NVIDIA`, `#AI compute`, `#China export controls`, `#A-share catalysts`, `#leadership`
 
 ---
 
 <a id="item-tech-news-2"></a>
-### [Hacker News Debates Anthropic IPO Terms and Compute Commitments](https://ipo.anthropic.com/us/) ⭐️ 8.0/10
+### [Rust 1.100.0 Stabilizes Never Type and Core Allocator API](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/) ⭐️ 8.0/10
 
-The Hacker News item links to Anthropic&\#x27;s IPO page and centers on community-reported offering terms and financial disclosures. Commenters cite a $70-$78 price range, an $85.3B gross deal size including a $26B private placement, roughly $968B implied market cap, and $900.9B in compute commitments through 2045. Because the item provides no source content, these figures are presented as reported details rather than independently verified facts.
+Rust 1.100.0 has been released for developers using the stable Rust toolchain. The supplied announcement lists stabilization of the never type and core parts of the Allocator API, along with Cargo reporting of unused dependencies. It does not provide performance, compatibility, or migration details beyond these release changes.
 
-hackernews · josephljohnston · Nov 12, 11:46 · [Discussion](https://news.ycombinator.com/item?id=50465829)
+hackernews · mbStavola · Nov 12, 18:39 · [Discussion](https://news.ycombinator.com/item?id=50472038)
 
-**「Background」** Anthropic, a five-year-old AI company, set an initial price range of $70 to $78 per share for its Nasdaq IPO under ticker ANT. The offering is scheduled to price on Nov. 18, 2026, with trading beginning Nov. 19, 2026.
+**「Background」** Rust releases are versioned updates to the stable compiler and standard library, with stabilization making previously experimental language or library features available without special configuration. Cargo is Rust’s package manager and build tool, so changes to Cargo affect dependency resolution, warnings, and project maintenance.
 
-**「Impact」** The discussion gives AI buyers and investors concrete figures to scrutinize, especially the long-dated compute commitments and implied valuation, but readers should verify them against the actual IPO documents before using them for procurement, investment, or infrastructure planning.
+**「Impact」** For Rust developers, the release makes the never type and core Allocator API features available on stable Rust, while Cargo&\#x27;s unused-dependency reporting may surface stale dependencies during builds and require manifest cleanup.
 
-**「Community Discussion」** freakynit reports detailed IPO terms, while other commenters debate whether Anthropic&\#x27;s large raise reflects durable frontier-model demand or pressure from cheaper, switchable, or local alternatives. maerF0x0 and maupin question the need for public capital if self-improving or local models could dominate, and irthomasthomas raises concern that earlier private rounds could be underwater at the low end of the price range.
+**「Community discussion」** Commenters celebrated the release as unusually broad, pointing to features such as custom allocators, dependency cooldowns, cargo install lockfile behavior, and unused-dependency warnings. One user argued that the announcement omitted additional stabilized APIs such as bool::toggle and Box::map, while another asked whether compile times had improved and reported frequent cargo clean use.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/technology/ai/article/anthropic-ipo-what-we-know-143321078.html?fr=sycsrp_catchall">Everything you need to know ahead of Anthropic&#x27;s IPO</a></li>
-<li><a href="https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html">Anthropic sets price range of $70 to $78 in upcoming IPO - CNBC</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#AI commercialization`, `#Anthropic IPO`, `#compute infrastructure`, `#AI industry`, `#market catalyst`
+**Tags**: `#Rust`, `#open source`, `#programming languages`, `#developer tooling`, `#software engineering`
 
 ---
 
 <a id="item-tech-news-3"></a>
-### [Rust 1.100 Stabilizes Never Type, Allocator API, Cargo Unused Dependency Warnings](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/) ⭐️ 8.0/10
+### [PostgreSQL 22-Year-Old Type-Confusion Primitive Described as CVE-2026-6460 RCE](https://mehmetince.net/part-3-6-how-i-ended-up-turning-a-22-year-old-postgresql-type-confusion-primitive-into-rce-cve-2026-6460/) ⭐️ 8.0/10
 
-Rust 1.100.0 has been released, stabilizing the never type and core parts of the Allocator API. Cargo now reports unused dependencies, giving developers a direct signal when a crate lists dependencies it does not use. The release also includes additional language and Cargo tooling changes beyond the highlighted items.
+A security write-up describes how a 22-year-old PostgreSQL type-confusion primitive, referenced as CVE-2026-6460, was developed into a remote code execution exploit. The supplied item is the researcher&\#x27;s account, not a vendor advisory or confirmed patch release. Some commenters argue the issue may amount to privilege escalation from an authenticated database account, but the available source does not state the exact access prerequisites.
 
-hackernews · mbStavola · Nov 12, 18:39 · [Discussion](https://news.ycombinator.com/item?id=50472038)
+hackernews · ozirus · Nov 12, 18:22 · [Discussion](https://news.ycombinator.com/item?id=50471761)
 
-**「Background」** In Rust, “stabilization” means a feature that was previously available only as an unstable or experimental capability becomes supported in the standard stable toolchain. Rust 1.100 is therefore a release that changes what ordinary Rust and Cargo users can rely on without depending on unstable features. Its highlighted items, such as the never type and core parts of the Allocator API, are examples of long-running language and tooling capabilities moving into the stable ecosystem.
+**「Background」** The write-up centers on CVE-2026-6460, which PostgreSQL describes as a type-confusion issue after ALTER ... SET DATA TYPE that can let an object creator execute arbitrary code as the operating-system user running the database. The advisory was included in a broader PostgreSQL security release covering many CVEs, providing the patch context for the exploit research.
 
-**「Impact」** Rust developers gain stabilized never-type and Allocator API capabilities, while Cargo users receive a concrete dependency-hygiene signal: projects with stale Cargo.toml entries may need to remove them to address Cargo&\#x27;s reports.
+**「Impact」** If the remote code execution claim is correct, PostgreSQL deployments could face server compromise; however, the supplied material does not identify affected versions or exploit prerequisites.
 
-**「Community Discussion」** Commenters praised Cargo&\#x27;s unused-dependency reporting and pointed to other stabilized APIs they felt were underemphasized, such as bool::toggle and Box::map. Some also highlighted minimum publish age configurations and cargo install lockfile behavior as practical tooling changes, while one commenter described moving projects to Rust because AI-generated code could produce safe, performant code.
+**「Community Discussion」** Commenters debate the practical severity: several argue the exploit resembles privilege escalation from an authenticated database account, while others praise the detailed path to the zero-day.
 
-**Tags**: `#rust`, `#programming-languages`, `#open-source`, `#developer-tools`, `#software-engineering`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.postgresql.org/support/security/CVE-2026-6460/">PostgreSQL : CVE - 2026 - 6460 : PostgreSQL type confusion after...</a></li>
+<li><a href="https://www.phoronix.com/news/PostgreSQL-52-CVEs">PostgreSQL Sees New Releases For 52 Security... - Phoronix</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#PostgreSQL`, `#security research`, `#type confusion`, `#remote code execution`, `#database internals`
 
 ---
 
 <a id="item-tech-news-4"></a>
-### [smolmaxxing claims 16B LLMs run on sub-1GB devices](https://github.com/hyperionaidev/smolmaxxing/) ⭐️ 7.0/10
+### [Malaysia Investigates Megaspeed Unit Over Possible AI Chip Re-Exports](https://www.bloomberg.com/news/articles/2026-11-13/malaysia-checks-whether-chips-were-reexported-by-megaspeed-unit) ⭐️ 8.0/10
 
-The Hacker News post links to smolmaxxing, an open-source repository where the author claims developers can run 16B-parameter LLMs on an iPad Air 1st generation and a Xiaomi TV box, each with under 1GB usable memory. The author says custom kernels, results, and modified models are being published for reproduction, including on Hugging Face. Because no independent benchmark data is supplied, speed and compatibility remain author-reported.
+Malaysia is examining whether AI chips imported by a unit of Singapore-based Megaspeed International Pte were subsequently shipped overseas. The inquiry tightens scrutiny of Megaspeed amid a scandal that led to the resignation of Nvidia Corp.’s Jensen Huang. The provided report does not confirm that any chips were re-exported.
 
-hackernews · mrashad74 · Nov 12, 15:23 · [Discussion](https://news.ycombinator.com/item?id=50468888)
+rss · Bloomberg Technology · Nov 13, 03:21
 
-**「Background」** Large language model inference is usually limited by the amount of model data that can be kept in memory. Mixture-of-experts models can reduce the active work per token, and a project described on GitHub uses partial in-memory loading plus flash storage to run 8B and 16B models on devices with about 1 GB of RAM.
+**「Background」** Jensen Huang resigned as Nvidia CEO after reports of two extramarital affairs, including one with an alleged Chinese spy. The scandal brought scrutiny to Megaspeed, a Singapore-based company reportedly incorporated in 2015 as Chinese video game developer 7Road International.
 
-**「Impact」** If the published kernels and models are reproducible, developers can test edge inference on legacy low-memory hardware, but they should verify memory limits, speed, and model quality before relying on sub-1GB 16B claims.
-
-**「Community Discussion」** Commenters debated practicality: Farmadupe2 argued inference is mostly compute and hardware sourcing is now the bottleneck, while nico reported rapid progress in small local models, including a 6.5M-parameter reasoning model. Others asked whether such tiny models are useful for real tasks.
+**「Export-control compliance risk」** The investigation creates concrete compliance risk for organizations sourcing AI chips through Megaspeed-linked Malaysian channels, because authorities are examining whether imported chips were re-exported and whether those routes allegedly bypassed export controls. Buyers should verify chip provenance, end-use, and re-export status before relying on such supply chains for AI deployments.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://github.com/hyperionaidev/smolmaxxing/">GitHub - hyperionaidev / smolmaxxing : maxxing the ability to run...</a></li>
+<li><a href="https://www.theverge.com/ai-artificial-intelligence/1031689/jensen-huang-nvidia-ceo-resigns">Nvidia CEO Jensen Huang resigns amid spy, affair scandals</a></li>
+<li><a href="https://www.zerohedge.com/political/i-dont-know-bessent-confronted-lutnick-over-why-nvidia-spy-scandal-firm-isnt-blacklisted">&quot;I Don&#x27;t Know&quot;: Bessent Confronted Lutnick Over Why Nvidia Spy...</a></li>
+<li><a href="https://www.ainvest.com/news/geopolitical-risk-tech-supply-chains-megaspeed-case-global-implications-2510/">Geopolitical Risk in Tech Supply Chains: The Megaspeed Case and Its...</a></li>
+<li><a href="https://www.linkedin.com/posts/rishabh-jaiswal-9b8aa1160_malaysia-to-tighten-semiconductor-regulations-activity-7309765907063418880-R0FS">Malaysia to tighten semiconductor regulations under... | LinkedIn</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#LLM inference`, `#edge AI`, `#open source`, `#hardware optimization`, `#AI compute`
+**Tags**: `#AI chips`, `#export controls`, `#supply chain`, `#Nvidia`, `#regulatory investigation`
 
 ---
 
 <a id="item-tech-news-5"></a>
-### [NVIDIA CEO Jensen Huang Reportedly Resigns After China Spy Reports](https://apnews.com/article/nvidia-megaspeed-china-singapore-huang-5403f152a601cf82ce939f1d24fffa0f) ⭐️ 7.0/10
+### [Google Antigravity Adds Gemini 4 Hydrogen and Orchestrator Mode](https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/) ⭐️ 7.0/10
 
-Jensen Huang reportedly resigned as NVIDIA&\#x27;s CEO after reports of marital infidelity, including an alleged affair with a woman the US reportedly suspects is a Chinese spy. The exit leaves the AI chipmaker with an interim CEO and introduces uncertainty for customers and investors tied to its hardware roadmap and China-related supply-chain exposure. The supplied item does not independently confirm the resignation or the allegations.
+Google reportedly introduced Gemini 4 Hydrogen and an Orchestrator mode in Google Antigravity, according to a Hacker News post linking to a Google Antigravity blog. Because the supplied item lacks source content, concrete details such as availability, benchmarks, pricing, compatibility, or shipped capabilities are not established. The announcement is relevant to developers working with AI agent workflows, model selection, and inference performance.
 
-hackernews · lldb · Nov 12, 13:52 · [Discussion](https://news.ycombinator.com/item?id=50467087)
+hackernews · jonbaer · Nov 12, 18:52 · [Discussion](https://news.ycombinator.com/item?id=50472260)
 
-**「Background」** Jensen Huang had been NVIDIA’s chief executive, and his sudden departure was confirmed in an SEC filing after the board accepted his resignation and named CFO Colette Kress as interim CEO. The resignation followed reports of extramarital affairs, including one involving a suspected Chinese spy, and Huang’s agreement to testify before Congress.
+**「Background」** Google’s Gemini 4 family uses chemistry-themed model names, with Carbon and Argon described as large reasoning models and Hydrogen positioned as a faster, more cost-efficient option for agentic workflows. The Antigravity blog connects this model release to an Orchestrator mode intended to coordinate development tasks.
 
-**「Impact」** For customers and partners, the reported leadership change raises near-term scrutiny of NVIDIA&\#x27;s export-control compliance and China-related supply-chain risk, which could complicate procurement and roadmap decisions for organizations that depend on NVIDIA AI infrastructure.
+**「Impact」** For developers using Google Antigravity, the Orchestrator mode could reduce manual switching between models and effort settings if it reliably routes tasks, but its practical value depends on whether the model’s task-complexity judgments are accurate and how caching, billing, and latency behave in real agent workflows.
 
-**「Community Discussion」** Commenters argued that the affair allegations matter mainly because Huang&\#x27;s public stability is central to confidence in the AI market, while others said the more consequential issue is possible export-control evasion and the timing of the leak. These are opinions about motive and impact, not independently established facts.
+**「Community Discussion」** Commenters mocked the Hydrogen naming after earlier Carbon and Argon references and questioned the new model-name scheme, while others praised Orchestrator for avoiding constant manual model and effort switching. Several developers also claimed Google’s agents felt slower than alternatives such as Anthropic’s Opus or Flash-style models, and asked how multi-model pipelines handle caching and billing.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.theguardian.com/technology/live/2026/nov/13/nvidia-jensen-huang-to-testify-before-congress-live-latest-updates">Nvidia ’s Jensen Huang expected to testify before... | The Guardian</a></li>
-<li><a href="https://techcrunch.com/2026/11/12/nvidia-ceo-jensen-huangs-affair-with-alleged-chinese-spy-a-timeline/">The unfolding Jensen Huang scandal: a timeline | TechCrunch</a></li>
+<li><a href="https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/">Gemini 4 Hydrogen and Orchestrator | Google Antigravity Blog</a></li>
+<li><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/">Introducing Gemini 4 Hydrogen for Agentic Workflows</a></li>
+<li><a href="https://thehype.news/gemini-4-hydrogen/">Gemini 4 Hydrogen : Benchmarks, Price and Availability</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#NVIDIA`, `#AI hardware`, `#export controls`, `#China tech`, `#corporate governance`
+**Tags**: `#Gemini`, `#AI agents`, `#model releases`, `#inference performance`, `#developer tools`
 
 ---
 
 <a id="item-tech-news-6"></a>
-### [Apple Foundation Models Framework: Developer AI and PCC Access](https://developer.apple.com/foundation-models-framework/) ⭐️ 7.0/10
+### [Microsoft 365 outage disrupts email and chat for over nine hours](https://status.cloud.microsoft/) ⭐️ 7.0/10
 
-Apple&\#x27;s Foundation Models framework is a developer-facing AI platform for on-device inference and app integration. Comments quoting Apple&\#x27;s Private Cloud Compute documentation say eligible App Store Small Business Program developers with fewer than two million first-time downloads can use Apple Foundation Models on PCC with no cloud API cost. They also say PCC access depends on Apple Intelligence availability and can be tested through TestFlight or ad hoc distribution.
+Microsoft 365 experienced a prolonged service degradation that left users unable to access email and chat services for more than nine hours, one of the company’s most severe disruptions in recent memory. Microsoft status updates said an alternative health check method had been validated on a subset of affected infrastructure, allowing some servers to return to service and prompting a broader rollout, while an automated recovery process was being prepared to detect and restart unresponsive servers. Community reports described Teams chat and meetings as partially usable while email remained down, and some users said Azure infrastructure appeared unaffected, pointing to a Microsoft 365-specific fault.
 
-hackernews · kermatt · Nov 12, 21:13 · [Discussion](https://news.ycombinator.com/item?id=50474361)
+hackernews · dkpk · Nov 12, 18:20 · [Discussion](https://news.ycombinator.com/item?id=50471731)
 
-**「Background」** Apple’s Foundation Models framework is described as a native Swift API for integrating large language models into apps, including Apple’s on-device models and models running on Private Cloud Compute. It builds on Apple’s 2024 introduction of on-device and server foundation models for Apple Intelligence, which were trained using Apple’s AXLearn framework.
+**「Background」** Microsoft 365 is a cloud-based productivity suite that includes Outlook, Teams, and Exchange Online, so a service degradation can disrupt core business communications. During this incident, Microsoft had earlier reported restarting affected servers and said its status page was intermittently not loading. The company later said a portion of servers were returning to service.
 
-**「Impact」** For eligible developers, the zero cloud API cost for PCC-backed Foundation Models reduces a concrete deployment expense, but they still need to meet Apple&\#x27;s eligibility, distribution, and regional availability conditions.
+**「Operational impact」** The outage directly disrupted Microsoft 365 email and collaboration, with Outlook and Exchange Online access failing for thousands while outage reports remained in the tens of thousands after the peak, so IT teams had to treat it as an extended enterprise incident and provide alternate communication paths rather than assuming a brief blip.
 
-**「Community discussion」** Commenters highlighted Apple&\#x27;s CoreAI repository for adapting open-weight models to Swift, reported surprisingly capable local AI on an 8 GB M1, and noted that Anthropic&\#x27;s Claude already supports App Attest for Foundation Models; another asked whether the item reflected a new update.
+**「Community Discussion」** Users reported that email remained down for many hours while Teams chat and meetings continued to work, and some noted Azure infrastructure appeared unaffected. Other commenters argued the incident reflected wider Microsoft reliability concerns tied to AI and cloud investments, but those views were opinions, not confirmed causes.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://developer.apple.com/foundation-models-framework/">Foundation Models framework - Apple Developer</a></li>
-<li><a href="https://developer.apple.com/documentation/foundationmodels">Foundation Models | Apple Developer Documentation</a></li>
-<li><a href="https://machinelearning.apple.com/research/introducing-apple-foundation-models">Introducing Apple’s On-Device and Server Foundation Models</a></li>
+<li><a href="https://www.cnet.com/news-live/microsoft-outlook-outage-11-12-2026/">Is Microsoft Outlook Down? What We Know Now - CNET</a></li>
+<li><a href="https://www.theguardian.com/technology/2026/nov/13/microsoft-outage-outlook-teams-word-excel-reports">Microsoft begins restoring services amid global outage ... | The Guardian</a></li>
+<li><a href="https://www.youtube.com/watch?v=AHC76Eas5-s">Microsoft 365 OUTAGE : Outlook DOWN for Thousands! - YouTube</a></li>
+<li><a href="https://www.usatoday.com/story/tech/2026/11/12/microsoft-down-outlook-365-outage-reports/92744582007/">Is Microsoft down? Live updates as users report Outlook, 365 issues</a></li>
+<li><a href="https://mashable.com/tech/microsoft-outlook-outage-cause-revealed-nov-12-2026">Microsoft Outlook outage cause: What happened today | Mashable</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Apple AI`, `#Foundation Models`, `#on-device inference`, `#Private Cloud Compute`, `#developer tools`
+**Tags**: `#Microsoft 365`, `#Cloud Reliability`, `#Enterprise Software`, `#Service Outage`, `#Hacker News`
 
 ---
 
 <a id="item-tech-news-7"></a>
-### [Google&\#x27;s Gemini 4 Hydrogen Appears, Raising Naming and Pricing Questions](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/) ⭐️ 7.0/10
+### [Apple Foundation Models Framework Highlights On-Device and Private Cloud Compute Access](https://developer.apple.com/foundation-models-framework/) ⭐️ 7.0/10
 
-Google appears to have introduced Gemini 4 Hydrogen, with Hacker News comments reporting that it showed up immediately in Gemini and replaced or overlapped with Gemini 3.8 Flash. Commenters also claim the model is being served in Search and is about 2.5x faster than 3.8 Flash, but these are user observations rather than verified benchmarks. The reported pricing—matching non-discounted 3.8 Flash rather than cheaper Flash Lite tiers—raised questions about whether Google is changing its fast, low-cost inference tier.
+Apple’s Foundation Models framework documentation describes developer access to on-device AI and Private Cloud Compute \(PCC\) model execution. The supplied discussion notes that App Store Small Business Program developers with fewer than two million first-time downloads can use Apple Foundation Models on PCC with no cloud API cost, and can test PCC features via TestFlight or ad hoc distribution.
 
-hackernews · dvaplima · Nov 12, 18:01 · [Discussion](https://news.ycombinator.com/item?id=50471431)
+hackernews · kermatt · Nov 12, 21:13 · [Discussion](https://news.ycombinator.com/item?id=50474361)
 
-**「Background」** Google’s Gemini Flash tier is its fast, cost-efficient model line for everyday developer and consumer tasks. Gemini 4 Hydrogen is presented as the next step in that line, replacing Gemini 3.8 Flash across Google products with immediate access.
+**「Background」** The Foundation Models framework has existed since Apple Intelligence launched, originally as a Swift interface to an on-device Apple model that kept inference local. The current documentation builds on that baseline by describing Private Cloud Compute access and eligibility conditions for App Store Small Business Program developers.
 
-**「Impact」** Developers using Gemini for coding or agentic workflows have a concrete reason to test Gemini 4 Hydrogen as a replacement for Gemini 3.8 Flash, because it is reported to score 57% on Terminal-Bench 4.1 versus 18.2% for Gemini 3.8 Flash and to help Google’s Orchestrator use 24% less quota. Before switching, they should verify current pricing, context limits, and availability through OpenRouter.
+**「Impact」** For eligible App Store developers, the PCC access path reduces the cost and infrastructure burden of adding AI features by avoiding separate cloud API billing, while requiring Small Business Program enrollment and first-time download limits to qualify.
 
-**「Community Discussion」** Commenters found the rollout abrupt and the naming confusing, with one noting that seeing Gemini 3.8 Flash replaced by &quot;4 Hydrogen&quot; prompted confusion rather than excitement. Another inferred from the model’s claimed Search availability and speed that it may be positioned as an entry-level replacement for Gemini 3.5 Flash Lite, while criticizing its higher reported price compared with what users currently pay for cheaper Gemini tiers.
+**「Community discussion」** HN commenters emphasized practical developer angles: one quoted Apple’s eligibility terms for no-cost PCC access, another pointed to Apple’s CoreAI model repository for Swift-compatible open-weight models, and a user described usable terminal command suggestions on an 8GB M1.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/">Introducing Gemini 4 Hydrogen for Agentic Workflows</a></li>
-<li><a href="https://arstechnica.com/google/2026/11/google-rolls-out-gemini-4-hydrogen-finally-replacing-3-8-flash/">Google rolls out Gemini 4 Hydrogen , finally replacing 3.8 Flash</a></li>
-<li><a href="https://openrouter.ai/compare/google/gemini-4-hydrogen">Gemini 4 Hydrogen compared to other AI models | OpenRouter</a></li>
-<li><a href="https://interestingengineering.com/ai-robotics/google-gemini-4-hydrogen-coding-benchmark">Google launches Gemini 4 Hydrogen for faster coding and agentic tasks</a></li>
+<li><a href="https://developer.apple.com/ios/whats-new/">What’s New - iOS - Apple Developer</a></li>
+<li><a href="https://www.upendrasengar.com/blog/apples-foundation-models-framework-is">Apple &#x27;s Foundation Models Framework Is... - Upendra Sengar Blog</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Gemini 4 Hydrogen`, `#Google AI`, `#AI models`, `#inference cost`, `#developer access`
+**Tags**: `#Apple AI`, `#on-device inference`, `#developer tools`, `#private cloud compute`, `#local LLMs`
 
 ---
 
 <a id="item-tech-news-8"></a>
-### [llm-gemini 0.37 and Gemini 4 Hydrogen pricing](https://simonwillison.net/2026/Nov/12/llm-gemini/) ⭐️ 7.0/10
+### [Open-source effort runs 16B LLMs on sub-1GB devices](https://github.com/hyperionaidev/smolmaxxing/) ⭐️ 7.0/10
 
-Simon Willison released llm-gemini 0.37 and analyzed Google&\#x27;s newly launched Gemini 4 Hydrogen, the lowest-cost member of the Gemini 4 family. Hydrogen costs $1.50 per million input tokens, $0.075 for cached input, and $7.50 for output, while Gemini 4 Carbon and Argon are priced at $2.00/$0.10/$10.00 through Nov. 30, 2026, then double to $4.00/$0.20/$20.00. Willison notes that Hydrogen is only a 25% discount before Dec. 1, becomes a 75% discount after that date, and remains far more expensive than Claude Haiku 5.5 and GPT-6 Luna, which he cites at $0.10 input and $0.50 output.
+GitHub project smolmaxxing is an open-source effort to make large language models run on small, old devices with very limited memory. Its author claims 16B models now run on an iPad Air 1st generation and a Xiaomi TV box, each with less than 1GB usable memory, at decent speeds for the hardware. The project says it is releasing kernels, results, and modified models on Hugging Face for reproduction.
 
-rss · Simon Willison · Nov 12, 22:55
+hackernews · mrashad74 · Nov 12, 15:23 · [Discussion](https://news.ycombinator.com/item?id=50468888)
 
-**「Background」** llm-gemini is a plugin for Simon Willison’s LLM tool that provides command-line access to Google Gemini models. Earlier Horizon summaries reported llm-gemini 0.32 adding support for Gemini 3.5 Flash and llm-gemini 0.33 adding support for Gemini 3.7 Flash, Gemini 3.6 Flash Lite, and embedding models.
+**「Background」** Large language models normally need substantial memory and compute to run, so edge devices and older hardware usually cannot host them directly. Projects like this rely on techniques such as smaller model variants, quantization, and optimized inference kernels to make LLMs practical on constrained devices.
 
-**「Impact」** Developers choosing between Gemini 4 models need to weigh Hydrogen&\#x27;s lower price against Willison&\#x27;s observed quality drop in SVG pelican tests, while Google positions Hydrogen as the free-tier model and the model powering AI features in Google Search.
+**「Impact」** The documented results show 8B and 16B mixture-of-experts models running on devices with about 1 GB of RAM by loading only part of the model into memory and reading the rest from flash as needed, giving developers a concrete edge-inference path for old tablets and TV boxes. The compatibility caveat is that this depends on MoE models and flash-backed partial loading rather than general full-model inference.
+
+**「Community discussion」** Comments include reports of LLMs running on older hardware, including a Dreamcast via Windows CE and experiments with Maxwell/Pascal GPUs, alongside claims that small local models have improved rapidly. One commenter argues that Opus and Fable can already perform this task as a one-shot prompt and that the main bottleneck is sourcing hardware and giving an agent SSH access, not the inference kernel itself.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://devblogs.co/posts/llm-gemini-032">llm - gemini 0 .32</a></li>
-<li><a href="https://minifeed.net/items/EVibv9eQinjY">llm - gemini 0 .33 | Simon Willison &#x27;s Weblog | minifeed</a></li>
+<li><a href="https://github.com/hyperionaidev/smolmaxxing/">GitHub - hyperionaidev/ smolmaxxing : maxxing the ability to run...</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#AI model pricing`, `#Gemini 4`, `#inference cost`, `#developer tools`, `#AI applications`
+**Tags**: `#LLM inference`, `#edge AI`, `#open source`, `#hardware optimization`, `#small models`
 
 ---
 
 <a id="item-tech-news-9"></a>
-### [ISO Refuses to Ratify C++26 Over Contracts Feature](https://lwn.net/Articles/1105400/) ⭐️ 7.0/10
+### [llm-gemini 0.37 release and Gemini 4 Hydrogen pricing](https://simonwillison.net/2026/Nov/12/llm-gemini/) ⭐️ 7.0/10
 
-On October 23, ISO declined to ratify the C++26 document presented by Working Group 21 for the first time in the language&\#x27;s standardization history. The refusal centers on a proposed contracts feature that would add pre- and post-conditions to function signatures. The outcome leaves the future of C++26 uncertain rather than establishing a shipped standard capability.
+llm-gemini 0.37 is a new release from Simon Willison, published as Google launched Gemini 4 Hydrogen, the lowest-cost member of the Gemini 4 family. Hydrogen costs $1.50 input, $0.075 cached input, and $7.50 output per million tokens, while Carbon and Argon are $2.00/$0.10/$10.00 through Nov 30, 2026 and $4.00/$0.20/$20.00 from Dec 1, 2026. Willison notes the pricing is confusing because Carbon and Argon are identical in price, with Google saying Argon gives faster responses and lower token spend per turn; Hydrogen is also the new free-tier model and powers Google Search AI features.
 
-rss · LWN.net · Nov 12, 14:29
+rss · Simon Willison · Nov 12, 22:55
 
-**「Background」** C++ standards are developed by ISO&\#x27;s Working Group 21, which integrates proposals into a document for ISO ratification. The disputed C++26 feature, contracts, would add pre- and post-conditions to function signatures, turning a language-feature disagreement into a standards-approval dispute.
+**「Background」** Google launched Gemini 4 Hydrogen as the lowest-cost model in the Gemini 4 family, alongside Carbon and Argon. The llm-gemini 0.37 release is tied to that model launch.
 
-**「Impact」** The stalled ratification means C++26 is not yet a completed ISO standard, so developers, compiler vendors, and projects that require a ratified specification may delay adoption of contracts and other C++26 features.
+**「Impact」** For LLM users, the release and pricing make model selection date-sensitive: Willison says Hydrogen is currently only a 25% discount but will represent a 75% discount after the Dec 1 price doubling for Carbon and Argon. His small SVG pelican test shows Hydrogen producing plainer images at lower cost and time, so detailed output may still require the larger models, while cost-sensitive users also need to compare Hydrogen against Claude Haiku 5.5 and GPT-6 Luna, which he lists at $0.10/$0.50.
 
-**Tags**: `#C++26`, `#ISO`, `#contracts`, `#programming-language-standards`, `#software-engineering`
+**Tags**: `#llm-gemini`, `#Gemini 4`, `#AI pricing`, `#inference cost`, `#model releases`
 
 ---
 
 <a id="item-tech-news-10"></a>
-### [Huang&\#x27;s Nvidia Exit Seen Opening AI Chip Competition](https://www.bloomberg.com/news/videos/2026-11-12/can-huang-s-exit-create-chip-competition-video) ⭐️ 7.0/10
+### [VulnCheck Finds Anthropic Glasswing AI Findings Mostly Unfixed and Duplicated](https://lwn.net/Articles/1107173/) ⭐️ 7.0/10
 
-Jensen Huang’s departure from Nvidia has prompted Bloomberg Intelligence analysts to assess whether the company’s AI semiconductor dominance could weaken. Robert Schiffman and Mandeep Singh say demand for AI computing remains strong, but Huang’s exit could create opportunities for Broadcom, AMD, Google and others. They frame the possible shift as customer-driven: buyers may seek alternatives and push back on Nvidia’s premium pricing.
+VulnCheck analyst Patrick Garrity reported that, since Anthropic launched Project Glasswing on April 7, the company has reported 37,966 AI-found vulnerabilities but only 7,349 \(19.4%\) have been made public and 217 have been marked fixed. The analysis also counts 1,654 duplicates and 419 withdrawals, while Anthropic&\#x27;s ledger claims a 94.2% true-positive rate, up from 90.8% at launch. Garrity argues the numbers show low practical remediation and shifting triage burden onto open-source maintainers.
 
-rss · Bloomberg Technology · Nov 12, 22:54
+rss · LWN.net · Nov 12, 16:26
 
-**「Background」** Jensen Huang founded and led Nvidia, building it into the dominant supplier of AI accelerators. Bloomberg reported that Nvidia cut ties with Huang over a scandal involving extramarital affairs and reports that he was targeted by a Chinese spying plot, prompting leadership memos and questions about the company’s future.
+**「Background」** Anthropic&\#x27;s Project Glasswing is an AI vulnerability-discovery effort launched on April 7. VulnCheck&\#x27;s analysis examines the public triage ledger for its findings, where entries can be marked fixed, duplicate, withdrawn, or true positive.
 
-**「Competitive and market impact」** The reported departure and appointment of CFO Colette Kress as interim CEO give Nvidia’s AI-chip rivals a potential opening: customers may evaluate alternatives such as Broadcom, AMD, and Google TPU, and could use that choice to push back on Nvidia’s premium pricing. Market moves—AMD and Broadcom rising while Nvidia fell—show investors are treating the transition as a possible shift in competitive leverage, though actual customer adoption remains unconfirmed.
+**「Impact」** For open-source maintainers, the findings suggest that Glasswing may increase duplicate and withdrawn vulnerability reports rather than deliver completed fixes, so teams should treat AI-generated findings as triage candidates and verify public status, duplicates, and exploitability before allocating response effort.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/read-the-memos-from-nvidia-chairman-and-interim-ceo-after-ouster">Nvidia Releases Leadership Memos Following CEO... - Bloomberg</a></li>
-<li><a href="https://www.theguardian.com/technology/2026/nov/12/jensen-huang-built-an-ai-kingdom-now-hes-gone-will-nvidias-ramparts-be-breached">Jensen Huang built an AI kingdom. Now he’s gone, will... | The Guardian</a></li>
-<li><a href="https://finance.yahoo.com/markets/article/amd-broadcom-stocks-jump-as-nvidia-ceo-jensen-huang-resigns-143725561.html">AMD , Broadcom stocks jump as Nvidia CEO Jensen Huang resigns</a></li>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/nvidia-turmoil-lifts-amd-broadcom-on-bets-for-business-gains">AMD , Broadcom , Alphabet Poised to Gain From Nvidia ... - Bloomberg</a></li>
-<li><a href="https://www.investing.com/news/stock-market-news/nvidia-succession-uncertainty-opens-door-for-google-tpu-and-broadcom-analyst-says-5022907">Nvidia succession uncertainty opens door for Google TPU and...</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#AI chips`, `#Nvidia`, `#semiconductor competition`, `#compute supply`, `#market catalysts`
+**Tags**: `#AI security`, `#vulnerability triage`, `#Anthropic`, `#open source`, `#software engineering`
 
 ---
 
 <a id="item-tech-news-11"></a>
-### [UMAP 0.6 Adds Faster Search, New Initialization, and Opt-In Optimizers](https://www.reddit.com/r/MachineLearning/comments/1xudaah/umap_06_new_initialization_new_optimizers_and/) ⭐️ 7.0/10
+### [ISO Declines to Ratify C++26 Over Contracts Controversy](https://lwn.net/Articles/1105400/) ⭐️ 7.0/10
 
-UMAP 0.6 is released with faster nearest-neighbor search, a recursive initialization method, and new optimizers that make seeded runs reproducible across all cores. The release reports roughly 4x faster neighbor search and, on a 3 million arXiv paper dataset, finishes in under 5 minutes, compared with a 52-minute single-threaded seeded UMAP 0.5 run. The new initialization and optimizer behavior are currently opt-in through compatibility\_layout=False, with future versions planned to make them the default.
+On October 23, ISO declined to ratify the C++26 document presented by Working Group 21, the first time it has refused a WG21 submission. The decision was driven by controversy over the proposed contracts feature, which would add pre- and post-conditions to function signatures. The refusal leaves the future of C++26 uncertain for developers, compiler vendors, and standards users.
 
-reddit · r/MachineLearning · /u/lmcinnes · Nov 12, 13:51
+rss · LWN.net · Nov 12, 14:29
 
-**「Background」** UMAP is a widely used open-source library for reducing high-dimensional data into lower-dimensional visualizations. Version 0.5 was the prior baseline for its nearest-neighbor search, initialization, and optimization behavior.
+**「Background」** C++ standards are developed by ISO&\#x27;s Working Group 21, which integrates proposals into a draft and submits it for ratification; ISO has approved seven C++ revisions since 1998. The disputed C++26 feature, contracts, would add pre- and post-conditions to function signatures.
 
-**「Impact」** For ML practitioners working with million-scale datasets, UMAP 0.6 offers faster layout generation and finer cluster detail, but users must explicitly set compatibility\_layout=False to get the new behavior, meaning existing UMAP 0.5 outputs may not match directly.
+**「Impact」** C++ implementers and users now face an unclear path for the next standard revision, including whether contracts will remain, be revised, or be delayed before C++26 can be ratified.
 
-**Tags**: `#UMAP`, `#dimensionality reduction`, `#machine learning libraries`, `#open source`, `#performance optimization`
+**Tags**: `#C++`, `#ISO standards`, `#contracts`, `#software engineering`, `#programming languages`
 
 ---
 
 <a id="item-tech-news-12"></a>
-### [Gemma 3 Study Finds Unused Spatial Map in Model](https://www.reddit.com/r/MachineLearning/comments/1xuqs9d/gemma_3_builds_a_linearly_decodable_spatial_map/) ⭐️ 7.0/10
+### [Nvidia Leadership Exit May Open AI Chip Competition](https://www.bloomberg.com/news/videos/2026-11-12/can-huang-s-exit-create-chip-competition-video) ⭐️ 7.0/10
 
-An independent, preregistered interpretability study on Gemma 3 12B and 27B reports that the model forms a linearly decodable spatial map from text-only layouts, with probes recovering object positions including multi-sentence relations at R² 0.74. The study also reports that ablating this map does not hurt answers more than random directions, while final answers appear to rely on a sentence-level 2-D code, measured by DAS at 72% and 83% versus 0% for random. Reading answers directly from the apparently unused map outperformed the model on chain questions, 80% versus 73%.
+Bloomberg reports that Jensen Huang’s departure from Nvidia is prompting analysts to consider whether rivals such as Broadcom, AMD, and Google could gain ground in the AI semiconductor market. The analysts say demand for AI computing remains strong, but Huang’s exit may encourage customers to seek alternatives and challenge Nvidia’s premium pricing. The item is an analyst discussion of potential market effects, not a confirmed shift in product capability or customer adoption.
 
-reddit · r/MachineLearning · /u/Cristhian-AI-Math · Nov 12, 22:29
+rss · Bloomberg Technology · Nov 12, 22:54
 
-**「Background」** Linear decoding and causal ablation are standard ways to distinguish information that is present in a model’s activations from information that is actually used to produce outputs. The study applies this distinction to Gemma 3’s handling of text-described spatial layouts.
+**「Huang’s Departure」** Nvidia announced on November 12, 2026, that Jensen Huang resigned as president, chief executive officer, and board member effective immediately, ending a leadership tenure reported to span 33 years. The company did not specify the reason for the departure, while media reports linked it to personal relationship controversies and intelligence concerns.
 
-**「Impact」** For AI researchers and model developers, the result suggests that a decodable internal representation may not be used by the model&\#x27;s final behavior, so spatial-reasoning audits should test whether answers depend on the probed map or on sentence-level coding.
-
-**Tags**: `#AI interpretability`, `#spatial reasoning`, `#Gemma 3`, `#machine learning research`, `#open source`
-
----
-
-<a id="item-tech-news-13"></a>
-### [Apple Details Secure Exclaves for iPhone 18 Pro Privacy Indicators](https://security.apple.com/blog/secure-exclaves/) ⭐️ 7.0/10
-
-Apple detailed a Secure Exclaves architecture that processes audio and video in isolated secure environments so the main system and apps in environment-aware modes receive only necessary recognition results instead of raw sensor data. Apple says the design is used for HomeView face and voice recognition and iPhone 18 Pro privacy indicators. On iPhone 18 Pro, dedicated hardware verifies the microphone indicator&\#x27;s color, brightness, and visibility before allowing audio into the main system, and Siri audio sessions must show the indicator continuously with at least three seconds of total display time to resist obstruction or spoofing.
-
-telegram · zaihuapd · Nov 12, 09:13
-
-**「Background」** Secure Exclaves describes Apple’s use of isolated secure environments for audio and video processing, limiting the main system and apps to necessary recognition results instead of raw sensor data. The privacy indicator mechanism addresses a known software weakness by having dedicated hardware verify the microphone dot’s color, brightness, and visibility before audio is allowed into the main system.
-
-**「Impact」** For users, the change makes microphone activation harder to conceal or fake on supported iPhone hardware, while for developers it narrows app access to raw audio and video in supported privacy-sensitive workflows.
-
-**Tags**: `#Apple security`, `#privacy engineering`, `#hardware isolation`, `#AI applications`, `#consumer devices`
-
----
-
-<a id="item-tech-news-14"></a>
-### [Unverified Blackwell Fingerprint Claim Covers Six Chinese AI Models](https://unemploymentlabs.com/checkpoint-forensics) ⭐️ 7.0/10
-
-A Telegram-relayed Unemployment Labs analysis claims that six Chinese AI model weights from DeepSeek, Moonshot AI, MiniMax, and Ant Group contain initialization patterns consistent with NVIDIA Blackwell hardware. It says the matches came from public model-weight analysis, with DeepSeek-V4-Flash reproduced on B300 and Kimi K3 highly correlated on GB200, and estimates five final training runs may have used about 12,000 Blackwell GPUs. The supplied source does not independently verify the method or the inference that Blackwell chips also participated in training.
-
-telegram · zaihuapd · Nov 13, 02:42
-
-**「Background」** Unemployment Labs’ claim rests on the idea that initializing or training large AI models on particular NVIDIA GPUs can leave identifiable patterns in public model weights. The analysis points to Blackwell-class B200 or B300 chips, which have 148 streaming multiprocessors, as the hardware whose compute layout may be reflected in the tested models.
-
-**「Impact」** If validated, the analysis would make public model checkpoints a possible source of evidence about training hardware, prompting AI organizations and export-control reviewers to scrutinize assumptions about Chinese AI-model compute sourcing.
+**「Impact」** If customers respond to the leadership change by evaluating more suppliers, AI infrastructure buyers may gain leverage to negotiate pricing or diversify away from Nvidia-dominated compute stacks.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://unemploymentlabs.com/checkpoint-forensics">Top Chinese Frontier AI Models Carry the Fingerprint of...</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition">NVIDIA Announces CEO Transition | NVIDIA Newsroom</a></li>
+<li><a href="https://showgamer.com/en/news/9436-dzhensen-huang-ushel-iz-nvidia-kompaniya-naznachila-novogo-glavu">Jensen Huang Resigns as NVIDIA CEO After 33 Years, Kress Takes...</a></li>
+<li><a href="https://www.nytimes.com/live/2026/11/12/business/nvidia-jensen-huang-resigns">Jensen Huang Resigns as Nvidia CEO After Affairs: Live Updates</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#China AI`, `#NVIDIA Blackwell`, `#AI compute supply chain`, `#model forensics`, `#A-share catalyst`
+**Tags**: `#AI chips`, `#Nvidia`, `#semiconductor market`, `#compute infrastructure`, `#industry analysis`
 
 ---
 
 ## Financial News
 
 <a id="item-finance-news-1"></a>
-### [Nvidia CEO Resignation Raises U.S.-China Chip Policy Risks](https://www.cnbc.com/2026/11/13/jensen-huang-nvidia-us-china-relations.html) ⭐️ 8.0/10
+### [Nvidia CEO Jensen Huang resigns](https://news.google.com/rss/articles/CBMisAFBVV95cUxOMEFwN0FWdjB6blNtR0RZaTBWZXZDaWVwYkhXREttY2FaYVNNVC1qNEFHYm9Yd1pDODBDN2tvNzhnMTY4cmxWYTg1WVFidzFlNVFEdlZNb3IyZG1nS2FKcHAzUERhQW9EdG9oOER6YmwydXZOd0t1VHRub1BCdFdoR1V4dktlUVUydjZWeU53aVdKMGwtOGFtZmd2T3VhODF3eXhPazVtbV81b0hpUi1vcw?oc=5) ⭐️ 9.0/10
 
-Nvidia CEO Jensen Huang resigned and agreed to testify before Congress by Nov. 26 after reports alleging Chinese intelligence involvement; it remains unclear whether sensitive information was shared. The episode follows U.S. chip-export restrictions first imposed in 2022 and eased in 2025.
+Reuters reports that Nvidia CEO Jensen Huang has resigned as president, CEO and director immediately; CFO Colette Kress has been named interim CEO while the board searches for a permanent successor.
 
-rss · CNBC Finance · Nov 13, 02:56
+google\_news · Reuters · Nov 12, 13:52
 
-**「Background」** The case emerged during a fragile U.S.-China trade truce ahead of a Nov. 18-19 Asia-Pacific Economic Cooperation \(APEC\) summit in Shenzhen, while China called the &\#x27;Chinese spy&\#x27; allegation unfounded.
+**「Background」** Jensen Huang had led Nvidia as its chief executive, and the company is central to the AI computing boom; according to reports, he resigned after alleged extramarital affairs, with chief financial officer Colette Kress serving as temporary CEO.
 
-**「Impact」** Analysts say the affair could weaken support for relaxed chip-export rules and push Congress to tighten controls before year-end, affecting semiconductor companies and AI supply-chain investors by raising regulatory uncertainty and encouraging China&\#x27;s shift to domestic alternatives.
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.nytimes.com/live/2026/11/12/business/nvidia-jensen-huang-resigns">Jensen Huang Resigns as Nvidia CEO After Affairs: Live Updates</a></li>
+<li><a href="https://edition.cnn.com/2026/11/12/tech/jensen-huang-nvidia-resigns">CFO Colette Kress to serve as interim leader after Nvidia CEO ...</a></li>
+<li><a href="https://www.theguardian.com/technology/2026/nov/12/nvidia-ceo-jensen-huang-resigns">Jensen Huang resigns as Nvidia CEO after alleged... | The Guardian</a></li>
 
-**Tags**: `#US-China relations`, `#semiconductor export controls`, `#Nvidia`, `#AI supply chain`, `#A-share domestic semiconductors`
+</ul>
+</details>
+
+**Tags**: `#Nvidia`, `#AI supply chain`, `#Corporate leadership`, `#A-share themes`, `#Reuters`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [China approves first oral GLP-1 weight-loss drug](https://www.reuters.com/business/healthcare-pharmaceuticals/china-approves-eli-lillys-weight-loss-pill-orforglipron-2026-11-12/) ⭐️ 7.0/10
+### [Nvidia CEO Resignation Raises U.S.-China Chip Control Risks](https://www.cnbc.com/2026/11/13/jensen-huang-nvidia-us-china-relations.html) ⭐️ 8.0/10
 
-China&\#x27;s drug regulator approved Eli Lilly&\#x27;s orforglipron on Nov 12 as the country&\#x27;s first oral GLP-1 weight-loss drug, for adults with obesity or overweight plus at least one weight-related condition. It is taken once daily and does not need to be timed with food or water.
+Nvidia CEO Jensen Huang resigned amid U.S. congressional scrutiny of reports that his alleged affair involved a woman said to have been recruited by Chinese intelligence. He agreed to testify before Congress by Nov. 26, and analysts said the episode could raise the risk of stricter semiconductor export controls.
 
-telegram · zaihuapd · Nov 12, 10:09
+rss · CNBC Finance · Nov 13, 02:56
 
-**「Background」** GLP-1 obesity drugs have mostly been weekly injections, and orforglipron is a once-daily oral tablet approved by China’s National Medical Products Administration.
+**「Background」** U.S. limits on Nvidia&\#x27;s advanced chip sales to China began in 2022 and were partly eased in 2025 under a fragile trade truce. China denies the spy allegation, and it remains unclear whether sensitive information was shared.
 
-**「Impact」** The approval adds a daily oral option in China&\#x27;s obesity-drug market, putting Eli Lilly against weekly injectable products from Novo Nordisk, Pfizer and Innovent; pricing and launch timing are not yet known.
+**「Impact」** Analysts said the episode could tighten U.S. semiconductor export controls and accelerate China&\#x27;s push for domestic alternatives, affecting AI chip supply chains and Nvidia&\#x27;s China sales.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.drugs.com/article/prescription-weight-loss-drugs.html">Weight Loss Drugs &amp; Injections: What Are Your Options?</a></li>
-<li><a href="https://www.marketwatch.com/investing/stock/lly">LLY Stock Price | Eli Lilly &amp; Co. Stock Quote... | MarketWatch</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#GLP-1`, `#weight-loss drugs`, `#China pharma regulation`, `#Eli Lilly`, `#healthcare competition`
+**Tags**: `#US-China relations`, `#Nvidia`, `#semiconductor export controls`, `#AI supply chain`, `#A-share semiconductors`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [UForce raises $700 million at $6 billion valuation](https://news.google.com/rss/articles/CBMi2wFBVV95cUxQZGJabUpkZzBWRWE3UG0xTTMtbGRSWnpwbVNjR09FZHMtR2JqSThHS1djUWtSMlZCdm9LR3ZubGZBTnVTQkYzaXYwMi11dHh1VXREdFl4UkV3b0hRZ2dSN1BDeTczSndZdHVscy11OVlPUVhHbk82TEhpbDBSVklQcmF2LWJrengxNllxTlZ1YmtFTko5WXduenp2enFVdnpCTmhhVzlOaUxIeWhJMUVpUGxLMjBfUllEdnVhaHBnc1FYRGRoVk95SGVpU21COXBoaThwdzlCYml1cGc?oc=5) ⭐️ 7.0/10
+### [China Approves Eli Lilly&\#x27;s First Oral GLP-1 Weight-Loss Pill](https://www.reuters.com/business/healthcare-pharmaceuticals/china-approves-eli-lillys-weight-loss-pill-orforglipron-2026-11-12/) ⭐️ 8.0/10
 
-Reuters reported that Ukraine-founded drone startup UForce raised $700 million in a funding round valuing the company at $6 billion.
+Eli Lilly&\#x27;s oral GLP-1 weight-loss pill orforglipron was approved by China&\#x27;s drug regulator on Nov. 12, 2026, becoming the first oral GLP-1 weight-loss treatment approved in China for adults with obesity or overweight who have at least one weight-related condition.
 
-google\_news · Reuters · Nov 12, 10:44
+telegram · zaihuapd · Nov 12, 10:09
 
-**「Background」** UForce is a Ukraine-founded drone maker that plans to expand production of autonomous sea, land and air systems for Ukraine and allied nations, with the round co-led by Valor Equity Partners, the UK National Wealth Fund and the U.S.-Ukraine Reconstruction Investment Fund.
+**「Background」** Orforglipron is an oral, non-peptide, small-molecule GLP-1 receptor agonist developed by Eli Lilly and licensed from Chugai Pharmaceutical in 2018.
+
+**「Impact」** The once-daily pill will compete with weekly injectable weight-loss drugs from Novo Nordisk, Pfizer and Innovent, though its price and launch timing were not disclosed.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.reuters.com/business/aerospace-defense/ukraine-founded-drone-startup-uforce-secures-700-million-funding-round-6-billion-2026-11-12/">Ukraine-founded drone startup UForce secures $700 million ...</a></li>
-<li><a href="https://www.uforce.com/news/uforce-raises-700m-at-6-billion-valuation-from-leading-tech-and-sovereign-wealth-funds-to-scale-combat-proven-defence-systems-for-ukraine-and-allied-nations">UFORCE raises $700M at $6 billion valuation from Leading Tech ...</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Orforglipron">Orforglipron - Wikipedia</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#drone technology`, `#defense startups`, `#venture capital`, `#Ukraine conflict economy`, `#private financing`
+**Tags**: `#GLP-1减重药`, `#中国药品监管`, `#肥胖症治疗`, `#医药产业链`, `#礼来`
+
+---
+
+<a id="item-finance-news-4"></a>
+### [Fed to skip rate vote at October 2027 meeting](https://www.cnbc.com/2026/11/12/in-policy-switch-fed-says-its-october-2027-meeting-will-not-see-a-vote-on-interest-rates.html) ⭐️ 7.0/10
+
+The Federal Reserve will not vote on interest rates at its Oct. 26-27, 2027 meeting, which the rate-setting FOMC will use to discuss broad monetary-policy strategy instead.
+
+rss · CNBC Finance · Nov 12, 19:05
+
+**「Context」** Chairman Kevin Warsh framed the move as part of a broader effort to reduce the Fed&\#x27;s market footprint and reshape policy communication, leaving seven voting meetings in 2027 and moving the final meeting from December to November.
+
+**Tags**: `#Federal Reserve`, `#monetary policy`, `#market communication`, `#macro policy`, `#global markets`
+
+---
+
+<a id="item-finance-news-5"></a>
+### [Ukraine-founded drone startup UForce raises $700 million](https://news.google.com/rss/articles/CBMi2wFBVV95cUxQZGJabUpkZzBWRWE3UG0xTTMtbGRSWnpwbVNjR09FZHMtR2JqSThHS1djUWtSMlZCdm9LR3ZubGZBTnVTQkYzaXYwMi11dHh1VXREdFl4UkV3b0hRZ2dSN1BDeTczSndZdHVscy11OVlPUVhHbk82TEhpbDBSVklQcmF2LWJrengxNllxTlZ1YmtFTko5WXduenp2enFVdnpCTmhhVzlOaUxIeWhJMUVpUGxLMjBfUllEdnVhaHBnc1FYRGRoVk95SGVpU21COXBoaThwdzlCYml1cGc?oc=5) ⭐️ 7.0/10
+
+Reuters reports that Ukraine-founded drone startup UForce closed a $700 million funding round at a $6 billion valuation.
+
+google\_news · Reuters · Nov 12, 10:44
+
+**「Background」** The financing included £113m from the UK National Wealth Fund, its largest defense investment, for UForce, a Ukraine-founded maker of military drones for land, air and sea.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/drone-startup-uforce-valued-at-6-billion-with-uk-wealth-fund-backing">Drone Startup Uforce Valued at $ 6 Billion With UK Wealth Fund ...</a></li>
+<li><a href="https://www.theguardian.com/business/2026/nov/12/uk-drone-maker-ukraine-value-uforce">UK drone maker founded by Ukrainians hits £4.5bn value after...</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#drone technology`, `#defense startups`, `#venture funding`, `#Ukraine`, `#private valuations`
 
 ---
