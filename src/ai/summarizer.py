@@ -49,7 +49,7 @@ def _pangu(text: str) -> str:
 
 LABELS = {
     "en": {
-        "header": "Horizon Daily",
+        "header": "Kenny's Horizon Daily",
         "source": "Source",
         "background": "Background",
         "discussion": "Discussion",
@@ -69,7 +69,7 @@ LABELS = {
         ),
     },
     "zh": {
-        "header": "Horizon 每日速递",
+        "header": "Kenny's Horizon 每日精选新闻速递",
         "source": "来源",
         "background": "背景",
         "discussion": "社区讨论",
