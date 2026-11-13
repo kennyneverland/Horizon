@@ -12,7 +12,7 @@ permalink: /feed-zh.xml
   {% assign zh_posts = site.posts | where: "lang", "zh" %}
   {% for post in zh_posts limit:7 %}
   <entry>
-    <title>{{ post.title | escape }}</title>
+    <title>Kenny's Horizon {{ post.date | date: "%Y-%m-%d" }} 日报</title>
     <link href="{{ post.url | absolute_url }}"/>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <id>{{ post.url | absolute_url }}</id>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     {%- if page.lang == "zh" and page.date %}
     <title>Kenny's Horizon {{ page.date | date: "%Y-%m-%d" }} 日报 | {{ site.title }}</title>
+    {%- elsif page.lang == "en" and page.date %}
+    <title>Kenny's Horizon {{ page.date | date: "%Y-%m-%d" }} Daily | {{ site.title }}</title>
     {%- elsif page.title %}
     <title>{{ page.title }} | {{ site.title }}</title>
     {%- else %}
@@ -22,7 +24,7 @@
     <a id="skip-to-content" href="#content">Skip to the content.</a>
 
     <header class="page-header" role="banner">
-      <h1 class="project-name">{% if page.lang == "zh" and page.date %}Kenny's Horizon {{ page.date | date: "%Y-%m-%d" }} 日报{% else %}{{ page.title | default: site.title | default: site.github.repository_name }}{% endif %}</h1>
+      <h1 class="project-name">{% if page.lang == "zh" and page.date %}Kenny's Horizon {{ page.date | date: "%Y-%m-%d" }} 日报{% elsif page.lang == "en" and page.date %}Kenny's Horizon {{ page.date | date: "%Y-%m-%d" }} Daily{% else %}{{ page.title | default: site.title | default: site.github.repository_name }}{% endif %}</h1>
       <h2 class="project-tagline">{% if page.lang == "zh" %}Kenny's Horizon 每日精选新闻速递{% else %}{{ page.description | default: site.description | default: site.github.project_tagline }}{% endif %}</h2>
       {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
