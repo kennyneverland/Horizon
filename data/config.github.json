@@ -134,15 +134,18 @@
         "enabled": true,
         "category": "tech-news",
         "profile": "tech-news"
-      },
-      {
-        "name": "Reuters Business",
-        "url": "https://news.google.com/rss/search?q=site:reuters.com+business+when:1d&hl=en-US&gl=US&ceid=US:en",
-        "enabled": true,
-        "category": "finance",
-        "profile": "finance-news"
       }
     ],
+    "google_news": {
+      "enabled": true,
+      "query": "site:reuters.com business",
+      "language": "en",
+      "country": "US",
+      "ceid": "US:en",
+      "max_results": 20,
+      "category": "finance",
+      "profile": "finance-news"
+    },
     "reddit": {
       "enabled": true,
       "subreddits": [
