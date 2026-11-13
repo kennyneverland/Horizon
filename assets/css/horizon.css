@@ -312,6 +312,67 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ===== Large phones: iPhone 15/16 Pro Max class (440pt viewport) ===== */
+@media screen and (min-width: 400px) and (max-width: 768px) {
+  .page-header {
+    padding: 2rem 1.35rem 1.15rem !important;
+  }
+
+  .page-header h1.project-name {
+    font-size: 1.3rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .page-header h2.project-tagline {
+    font-size: 0.86rem !important;
+  }
+
+  .main-content {
+    padding: 1.15rem 1.35rem 2.6rem !important;
+    line-height: 1.9 !important;
+  }
+
+  /* Explicit px so Cayman's 0.95em paragraph rule cannot shrink it again */
+  .main-content p,
+  .main-content li,
+  .main-content td {
+    font-size: 17px !important;
+    line-height: 1.9 !important;
+  }
+
+  .main-content h2 {
+    font-size: 1.26rem !important;
+    margin-top: 1.9rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .main-content h3 {
+    font-size: 1.1rem !important;
+    line-height: 1.6 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.45rem !important;
+  }
+
+  .main-content > ol {
+    font-size: 1.02rem !important;
+    padding: 0.7em 0.8em 0.7em 1.7em !important;
+    line-height: 1.75 !important;
+  }
+
+  .main-content > ol > li {
+    padding: 0.26em 0 !important;
+  }
+
+  .score-badge {
+    font-size: 0.7em !important;
+    padding: 0.1em 0.45em !important;
+  }
+
+  .main-content blockquote {
+    font-size: 1rem !important;
+  }
+}
+
 /* Narrow phones: one more notch down */
 @media screen and (max-width: 380px) {
   .page-header h1.project-name {
