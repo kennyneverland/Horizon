@@ -197,13 +197,13 @@ h1, h2, h3, h4, h5, h6 {
     text-size-adjust: 100%;
   }
 
-  /* Header: cut vertical space so the first entry is visible on load */
+  /* Header: reserve a top band for the fixed language toggle, then keep it short */
   .page-header {
-    padding: 1.2rem 1rem 1rem !important;
+    padding: 2rem 1rem 1rem !important;
   }
 
   .page-header h1.project-name {
-    font-size: 1.28rem !important;
+    font-size: 1.22rem !important;
     line-height: 1.45 !important;
     margin-bottom: 0.3rem !important;
     word-break: keep-all;
@@ -211,7 +211,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .page-header h2.project-tagline {
-    font-size: 0.82rem !important;
+    font-size: 0.8rem !important;
     line-height: 1.5 !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
@@ -222,15 +222,15 @@ h1, h2, h3, h4, h5, h6 {
     display: none !important;
   }
 
-  /* Language toggle: smaller and out of the title's way */
+  /* Language toggle: sits in the reserved band above the title */
   .lang-toggle {
     top: 8px !important;
     right: 8px !important;
   }
 
   .lang-toggle button {
-    padding: 0.22em 0.65em !important;
-    font-size: 0.68em !important;
+    padding: 0.2em 0.6em !important;
+    font-size: 0.64em !important;
   }
 
   /* Body copy: Chinese needs looser leading than 1.5 */
@@ -315,7 +315,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Narrow phones: one more notch down */
 @media screen and (max-width: 380px) {
   .page-header h1.project-name {
-    font-size: 1.15rem !important;
+    font-size: 1.1rem !important;
   }
 
   .main-content {
