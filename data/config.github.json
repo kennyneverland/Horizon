@@ -141,6 +141,13 @@
         "enabled": true,
         "category": "business",
         "profile": "finance-news"
+      },
+      {
+        "name": "财联社电报(RSSHub)",
+        "url": "https://rsshub.app/cls/telegraph",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
