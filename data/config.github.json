@@ -136,17 +136,10 @@
         "profile": "tech-news"
       },
       {
-        "name": "Bloomberg Politics",
-        "url": "https://feeds.bloomberg.com/politics/news.rss",
+        "name": "Bloomberg Business",
+        "url": "https://feeds.bloomberg.com/business/news.rss",
         "enabled": true,
-        "category": "policy",
-        "profile": "finance-news"
-      },
-      {
-        "name": "Bloomberg Economics",
-        "url": "https://feeds.bloomberg.com/economics/news.rss",
-        "enabled": true,
-        "category": "macro",
+        "category": "business",
         "profile": "finance-news"
       }
     ],
@@ -156,7 +149,7 @@
       "language": "en",
       "country": "US",
       "ceid": "US:en",
-      "max_results": 20,
+      "max_results": 40,
       "category": "finance",
       "profile": "finance-news"
     },
