@@ -213,7 +213,7 @@
         ]
       },
       "finance-news": {
-        "limit": 10,
+        "limit": 14,
         "categories": [
           "finance-news"
         ]
