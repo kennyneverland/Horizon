@@ -27,7 +27,7 @@
         "topic_dedup": false
       },
       "finance-news": {
-        "threshold": 7.0,
+        "threshold": 6.5,
         "topic_dedup": true
       }
     }
