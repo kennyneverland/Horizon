@@ -124,7 +124,7 @@
       {
         "name": "Bloomberg Markets",
         "url": "https://feeds.bloomberg.com/markets/news.rss",
-        "enabled": false,
+        "enabled": true,
         "category": "finance",
         "profile": "finance-news"
       },
@@ -138,7 +138,7 @@
       {
         "name": "Bloomberg Business",
         "url": "https://feeds.bloomberg.com/business/news.rss",
-        "enabled": false,
+        "enabled": true,
         "category": "business",
         "profile": "finance-news"
       }
