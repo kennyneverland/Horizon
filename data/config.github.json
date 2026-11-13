@@ -64,7 +64,7 @@
     ],
     "hackernews": {
       "enabled": true,
-      "fetch_top_stories": 30,
+      "fetch_top_stories": 20,
       "min_score": 150,
       "profile": "tech-news"
     },
@@ -191,14 +191,34 @@
   },
   "digest": {
     "max_items": 30,
+    "group_by": "profile",
+    "category_groups": {
+      "tech-news": {
+        "limit": 12,
+        "categories": [
+          "tech-news"
+        ]
+      },
+      "tech-blog": {
+        "limit": 4,
+        "categories": [
+          "tech-blog"
+        ]
+      },
+      "finance-news": {
+        "limit": 10,
+        "categories": [
+          "finance-news"
+        ]
+      }
+    },
+    "default_group": "other",
+    "default_group_limit": null,
     "profile_order": [
       "tech-news",
       "tech-blog",
       "finance-news"
-    ],
-    "category_groups": {},
-    "default_group": "other",
-    "default_group_limit": null
+    ]
   },
   "webhook": {
     "enabled": false,
