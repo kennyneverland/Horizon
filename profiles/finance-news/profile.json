@@ -23,12 +23,16 @@
       {
         "id": "background",
         "type": "section",
-        "tools": []
+        "tools": [
+          "web_search"
+        ]
       },
       {
         "id": "impact",
         "type": "section",
-        "tools": [],
+        "tools": [
+          "web_search"
+        ],
         "optional": true
       }
     ]
