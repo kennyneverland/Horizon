@@ -27,7 +27,13 @@ _TOC_ENTRY_RE = re.compile(
     r"\u2b50\ufe0f\s*(?P<score>[\d.]+|\?)/10[ \t]*$",
     re.MULTILINE,
 )
+_SOURCE_LINE_RE = re.compile(
+    r"(?:\d{1,2}月\d{1,2}日\s*\d{1,2}:\d{2})"
+    r"|(?:[A-Z][a-z]{2}\s+\d{1,2},\s+\d{1,2}:\d{2})"
+)
 _RANK_BADGES = {1: "\U0001F947", 2: "\U0001F948", 3: "\U0001F949"}
+_BODY_SKIP_PREFIXES = ("#", ">", "- ", "* ", "|", "<", "---")
+_BODY_SKIP_EXACT = ("**参考链接**", "**References**", "**标签**", "**Tags**")
 _SAFE_URL_SCHEMES = {"http", "https", "mailto"}
 
 
@@ -108,6 +114,38 @@ def _render_ranked_entry(match: re.Match) -> str:
     return f"{prefix} {match.group('title')} \u2b50\ufe0f {match.group('score')}/10"
 
 
+def _promote_body_paragraphs(value: str) -> str:
+    """Render digest body paragraphs as blockquotes so they stay legible.
+
+    Chat renderers paint plain paragraphs in a dim grey that is hard to read on
+    a dark background, while blockquote text uses the brighter body colour.
+    Only the item detail area (everything after the first ``## `` heading) is
+    rewritten, so the ranked table of contents keeps its plain layout, and
+    source lines, tags and reference lists stay visually secondary.
+    """
+    marker = "\n## "
+    start = value.find(marker)
+    if start == -1:
+        return value
+
+    head, tail = value[:start], value[start:]
+    out: list[str] = []
+    for line in tail.split("\n"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith(_BODY_SKIP_PREFIXES):
+            out.append(line)
+            continue
+        if any(stripped.startswith(prefix) for prefix in _BODY_SKIP_EXACT):
+            out.append(line)
+            continue
+        if " \u00b7 " in stripped and _SOURCE_LINE_RE.search(stripped):
+            out.append(line)
+            continue
+        out.append(f"> {stripped}")
+
+    return head + "\n".join(out)
+
+
 def clean_app_summary_markdown(value: str) -> str:
     """Flatten app-generated HTML snippets embedded in summary Markdown.
 
@@ -117,11 +155,13 @@ def clean_app_summary_markdown(value: str) -> str:
     Chat and webhook Markdown renderers treat a single newline as a soft break
     and merge adjacent lines into one paragraph, which turns the digest list
     into an unreadable block. Lone newlines are promoted to blank-line breaks so
-    every entry renders on its own line, and table-of-contents entries are
-    rewritten as rank-badged single lines (gold/silver/bronze for the top three)
-    to match a hot-list layout.
+    every entry renders on its own line, table-of-contents entries are rewritten
+    as rank-badged single lines (gold/silver/bronze for the top three) to match
+    a hot-list layout, and body paragraphs become blockquotes so they render in
+    the brighter body colour instead of the dim grey used for plain text.
     """
     value = _ANCHOR_ID_RE.sub("", value)
     value = _convert_details_to_markdown(value)
     value = _TOC_ENTRY_RE.sub(_render_ranked_entry, value)
-    return _SOFT_BREAK_RE.sub("\n\n", value)
+    value = _SOFT_BREAK_RE.sub("\n\n", value)
+    return _promote_body_paragraphs(value)
