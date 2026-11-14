@@ -21,6 +21,7 @@ _HTML_TAG_RE = re.compile(r"<[^>]+>")
 _MARKDOWN_SPECIAL_RE = re.compile(r"([\\`*_{}\[\]<>()#+!|])")
 _CONTROL_CHAR_RE = re.compile(r"[\x00-\x1f\x7f]")
 _UNSAFE_MARKDOWN_URL_CHAR_RE = re.compile(r"[\s<>\[\]\\]")
+_SOFT_BREAK_RE = re.compile(r"(?<!\n)\n(?!\n)")
 _SAFE_URL_SCHEMES = {"http", "https", "mailto"}
 
 
@@ -98,6 +99,12 @@ def clean_app_summary_markdown(value: str) -> str:
 
     Unknown raw HTML is intentionally left in place so callers can choose their
     own safety boundary. Email, for example, escapes after this cleanup step.
+
+    Chat and webhook Markdown renderers treat a single newline as a soft break
+    and merge adjacent lines into one paragraph, which turns the digest list
+    into an unreadable block. Lone newlines are promoted to blank-line breaks
+    so every entry renders on its own line.
     """
     value = _ANCHOR_ID_RE.sub("", value)
-    return _convert_details_to_markdown(value)
+    value = _convert_details_to_markdown(value)
+    return _SOFT_BREAK_RE.sub("\n\n", value)
