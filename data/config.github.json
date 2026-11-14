@@ -144,7 +144,7 @@
       },
       {
         "name": "财联社电报(RSSHub)",
-        "url": "https://rsshub.app/cls/telegraph",
+        "url": "https://hub.slarker.me/cls/telegraph",
         "enabled": true,
         "category": "finance",
         "profile": "finance-news"
@@ -175,7 +175,7 @@
       "profile": "finance-news"
     },
     "reddit": {
-      "enabled": true,
+      "enabled": false,
       "subreddits": [
         {
           "subreddit": "MachineLearning",
