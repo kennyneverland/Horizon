@@ -2,6 +2,7 @@
 
 import html
 import re
+from typing import Dict
 from urllib.parse import urlsplit
 
 
@@ -27,6 +28,11 @@ _TOC_ENTRY_RE = re.compile(
     r"\u2b50\ufe0f\s*(?P<score>[\d.]+|\?)/10[ \t]*$",
     re.MULTILINE,
 )
+_ITEM_HEADING_RE = re.compile(
+    r"^###\s+\[(?P<title>(?:[^\]\\]|\\.)+)\]\((?P<url>https?://[^)\s]+)\)",
+    re.MULTILINE,
+)
+_TOC_SECTION_RE = re.compile(r"^\*\*(?P<name>[^*\n]+)\*\*[ \t]*$", re.MULTILINE)
 _SOURCE_LINE_RE = re.compile(
     r"(?:\d{1,2}月\d{1,2}日\s*\d{1,2}:\d{2})"
     r"|(?:[A-Z][a-z]{2}\s+\d{1,2},\s+\d{1,2}:\d{2})"
@@ -106,12 +112,50 @@ def _convert_details_to_markdown(value: str) -> str:
     return _DETAILS_RE.sub(_replace, value)
 
 
-def _render_ranked_entry(match: re.Match) -> str:
-    """Render one digest entry as a single hot-list line with a rank badge."""
-    index = int(match.group("index"))
+def _rank_badge(index: int) -> str:
+    """Return a rank marker whose rendered width matches the medal emojis.
+
+    Medals and circled digits both occupy one emoji-width cell, so entry text
+    starts at the same offset for every rank instead of drifting left after the
+    third item.
+    """
     badge = _RANK_BADGES.get(index)
-    prefix = badge if badge else f"**{index}**"
-    return f"{prefix} {match.group('title')} \u2b50\ufe0f {match.group('score')}/10"
+    if badge:
+        return badge
+    if 4 <= index <= 20:
+        return chr(0x2460 + index - 1)
+    return f"**{index}**"
+
+
+def _collect_item_urls(value: str) -> Dict[str, str]:
+    """Map item titles to their article URLs using the detail headings."""
+    return {
+        match.group("title"): match.group("url")
+        for match in _ITEM_HEADING_RE.finditer(value)
+    }
+
+
+def _render_ranked_entry(match: re.Match, url_by_title: Dict[str, str]) -> str:
+    """Render one digest entry as a hot-list line with a rank badge."""
+    title = match.group("title")
+    url = url_by_title.get(title)
+    label = f"[**{title}**]({url})" if url else f"**{title}**"
+    return (
+        f"{_rank_badge(int(match.group('index')))} {label} "
+        f"\u2b50\ufe0f {match.group('score')}/10"
+    )
+
+
+def _promote_toc_sections(value: str) -> str:
+    """Turn table-of-contents group labels into headings so they stand out."""
+    marker = "\n## "
+    start = value.find(marker)
+    if start == -1:
+        return value
+
+    head, tail = value[:start], value[start:]
+    head = _TOC_SECTION_RE.sub(lambda m: f"### {m.group('name')}", head)
+    return head + tail
 
 
 def _promote_body_paragraphs(value: str) -> str:
@@ -156,12 +200,16 @@ def clean_app_summary_markdown(value: str) -> str:
     and merge adjacent lines into one paragraph, which turns the digest list
     into an unreadable block. Lone newlines are promoted to blank-line breaks so
     every entry renders on its own line, table-of-contents entries are rewritten
-    as rank-badged single lines (gold/silver/bronze for the top three) to match
-    a hot-list layout, and body paragraphs become blockquotes so they render in
-    the brighter body colour instead of the dim grey used for plain text.
+    as rank-badged single lines with the article link restored and the title
+    bolded, group labels become headings, and body paragraphs become blockquotes
+    so they render in the brighter body colour.
     """
     value = _ANCHOR_ID_RE.sub("", value)
     value = _convert_details_to_markdown(value)
-    value = _TOC_ENTRY_RE.sub(_render_ranked_entry, value)
+    url_by_title = _collect_item_urls(value)
+    value = _TOC_ENTRY_RE.sub(
+        lambda match: _render_ranked_entry(match, url_by_title), value
+    )
+    value = _promote_toc_sections(value)
     value = _SOFT_BREAK_RE.sub("\n\n", value)
     return _promote_body_paragraphs(value)
