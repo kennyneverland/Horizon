@@ -3,8 +3,12 @@
 The balanced digest only enforces quotas per profile group, so a single
 high-volume feed can consume most of a group's slots and crowd out every other
 source in that group. This module adds an optional cap on how many items a
-single source may contribute, while still letting the remaining slots be filled
-by other sources.
+single publisher may contribute, while still letting the remaining slots be
+filled by other sources.
+
+The cap counts items per *publisher*, not per feed, so sibling feeds from the
+same outlet (Bloomberg Business / Markets / Technology) share one quota instead
+of each getting a full allowance.
 
 The cap is read from ``data/digest_limits.json`` so it can be tuned without
 touching the validated config schema::
@@ -17,12 +21,14 @@ Use ``null`` (or delete the file) to disable the cap.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 
 DEFAULT_LIMITS_PATH = Path("data/digest_limits.json")
+_PUBLISHER_SPLIT_RE = re.compile(r"[\s(\u2013\u2014-]+")
 
 
 def load_per_source_limit(path: Optional[Path] = None) -> Optional[int]:
@@ -42,11 +48,21 @@ def load_per_source_limit(path: Optional[Path] = None) -> Optional[int]:
     return limit if limit > 0 else None
 
 
+def _publisher_label(label: str) -> str:
+    """Collapse a feed label to its publisher name.
+
+    ``Bloomberg Business``, ``Bloomberg Markets`` and ``Bloomberg Technology``
+    all reduce to ``bloomberg`` so they share a single quota.
+    """
+    parts = [part for part in _PUBLISHER_SPLIT_RE.split(label) if part]
+    return parts[0].lower() if parts else label.lower()
+
+
 def source_key(orchestrator: Any, item: Any) -> str:
-    """Return the same ``source/label`` key used by the fetch report."""
+    """Return a publisher-level ``source/label`` key for cap accounting."""
     label = orchestrator._sub_source_label(item)
     source_type = getattr(item.source_type, "value", item.source_type)
-    return f"{source_type}/{label}"
+    return f"{source_type}/{_publisher_label(label)}"
 
 
 def _score(item: Any) -> float:
@@ -64,7 +80,7 @@ def apply_balanced_digest_with_cap(
     limit: Optional[int],
     log: bool = True,
 ):
-    """Run ``base`` until no single source exceeds ``limit`` selected items.
+    """Run ``base`` until no single publisher exceeds ``limit`` selected items.
 
     Items are removed from the candidate pool (lowest score first) rather than
     from the result, so the freed slots are refilled by other sources instead of
@@ -98,7 +114,7 @@ def apply_balanced_digest_with_cap(
         if log:
             for key, count in sorted(dropped.items()):
                 orchestrator.console.print(
-                    f"      {orchestrator.icons['detail']} per-source cap {limit}: "
+                    f"      {orchestrator.icons['detail']} per-publisher cap {limit}: "
                     f"trimmed {count} extra item(s) from {key}"
                 )
         pool = kept
