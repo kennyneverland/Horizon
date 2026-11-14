@@ -18,12 +18,14 @@
       {
         "id": "background",
         "type": "section",
-        "tools": ["history_search", "web_search"]
+        "tools": [
+          "history_search"
+        ]
       },
       {
         "id": "impact",
         "type": "section",
-        "tools": ["web_search"],
+        "tools": [],
         "optional": true
       },
       {
