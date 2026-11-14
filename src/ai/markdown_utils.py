@@ -113,18 +113,24 @@ def _convert_details_to_markdown(value: str) -> str:
 
 
 def _rank_badge(index: int) -> str:
-    """Return a rank marker whose rendered width matches the medal emojis.
-
-    Medals and circled digits both occupy one emoji-width cell, so entry text
-    starts at the same offset for every rank instead of drifting left after the
-    third item.
-    """
+    """Return the rank marker placed at the start of a digest line."""
     badge = _RANK_BADGES.get(index)
     if badge:
         return badge
     if 4 <= index <= 20:
         return chr(0x2460 + index - 1)
     return f"**{index}**"
+
+
+def _rank_padding(index: int) -> str:
+    """Return the separator that follows a rank marker.
+
+    Medal emojis render one emoji cell wide, while circled digits render
+    narrower in the WeChat Markdown renderer, so entry text drifts left from
+    the fourth item on. Circled ranks therefore get one extra space to keep
+    every title starting at the same offset.
+    """
+    return "  " if 4 <= index <= 20 else " "
 
 
 def _collect_item_urls(value: str) -> Dict[str, str]:
@@ -137,11 +143,12 @@ def _collect_item_urls(value: str) -> Dict[str, str]:
 
 def _render_ranked_entry(match: re.Match, url_by_title: Dict[str, str]) -> str:
     """Render one digest entry as a hot-list line with a rank badge."""
+    index = int(match.group("index"))
     title = match.group("title")
     url = url_by_title.get(title)
     label = f"[**{title}**]({url})" if url else f"**{title}**"
     return (
-        f"{_rank_badge(int(match.group('index')))} {label} "
+        f"{_rank_badge(index)}{_rank_padding(index)}{label} "
         f"\u2b50\ufe0f {match.group('score')}/10"
     )
 
