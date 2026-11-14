@@ -16,9 +16,32 @@ from .storage.manager import ConfigError, StorageManager
 from .orchestrator import HorizonOrchestrator
 from .collection_window import collection_hours
 from .models import AIProvider
+from .processing.source_cap import apply_balanced_digest_with_cap, load_per_source_limit
 
 
 console = Console(stderr=True)
+
+
+class _SourceCappedOrchestrator(HorizonOrchestrator):
+    """Orchestrator that also enforces an optional per-source digest cap.
+
+    The cap is read from ``data/digest_limits.json`` and applied on top of the
+    regular per-group quotas; when a source exceeds the cap, its lowest-scored
+    extra items leave the candidate pool so other sources can fill those slots.
+    """
+
+    def __init__(self, *args, per_source_limit=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.per_source_limit = per_source_limit
+
+    def apply_balanced_digest(self, items, *, log: bool = True):
+        return apply_balanced_digest_with_cap(
+            self,
+            items,
+            super().apply_balanced_digest,
+            limit=self.per_source_limit,
+            log=log,
+        )
 
 
 def print_banner():
@@ -120,7 +143,10 @@ def main():
             console.print(f"[bold red]{icons['error']} {exc}[/bold red]")
             sys.exit(2)
 
-        orchestrator = HorizonOrchestrator(config, storage, console=console)
+        per_source_limit = load_per_source_limit(data_dir / "digest_limits.json")
+        orchestrator = _SourceCappedOrchestrator(
+            config, storage, console=console, per_source_limit=per_source_limit
+        )
         asyncio.run(orchestrator.run(force_hours=window))
 
     except KeyboardInterrupt:
