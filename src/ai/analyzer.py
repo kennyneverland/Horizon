@@ -16,6 +16,7 @@ from .prompting.analysis import analysis_system_prompt, analysis_user_prompt
 from .utils import gather_ai_tasks, parse_json_response
 from .errors import AIProviderUnavailableError
 from ..models import ContentAnalysis, ContentItem
+from ..processing.citation_check import adjust_analysis
 from ..processing.content import select_content, split_content
 from ..processing.profiles import ProfileRegistry
 
@@ -179,7 +180,7 @@ class ContentAnalyzer:
             return
 
         if item.processing:
-            item.processing.analysis = result
+            item.processing.analysis = await adjust_analysis(item, result)
 
     @classmethod
     def _validate_analysis_response(
