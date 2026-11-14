@@ -22,6 +22,12 @@ _MARKDOWN_SPECIAL_RE = re.compile(r"([\\`*_{}\[\]<>()#+!|])")
 _CONTROL_CHAR_RE = re.compile(r"[\x00-\x1f\x7f]")
 _UNSAFE_MARKDOWN_URL_CHAR_RE = re.compile(r"[\s<>\[\]\\]")
 _SOFT_BREAK_RE = re.compile(r"(?<!\n)\n(?!\n)")
+_TOC_ENTRY_RE = re.compile(
+    r"^(?P<index>\d+)\.\s+\[(?P<title>(?:[^\]\\]|\\.)+)\]\(#[^)]*\)\s*"
+    r"\u2b50\ufe0f\s*(?P<score>[\d.]+|\?)/10[ \t]*$",
+    re.MULTILINE,
+)
+_RANK_BADGES = {1: "\U0001F947", 2: "\U0001F948", 3: "\U0001F949"}
 _SAFE_URL_SCHEMES = {"http", "https", "mailto"}
 
 
@@ -94,6 +100,14 @@ def _convert_details_to_markdown(value: str) -> str:
     return _DETAILS_RE.sub(_replace, value)
 
 
+def _render_ranked_entry(match: re.Match) -> str:
+    """Render one digest entry as a single hot-list line with a rank badge."""
+    index = int(match.group("index"))
+    badge = _RANK_BADGES.get(index)
+    prefix = badge if badge else f"**{index}**"
+    return f"{prefix} {match.group('title')} \u2b50\ufe0f {match.group('score')}/10"
+
+
 def clean_app_summary_markdown(value: str) -> str:
     """Flatten app-generated HTML snippets embedded in summary Markdown.
 
@@ -102,9 +116,12 @@ def clean_app_summary_markdown(value: str) -> str:
 
     Chat and webhook Markdown renderers treat a single newline as a soft break
     and merge adjacent lines into one paragraph, which turns the digest list
-    into an unreadable block. Lone newlines are promoted to blank-line breaks
-    so every entry renders on its own line.
+    into an unreadable block. Lone newlines are promoted to blank-line breaks so
+    every entry renders on its own line, and table-of-contents entries are
+    rewritten as rank-badged single lines (gold/silver/bronze for the top three)
+    to match a hot-list layout.
     """
     value = _ANCHOR_ID_RE.sub("", value)
     value = _convert_details_to_markdown(value)
+    value = _TOC_ENTRY_RE.sub(_render_ranked_entry, value)
     return _SOFT_BREAK_RE.sub("\n\n", value)
