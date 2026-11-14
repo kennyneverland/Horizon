@@ -5,593 +5,579 @@ date: 2026-11-14
 lang: en
 ---
 
-> From 231 items, 26 important content pieces were selected
+> From 193 items, 27 important content pieces were selected
 
 ---
 
 **Technology News**
-1. [Reported Nvidia CEO Exit Raises AI Boom Uncertainty](#item-tech-news-1) ⭐️ 8.0/10
-2. [Alleged Nvidia Financing of GPU Buyers Raises Circular-Demand Questions](#item-tech-news-2) ⭐️ 7.0/10
-3. [Colette Kress Expected to Face Scrutiny as Nvidia Interim CEO](#item-tech-news-3) ⭐️ 7.0/10
-4. [Modine Shares Surge After Reported Samsung Acquisition Talks](#item-tech-news-4) ⭐️ 7.0/10
-5. [QTS Cuts Planned AI Debt Sale by About 60%](#item-tech-news-5) ⭐️ 7.0/10
-6. [Nvidia Calls CEO Candidate Speculation Premature Amid Successor Search](#item-tech-news-6) ⭐️ 7.0/10
-7. [Anthropic CEO Says Compute Sourcing Is Top Challenge Before IPO](#item-tech-news-7) ⭐️ 7.0/10
-8. [OpenAI Launches ChatGPT Wallet for Tokenized Agent Payments in US](#item-tech-news-8) ⭐️ 7.0/10
+1. [Modine Shares Jump After Reported Samsung Acquisition Talks](#item-tech-news-1) ⭐️ 8.0/10
+2. [Nvidia alleged to have funded AI startups to spur GPU demand](#item-tech-news-2) ⭐️ 7.0/10
+3. [Nvidia CFO Colette Kress to Face Scrutiny as Interim CEO](#item-tech-news-3) ⭐️ 7.0/10
+4. [QTS Cuts Planned AI Data-Center Debt Sale by About 60%](#item-tech-news-4) ⭐️ 7.0/10
+5. [Huang Exit Raises Questions About AI Boom’s Future](#item-tech-news-5) ⭐️ 7.0/10
+6. [Anthropic CEO Says Compute Sourcing Is a Major Business Challenge](#item-tech-news-6) ⭐️ 7.0/10
+7. [Ackman Comments on Huang’s Nvidia Exit and Anthropic IPO Roadshow](#item-tech-news-7) ⭐️ 7.0/10
+8. [OpenAI Launches US ChatGPT Wallet for Pro Subscribers](#item-tech-news-8) ⭐️ 7.0/10
+
+**Technology Blog**
+1. [Finding Meaning in Large Tech Companies](#item-tech-blog-1) ⭐️ 6.0/10
 
 **Financial News**
-1. [Lutnick scrutiny over Nvidia ties and export controls](#item-finance-news-1) ⭐️ 8.0/10
-2. [Fed’s Goolsbee says inflation work remains as December hike priced](#item-finance-news-2) ⭐️ 8.0/10
-3. [Iran Revolutionary Guard Reports Tanker Fires in Strait of Hormuz](#item-finance-news-3) ⭐️ 8.0/10
-4. [US stocks rebound on short covering despite Nvidia CEO exit](#item-finance-news-4) ⭐️ 8.0/10
-5. [OpenAI Disbands Robotics Team After General Models Show Robot Control Promise](#item-finance-news-5) ⭐️ 8.0/10
-6. [Anthropic IPO Seeks $70–78 Range in Demand-Driven Pricing](#item-finance-news-6) ⭐️ 8.0/10
-7. [Nvidia valuation falls to 14-year low after reported CEO departure](#item-finance-news-7) ⭐️ 8.0/10
-8. [China to Meet New Power Demand With Clean Energy by 2030, CCTV Says](#item-finance-news-8) ⭐️ 7.0/10
-9. [US Flights Grounded Nationwide Over Air Traffic Control Communication Issue](#item-finance-news-9) ⭐️ 7.0/10
-10. [Goldman Sachs Forecasts Slower 2027 Equity Earnings Growth](#item-finance-news-10) ⭐️ 7.0/10
-11. [Anthropic advances large IPO roadshow with conservative pricing](#item-finance-news-11) ⭐️ 7.0/10
-12. [FTC sues to block $3.5 billion Cencora veterinary sale](#item-finance-news-12) ⭐️ 7.0/10
-13. [IEA cuts oil demand forecasts as market heads toward surplus](#item-finance-news-13) ⭐️ 7.0/10
+1. [Nvidia CEO Resignation, US Stocks Rebound Despite Inflation Shock](#item-finance-news-1) ⭐️ 9.0/10
+2. [Lutnick-Nvidia ties face scrutiny](#item-finance-news-2) ⭐️ 8.0/10
+3. [Nvidia Departure Raises AI Financing Concerns](#item-finance-news-3) ⭐️ 8.0/10
+4. [Anthropic IPO targets about $1.33 trillion](#item-finance-news-4) ⭐️ 8.0/10
+5. [US stocks diverge as PPI fuels Fed hike expectations](#item-finance-news-5) ⭐️ 8.0/10
+6. [Nvidia Board Reportedly Contacted Arm CEO as Successor Candidate](#item-finance-news-6) ⭐️ 8.0/10
+7. [Chicago Fed&\#x27;s Goolsbee Says More Inflation Work Needed](#item-finance-news-7) ⭐️ 7.0/10
+8. [U.S. Grounds Flights Nationwide After Air-Traffic Communications Failure](#item-finance-news-8) ⭐️ 7.0/10
+9. [Goldman Sachs 2027 Global Equity Outlook](#item-finance-news-9) ⭐️ 7.0/10
+10. [Nvidia CEO Jensen Huang&\#x27;s $135 Billion Stake After Departure](#item-finance-news-10) ⭐️ 7.0/10
+11. [OpenAI Dissolves Robotics Team Amid Benchmark and Cost Pressures](#item-finance-news-11) ⭐️ 7.0/10
+12. [Moonshot AI Restructures for Hong Kong IPO](#item-finance-news-12) ⭐️ 7.0/10
+13. [Anthropic IPO Reportedly Restricts Mainland China and Hong Kong Orders](#item-finance-news-13) ⭐️ 7.0/10
 14. [Centrica and Equinor advance in Uniper sale](#item-finance-news-14) ⭐️ 6.0/10
-15. [Oil Supply Remains Ample Despite Hormuz Tanker Attacks](#item-finance-news-15) ⭐️ 6.0/10
-16. [China Railways Set Record With 4.13 Billion Passenger Trips](#item-finance-news-16) ⭐️ 6.0/10
-17. [Sherritt Misses Interest Payment as Liquidity Crisis Deepens](#item-finance-news-17) ⭐️ 6.0/10
-18. [FAA lifts nationwide ground stop](#item-finance-news-18) ⭐️ 6.0/10
+15. [Microsoft says consumer services recovered, enterprise under monitoring](#item-finance-news-15) ⭐️ 6.0/10
+16. [Reuters: Anthropic IPO interest meets AI lead doubts](#item-finance-news-16) ⭐️ 6.0/10
+17. [Fed official Daly sees possible rate hikes amid inflation](#item-finance-news-17) ⭐️ 6.0/10
+18. [Razorpay gets regulatory approval for IPO](#item-finance-news-18) ⭐️ 6.0/10
 
 ---
 
 ## Technology News
 
 <a id="item-tech-news-1"></a>
-### [Reported Nvidia CEO Exit Raises AI Boom Uncertainty](https://www.bloomberg.com/news/newsletters/2026-11-13/huang-s-exit-leaves-silicon-valley-unsure-about-ai-boom-s-future) ⭐️ 8.0/10
+### [Modine Shares Jump After Reported Samsung Acquisition Talks](https://www.bloomberg.com/news/articles/2026-11-13/modine-shares-gain-most-in-six-years-after-samsung-buyout-talks) ⭐️ 8.0/10
 
-Bloomberg reported that Nvidia’s leadership changed after CEO Jensen Huang was said to have resigned or been ousted, raising new questions about the durability of the AI investment boom. The report tied the departure to personal conduct, including multiple affairs, one allegedly involving a Chinese spy, and said Huang tried to accept responsibility in his final days. The available account does not specify a successor, transition timeline, or immediate market reaction.
+Modine Manufacturing Co. shares recorded their biggest single-day gain since 2020 after Bloomberg News reported that Samsung Electronics Co. was in talks to acquire the data-center cooling-systems maker. The report described preliminary acquisition discussions, not a confirmed deal or completed transaction. The move highlighted investor sensitivity to potential consolidation in data-center cooling supply chains.
 
-rss · Bloomberg Technology · Nov 13, 20:18
+rss · Bloomberg Technology · Nov 13, 23:03
 
-**「Background」** Huang resigned after a Nov. 8 statement in which he admitted to multiple affairs, including one with a business executive the U.S. government has determined to be working with Chinese intelligence. Nvidia named finance chief Colette Kress as interim CEO and said an external counsel would investigate, while the board said it had no reason to believe national security or company secrets were compromised.
+**「Background」** Modine is a supplier of cooling systems for data centers, a segment that has drawn attention as AI workloads increase power density and thermal demands. Bloomberg&\#x27;s report of acquisition talks with Samsung Electronics therefore connected a major electronics and semiconductor maker to a niche infrastructure supplier, making the story a capital-market signal about AI data-center supply chains rather than a confirmed deal.
 
-**「Investor and AI-infrastructure uncertainty」** Huang’s resignation has made Nvidia’s leadership transition and its $530 billion web of AI deals an immediate market risk, with NVDA falling sharply and Nvidia-backed cloud companies such as Nebius and CoreWeave taking deeper losses than rivals. Investors will likely watch the Nov 17 earnings call for backlog, succession, and deal-network clarity, since the market is repricing leadership uncertainty rather than chip demand alone.
+**「Impact」** The reported talks immediately affected Modine’s equity value, with the stock posting its largest one-day rise in six years, while the absence of confirmation means the gain reflects speculation about a Samsung acquisition rather than an established corporate action.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/news/inside-nvidia-ceo-jensen-huang-030100548.html">Nvidia CEO Jensen Huang Resigns After Affair with Suspected Chinese Spy—Inside His $53 Million Property Portfolio</a></li>
-<li><a href="https://finance.yahoo.com/markets/stocks/articles/nvidia-stock-scenarios-jensen-huang-205423367.html">NVIDIA stock scenarios after Jensen Huang’s resignation</a></li>
-<li><a href="https://finance.yahoo.com/markets/article/jensen-huangs-exit-puts-nvidias-530-billion-web-of-ai-deals-under-the-microscope-153142269.html">Jensen Huang&#x27;s exit puts Nvidia&#x27;s $530 billion web of AI deals under the microscope</a></li>
-<li><a href="https://www.cnbc.com/2026/11/12/nvidia-nvda-jensen-huang-second-affair.html">Nvidia stock falls 7% as investors await Jensen Huang’s fate</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia`, `#AI compute`, `#Executive change`, `#Capital markets`, `#AI industry`
+**Tags**: `#M&amp;A talks`, `#data-center cooling`, `#AI infrastructure`, `#Samsung`, `#capital markets`
 
 ---
 
 <a id="item-tech-news-2"></a>
-### [Alleged Nvidia Financing of GPU Buyers Raises Circular-Demand Questions](https://www.techpowerup.com/354814/nvidia-allegedly-engineered-scarcity-by-funding-ai-startups-to-buy-its-gpus) ⭐️ 7.0/10
+### [Nvidia alleged to have funded AI startups to spur GPU demand](https://www.techpowerup.com/354814/nvidia-allegedly-engineered-scarcity-by-funding-ai-startups-to-buy-its-gpus) ⭐️ 7.0/10
 
-TechPowerUp reported an allegation that Nvidia funded or incentivized AI startups to buy its GPUs, potentially shaping scarcity and demand in the AI compute market. The evidence is secondhand and contested: commenters say it may be a third-source summary of WSJ reporting and possibly a different original story, and no confirmed Nvidia statement or independently measured result is provided. If accurate, the practice would mean GPU availability and sales figures may reflect vendor-supported demand as well as independent customer need.
+TechPowerUp reports an allegation that Nvidia may have financed or invested in AI startups so they would purchase its GPUs, a form of circular financing that could help explain artificial scarcity and strong demand. The claim is framed as secondhand and is not presented as confirmed by Nvidia or independently measured in the supplied item. If accurate, the practice would affect AI compute buyers, capital-expenditure decisions, and revenue visibility across the GPU supply chain.
 
 hackernews · speckx · Nov 14, 02:52 · [Discussion](https://news.ycombinator.com/item?id=50493251)
 
-**「Background」** The claim rests on Wall Street Journal reporting, relayed by TechPowerUp and other outlets, that Nvidia invested in AI startups that would buy its GPUs and build data centers. It concerns circular financing, where a vendor funds customers to create demand, and is tied to earlier reporting about Nvidia’s role in GPU scarcity and its leadership transition to interim CEO Colette Kress.
+**「Background」** Circular financing in AI hardware refers to a chipmaker investing in or partnering with customers so they can purchase its chips, which can amplify reported demand and revenue. Earlier reporting described Nvidia planning up to $100 billion in investment in OpenAI and a $20 billion licensing deal with Groq, examples of arrangements that tie Nvidia capital or deals to AI compute purchases.
 
-**「Impact」** For AI compute buyers and investors, the allegation makes it harder to interpret GPU scarcity, pricing, and Nvidia revenue as purely market-driven signals, because financing or equity ties could encourage startups to choose Nvidia hardware over AMD or custom ASICs.
+**「Impact」** For AI startups and data-center buyers, the allegation suggests that GPU availability and pricing may partly reflect vendor-financed purchases rather than only end-user demand, so organizations should scrutinize supply claims and counterparty incentives when planning compute capacity.
 
-**「Community Discussion」** Commenters argued the report is secondhand and possibly distorted, with some noting earlier coverage of Nvidia’s circular financing. Others framed stakes in AI cloud firms such as Nebius as a business strategy to secure chip adoption, first access to new hardware, upfront revenue recognition, and equity upside, while one commenter linked the allegation to Nvidia’s older anti-competitive practices.
+**「Community discussion」** Commenters argued over whether the claim is sinister or ordinary business strategy: one said Nvidia may use such financing because supply bottlenecks mean it can sell all inventory, while another said the report is thirdhand and pointed to an earlier WSJ account. Others recalled Nvidia’s history of anti-competitive allegations, such as GameWorks and PhysX.
 
 <details><summary>References</summary>
 <ul>
 <li><a href="https://explainx.ai/blog/nvidia-engineered-gpu-scarcity-startup-funding-wsj-claimed-vs-verified-2026">WSJ: Nvidia Funded Startups to Buy GPUs — What&#x27;s Verified | explainx.ai Blog | explainx.ai</a></li>
-<li><a href="https://linustechtips.com/topic/1644483-nvidia-allegedly-engineered-gpu-and-memory-shortage-by-funding-ai-startups-to-buy-its-gpus">NVIDIA allegedly engineered GPU and memory shortage by funding AI startups to buy its GPUs - Tech News - Linus Tech Tips</a></li>
-<li><a href="https://x.com/TechPowerUp/status/2121370377892876408/photo/1">TechPowerUp on X: &quot;NVIDIA Allegedly Engineered Scarcity By Funding AI Startups To Buy Its GPUs https://t.co/8QlIOGy2dH&quot; / X</a></li>
+<li><a href="https://finance.yahoo.com/news/nvidia-plans-chip-speed-ai-032246645.html">Nvidia plans new chip to speed AI processing, WSJ reports</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#AI compute`, `#GPU supply`, `#circular financing`, `#competitive dynamics`
+**Tags**: `#Nvidia`, `#AI compute supply chain`, `#circular financing`, `#GPU demand`, `#capital markets`
 
 ---
 
 <a id="item-tech-news-3"></a>
-### [Colette Kress Expected to Face Scrutiny as Nvidia Interim CEO](https://www.bloomberg.com/news/videos/2026-11-13/colette-kress-will-face-scrutiny-at-nvidia-video) ⭐️ 7.0/10
+### [Nvidia CFO Colette Kress to Face Scrutiny as Interim CEO](https://www.bloomberg.com/news/videos/2026-11-13/colette-kress-will-face-scrutiny-at-nvidia-video) ⭐️ 7.0/10
 
-A Bloomberg video segment says Colette Kress is expected to become more visible as Nvidia’s interim CEO after Jensen Huang’s departure. The commentary frames her role as involving more public discussion of the company’s finances, performance, and plans. It also highlights increased scrutiny of Nvidia’s strategy and financial communication during the leadership transition.
+Bloomberg reports that Nvidia CFO Colette Kress is expected to become more prominent as interim CEO after Jensen Huang’s departure. The change puts greater attention on Nvidia’s finances, performance, and strategic plans as Kress speaks more publicly about them. The report frames this as increased scrutiny rather than a confirmed official appointment.
 
 rss · Bloomberg Technology · Nov 13, 23:23
 
-**「Background」** Jensen Huang resigned as Nvidia president, CEO and board member with immediate effect on Nov. 11, ending his 33-year tenure, while CFO Colette Kress became interim CEO and retained her executive vice president and CFO roles, which she has held since September 2013. Nvidia shares fell more than 13% in early trading on Nov. 12, and the company kept its Nov. 17 fiscal Q3 earnings call unchanged. The board has begun searching for a permanent successor and, according to one report, has hired Wachtell Lipton to investigate intelligence allegations.
+**「Leadership transition context」** Nvidia announced on Nov. 12, 2026, that Jensen Huang resigned as president, CEO, and board member effective immediately after co-founding and leading the company for 33 years. CFO Colette Kress was named interim CEO and will continue as executive vice president and CFO while the board searches for a permanent successor.
 
-**「Impact」** For investors, Kress’s more prominent role means Nvidia’s financial guidance, AI strategy, and governance decisions will be examined more closely, making her communication style a near-term factor in market confidence.
+**「Impact」** For investors, customers, and partners, the transition means Nvidia’s AI and computing strategy may be judged through Kress’s financial framing, raising questions about leadership continuity and execution.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://datacentremagazine.com/news/nvidia-ceo-jensen-huang-resigns-as-colette-kress-steps-in">NVIDIA CEO Jensen Huang Resigns as Colette Kress Steps In | Data Centre Magazine</a></li>
 <li><a href="https://finance.yahoo.com/technology/ai/articles/nvidia-ceo-jensen-huang-resigns-110116748.html">Nvidia CEO Jensen Huang Resigns — CFO Collette Kress in as Interim CEO</a></li>
-<li><a href="https://www.cnbcafrica.com/2026/nvidia-ceo-jensen-huang-resigns-colette-kress-named-interim-chief">Nvidia CEO Jensen Huang resigns, Colette Kress named interim chief | CNBC Africa</a></li>
+<li><a href="https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition">NVIDIA Corporation - NVIDIA Announces CEO Transition</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#Executive change`, `#AI industry leadership`, `#Capital markets`, `#Corporate governance`
+**Tags**: `#Nvidia`, `#executive leadership`, `#AI industry`, `#capital markets`, `#interim CEO`
 
 ---
 
 <a id="item-tech-news-4"></a>
-### [Modine Shares Surge After Reported Samsung Acquisition Talks](https://www.bloomberg.com/news/articles/2026-11-13/modine-shares-gain-most-in-six-years-after-samsung-buyout-talks) ⭐️ 7.0/10
+### [QTS Cuts Planned AI Data-Center Debt Sale by About 60%](https://www.bloomberg.com/news/articles/2026-11-13/blackstone-s-qts-is-cutting-ai-debt-sale-by-more-than-half) ⭐️ 7.0/10
 
-Modine Manufacturing Co. shares recorded their biggest single-day gain since 2020 after Bloomberg News reported that Samsung Electronics Co. was in talks to acquire the data-center cooling-system maker. The report describes potential acquisition discussions, not a completed transaction or confirmed deal terms. The move reflects investor reaction to the possibility that Samsung would take direct ownership of a supplier used for data-center cooling.
+Blackstone-backed data-center operator QTS is cutting a planned private debt sale tied to AI infrastructure financing by about 60% after struggling to attract enough investor demand at acceptable yields. The reduction applies to a proposed financing rather than a completed debt issuance, and QTS reportedly declined to pay much higher yields to secure the original size. The move points to tighter capital-market conditions for large data-center borrowers.
 
-rss · Bloomberg Technology · Nov 13, 23:03
+rss · Bloomberg Technology · Nov 13, 21:35
 
-**「Why this matters」** Modine makes thermal-management systems for data centers, a category that has benefited from rapidly growing AI-related construction and the heat loads of high-density computing. Samsung Electronics operates global cloud centers through its SDS arm, giving it a direct infrastructure interest in cooling capabilities.
+**「Background」** QTS was taken private by Blackstone in a roughly $10 billion deal, making it a major data-center operator in the AI infrastructure financing market. Earlier, a QTS bond tied to Microsoft reportedly drew $12.5 billion in orders, showing that private debt demand for its data-center assets has not always been weak.
 
-**「Impact」** For investors and AI-infrastructure supply-chain stakeholders, the report creates near-term uncertainty about ownership and sourcing of data-center cooling systems, but customers should not assume product, pricing, or availability changes until a deal is announced and closed.
+**「Financing pressure」** Because private credit is a critical funding channel for data-center expansion, QTS’s reduced debt sale suggests that AI infrastructure operators and sponsors may need to raise smaller amounts, accept higher yields, or seek alternative financing rather than rely on investor appetite alone.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://finance.yahoo.com/markets/stocks/articles/samsung-talks-buy-data-center-005809830.html">Samsung in talks to buy data center cooling firm Modine, Bloomberg reports</a></li>
+<li><a href="https://startupfortune.com/blackstones-qts-cuts-its-ai-data-center-debt-sale-to-300-million">Blackstone&#x27;s QTS cuts its AI data center debt sale to $300 million - Startup Fortune</a></li>
+<li><a href="https://ca.finance.yahoo.com/news/blackstone-buy-qts-realty-trust-112258022.html">Blackstone to take QTS Realty Trust private in $10 billion deal</a></li>
+<li><a href="https://ourfinancialsecurity.org/resources/tracing-the-money-private-equity-and-data-centers">TRACING THE MONEY: Private Equity, Private Credit, and the Data Center Bubble - Americans for Financial Reform</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#M&amp;A`, `#data-center cooling`, `#AI infrastructure`, `#Samsung`, `#supply chain`
+**Tags**: `#AI infrastructure financing`, `#data centers`, `#private credit`, `#Blackstone`, `#compute capex`
 
 ---
 
 <a id="item-tech-news-5"></a>
-### [QTS Cuts Planned AI Debt Sale by About 60%](https://www.bloomberg.com/news/articles/2026-11-13/blackstone-s-qts-is-cutting-ai-debt-sale-by-more-than-half) ⭐️ 7.0/10
+### [Huang Exit Raises Questions About AI Boom’s Future](https://www.bloomberg.com/news/newsletters/2026-11-13/huang-s-exit-leaves-silicon-valley-unsure-about-ai-boom-s-future) ⭐️ 7.0/10
 
-Blackstone-backed data center operator QTS is reportedly cutting the size of a planned private AI debt sale by about 60%. The reduction follows weak investor demand and QTS’s unwillingness to pay much higher yields to attract buyers. The change points to tighter financing conditions for AI infrastructure debt rather than a completed sale.
+Bloomberg reports that Nvidia chief Huang’s exit has left Silicon Valley unsure about the future of the AI investment boom. The brief excerpt says the ouster raises new questions about a key piece of the money machine supporting AI, without giving details on timing, succession, or company response. As a result, the story is currently a leadership-change signal affecting investor confidence, not a documented change to AI products or infrastructure spending.
 
-rss · Bloomberg Technology · Nov 13, 21:35
+rss · Bloomberg Technology · Nov 13, 20:18
 
-**「Background」** QTS is a data-center operator that Blackstone acquired in 2021, making it part of Blackstone’s infrastructure portfolio rather than a standalone public company. Private debt sales are commonly used by large AI-infrastructure borrowers to raise capital outside traditional bond markets, often when investors demand tighter terms or higher yields. A sharp reduction in such a sale therefore signals that financing conditions for AI data centers are becoming more selective.
+**「Background」** The uncertainty follows Nvidia’s sudden leadership change. Bloomberg reported that the board removed CEO Jensen Huang after reports of two affairs, including one with a woman suspected of spying for China, and named CFO Colette Kress as interim CEO.
 
-**「Impact」** For QTS and other AI data-center operators, the cut signals that private credit investors may require higher yields or smaller allocations before funding expansion, potentially raising financing costs or delaying capital-intensive buildouts.
-
-**Tags**: `#AI infrastructure`, `#data centers`, `#private credit`, `#Blackstone`, `#capital markets`
-
----
-
-<a id="item-tech-news-6"></a>
-### [Nvidia Calls CEO Candidate Speculation Premature Amid Successor Search](https://www.bloomberg.com/news/articles/2026-11-13/nvidia-says-speculation-on-new-ceo-candidates-is-premature) ⭐️ 7.0/10
-
-Nvidia said speculation that it is already engaging with potential chief executive candidates is premature. The company said it is still selecting a firm to find a successor to ousted leader Jensen Huang. No successor or search firm was identified.
-
-rss · Bloomberg Technology · Nov 13, 20:37
-
-**「Leadership transition context」** Nvidia is in the early stages of replacing Jensen Huang after his ouster, and the company says it has not yet moved beyond selecting a search firm. That stage typically precedes formal engagement with potential CEO candidates, which is why Nvidia called current speculation premature.
-
-**「Impact」** For investors and customers, the statement means Nvidia’s leadership transition remains at the search-firm selection stage rather than the candidate-evaluation stage. Reports naming possible CEOs should be treated as unconfirmed until Nvidia identifies the firm and process.
-
-**Tags**: `#Nvidia`, `#CEO succession`, `#AI hardware`, `#corporate governance`, `#capital markets`
-
----
-
-<a id="item-tech-news-7"></a>
-### [Anthropic CEO Says Compute Sourcing Is Top Challenge Before IPO](https://www.bloomberg.com/news/articles/2026-11-13/anthropic-ceo-calls-computing-power-deepest-business-dilemma) ⭐️ 7.0/10
-
-Anthropic CEO Dario Amodei said sourcing computing power is one of the company’s biggest business challenges, according to Bloomberg. The remarks were made in a briefing ahead of Anthropic’s expected initial public offering. The report does not specify how much compute the company needs, which suppliers or data centers are involved, or what steps it plans to take.
-
-rss · Bloomberg Technology · Nov 13, 18:46
-
-**「Background」** Anthropic’s comments came as its anticipated IPO approached, and its filing tied the company’s growth to enormous compute purchases, including at least $121.3 billion committed to Google between April 2026 and July 2033 and tens of billions of dollars in agreements with Microsoft and Amazon. Bloomberg reported that Chief Executive Dario Amodei spoke at a JPMorgan Chase event with Jamie Dimon, describing compute as the company’s deepest business dilemma because rapid technological growth had not yet translated into predictable economic value.
-
-**「Impact」** The statement identifies compute supply as a material concern for Anthropic’s IPO and for customers relying on its AI services, suggesting investors and buyers may need to scrutinize how the company plans to secure capacity.
+**「Financing risk for AI infrastructure」** Investors and AI infrastructure customers may need to watch whether Nvidia’s financing arrangements continue, because one analyst said Jensen Huang’s departure could slow or halt that financing and tighten financial conditions for the AI buildout. CNBC reported no broad shock to the credit market, but said the company’s role as a financier of AI infrastructure is now under scrutiny.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-13/anthropic-ceo-calls-computing-power-deepest-business-dilemma">Anthropic&#x27;s Dario Amodei Says Computing Power Is Key Challenge Ahead of IPO - Bloomberg</a></li>
-<li><a href="https://www.bloomberg.com/graphics/2026-anthropic-ipo">Anthropic IPO: AI Giant Must Convince Investors Revenue Will Overcome Computing Costs</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/jensen-huang-face-of-the-ai-boom-ousted-by-nvidia-board-as-ceo">Jensen Huang Removed as Nvidia CEO Following Affairs, Board Appoints Kress - Bloomberg</a></li>
+<li><a href="https://finance.yahoo.com/technology/ai/articles/nvidia-ceo-jensen-huang-exit-113207431.html">Nvidia CEO Jensen Huang’s Exit Raises AI Financing Risks, Says Ed Yardeni — Sees Selloff As Buying Opportunity</a></li>
+<li><a href="https://www.facebook.com/cnbc/posts/nvidia-ceo-jensen-huangs-departure-hasnt-produced-a-broad-shock-to-the-credit-ma/1538211948180193">3 comments | Nvidia CEO Jensen Huang’s departure hasn’t produced a broad shock to the credit market, but it is putting the company’s role as a financier of artificial intelligence infrastructure under scrutiny.
+
+CNBC’s Matt Peterson explains.
+
+Find the full report: cnb.cx/4AwBriR | CNBC</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Anthropic`, `#AI compute`, `#IPO`, `#supply chain`, `#executive remarks`
+**Tags**: `#Nvidia`, `#AI infrastructure`, `#executive change`, `#capital markets`, `#investor sentiment`
+
+---
+
+<a id="item-tech-news-6"></a>
+### [Anthropic CEO Says Compute Sourcing Is a Major Business Challenge](https://www.bloomberg.com/news/articles/2026-11-13/anthropic-ceo-calls-computing-power-deepest-business-dilemma) ⭐️ 7.0/10
+
+Anthropic CEO Dario Amodei said sourcing computing power is one of the company’s biggest business challenges, according to a briefing ahead of its anticipated initial public offering. The remarks identify compute access as a core constraint for Anthropic as it prepares for the IPO. The source does not provide specific capacity figures, costs, suppliers, or timelines.
+
+rss · Bloomberg Technology · Nov 13, 18:46
+
+**「Background」** Anthropic is a private frontier AI developer, so an expected IPO would bring public-market scrutiny of costs and capacity. Compute sourcing refers to securing GPUs or cloud contracts needed to train and serve large models, a major expense for AI companies.
+
+**Tags**: `#Anthropic`, `#AI IPO`, `#Compute sourcing`, `#Inference cost`, `#Frontier AI economics`
+
+---
+
+<a id="item-tech-news-7"></a>
+### [Ackman Comments on Huang’s Nvidia Exit and Anthropic IPO Roadshow](https://www.bloomberg.com/news/videos/2026-11-13/ackman-on-huang-s-exit-anthropic-ipo-roadshow-video) ⭐️ 7.0/10
+
+Bloomberg video reports Pershing Square founder Bill Ackman reacting to Jensen Huang’s departure from Nvidia and Anthropic’s IPO roadshow in New York. Ackman said it was sad to see Huang leave and predicted he would go on to do something great. He also said he was impressed by Anthropic CEO Dario Amodei’s presentation at the roadshow. The item is commentary, not a detailed corporate disclosure, and provides no further specifics about Huang’s exit or Anthropic’s IPO terms.
+
+rss · Bloomberg Technology · Nov 13, 19:42
+
+**「Context」** The discussion centers on two investor-sensitive developments: Jensen Huang’s departure from Nvidia, a major supplier of AI computing hardware, and Anthropic’s IPO roadshow, where a roadshow is the pre-listing presentation a company gives to potential investors. Ackman’s remarks are commentary on these events rather than a formal corporate disclosure.
+
+**「Impact」** For investors and readers, the main practical consequence is that Ackman’s remarks are commentary, not a corporate disclosure: they do not confirm Anthropic’s IPO terms, timing, or Huang’s post-Nvidia plans.
+
+**Tags**: `#Nvidia`, `#Jensen Huang`, `#Anthropic`, `#IPO`, `#AI capital markets`
 
 ---
 
 <a id="item-tech-news-8"></a>
-### [OpenAI Launches ChatGPT Wallet for Tokenized Agent Payments in US](https://openai.com/index/introducing-chatgpt-wallet/) ⭐️ 7.0/10
+### [OpenAI Launches US ChatGPT Wallet for Pro Subscribers](https://openai.com/index/introducing-chatgpt-wallet/) ⭐️ 7.0/10
 
-OpenAI launched ChatGPT Wallet with Visa, Mastercard, and American Express to let AI agents make purchases without seeing users’ real card numbers. The source says each purchase requires the user to review the item and amount, then confirm with Face ID or fingerprint, after which the payment network provides a token that replaces the actual card number. Availability is limited to the US through dots for ChatGPT Pro subscribers aged 18 and older, and users must have a US-issued card.
+OpenAI launched ChatGPT Wallet in the US, enabling AI agents to make tokenized payments through partnerships with American Express, Mastercard, and Visa. It is available to ChatGPT Pro subscribers aged 18+ with US-issued cards, and agents do not access real card numbers. Each purchase requires the user to review the item and amount, then confirm with Face ID or fingerprint before the payment network issues a token.
 
 telegram · zaihuapd · Nov 13, 15:43
 
-**「Background」** AI agents that can complete purchases need a way to authorize payments without giving the agent direct access to a user&\#x27;s card details. Tokenized checkout addresses this by replacing the real card number with a network-issued payment token that can be verified for each transaction.
+**「Background」** Agentic commerce requires a way for AI agents to complete purchases without exposing a user’s real card number or bypassing user authorization. Card networks already provide tokenized payment rails that can replace account credentials with payment tokens, making verified agent-initiated transactions technically feasible.
 
-**「Impact」** For eligible US ChatGPT Pro users, ChatGPT Wallet enables agent-initiated purchases with per-transaction authentication and card-number protection, but it is not a general rollout because it requires Pro access, US availability, age 18 or older, and a US-issued card.
+**「Impact」** The rollout is limited to paid Pro users, US availability, and US-issued cards, so developers and merchants should not assume broad agentic payment support or unattended checkout without explicit user verification.
 
-**Tags**: `#AI applications`, `#Agentic commerce`, `#Payments infrastructure`, `#OpenAI`, `#ChatGPT`
+**Tags**: `#OpenAI`, `#ChatGPT`, `#agentic commerce`, `#payments`, `#AI commercialization`
+
+---
+
+## Technology Blog
+
+<a id="item-tech-blog-1"></a>
+### [Finding Meaning in Large Tech Companies](https://seangoedecke.com/how-to-find-meaning-in-large-tech-companies/) ⭐️ 6.0/10
+
+rss · Sean Goedecke · Nov 14, 00:00
+
+**「Background」** Sean Goedecke argues that dissatisfaction in large tech companies often comes not just from dysfunction blocking work, but from engineers&\#x27; discomfort with organizational mess and performative importance. He suggests the real challenge is tolerating that mess while still finding value in scale.
+
+**「Solution」** His central insight is that meaning can come from making small improvements to widely used enterprise software, where even a tiny fix or feature can save cumulative months or years of users&\#x27; time. He warns against treating work politics as emotionally real, describing OKRs, deadlines, hype, and internal rituals as things that can create alienation if one performs importance too convincingly. Instead, he recommends detachment, a rich personal life, and direct contact with things that matter outside work. The work remains hard because it sits at the intersection of software engineering and large-organization coordination, and enterprise software may be getting worse, but slowing that decline still matters.
+
+**「Takeaway」** Goedecke&\#x27;s thesis is that large tech companies can offer real meaning when people accept messiness, avoid internalizing performative importance, and focus on incremental improvements affecting millions.
+
+**Tags**: `#large-tech-culture`, `#engineering-career`, `#organizational-dysfunction`, `#meaning-at-work`, `#enterprise-software`
 
 ---
 
 ## Financial News
 
 <a id="item-finance-news-1"></a>
-### [Lutnick scrutiny over Nvidia ties and export controls](https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html) ⭐️ 8.0/10
+### [Nvidia CEO Resignation, US Stocks Rebound Despite Inflation Shock](https://wallstreetcn.com/articles/3785940) ⭐️ 9.0/10
 
-Nvidia CEO Jensen Huang&\#x27;s resignation and Axios reports that Commerce Secretary Howard Lutnick resisted a crackdown on Megaspeed, a company suspected of funneling Nvidia AI chips to China, have intensified scrutiny of U.S. export-control policy, after President Trump authorized new restrictions on Nov. 5. Cantor Fitzgerald, now led by Lutnick&\#x27;s sons, reported its Nvidia share position fell 49% from 3.5 million shares in September 2025 to 1.78 million by March 2026.
+Nvidia CEO Jensen Huang resigned after reported personal scandals, yet the S&amp;P 500 rose 2% for the week as short positions were largely cleared, leaving few sellers to absorb bad news. Hotter-than-expected US inflation and Fed officials’ talk of a possible 50-basis-point December rate hike pushed the 2-year Treasury yield up 35 basis points and the 10-year yield above 5.15%.
 
-rss · CNBC Finance · Nov 13, 23:42
+rss · 华尔街见闻 · Nov 14, 08:34
 
-**「Background」** The entity list is a Commerce Department tool that restricts companies, and Treasury, Defense, State and the U.S. Trade Representative reportedly favored adding Megaspeed while Commerce imposed it.
+**「Background」** Nvidia CEO Jensen Huang resigned Thursday after reported personal scandals, with CFO Colette Kress named temporary leader; this leadership shock occurred as US inflation data and Fed officials&\#x27; comments raised expectations of higher interest rates.
 
-**「Impact」** The dispute has exposed internal disagreement over China-facing AI-chip export controls, though Trump publicly maintained confidence in Lutnick and there is no evidence of insider information sharing.
+**「Impact」** US households holding Nvidia in retirement portfolios and AI-linked suppliers face valuation and financing uncertainty because Nvidia is central to AI data-center spending and has large investment commitments, with funds rotating to AMD and Broadcom.
 
-**Tags**: `#Nvidia`, `#AI chips`, `#export controls`, `#semiconductors`, `#governance`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://finance.yahoo.com/technology/article/nvidia-ceo-huang-resigns-amid-affair-scandals-board-names-cfo-colette-kress-interim-ceo-135801377.html">Nvidia CEO Huang resigns amid affair scandals, board names CFO Colette Kress interim CEO</a></li>
+<li><a href="https://www.nytimes.com/2026/11/12/technology/nvidia-jensen-huang.html">Here’s the latest. - The New York Times</a></li>
+<li><a href="https://finance.yahoo.com/quote/SYNP.VI/news">Synopsys, Inc. (SYNP.VI) Latest Stock News &amp; Headlines - Yahoo Finance</a></li>
+<li><a href="https://www.youtube.com/watch?v=JjEGdCPGyWw">Nvidia stock sinks after CEO Jensen Huang resigns</a></li>
+<li><a href="https://finance.yahoo.com/technology/live/nvidia-live-updates-following-jensen-huangs-resignation-as-ceo-allegations-of-a-third-affair-emerge-195535310.html">Nvidia live updates: Following Jensen Huang&#x27;s resignation as CEO, allegations of a third affair emerge</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#AI供应链`, `#英伟达治理风险`, `#半导体主题`, `#美联储加息预期`, `#美股逼空`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [Fed’s Goolsbee says inflation work remains as December hike priced](https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html) ⭐️ 8.0/10
+### [Lutnick-Nvidia ties face scrutiny](https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html) ⭐️ 8.0/10
 
-Chicago Fed President Austan Goolsbee said the central bank likely needs further action on inflation after October producer prices rose 0.3% month over month and 6.5% year over year, the highest annual gain since November 2022, while markets are pricing a quarter-point rate increase at the Fed’s Dec. 8-9 meeting.
+CNBC reports that Commerce Secretary Howard Lutnick is facing questions after Axios said he resisted a crackdown on Megaspeed, a Singapore company suspected of sending Nvidia AI chips to China, even as President Trump authorized new export restrictions on Nov 5. The scrutiny follows Nvidia CEO Jensen Huang’s resignation and a CNBC analysis showing Cantor Fitzgerald, led by Lutnick’s sons, reported a 49% decline in Nvidia shares between September 2025 and March 2026.
 
-rss · CNBC Finance · Nov 13, 14:22
+rss · CNBC Finance · Nov 13, 23:42
 
-**「Background」** Goolsbee, who will join the Fed’s rate-setting committee as a voter in 2027, said inflation has stayed above the Fed’s 2% target for nearly six years and that demand from building AI data centers is adding pressure.
+**「Background」** Howard Lutnick left Cantor Fitzgerald to become Commerce Secretary in February 2025, while his sons took over the firm, creating scrutiny because he oversees U.S. chip export controls and the firm had disclosed large Nvidia holdings and continued business ties with the chipmaker.
 
-**「Impact」** If the Fed raises rates as markets expect, borrowing costs for households and businesses would rise, and the more than 10% market odds of a half-point hike would add pressure to loans and credit conditions.
+<details><summary>References</summary>
+<ul>
+<li><a href="https://finance.yahoo.com/video/howard-lutnicks-kids-run-cantor-172058306.html">Howard Lutnick&#x27;s Kids Will Run Cantor Fitzgerald</a></li>
 
-**Tags**: `#Federal Reserve`, `#inflation`, `#interest rates`, `#macro policy`, `#market expectations`
+</ul>
+</details>
+
+**Tags**: `#Nvidia`, `#AI chips`, `#export controls`, `#Cantor Fitzgerald`, `#China semiconductor supply chain`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [Iran Revolutionary Guard Reports Tanker Fires in Strait of Hormuz](https://www.cls.cn/detail/2534491) ⭐️ 8.0/10
+### [Nvidia Departure Raises AI Financing Concerns](https://wallstreetcn.com/articles/3785942) ⭐️ 8.0/10
 
-Iran&\#x27;s Islamic Revolutionary Guard Corps said on Nov. 14 that at least four tankers struck mines and caught fire in the Strait of Hormuz within hours. The claim comes from a single source and lacks independent verification.
+Nvidia Chair Jensen Huang&\#x27;s reported resignation has focused investors on roughly $530 billion of AI financing commitments reported in 10-Q footnotes.
 
-rss · 财联社电报\(RSSHub\) · Nov 14, 09:28
+rss · 华尔街见闻 · Nov 14, 09:44
 
-**「Background」** The Strait of Hormuz is a narrow oil shipping route; Iran&\#x27;s Islamic Revolutionary Guard Corps has said in recent weeks that multiple tankers using unauthorized or prohibited lanes triggered mines, caught fire, or were stopped.
+**「Background」** The reported concern is that Nvidia has acted as a funding hub for AI infrastructure, using equity, guarantees and buyback agreements to support customers whose spending can return as chip orders.
 
-**「Impact」** If confirmed, the reported mine strikes could raise freight and insurance costs for tankers carrying oil and gas through a strait that handles about one-fifth of global energy trade, increasing pressure on shipping firms, energy traders, and fuel-importing economies.
+**「Impact」** If Nvidia reduces new credit support, AI cloud providers and data-center developers that rely on its guarantees to access lower-cost borrowing could face tighter terms or higher financing costs.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.eastmoney.com/a/202610313917457946.html">霍尔木兹海峡，突发！4艘油轮爆炸起火 _ 东方财富网</a></li>
-<li><a href="https://app.xinhuanet.com/news/article.html?articleId=20261104a463e1ac7ef74f7b8954d9392f8111fc">伊朗：4艘试图通过霍尔木兹海峡的油轮触雷起火 - 新华网客户端</a></li>
-<li><a href="https://www.instagram.com/reel/DfWp2EuEaDq">Instagram</a></li>
-<li><a href="https://www.swissinfo.ch/chi/%E5%85%A8%E7%90%83%E8%B4%B8%E6%98%93/%E8%88%AA%E9%81%93%E5%8F%97%E9%98%BB%E4%B9%8B%E5%90%8E%EF%BC%9A%E9%9C%8D%E5%B0%94%E6%9C%A8%E5%85%B9%E6%B5%B7%E5%B3%A1%E5%8D%B1%E6%9C%BA%E5%A6%82%E4%BD%95%E9%87%8D%E5%86%99%E8%B4%B8%E6%98%93%E9%80%BB%E8%BE%91/91726757">从油轮改道到供应链重塑：霍尔木兹海峡危机的深层影响</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#oil shipping`, `#Strait of Hormuz`, `#geopolitical risk`, `#energy markets`, `#breaking news`
+**Tags**: `#Nvidia`, `#AI financing`, `#datacenter capex`, `#neocloud credit`, `#semiconductor supply chain`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [US stocks rebound on short covering despite Nvidia CEO exit](https://wallstreetcn.com/articles/3785940) ⭐️ 8.0/10
+### [Anthropic IPO targets about $1.33 trillion](https://wallstreetcn.com/articles/3785931) ⭐️ 8.0/10
 
-US stocks rose 2% for the week despite Nvidia CEO Jensen Huang’s resignation, hotter inflation readings and talk of a possible 50-basis-point December rate hike. The rebound reflected short covering after hedge funds cut leverage, and the Philadelphia Semiconductor Index posted its best week since April.
+The Wall Street Journal reported that Anthropic is targeting an IPO valuation of about $1.33 trillion or higher, down from earlier market expectations of up to $2 trillion, with shares planned to begin trading next Thursday. CEO Dario Amodei said the company is using conservative pricing and is not focused on the month or market conditions for the listing.
 
-rss · 华尔街见闻 · Nov 14, 08:34
+rss · 华尔街见闻 · Nov 14, 01:37
 
-**「Background」** Nvidia’s board approved CEO Jensen Huang’s resignation, with CFO Colette Kress as interim CEO, while hotter-than-expected U.S. CPI and hawkish Fed remarks renewed concerns about tighter policy.
+**「Background」** Anthropic’s IPO comes during a sharp AI-stock selloff and after Jensen Huang’s resignation as Nvidia CEO, which has increased pressure on the listing as a test of investor appetite for AI exposure.
 
-**「Impact」** Higher Treasury yields and wider chip credit spreads raised financing pressure on AI-linked companies, even as the equity rebound came from short covering.
+**「Impact」** A strong Anthropic IPO could support AI suppliers and partners such as Alphabet and Nebius, while a weak reception would reinforce doubts about high AI valuations and future listings.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.moomoo.com/hans/news/post/1004450336/nvidia-ceo-jensen-huang-resigns-global-ai-sector-under-pressure">英伟达CEO黄仁勋辞职 全球AI板块承压 纳指期货跌超1% | 今夜看点</a></li>
+<li><a href="https://www.youtube.com/watch?v=uwWuliy41-8">We don&#x27;t know what Nvidia is now. Anthropic&#x27;s IPO is the test | The 8:30</a></li>
+<li><a href="https://finance.yahoo.com/technology/ai/articles/anthropic-blockbuster-ipo-just-got-175115107.html">Anthropic’s blockbuster IPO just got harder after Jensen Huang’s dramatic exit as Nvidia CEO</a></li>
+<li><a href="https://fortune.com/2026/11/12/anthropic-ipo-jensen-huang-resignation-nvidia">Anthropic’s blockbuster IPO just got harder after Jensen Huang’s dramatic exit as Nvidia CEO | Fortune</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/articles/anthropic-ipo-targets-november-debut-162209958.html">Anthropic IPO targets November debut as valuation expectations fall</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#AI供应链`, `#英伟达`, `#美联储政策`, `#美股市场`, `#宏观通胀`
+**Tags**: `#Anthropic IPO`, `#AI估值`, `#算力资本开支`, `#全球科技股`, `#A股AI主题情绪`
 
 ---
 
 <a id="item-finance-news-5"></a>
-### [OpenAI Disbands Robotics Team After General Models Show Robot Control Promise](https://wallstreetcn.com/articles/3785914) ⭐️ 8.0/10
+### [US stocks diverge as PPI fuels Fed hike expectations](https://wallstreetcn.com/articles/3785885) ⭐️ 8.0/10
 
-According to Fortune, OpenAI has disbanded its independent robotics team and moved researchers into its main research and applied organizations, saying general frontier models such as GPT-6 Astra can directly drive robot control. In an Nvidia test, an Astra-driven agent reached 74.8% success in a simulated manipulation benchmark, compared with 51.0% for the best specialized robot model reported on that list.
+US stocks diverged Friday after October PPI rose 6.5% year over year, the fastest annual pace since November 2022, reinforcing expectations for a 25-basis-point \(0.25 percentage point\) Federal Reserve hike in December. Nvidia fell 2.0% on reports of CEO Jensen Huang’s resignation, weighing on semiconductor shares.
 
-rss · 华尔街见闻 · Nov 14, 01:09
+rss · 华尔街见闻 · Nov 13, 22:54
 
-**「Background」** OpenAI had earlier abandoned and then rebuilt a standalone robotics effort, but Fortune and MLQ.ai reported that recent Nvidia-run tests showed its general GPT-6 Astra model could directly control simulated robots, making a separate team less necessary.
+**「Background」** The PPI tracks producer prices and can signal inflation pressure before consumer prices, while Nvidia is a central supplier in AI chip demand.
 
-**「Impact」** Robotics investors may face pressure to reassess valuations of humanoid-robot and embodied-AI startups, since OpenAI’s shift suggests general models can reduce demand for robot-specific AI.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://mlq.ai/news/openai-disbands-its-standalone-robotics-team-as-its-general-models-start-running-robots-fortune-reports">OpenAI disbands its standalone robotics team as its general models start running robots, Fortune reports | MLQ.ai</a></li>
-<li><a href="https://fortune.com/2026/11/13/openai-disbands-robotics-team-as-its-general-models-start-running-robots">Exclusive: OpenAI disbands its robotics team as its general-purpose AI models start running robots | Fortune</a></li>
-<li><a href="https://activantcapital.com/research/robots">Robots: Valuations and The Scaling Question — Activant Research</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#OpenAI`, `#具身智能/机器人`, `#AI产业经济学`, `#A股机器人主题`, `#融资与IPO`
+**Tags**: `#美股市场`, `#英伟达`, `#AI产业链`, `#美联储政策`, `#通胀数据`
 
 ---
 
 <a id="item-finance-news-6"></a>
-### [Anthropic IPO Seeks $70–78 Range in Demand-Driven Pricing](https://wallstreetcn.com/articles/3785926) ⭐️ 8.0/10
+### [Nvidia Board Reportedly Contacted Arm CEO as Successor Candidate](https://wallstreetcn.com/articles/3785915) ⭐️ 8.0/10
 
-Bloomberg reported Anthropic is seeking a $70–78 per-share IPO price range, targeting about $1.4 trillion in fully diluted value and up to $64.4 billion in proceeds, with a planned $26 billion private placement.
+According to the Financial Times, Nvidia’s board has reportedly contacted Arm CEO Rene Haas among possible successors after Jensen Huang resigned after 33 years. Nvidia said it is selecting headhunters and has not formally contacted any candidate, calling speculation premature.
 
-rss · 华尔街见闻 · Nov 13, 23:44
+rss · 华尔街见闻 · Nov 13, 21:54
 
-**「Background」** The report says Anthropic is using a traditional roadshow, where institutional demand helps set the final price, unlike SpaceX&\#x27;s reported fixed $135 per-share IPO, amid a weaker AI-market backdrop than SpaceX&\#x27;s June listing, when the Nasdaq 100 tech-stock index rose about 28% in the quarter.
+**「Background」** Huang led Nvidia for 33 years and resigned after reports of extramarital relationships, with CFO Colette Kress serving as interim CEO while the board begins a succession search. Haas, now Arm&\#x27;s CEO, spent about seven years at Nvidia and leads Arm, whose licensed chip designs are used in many smartphones and in Nvidia&\#x27;s AI hardware.
 
-**Tags**: `#Anthropic IPO`, `#AI supply chain`, `#SpaceX comparison`, `#IPO valuation`, `#market sentiment`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.cnbc.com/video/2024/09/16/arm-is-seeing-a-lot-of-growth-in-its-data-centers-says-ceo-rene-haas.html">ARM is seeing a lot of growth in its data centers, says CEO Rene Haas</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Nvidia`, `#CEO succession`, `#AI chips`, `#semiconductors`, `#A-share AI supply chain`
 
 ---
 
 <a id="item-finance-news-7"></a>
-### [Nvidia valuation falls to 14-year low after reported CEO departure](https://wallstreetcn.com/articles/3785898) ⭐️ 8.0/10
+### [Chicago Fed&\#x27;s Goolsbee Says More Inflation Work Needed](https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html) ⭐️ 7.0/10
 
-Nvidia shares closed down 4.34% at $166.19 after reports of CEO Jensen Huang’s departure, leaving the stock about 30% below its Oct. 6 high of $243.37. The company’s forward price-to-earnings ratio fell to about 12x, the lowest since 2012, while Bernstein cut its price target to $200 from $400 and Goldman cut to $220 from $300.
+Chicago Fed President Austan Goolsbee said the central bank has “definitely got work to do” on inflation after October producer prices rose 0.3% from the previous month and 6.5% from a year earlier, the highest annual gain since November 2022, while markets fully priced a 0.25 percentage point increase at the Dec. 8-9 Federal Open Market Committee meeting.
 
-rss · 华尔街见闻 · Nov 13, 11:19
+rss · CNBC Finance · Nov 13, 14:22
 
-**「Background」** Nvidia’s stock reaction follows its Nov. 12, 2026 announcement that co-founder and CEO Jensen Huang resigned and CFO Colette Kress was named interim CEO, or temporary chief executive; media reports say the leadership change came after allegations involving Huang’s ties to a woman identified by U.S. intelligence as a Chinese spy and a board-ordered investigation into national-security concerns.
+**「Background」** Goolsbee, who is not currently an FOMC voter but will be in 2027, said inflation is moving away from the Fed’s 2% target after almost six years above it, partly because demand from AI data-center buildout is adding pressure.
 
-**「Impact」** The reported leadership change raised concerns about Nvidia’s role in financing AI customers; CoreWeave fell more than 11% premarket as it marketed a $4 billion-plus investment-grade loan and Nvidia is reportedly a guarantor.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition">NVIDIA Announces CEO Transition | NVIDIA Newsroom</a></li>
-<li><a href="https://www.nytimes.com/live/2026/11/12/business/nvidia-jensen-huang-resigns">Nvidia Updates: Huang’s Resignation Reverberates Through A.I. Industry - The New York Times</a></li>
-<li><a href="https://www.cnbc.com/2026/11/12/nvidia-jensen-huang-ceo-live-updates.html">Nvidia CEO Jensen Huang resigns: Live updates</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#英伟达`, `#AI芯片`, `#管理层变动`, `#估值分歧`, `#散户资金流`
+**Tags**: `#Federal Reserve`, `#Inflation data`, `#Interest rate expectations`, `#AI data center demand`, `#Macro policy`
 
 ---
 
 <a id="item-finance-news-8"></a>
-### [China to Meet New Power Demand With Clean Energy by 2030, CCTV Says](https://www.bloomberg.com/news/articles/2026-11-14/china-to-meet-all-new-power-demand-with-clean-energy-cctv-says) ⭐️ 7.0/10
+### [U.S. Grounds Flights Nationwide After Air-Traffic Communications Failure](https://www.bloomberg.com/news/videos/2026-11-14/us-flights-grounded-over-air-traffic-communication-issue-video) ⭐️ 7.0/10
 
-China is expected to meet all growth in power demand with new clean-energy generation by 2030, according to state broadcaster CCTV.
+The U.S. Federal Aviation Administration issued a nationwide departure-grounding order on Nov. 13 after a communications failure affecting air-traffic control, and FlightAware data showed more than 3,300 cancellations and more than 10,200 delays by 6:40 p.m. ET.
 
-rss · Bloomberg Markets · Nov 14, 04:05
+rss · Bloomberg Markets · Nov 14, 00:08
 
-**「Background」** China Central Television cited a report from the Academy of Macroeconomic Research, an institute under China’s National Development and Reform Commission, the top economic planning agency. The report noted that renewables generated more than 40% of China’s electricity in the first nine months of the year, the baseline behind the 2030 target for covering all incremental demand.
+**「Background」** The order was the third nationwide FAA flight ban in recent years, following the 2001 9/11 attacks and a 2023 notice-to-airmen \(NOTAM\) system outage, and came after repeated U.S. air-traffic communications disruptions.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://mjengohub.co.ke/articles/world/china-targets-clean-energy-to-cover-all-new-power-demand-by-2030">China targets clean energy to cover all new power demand by 2030 - Mjengo Hub</a></li>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-14/china-to-meet-all-new-power-demand-with-clean-energy-cctv-says">China to Meet All New Power Demand With Clean Energy, CCTV Says - Bloomberg</a></li>
+**「Impact」** Airlines and passengers faced immediate knock-on disruption as carriers cut weekend flights and offered fee-free changes while displaced aircraft and crews strained schedules.
 
-</ul>
-</details>
-
-**Tags**: `#China energy policy`, `#clean energy`, `#power demand`, `#A-share themes`, `#renewables`
+**Tags**: `#U.S. aviation`, `#air traffic control`, `#transportation disruption`, `#market impact`, `#Bloomberg`
 
 ---
 
 <a id="item-finance-news-9"></a>
-### [US Flights Grounded Nationwide Over Air Traffic Control Communication Issue](https://www.bloomberg.com/news/videos/2026-11-14/us-flights-grounded-over-air-traffic-communication-issue-video) ⭐️ 7.0/10
+### [Goldman Sachs 2027 Global Equity Outlook](https://wallstreetcn.com/articles/3785935) ⭐️ 7.0/10
 
-US authorities grounded flights nationwide after air traffic control communication issues, according to a Bloomberg Markets report.
+Goldman Sachs forecasts global earnings growth will sharply slow by 2027 as AI infrastructure spending growth peaks, and says US hyperscale cloud companies are relatively defensive after falling to 19.7 times expected earnings, below consumer staples&\#x27; 21.0 times.
 
-rss · Bloomberg Markets · Nov 14, 00:08
+rss · 华尔街见闻 · Nov 14, 06:49
 
-**「Background」** The Federal Aviation Administration \(FAA\), the U.S. agency responsible for civil aviation safety, issued a nationwide ground stop that prevented departing flights from taking off because of a communications problem affecting Air Route Traffic Control Centers, which direct planes between airports across the country. Officials said the cause was not immediately known, but described it as a telecommunications outage and said there was no indication yet of anything nefarious.
+**「Background」** The outlook follows the worst single-day Nasdaq 100 drop since the pandemic and an Nvidia decline on reports of a founder CEO departure, which reduced AI-linked valuations.
 
-**「Impact」** The FAA’s nationwide ground stop disrupted airline operations and passenger travel, with major delays and backlog continuing even after departures were allowed to resume.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.nbcnews.com/news/us-news/live-blog/live-updates-flights-grounded-faa-communications-outage-rcna609268">Live updates: FAA grounds flights nationwide because of communication issue</a></li>
-<li><a href="https://www.aljazeera.com/news/liveblog/2026/11/13/groundling-live">LIVE: FAA issues nationwide ground stop after communications outage in US | Aviation News | Al Jazeera</a></li>
-<li><a href="https://www.cnn.com/2026/11/13/us/live-news/flights-ground-stop-faa">Live updates: FAA issues nationwide ground stop for all flights | CNN</a></li>
-<li><a href="https://www.facebook.com/AlannaNBC5/videos/update-the-faa-says-airplane-departures-can-now-resume-the-agency-has-lifted-the/2254363832089267">16K views · 105 reactions | UPDATE: The FAA says airplane departures can now resume - the agency has LIFTED the nationwide ground stop caused by communications problems.
-
-This is a message from the pilot of a flight from Starkville, MS to DFW this evening…Major delays and backlog continues for travelers.
-
-DETAILS: https://www.nbcdfw.com/news/local/flights-halted-airports-air-traffic-control-communications-problems/4106008/
-
-🎥 Credit: Madeline games | Alanna Quillen NBC 5</a></li>
-<li><a href="https://federalnewsnetwork.com/technology-main/2026/11/flights-are-halted-at-airports-across-the-united-states-due-to-unspecified-extraordinary-circumstances-faa-says">Flights halted at airports across US due to air traffic control communications problems, FAA says - Federal News Network</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#US aviation`, `#air traffic control`, `#market disruption`, `#airlines`, `#Bloomberg`
+**Tags**: `#Goldman Sachs`, `#global equity outlook`, `#AI capex`, `#cloud giants`, `#semiconductors`
 
 ---
 
 <a id="item-finance-news-10"></a>
-### [Goldman Sachs Forecasts Slower 2027 Equity Earnings Growth](https://wallstreetcn.com/articles/3785935) ⭐️ 7.0/10
+### [Nvidia CEO Jensen Huang&\#x27;s $135 Billion Stake After Departure](https://wallstreetcn.com/articles/3785938) ⭐️ 7.0/10
 
-Goldman Sachs forecast global equity earnings growth slowing sharply in 2027 as AI capital spending peaks, and set a 12-month S&amp;P 500 target of 8,700 points, about 14% above current levels.
+Nvidia CEO Jensen Huang&\#x27;s departure leaves him as the company&\#x27;s largest individual shareholder with about 812 million shares, worth roughly $135 billion. Harvard governance expert Jesse Fried says he cannot sell while holding undisclosed material negative information, and Nvidia&\#x27;s upcoming earnings report could clear part of that constraint.
 
-rss · 华尔街见闻 · Nov 14, 06:49
+rss · 华尔街见闻 · Nov 14, 06:29
 
-**「Background」** The outlook follows a sharp Nasdaq 100 selloff and a reported Nvidia drop on founder-CEO departure news, as markets question whether AI spending has reached its peak.
+**「Background」** Huang’s past sales have been limited relative to his current stake and made through prearranged Rule 10b5-1 plans, which let insiders schedule stock sales in advance to reduce the risk of trading on undisclosed company information.
 
-**Tags**: `#AI资本开支`, `#云巨头估值`, `#全球股市展望`, `#半导体与存储`, `#高盛策略`
+**「Impact」** The article estimates the stake equals about six trading days of Nvidia&\#x27;s total volume, so a large sale would need to be spread over months to avoid pressuring shares.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://finance.yahoo.com/news/nvidia-ceo-jensen-huang-begins-124902499.html">Nvidia CEO Jensen Huang begins sale of $925M worth of Nvidia stock — sale of 6 million shares barely dents his $123 billion in shares</a></li>
+<li><a href="https://www.businessinsider.com/nvidia-stock-jensen-huang-wealth-musk-buffett-ai-tech-compensation-2025-9">Why Nvidia CEO Jensen Huang Isn&#x27;t the World&#x27;s Richest Person - Business Insider</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#英伟达`, `#黄仁勋`, `#股票减持`, `#公司治理`, `#AI供应链`
 
 ---
 
 <a id="item-finance-news-11"></a>
-### [Anthropic advances large IPO roadshow with conservative pricing](https://wallstreetcn.com/articles/3785931) ⭐️ 7.0/10
+### [OpenAI Dissolves Robotics Team Amid Benchmark and Cost Pressures](https://wallstreetcn.com/articles/3785914) ⭐️ 7.0/10
 
-Anthropic is advancing one of the largest planned IPOs, with a target valuation of about $1.33 trillion or higher, while CEO Dario Amodei said the company will use conservative pricing and is not especially concerned about market conditions.
+Fortune reported that OpenAI dissolved its independent robotics team and moved researchers into other departments, citing breakthroughs by general models such as GPT-6 Astra and cost pressure while it seeks new funding and prepares for a possible 2027 IPO. In an NVIDIA test, an Astra-driven agent scored 74.8% on a simulated manipulation benchmark, compared with 51.0% for the best specialized robot model, while OpenAI’s most recent quarter showed a $10.9 billion operating loss.
 
-rss · 华尔街见闻 · Nov 14, 01:37
+rss · 华尔街见闻 · Nov 14, 01:09
 
-**「Background」** The roadshow is unfolding amid a recent AI-share selloff and the departure of Nvidia CEO Jensen Huang, whose company supplies chips and is expected to take part in the IPO. The offering is also being compared with SpaceX’s June 2026 record $75 billion IPO.
-
-**「Impact」** The report says strong investor demand could lead Anthropic to raise its price range or offering size, potentially pushing total proceeds above $75 billion and surpassing SpaceX’s IPO record.
+**「Background」** OpenAI has repeatedly changed its robotics approach: it disbanded an early team in 2020, rebuilt one in 2024 with Figure, then ended that partnership in 2025, and has now reassigned robotics researchers to core research and Applied teams.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.cnbc.com/2026/11/12/nvidia-jensen-huang-ceo-live-updates.html">Nvidia CEO Jensen Huang resigns: Live updates</a></li>
-<li><a href="https://theconversation.com/spacex-raised-75b-in-record-ipo-heres-why-insiders-like-elon-musk-are-much-likelier-than-public-stock-buyers-to-get-rocket-powered-returns-these-days-285134">SpaceX raised $75B in record IPO – here’s why insiders like Elon Musk are much likelier than public stock buyers to get rocket-powered returns these days</a></li>
+<li><a href="https://www.tradingview.com/news/seekingalpha:65487c40e094b:0-openai-dissolves-stand-alone-robotics-team-report">OpenAI dissolves stand-alone robotics team: report — TradingView News</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Anthropic IPO`, `#AI融资`, `#科技估值`, `#英伟达供应链`, `#市场波动`
+**Tags**: `#OpenAI`, `#机器人AI`, `#融资与IPO`, `#AI产业链`, `#A股主题`
 
 ---
 
 <a id="item-finance-news-12"></a>
-### [FTC sues to block $3.5 billion Cencora veterinary sale](https://news.google.com/rss/articles/CBMisgFBVV95cUxNcXdFLTNlbU5kN1Z1Z2p6cDJRSnlsUEpWMm9KdkEwOUlMVHE3a2pmemF5cFJjcjNVS2Z5cG9aUkx0R0RMMy16YmtVbzc5bHljYVdMY2ZERm54Q29lZTM2VWVzV3ptU3EyVUtvWERjUFlLT3lrNjNGaWlta0RERWh0SnNtalREUm5ZVlFoODlaWGdULWZ3eDdScC1TeDZpX0IxM2NqdUYwZzdnNkItVGd6UUxB?oc=5) ⭐️ 7.0/10
+### [Moonshot AI Restructures for Hong Kong IPO](https://www.wsj.com/tech/chinas-moonshot-ai-restructures-to-pave-way-for-ipo-49f09abb) ⭐️ 7.0/10
 
-The U.S. Federal Trade Commission is suing to block Cencora&\#x27;s proposed $3.5 billion sale of its veterinary unit to Covetrus.
+Chinese AI startup Moonshot AI is reportedly restructuring its ownership ahead of a planned Hong Kong IPO, according to people familiar with the matter. The change would discontinue its Cayman Islands holding company and move early U.S. dollar investors’ shares into its main China-based operating entity.
 
-google\_news · Reuters · Nov 13, 18:24
+telegram · zaihuapd · Nov 13, 11:29
 
-**「Background」** Cencora agreed in February to sell its MWI Animal Health unit to Covetrus, a deal the FTC says would combine the two largest U.S. distributors of veterinary medicines and clinic supplies and remove direct price competition, prompting a lawsuit filed in New York federal court with state attorneys general.
+**「Background」** Moonshot’s operations are mainly in China, but early dollar investors held shares through a Cayman Islands holding company, an offshore entity that the company is now deactivating and moving stakes from, according to people familiar with the matter.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://ca.finance.yahoo.com/news/us-ftc-sues-block-cencoras-165038894.html">US FTC sues to block Cencora&#x27;s $3.5 billion sale of veterinary unit to Covetrus</a></li>
-<li><a href="https://news.bloomberglaw.com/antitrust/ftc-sues-to-block-3-5-billion-covetrus-acquisition-of-rival-mwi">FTC, States Sue to Block $3.5 Billion Covetrus-MWI Deal (1)</a></li>
+<li><a href="https://www.wsj.com/tech/chinas-moonshot-ai-restructures-to-pave-way-for-ipo-49f09abb">Exclusive | China’s Moonshot AI Restructures to Pave Way for IPO - WSJ</a></li>
+<li><a href="https://x.com/JChengWSJ/status/2121175647418454273">Jonathan Cheng on X: &quot;Chinese artificial-intelligence startup Moonshot AI is wrapping up a corporate restructuring that would pave the way for an initial public offering. https://t.co/OIzliXTquP&quot; / X</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#antitrust`, `#M&amp;A`, `#healthcare distribution`, `#veterinary services`, `#US regulation`
+**Tags**: `#Moonshot AI`, `#HK IPO`, `#China AI`, `#startup financing`, `#AI industry economics`
 
 ---
 
 <a id="item-finance-news-13"></a>
-### [IEA cuts oil demand forecasts as market heads toward surplus](https://news.google.com/rss/articles/CBMiuwFBVV95cUxOcWtzQXhRVUlUbWQ0VVloOTVjekFCcC1XQlNXNWNRcERHNDFEbnBNTTFhZjV3Qjk5bGxCaDhoRFE1Yi1mdGNoR3JCVXY5MmQ0ODVnUWRabHowUDhYSUNKOXV5X0lLQzRBbWNabUFMTzVlMzBNOUUyWTgyeUg1cW5sRjJtUHo3TldPOEY4S19xOGwwYjlkemFibktTVTltVF94WUg5ekdJczcyUlBHOHZ0V3EtdWdjU0JOVkY4?oc=5) ⭐️ 7.0/10
+### [Anthropic IPO Reportedly Restricts Mainland China and Hong Kong Orders](https://m.economictimes.com/markets/us-stocks/news/anthropic-ipo-share-orders-from-china-are-said-to-be-rebuffed/articleshow/135809948.cms) ⭐️ 7.0/10
 
-The IEA said the world oil market is returning to surplus as Gulf exports recover. Its monthly report cut the 2026 global oil demand forecast by 90,000 barrels a day to 102.29 million barrels a day and the 2027 forecast by 80,000 barrels a day to 104.30 million barrels a day.
+Anthropic&\#x27;s planned IPO is reportedly rejecting orders from mainland China and Hong Kong investors because of ITAR export-control restrictions, according to Economic Times. The listing is proposed at a $1.4 trillion valuation, with a target raise of up to $90.4 billion.
 
-google\_news · Reuters · Nov 13, 11:34
+telegram · zaihuapd · Nov 14, 10:18
 
-**「Context」** The IEA, a Paris-based energy agency, had projected continued supply deficits through year-end after the Iran war tightened oil markets.
+**「Background」** The reported restriction rests on ITAR, a U.S. export-control rule for defense-related technologies, and China appears on U.S. defense-trade control lists even though Anthropic&\#x27;s listing document did not explicitly spell out selling restrictions. Similar China and Hong Kong investor bans were reported in SpaceX&\#x27;s IPO.
 
-**「Impact」** A return to oil surplus could ease pressure on fuel prices for households and transport-dependent businesses, but the effect depends on continued Gulf export recovery and demand trends.
+**「Impact」** Mainland China and Hong Kong institutional investors are being cut out of Anthropic’s IPO, limiting their access to a large strategic AI offering amid US-China tensions.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.morningstar.com/news/dow-jones/202611132817/global-oil-market-set-to-return-to-surplus-as-gulf-exports-recover-iea-says">Global Oil Market Set to Return to Surplus as Gulf Exports Recover, IEA Says | Morningstar</a></li>
-<li><a href="https://www.ogj.com/general-interest/economics-markets/news/55416618/jpmorgan-sees-global-oil-market-return-to-surplus">JPMorgan sees global oil market return to surplus | Oil &amp; Gas Journal</a></li>
-<li><a href="https://www.iea.org/commentaries/oil-markets-strain-to-plug-the-gap-left-by-middle-east-supply-shortfall">Oil markets strain to plug the gap left by Middle East supply shortfall - IEA</a></li>
-<li><a href="https://www.ogj.com/general-interest/economics-markets/news/55416618/jpmorgan-sees-global-oil-market-return-to-surplus">JPMorgan sees global oil market return to surplus | Oil &amp; Gas Journal</a></li>
+<li><a href="https://m.economictimes.com/markets/us-stocks/news/anthropic-ipo-share-orders-from-china-are-said-to-be-rebuffed/amp_articleshow/135809948.cms">Anthropic IPO share orders from China are said to be rebuffed - The Economic Times</a></li>
+<li><a href="https://www.tradingview.com/news/stocktwits:b15d85833094b:0-anthropic-ipo-reportedly-closed-to-china-hong-kong-buyers-mirroring-spacex-playbook">Anthropic IPO Reportedly Closed To China, Hong Kong Buyers, Mirroring SpaceX Playbook — TradingView News</a></li>
+<li><a href="https://au.finance.yahoo.com/news/anthropic-ipo-shuts-chinese-investors-162205977.html">Anthropic IPO shuts out Chinese investors amid US-China tensions</a></li>
+<li><a href="https://sg.finance.yahoo.com/news/anthropic-ipo-shuts-chinese-investors-162205977.html">Anthropic IPO shuts out Chinese investors amid US-China tensions</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#oil markets`, `#IEA`, `#global commodities`, `#energy supply`, `#market forecasts`
+**Tags**: `#Anthropic IPO`, `#China investor restrictions`, `#ITAR export controls`, `#AI supply chain`, `#A-share AI themes`
 
 ---
 
 <a id="item-finance-news-14"></a>
 ### [Centrica and Equinor advance in Uniper sale](https://www.bloomberg.com/news/articles/2026-11-13/brookfield-consortium-progresses-to-next-round-of-uniper-sale) ⭐️ 6.0/10
 
-Centrica Plc and Equinor ASA are reported to have advanced to the second round of Germany’s Uniper SE sale process, according to people familiar with the matter.
+Centrica and Equinor are reported to have advanced to the second round of Germany’s Uniper sale process, according to people familiar with the matter.
 
 rss · Bloomberg Markets · Nov 13, 19:53
 
-**「Background」** Uniper, Germany’s largest gas supplier, was rescued by Berlin during the 2022 energy crisis; the government now owns 99% of it and is exploring ways to reduce that stake, including a sale to a single buyer or a public share offering.
+**「Background」** Germany owns about 99% of Uniper and is exploring how to reduce that stake, including a full sale to a single buyer or a stock offering, to meet European Commission requirements.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.instagram.com/p/DeY9OTyjqrS">Instagram</a></li>
 <li><a href="https://finance.yahoo.com/news/german-energy-provider-uniper-attracts-121852901.html">German energy provider Uniper attracts early interest from buyers</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#M&amp;A`, `#energy`, `#Germany`, `#Uniper`, `#European markets`
+**Tags**: `#M&amp;A`, `#energy sector`, `#Uniper sale`, `#acquisition process`, `#European utilities`
 
 ---
 
 <a id="item-finance-news-15"></a>
-### [Oil Supply Remains Ample Despite Hormuz Tanker Attacks](https://www.bloomberg.com/news/articles/2026-11-14/the-oil-market-is-brimming-with-crude-despite-tanker-attacks) ⭐️ 6.0/10
+### [Microsoft says consumer services recovered, enterprise under monitoring](https://news.google.com/rss/articles/CBMixAFBVV95cUxObkxxbE1VclJTQkp3R3ZZR3M4b0UtTUNMMmIzb09GSzlZQU1kUDQzN3ZKRXhleXhXV1BUd1lEMXVSMnZBUDN3WEwwdUM0QVhydk5mZWwxZnRndlJHd2FEQUpWUnRaeG5raGFMY2Z2M1RHRlZYLThiVktPTVVsYVFFS0dkMHlyNmtPNWRlQ3NsYjNRY0dxZVdQaFhRUlRpMTNjdlZqbDBZcVg3Q0tRV3ZFWlQ1bTJIZHl3WXFDV2FJbFVocm8w?oc=5) ⭐️ 6.0/10
 
-Bloomberg reports that oil markets remain well supplied despite more than eight months of tanker attacks near the Strait of Hormuz during the Iran war.
+Microsoft said its consumer products services have recovered, while it is still monitoring enterprise services.
 
-rss · Bloomberg Markets · Nov 14, 08:30
+google\_news · Reuters · Nov 14, 05:40
 
-**「Background」** The Strait of Hormuz is a narrow shipping route carrying about a quarter of the world’s oil moved by sea, so tanker attacks can raise prices by threatening transport even when crude supply is ample; past attacks in the 1980s and 2019 caused price spikes despite limited physical shortages.
-
-**「Fuel costs」** Attacks near the Strait of Hormuz have kept oil prices elevated and contributed to a reported nearly 40% surge in US gasoline prices, raising fuel costs for households and transport businesses even as crude supply appears ample.
+**「Background」** The update follows a global outage of Microsoft 365, the company&\#x27;s suite of online productivity and communication tools, which disrupted email and collaboration services in at least 74 countries.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://discoveryalert.com.au/iran-deal-strait-hormuz-oil-prices-asx-rba-2026">Iran Deal &amp; Strait of Hormuz: Oil Price Impact 2026</a></li>
-<li><a href="https://www.aa.com.tr/en/energy/oil/oil-prices-rise-amid-tanker-attacks-in-strait-of-hormuz/60880">Oil prices rise amid tanker attacks in Strait of Hormuz</a></li>
-<li><a href="https://discoveryalert.com.au/iran-deal-strait-hormuz-oil-prices-asx-rba-2026">Iran Deal &amp; Strait of Hormuz: Oil Price Impact 2026</a></li>
-<li><a href="https://www.cnbc.com/2026/03/23/chevron-ceo-oil-price-iran-war-strait-hormuz.html">Chevron CEO says Iran war impact isn&#x27;t fully priced into oil market</a></li>
+<li><a href="https://www.modernghana.com/news/1544480/microsoft-says-consumer-products-fully-recovered.html">Microsoft says consumer products &#x27;fully recovered&#x27;, business services improving</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#oil markets`, `#energy supply`, `#geopolitical risk`, `#Strait of Hormuz`, `#tanker attacks`
+**Tags**: `#Microsoft`, `#cloud services`, `#enterprise services`, `#consumer products`, `#service recovery`
 
 ---
 
 <a id="item-finance-news-16"></a>
-### [China Railways Set Record With 4.13 Billion Passenger Trips](https://www.bloomberg.com/news/articles/2026-11-14/china-railways-set-record-with-4-13-billion-trips-in-10-months) ⭐️ 6.0/10
+### [Reuters: Anthropic IPO interest meets AI lead doubts](https://news.google.com/rss/articles/CBMirwFBVV95cUxOckJYSDVUWDh1cTJPb3ptd2pLZmxuNXBtSEJkN0F0WWFucUZuWDgtQ0dZbzZITDBWY3dhSWZqcjcyZl9FdGpHdHJsX1dkbVowTkZ3OWRKd3pwN2NIMnBGZ1AtbDFkMkl6Vm1RZFNsZ2VDOU1nLUVmY2d4UHV2U01ER1pJTmdlSGFDdmsyM2ZhbXlXYVdEb01ERlNybGxWY0RsYlo4QlNxa0NCaUNpQjQw?oc=5) ⭐️ 6.0/10
 
-China’s railways carried a record 4.13 billion passenger trips in the first 10 months of 2026, up 4.7% from a year earlier, according to the Ministry of Transport.
+Reuters reported that investors are interested in Anthropic&\#x27;s IPO while questioning the durability of its AI lead, but the supplied content lacks concrete IPO details, figures, or baselines.
 
-rss · Bloomberg Markets · Nov 14, 02:04
+google\_news · Reuters · Nov 13, 23:30
 
-**「Background」** The 10-month record follows a similar surge in the first nine months of 2026, when China’s railways handled a record 3.71 billion passenger trips, up 4.8% year on year, as expanded services, tourism and cross-border travel lifted demand.
+**「Background」** Reuters reported that Anthropic&\#x27;s IPO roadshow drew strong institutional demand, including an order book said to be six times oversubscribed by Thursday and a $64 billion offering expected to price next Wednesday. The company&\#x27;s filing names Google and OpenAI as primary competitors with substantially greater resources, while the valuation debate centers on projected revenue for 2028 rather than a distant 2029 forecast.
+
+**「Market impact」** Anthropic&\#x27;s IPO is expected to serve as a benchmark for AI-sector valuations and may shape investor expectations for rivals such as OpenAI.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://global.chinadaily.com.cn/a/202610/18/WS6ad4344ce4b06d4aa0563672.html">China&#x27;s railways achieve record passenger trips in first nine months of 2026 - Chinadaily.com.cn</a></li>
-<li><a href="https://www.chinadailyasia.com/article/641301">China&#x27;s railways achieve record passenger trips in first nine months of 2026</a></li>
+<li><a href="https://mlq.ai/news/investors-flock-to-anthropics-ipo-but-question-how-long-its-ai-lead-can-last-reuters-reports">Investors flock to Anthropic&#x27;s IPO but question how long its AI lead can last, Reuters reports | MLQ.ai</a></li>
+<li><a href="https://www.investing.com/news/stock-market-news/exclusiveinvestors-flock-to-anthropic-ipo-but-question-durability-of-ai-lead-5026644">Exclusive-Investors flock to Anthropic IPO but question durability of AI lead By Reuters</a></li>
+<li><a href="https://www.kentucky.com/news/business/article318070573.html">Exclusive-Investors flock to Anthropic IPO but question durability of AI lead | Lexington Herald Leader</a></li>
+<li><a href="https://www.reuters.com/business/anthropic-ipo-raise-much-644-billion-latest-draft-prospectus-shows-2026-11-10">EXCLUSIVE: Anthropic eyes $1.4 trillion IPO valuation in test of Wall Street&#x27;s AI fervor | Reuters</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#China railways`, `#passenger transport`, `#economic data`, `#China economy`, `#transportation`
+**Tags**: `#Anthropic`, `#IPO`, `#AI financing`, `#investor sentiment`, `#Reuters`
 
 ---
 
 <a id="item-finance-news-17"></a>
-### [Sherritt Misses Interest Payment as Liquidity Crisis Deepens](https://www.bloomberg.com/news/articles/2026-11-13/troubled-sherritt-misses-payment-as-liquidity-crisis-deepens) ⭐️ 6.0/10
+### [Fed official Daly sees possible rate hikes amid inflation](https://news.google.com/rss/articles/CBMipAFBVV95cUxOaHBuM0FNRHlsWlNrX090Q3F6R2VZUTFYRkF3bFZwbDNQMUwxZXpiYmROVUJWWTVKZHRoOExqUkxpcktRYUZodDVncmNVSEdIMDktTDYxMXlWM1hvdXVKRmVfMmtvbTBUd1MyWkxFR3RqTlNJNVk1WFNtc2pnQ0w4QjRTdjlmcFdPUkVUZFVndGdCRWRPMEw3cFZHcjBlc3lhdDY2Vw?oc=5) ⭐️ 6.0/10
 
-Sherritt International Corp. missed an interest payment on secured notes, deepening a liquidity crisis for the Canadian miner. The company has been hobbled by US sanctions that forced it to halt production in Cuba.
+Reuters reported that Fed official Daly said the central bank may need to raise rates amid worsening inflation, without specifying a timing or policy decision.
 
-rss · Bloomberg Markets · Nov 13, 23:39
+google\_news · Reuters · Nov 13, 18:48
 
-**「Background」** Before the missed payment, Sherritt halted Cuban operations after expanded US sanctions in May 2026, triggering debt default provisions and a going-concern warning.
+**「Background」** The Fed’s rate-setting committee had just paused after a hike to await more data, and Daly said the next decision would be discussed with colleagues at the December meeting.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.northernminer.com/news/sherritt-shares-crater-on-cuba-sanctions-shock/1003890840">Sherritt shares crater on Cuba sanctions shock - The Northern Miner</a></li>
-<li><a href="https://mexicobusiness.news/mining/news/sherritt-flags-risks-cuba-sanctions-halt-operations">Sherritt Flags Risks as Cuba Sanctions Halt Operations</a></li>
+<li><a href="https://sg.finance.yahoo.com/news/fed-likely-raise-rates-amid-184220193.html">Fed likely to need to raise rates amid worsening inflation: Daly</a></li>
+<li><a href="https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html">Fed&#x27;s Mary Daly says higher interest rates &#x27;are likely to be needed&#x27; in inflation fight</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Sherritt International`, `#corporate default`, `#liquidity crisis`, `#sanctions`, `#mining`
+**Tags**: `#Fed policy`, `#interest rates`, `#inflation`, `#monetary policy`, `#macro`
 
 ---
 
 <a id="item-finance-news-18"></a>
-### [FAA lifts nationwide ground stop](https://www.bloomberg.com/news/articles/2026-11-14/faa-lifts-ground-stop-allowing-flights-to-resume-after-outage) ⭐️ 6.0/10
+### [Razorpay gets regulatory approval for IPO](https://news.google.com/rss/articles/CBMiogFBVV95cUxOTE51c3BkMXhjUkhrTHo4UV9OSEFKSlRwTllET3dLRWRXZDA5eTNCV2hfTGhuVzZ6RUVVUGN0TkhpdWxqZHhnaHA0cTEwQ3FscDhRY1FvQ052b0p1MUZsUHB4dnJTcUFCS2Y1LWpUcW9FdTBzMTR0dGNNV3p5eXp1NVZ2d01EMTBHMVNwSlIxbU1ZSXlmaUdkdXN6TUwxcUNlMkE?oc=5) ⭐️ 6.0/10
 
-The FAA lifted a nationwide ground stop after a four-hour shutdown disrupted thousands of US flights, with delays expected to continue into the weekend.
+Reuters reported that Indian fintech firm Razorpay received regulatory approval for an initial public offering \(IPO\), the first sale of shares to public investors, without disclosing the planned size, valuation or timing.
 
-rss · Bloomberg Business · Nov 14, 01:28
+google\_news · Reuters · Nov 13, 17:47
 
-**「Background」** A nationwide ground stop is an FAA order that halts departing flights so aircraft cannot enter the airspace while authorities address safety problems. The FAA said this stop was caused by a telecommunications outage affecting air traffic control centers, which handle flights across the country; Al Jazeera reported it was described as only the third nationwide ground stop in US history, after the 2001 attacks and a 2023 FAA outage.
+**「Background」** Razorpay, a Bengaluru payments company, had confidentially filed draft IPO documents with India&\#x27;s market regulator, the Securities and Exchange Board of India \(SEBI\), in June 2026; this pre-filing route lets SEBI review an offer document before details become public. The company converted to a public limited company in April 2025 and is reportedly targeting a listing as early as the first quarter of 2027.
 
-**「Impact」** The reported communications problem affecting air traffic control centres directly disrupted airline schedules and stranded passengers, with delays expected to continue into the weekend.
+**「Impact」** The approval clears the way for a reported ₹5,000–6,000 crore public offering, giving Indian equity investors a new large fintech listing.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.aljazeera.com/news/2026/11/14/faa-ground-stop-lifted-why-were-us-flights-grounded-and-whats-next">FAA ground stop lifted: Why were US flights grounded, and what’s next? | Aviation News | Al Jazeera</a></li>
-<li><a href="https://www.nytimes.com/live/2026/11/13/us/ground-stop-nationwide-flights-faa">Live Updates: FAA Declares Nationwide Ground Stop of Flights - The New York Times</a></li>
-<li><a href="https://www.cnn.com/2026/11/13/us/live-news/flights-ground-stop-faa">Live updates: FAA issues nationwide ground stop for all flights | CNN</a></li>
-<li><a href="https://edition.cnn.com/2026/11/13/us/live-news/flights-ground-stop-faa">Live updates: FAA issues nationwide ground stop for all flights | CNN</a></li>
+<li><a href="https://www.instagram.com/p/DfY94b5CE9Q">Instagram</a></li>
+<li><a href="https://thepaypers.com/payments/news/razorpay-reportedly-receives-sebi-approval-for-ipo">Razorpay reportedly gets Sebi nod for IPO | The Paypers</a></li>
+<li><a href="https://www.instagram.com/p/DfVFD1xgRoN">Instagram</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#aviation`, `#travel`, `#US markets`, `#operational disruption`, `#FAA`
+**Tags**: `#IPO`, `#Indian fintech`, `#Razorpay`, `#regulatory approval`, `#private markets`
 
 ---
