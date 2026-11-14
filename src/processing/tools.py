@@ -14,6 +14,11 @@ from .history import HistorySearchTool
 
 logger = logging.getLogger(__name__)
 
+# DuckDuckGo aggressively rate-limits datacenter IP ranges such as GitHub
+# Actions runners, so a lookup can hang for minutes before returning nothing.
+# Cap the wait so one dead lookup cannot stall the whole enrichment stage.
+_WEB_SEARCH_TIMEOUT_SEC = 8.0
+
 
 @dataclass(frozen=True)
 class ToolResult:
@@ -31,7 +36,10 @@ class WebSearchTool:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("web_search requires a non-empty query")
         try:
-            raw = await asyncio.to_thread(DDGS().text, query.strip(), max_results=3)
+            raw = await asyncio.wait_for(
+                asyncio.to_thread(DDGS().text, query.strip(), max_results=3),
+                timeout=_WEB_SEARCH_TIMEOUT_SEC,
+            )
         except Exception as exc:
             logger.warning("web_search failed for %r: %s", query, exc)
             return []
