@@ -65,7 +65,7 @@
     "hackernews": {
       "enabled": true,
       "fetch_top_stories": 20,
-      "min_score": 150,
+      "min_score": 100,
       "profile": "tech-news"
     },
     "rss": [
