@@ -5,377 +5,308 @@ date: 2026-11-14
 lang: zh
 ---
 
-> 从 215 条内容中筛选出 21 条重要资讯。
+> 从 234 条内容中筛选出 18 条重要资讯。
 
 ---
-
-**科技新闻**
-1. [黄仁勋离职引 AI 热潮不确定性](#item-tech-news-1) ⭐️ 9.0/10
-2. [Blackstone 旗下 QTS 将 AI 数据中心债务出售缩减约六成](#item-tech-news-2) ⭐️ 8.0/10
-3. [Ackman 评论黄仁勋离开 Nvidia 与 Anthropic IPO 路演](#item-tech-news-3) ⭐️ 8.0/10
 
 **财经新闻**
-1. [美国因空管通信问题暂停全美离港航班](#item-finance-news-1) ⭐️ 9.0/10
-2. [美股周五分化：纳指跌 0.9%，PPI 同比涨 6.5%](#item-finance-news-2) ⭐️ 9.0/10
-3. [英伟达估值跌至 14 年低位，多空分歧加剧](#item-finance-news-3) ⭐️ 9.0/10
-4. [卢特尼克家族与英伟达持股争议](#item-finance-news-4) ⭐️ 8.0/10
-5. [Anthropic IPO 路演：目标估值约 1.33 万亿美元](#item-finance-news-5) ⭐️ 8.0/10
-6. [OpenAI 解散机器人团队，通用模型测试成功率高于专用模型](#item-finance-news-6) ⭐️ 8.0/10
-7. [英伟达本周市值蒸发逾 6200 亿美元，黄仁勋被解职](#item-finance-news-7) ⭐️ 8.0/10
-8. [中国信贷走弱、美国通胀高企与美联储收紧信号](#item-finance-news-8) ⭐️ 8.0/10
-9. [英伟达启动 CEO 继任搜寻，据报接触 Arm CEO](#item-finance-news-9) ⭐️ 8.0/10
-10. [问界新 M8 上市，华为与赛力斯重申分工](#item-finance-news-10) ⭐️ 8.0/10
-11. [美国 10 月财政赤字创同期新高，利息占税收 28.2%](#item-finance-news-11) ⭐️ 8.0/10
-12. [英伟达 CEO 辞职冲击 AI 算力链，光模块大跌、银行走强](#item-finance-news-12) ⭐️ 8.0/10
-13. [微软核心服务全球宕机：Outlook 报障峰值超 13 万条](#item-finance-news-13) ⭐️ 8.0/10
-14. [美联储官员称通胀仍过高，市场定价后续加息](#item-finance-news-14) ⭐️ 8.0/10
-15. [英伟达暴跌后散户半小时买入逾 1 亿美元](#item-finance-news-15) ⭐️ 8.0/10
-16. [芝加哥联储主席称通胀仍待处理](#item-finance-news-16) ⭐️ 7.0/10
-17. [高盛发布 2027 年宏观展望](#item-finance-news-17) ⭐️ 7.0/10
-18. [美联储 12 月加息路径因通胀根源分歧升温](#item-finance-news-18) ⭐️ 7.0/10
-
----
-
-## 科技新闻
-
-<a id="item-tech-news-1"></a>
-### [黄仁勋离职引 AI 热潮不确定性](https://www.bloomberg.com/news/newsletters/2026-11-13/huang-s-exit-leaves-silicon-valley-unsure-about-ai-boom-s-future) ⭐️ 9.0/10
-
-彭博社报道，英伟达 CEO 黄仁勋因多起婚外情被迫离职，其中一段涉及一名被指为中国间谍的人士。记者 Ian King 称，这一处境让黄仁勋别无选择，只能辞职。报道认为，这一领导层变动使硅谷对 AI 热潮及其背后资金机器的前景更加不确定。
-
-rss · Bloomberg Technology · 11月13日 20:18
-
-**「背景」** 黄仁勋此前长期担任英伟达 CEO，并被视为 AI 基础设施热潮的标志性人物。2026 年 11 月 12 日的报道显示，英伟达董事会在有关其三段婚外情、其中一名女性涉嫌为中国间谍的消息后将其免职；随后报道也称其辞职。这一高层变动构成了理解当前关于 AI 资本开支与芯片供应链担忧的背景。
-
-**「影响」** 对依赖英伟达芯片、AI 数据中心资本开支和融资预期的投资者与供应商而言，这次领导层变动增加了战略与治理不确定性。
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/jensen-huang-face-of-the-ai-boom-ousted-by-nvidia-board-as-ceo">Jensen Huang Removed as Nvidia CEO Following Affairs, Board ...</a></li>
-<li><a href="https://www.cbsnews.com/news/nvidia-jensen-huang-resigns-competitors/">Jensen Huang&#x27;s exit rocks Nvidia and creates openings for ...</a></li>
-
-</ul>
-</details>
-
-**标签**: `#Nvidia`, `#AI infrastructure`, `#executive change`, `#capital markets`, `#AI boom`
-
----
-
-<a id="item-tech-news-2"></a>
-### [Blackstone 旗下 QTS 将 AI 数据中心债务出售缩减约六成](https://www.bloomberg.com/news/articles/2026-11-13/blackstone-s-qts-is-cutting-ai-debt-sale-by-more-than-half) ⭐️ 8.0/10
-
-Blackstone 支持的 QTS 正在将其计划中的 AI 数据中心私募债务出售规模削减约 60%。该调整发生在投资者需求不足、且 QTS 不愿支付显著更高收益率的情况下。目前被缩减的是计划中的私募债务交易，而非已经完成的融资或已建成的算力能力。
-
-rss · Bloomberg Technology · 11月13日 21:35
-
-**「背景」** AI 数据中心是重资产基础设施，运营商常通过私募债务融资来扩建算力容量。此类融资的规模取决于投资者对风险和收益的接受程度；当需求不足且发行方不愿大幅提高收益率时，交易规模可能被压缩。
-
-**「影响」** 对依赖私募债务为 AI 数据中心融资的运营商和投资者而言，这显示市场可能拒绝大规模、低收益率的融资安排。后续项目可能需要缩小融资规模、延后扩张，或接受更高的收益率要求。
-
-**标签**: `#AI data centers`, `#private debt markets`, `#compute capex`, `#Blackstone`, `#infrastructure financing`
-
----
-
-<a id="item-tech-news-3"></a>
-### [Ackman 评论黄仁勋离开 Nvidia 与 Anthropic IPO 路演](https://www.bloomberg.com/news/videos/2026-11-13/ackman-on-huang-s-exit-anthropic-ipo-roadshow-video) ⭐️ 8.0/10
-
-Bloomberg 视频报道，Pershing Square 创始人兼 CEO Bill Ackman 公开评论称，看到 Jensen Huang 离开 Nvidia 令人惋惜，并认为他未来将继续取得成就。Ackman 还称，他对 Anthropic CEO Dario Amodei 在纽约 IPO 路演活动中给出的展示印象深刻。该报道呈现的是 Ackman 的个人评论，未包含 Nvidia 或 Anthropic 对 Huang 离职、上市安排或路演内容的正式确认。
-
-rss · Bloomberg Technology · 11月13日 19:42
-
-**「背景」** 黄仁勋离开英伟达之所以受到市场关注，是因为英伟达的 AI 芯片业务与领导层变化直接相关。Anthropic 在纽约举行 IPO 路演，则意味着公司正面向公开市场投资者展示其业务与融资安排。
-
-**「影响」** 对 Nvidia 客户、员工和 AI 算力供应链相关投资者而言，这条信息的直接后果是提供了市场情绪信号，而非可据以调整依赖或采购决策的正式变更；若后续公司确认 Huang 离职或 Anthropic 上市进展，相关方需重新评估领导层连续性与融资叙事。
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=smWhLfvsFIc">Ackman on Huang&#x27;s Exit, Anthropic IPO Roadshow - YouTubeAckman on Anthropic IPO Roadshow, Huang&#x27;s Nvidia Exit | SubvoltsBill Ackman Reacts to Jensen Huang&#x27;s Nvidia Exit, Praises ...Ackman on Huang&#x27;s Exit, Anthropic IPO Roadshow | AInvestAckman on Nvidia Exit and Anthropic IPO | A47 NewsHow Jensen Huang&#x27;s Fall Could Reshape Anthropic IPO and AI ...</a></li>
-
-</ul>
-</details>
-
-**标签**: `#Nvidia leadership`, `#Anthropic IPO`, `#AI capital markets`, `#compute supply chain`
+1. [Anthropic IPO 路演强调保守定价](#item-finance-news-1) ⭐️ 9.0/10
+2. [卢特尼克因英伟达出口管控争议受关注，其子所在公司披露持股下降](#item-finance-news-2) ⭐️ 8.0/10
+3. [美国空管通信故障致离港航班全国停飞](#item-finance-news-3) ⭐️ 8.0/10
+4. [SpaceX 星舰十五飞助推器回收失败，飞船继续部署星链 V3](#item-finance-news-4) ⭐️ 8.0/10
+5. [华尔街见闻早餐：中国 10 月信贷转负，美国 PPI 创 2022 年 11 月以来新高](#item-finance-news-5) ⭐️ 8.0/10
+6. [美国 PPI 走高与英伟达动荡拖累科技股](#item-finance-news-6) ⭐️ 8.0/10
+7. [美国 10 月财政赤字创历史同期新高](#item-finance-news-7) ⭐️ 8.0/10
+8. [英伟达 CEO 辞职引发 A 股算力链重挫](#item-finance-news-8) ⭐️ 8.0/10
+9. [芝加哥联储官员称通胀工作尚未完成，12 月加息预期升温](#item-finance-news-9) ⭐️ 7.0/10
+10. [FAA 结束全国地面停飞，美国航班延误或延续至周末](#item-finance-news-10) ⭐️ 7.0/10
+11. [英国央行首席经济学家预计 2027 年仍需进一步加息](#item-finance-news-11) ⭐️ 7.0/10
+12. [中国商飞 10 吨级电动商用飞机 CE-25A 完成有人驾驶首飞](#item-finance-news-12) ⭐️ 7.0/10
+13. [吴清：A 股长期资金净买入超 1.5 万亿元](#item-finance-news-13) ⭐️ 7.0/10
+14. [两款商保创新药目录药品转入 2026 年国家基本医保目录](#item-finance-news-14) ⭐️ 7.0/10
+15. [信达生物 7 款产品纳入 2026 年医保目录](#item-finance-news-15) ⭐️ 7.0/10
+16. [美国 FTC 起诉阻止 Cencora 出售兽医业务](#item-finance-news-16) ⭐️ 7.0/10
+17. [中国铁路前 10 个月客运量创纪录](#item-finance-news-17) ⭐️ 6.0/10
+18. [国家数据局会议提出加快高质量数据集与数据标注建设](#item-finance-news-18) ⭐️ 6.0/10
 
 ---
 
 ## 财经新闻
 
 <a id="item-finance-news-1"></a>
-### [美国因空管通信问题暂停全美离港航班](https://www.bloomberg.com/news/videos/2026-11-13/flights-halted-across-us-faa-cites-safety-reasons-video) ⭐️ 9.0/10
+### [Anthropic IPO 路演强调保守定价](https://wallstreetcn.com/articles/3785931) ⭐️ 9.0/10
 
-美国联邦航空管理局 11 月 13 日以“特殊情况和安全原因”为由，因空中交通管制通信问题暂停全美所有离港航班，直至另行通知；据新华社报道，截至当日下午 6 时 40 分，全美已有逾 3300 架次航班取消、逾 10200 架次延误。
+Anthropic CEO Dario Amodei 在 IPO 路演中表示，公司采取保守定价策略，且不特别在意上市月份和市场条件。其目标估值从此前的约 2 万亿美元下调至约 1.33 万亿至 1.4 万亿美元，计划以每股 70 至 78 美元发行 8.25 亿股，IPO 募资预计超过 610 亿美元。
 
-rss · Bloomberg Markets · 11月13日 22:10
+rss · 华尔街见闻 · 11月14日 01:37
 
-**「背景」** FAA 因全美空中交通管制中心的通信系统故障发布全国停飞令，并引用“特殊情况”和“安全原因”；报道称这是近年第三次全国性航班禁令，前两次分别发生在 2001 年“9·11”袭击后和 2023 年 1 月航空通告（NOTAM）系统故障期间。
+**「背景」** Anthropic 是开发 Claude 的人工智能公司，由前 OpenAI 成员创立，计划于 2026 年 11 月上市。此次路演发生在 AI 股因估值、算力供给担忧和英伟达前 CEO 离职消息而波动时，因此公司采用传统路演让机构投资者需求影响定价，估值较此前约 2 万亿美元预期明显回落。
 
-**「影响」** 全美逾 3300 架次航班取消、逾 10200 架次延误，迫使多家航空公司提供免费改签并削减周末航班，旅客和机组排班面临连锁中断。
+**「影响」** 若按当前区间完成发行，Anthropic 将成为全球最大 IPO 之一，并直接牵动科技/AI 板块投资者对算力资本开支和高估值新股的风险定价。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.cnbc.com/2026/11/13/faa-ground-stop.html">FAA lifts ground stop after four hours, but flight ... - CNBC</a></li>
-<li><a href="https://www.aerotime.aero/articles/faa-nationwide-ground-stop-atc-communications-november-2026">ATC communications outage impacting flights across US - AeroTime</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Anthropic">Anthropic - Wikipedia</a></li>
 
 </ul>
 </details>
 
-**标签**: `#US aviation`, `#FAA`, `#air traffic control`, `#transportation disruption`, `#Bloomberg`
+**标签**: `#Anthropic IPO`, `#AI industry economics`, `#capital markets`, `#Nvidia supply chain`, `#market volatility`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [美股周五分化：纳指跌 0.9%，PPI 同比涨 6.5%](https://wallstreetcn.com/articles/3785885) ⭐️ 9.0/10
+### [卢特尼克因英伟达出口管控争议受关注，其子所在公司披露持股下降](https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html) ⭐️ 8.0/10
 
-美国 10 月 PPI 同比上涨 6.5%，强化美联储 12 月加息预期；叠加英伟达 CEO 黄仁勋辞职消息发酵，纳指周五收跌 0.9%，费城半导体指数跌 3.4%。
+CNBC 报道，美国商务部长霍华德·卢特尼克因英伟达 CEO 黄仁勋辞职和芯片出口管控争议受到质疑；Axios 称他抵制打击涉嫌向中国转运英伟达人工智能芯片的 Megaspeed，尽管特朗普 11 月 5 日第三次授权对相关公司实施新出口限制。CNBC 分析证券文件称，卢特尼克儿子们领导的 Cantor Fitzgerald 披露的英伟达股票持仓在 2025 年 9 月至 2026 年 3 月间下降约 49%，市值从 6.52 亿美元降至 3.10 亿美元。
 
-rss · 华尔街见闻 · 11月13日 22:54
+rss · CNBC Finance · 11月13日 23:42
 
-**「背景」** 英伟达股价本周累计下跌约 11%，市值跌破 4 万亿美元；市场目前定价 12 月加息至少 25 个基点的概率接近锁定。
+**「背景」** 美国商务部长卢特尼克此前执掌的 Cantor Fitzgerald 现由其子管理，该公司披露的英伟达持股在 2025 年 9 月至 2026 年 3 月间下降约 50%。与此同时，白宫和情报机构要求他打击涉嫌向中国转运英伟达 AI 芯片的新加坡公司 Megaspeed，而英伟达 CEO 黄仁勋也面临间谍关联指控。
 
-**「影响」** AI 硬件链与加密资产承压，博通、ARM、AMD 等半导体股齐跌，比特币跌破 70,000 美元。
-
-**标签**: `#A股AI产业链`, `#英伟达领导层危机`, `#美国通胀与美联储`, `#AI资本开支`, `#Anthropic IPO`
+**标签**: `#Nvidia`, `#AI chips`, `#export controls`, `#China semiconductor supply chain`, `#Cantor Fitzgerald`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [英伟达估值跌至 14 年低位，多空分歧加剧](https://wallstreetcn.com/articles/3785898) ⭐️ 9.0/10
+### [美国空管通信故障致离港航班全国停飞](https://www.bloomberg.com/news/videos/2026-11-13/flights-grounded-across-us-video) ⭐️ 8.0/10
 
-英伟达因 CEO 黄仁勋离职股价重挫，周四收跌 4.34%至 166.19 美元，较 10 月 6 日高点 243.37 美元累计跌逾 30%，远期市盈率（按未来盈利预测计算的市盈率）降至约 12 倍、创 2012 年以来最低。
+美国联邦航空管理局 11 月 13 日因空中交通管制通信问题发布全国停飞令，要求所有美国机场离港航班暂停起飞直至另行通知。据新华社援引 FlightAware 数据，截至美东时间下午 6 时 40 分，全美已有逾 3,300 架次航班取消、逾 10,200 架次延误。
 
-rss · 华尔街见闻 · 11月13日 11:19
+rss · Bloomberg Markets · 11月13日 22:33
 
-**「背景」** 英伟达最新季度营收 962 亿美元、同比增长 106%，分析师称订单排至 2027 年；但黄仁勋离职引发对其组织管理和 AI 产业融资生态延续性的担忧。
+**「背景」** 美国联邦航空管理局（FAA）的“全国地面停飞”指所有机场离港航班暂停起飞；这是美国近年来第三次全国性航班禁令，前两次为 2001 年“9·11”恐袭后以及 2023 年 1 月空域安全通告系统（NOTAM）故障，后者约持续两小时并导致逾千架次航班取消。
 
-**「影响」** UBS 称，若英伟达每季度最多约 500 亿美元的资金支持暂停，AI 产业链融资环境可能恶化；消息公布当天 CoreWeave 盘前跌超 11%。
+**「影响」** 截至美东时间 11 月 13 日下午 6 时 40 分，此次停飞已造成逾 3300 架次航班取消、逾 10200 架次延误，并可能引发周末级联式排班混乱，迫使旅客改签和航司删减航班。
 
-**标签**: `#英伟达`, `#AI算力`, `#黄仁勋离职`, `#A股AI主题`, `#估值重定价`
+**标签**: `#US aviation`, `#air traffic control`, `#FAA`, `#market disruption`, `#travel`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [卢特尼克家族与英伟达持股争议](https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html) ⭐️ 8.0/10
+### [SpaceX 星舰十五飞助推器回收失败，飞船继续部署星链 V3](https://wallstreetcn.com/articles/3785933) ⭐️ 8.0/10
 
-CNBC 报道称，美国商务部长卢特尼克因英伟达对华芯片走私疑云面临利益冲突质疑；其子掌管的坎特菲茨杰拉德披露的英伟达持股数量在 2025 年 9 月至 2026 年 3 月下降近 50%，但 10 月 3 日研报仍维持 350 美元目标价和增持评级。CNBC 称尚无证据显示卢特尼克向儿子泄露非公开信息，坎特菲茨杰拉德称相关持仓来自常规客户互换交易。
+SpaceX 第十五次星舰综合飞行测试中，V3 助推器 Booster 22 未能按计划返回发射场，溅落墨西哥湾并爆炸。上级飞船 Ship 42 继续部署 26 颗星链 V3 卫星，并计划次日下午尝试由发射塔机械臂回收。
 
-rss · CNBC Finance · 11月13日 23:42
+rss · 华尔街见闻 · 11月14日 03:22
 
-**「背景」** 英伟达 CEO 黄仁勋辞职后，批评者将焦点转向美国商务部长霍华德·卢特尼克：他曾执掌的坎特菲茨杰拉德现由其子运营，并与英伟达存在投资与业务关联，同时美国正围绕疑似向中国转移先进 AI 芯片的出口管制执法展开争论。
+**「背景」** 此次是 V3 版超重型助推器 Booster 22 首次飞行，也是 SpaceX 首次尝试在一次星舰综合飞行测试中同时回收助推器和上级飞船；此前 SpaceX 已在 2024 年 10 月第五次测试中成功用发射塔机械臂捕获助推器，但飞船返回和热防护、发动机重启等要求更复杂。
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html">Howard Lutnick&#x27;s sons&#x27; Nvidia ties amid Jensen Huang China ...</a></li>
-<li><a href="https://www.cbsnews.com/news/lutnick-nvidia-ai-chips-china/">Lutnick should have prevented the diversion of sensitive ...</a></li>
-<li><a href="https://www.straitstimes.com/world/united-states/trumps-commerce-chief-lutnick-criticised-over-chip-exports-after-nvidia-ceo-resignation">Lutnick criticised over Nvidia chip exports to China | The ...</a></li>
-
-</ul>
-</details>
-
-**标签**: `#Nvidia`, `#AI chips`, `#export controls`, `#corporate governance`, `#Cantor Fitzgerald`
+**标签**: `#SpaceX Starship`, `#reusable launch`, `#Starlink V3`
 
 ---
 
 <a id="item-finance-news-5"></a>
-### [Anthropic IPO 路演：目标估值约 1.33 万亿美元](https://wallstreetcn.com/articles/3785931) ⭐️ 8.0/10
+### [华尔街见闻早餐：中国 10 月信贷转负，美国 PPI 创 2022 年 11 月以来新高](https://wallstreetcn.com/articles/3785925) ⭐️ 8.0/10
 
-据《华尔街日报》报道，Anthropic CEO Dario Amodei 在 IPO 路演中表示公司采取保守定价、希望“少承诺、多兑现”；公司目标估值约 1.33 万亿美元或更高，计划以每股 70 至 78 美元发行 8.25 亿股，按区间中值募资逾 610 亿美元，另有 260 亿美元来自包括谷歌在内的大型投资者私募配售。
+华尔街见闻早餐汇总称，中国 10 月新增社会融资规模 1.15 万亿元、较 9 月的 3.55 万亿元回落，人民币贷款单月减少 1000 亿元。美国 10 月生产者价格指数（PPI）同比上涨 6.5%，为 2022 年 11 月以来最高；两名美联储官员警告可能很快需要进一步收紧，市场仍普遍预期 12 月加息 25 个基点。
 
-rss · 华尔街见闻 · 11月14日 01:37
+rss · 华尔街见闻 · 11月13日 23:12
 
-**「背景」** 此前市场曾预期 Anthropic IPO 估值最高约 2 万亿美元、随后降至约 1.5 万亿美元；本月初 AI 股大跌和英伟达前 CEO 黄仁勋离职消息令科技股波动，而 Amodei 称不太在意上市月份和市场条件。
+**「背景」** 社会融资规模衡量实体经济从银行、债券等渠道获得的资金，9 月新增社融为 3.55 万亿元，10 月降至 1.15 万亿元，显示融资需求回落。人民币贷款 10 月减少 1000 亿元，而 9 月增加 1.08 万亿元；M1 与 M2 分别代表狭义和广义货币，二者增速差从 9 月的 4.0 个百分点收窄至 2.7 个百分点。
 
-**「影响」** 若最终募资超过 750 亿美元，Anthropic 将超越 SpaceX 今年 6 月 IPO 募资纪录；英伟达既供芯片又拟取得大额股份，使上市表现与 AI 算力供应链和科技股风险偏好更紧密相连。
+**「直接影响」** 美国联邦航空管理局因空管通信频率故障发布全国地面停飞令，暂停所有出港航班并拖累航空股在美股收盘后交易时段普跌，美联航、捷蓝和美国航空分别下跌 1.2%、2.4%和 1.7%。
 
-**标签**: `#Anthropic IPO`, `#AI行业经济`, `#算力资本开支`, `#科技股估值`, `#全球资本市场`
+**标签**: `#中国宏观流动性`, `#美国通胀与美联储政策`, `#A股与港股市场`, `#全球科技与AI供应链`, `#重大公司事件`
 
 ---
 
 <a id="item-finance-news-6"></a>
-### [OpenAI 解散机器人团队，通用模型测试成功率高于专用模型](https://wallstreetcn.com/articles/3785914) ⭐️ 8.0/10
+### [美国 PPI 走高与英伟达动荡拖累科技股](https://wallstreetcn.com/articles/3785885) ⭐️ 8.0/10
 
-据《财富》报道，OpenAI 已解散独立机器人团队，将研究人员并入主研究和应用组织，理由是 GPT-6 Astra 等通用前沿模型可直接用于机器人控制。报道引述英伟达测试称，Astra 驱动的智能体在模拟操作基准中达到 74.8%成功率，高于榜单上最佳专用机器人模型的 51.0%。
+美国 10 月生产者价格指数（PPI）同比上涨 6.5%，创 2022 年 11 月以来最快年增速但略低于预期，交易数据显示 12 月至少加息 25 个基点的概率几近锁定。叠加报道称英伟达 CEO 黄仁勋因婚外情丑闻辞职，纳指周五跌 0.9%，道指涨 0.1%。
 
-rss · 华尔街见闻 · 11月14日 01:09
+rss · 华尔街见闻 · 11月13日 22:54
 
-**「背景」** OpenAI 曾在 2020 年因认为机器人训练数据不足而裁撤机器人团队，后于 2024 年重建该团队，并与人形机器人公司 Figure 合作，但双方合作已于 2025 年结束。
+**「背景」** 英伟达是一家开发图形处理器和 AI 硬件的公司，其领导层变动可能影响投资者对 AI 硬件需求的预期；PPI 是衡量企业端成本的价格指标，其上涨会强化美联储继续加息的预期。
 
-**标签**: `#OpenAI`, `#机器人/具身智能`, `#AI应用`, `#公司战略`, `#A股主题`
-
----
-
-<a id="item-finance-news-7"></a>
-### [英伟达本周市值蒸发逾 6200 亿美元，黄仁勋被解职](https://wallstreetcn.com/articles/3785919) ⭐️ 8.0/10
-
-据华尔街见闻报道，英伟达本周股价累计下跌约 14%，市值蒸发逾 6200 亿美元，创约 18 个月最差单周表现；董事会解职创始人黄仁勋，首席财务官 Colette Kress 临时接任。
-
-rss · 华尔街见闻 · 11月13日 23:44
-
-**「背景」** 此前市场已担忧 AI 基础设施支出增长持续性和数据中心扩张的政治阻力，黄仁勋同意在感恩节假期前赴国会作证。
-
-**「影响」** 本周至少 13 名分析师下调对英伟达的买入评级，持有评级增至 15 名，使 11 月 17 日季报的营收指引成为投资者关注焦点。
-
-**标签**: `#NVIDIA`, `#AI supply chain`, `#CEO departure`, `#analyst downgrades`, `#earnings uncertainty`
-
----
-
-<a id="item-finance-news-8"></a>
-### [中国信贷走弱、美国通胀高企与美联储收紧信号](https://wallstreetcn.com/articles/3785925) ⭐️ 8.0/10
-
-中国 10 月新增社会融资规模 1.15 万亿元，人民币贷款单月减少 1000 亿元。美国 10 月生产者价格指数同比上涨 6.5%，为 2022 年 11 月以来最高，两名地区联储主席称通胀扩散、很快需要进一步收紧政策。
-
-rss · 华尔街见闻 · 11月13日 23:12
-
-**「背景」** 美联储 12 月议息会议临近，市场普遍预期加息 25 个基点，官员对通胀扩散的警告因此成为判断后续利率路径的关键信号。
-
-**「影响」** 美国 10 月生产者价格指数\(PPI\)同比涨 6.5%、创 2022 年 11 月以来最高，联储官员警告通胀扩散，市场普遍预期 12 月加息 25 个基点，高利率可能增加美国家庭购房与建房成本。
-
-**标签**: `#China credit data`, `#US inflation and Fed policy`, `#Nvidia and AI supply chain`, `#A-share tech themes`, `#SpaceX-Tesla merger rumors`
-
----
-
-<a id="item-finance-news-9"></a>
-### [英伟达启动 CEO 继任搜寻，据报接触 Arm CEO](https://wallstreetcn.com/articles/3785915) ⭐️ 8.0/10
-
-据英国《金融时报》报道，英伟达在创始人黄仁勋因外界披露婚外情关系而辞职后启动 CEO 继任搜寻，并据报接触曾在英伟达任职约七年、现任 Arm CEO 的 Rene Haas；英伟达董事会称尚未正式接触任何候选人。
-
-rss · 华尔街见闻 · 11月13日 21:54
-
-**「背景」** 英伟达创始人黄仁勋因婚外情丑闻辞职后，董事会启动 CEO 继任程序并委托独立调查；据《金融时报》报道，董事会已接触 Arm CEO Rene Haas，但英伟达称尚未正式接触任何候选人。Haas 曾在英伟达工作约七年，是黄仁勋提携的门生，而 Arm 的处理器架构授权为英伟达 AI 硬件提供底层技术基础。
+**「影响」** 高利率预期与英伟达领导层动荡拖累半导体及 AI 供应链股票，费城半导体指数周五跌 3.4%，英伟达本周累计下跌约 11%。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://finance.yahoo.com/technology/articles/could-former-nvidia-executive-replace-221603173.html?fr=sycsrp_catchall">Could a Former Nvidia Executive Replace Jensen Huang? Arm’s ...</a></li>
-<li><a href="https://www.hindustantimes.com/world-news/us-news/nvidia-approaches-tech-firm-arms-ceo-rene-haas-in-search-for-jensen-huangs-successor-report-101794601686423.html">Nvidia approaches tech firm Arm&#x27;s CEO Rene Haas in search for ...</a></li>
-<li><a href="https://www.businessworld.in/article/nvidia-board-approaches-arm-ceo-rene-haas-as-potential-successor-report-633535">Nvidia Board Approaches Arm CEO Rene Haas As Potential ...</a></li>
+<li><a href="https://en.m.wikipedia.org/wiki/Nvidia">Nvidia - Wikipedia</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Nvidia`, `#AI chips`, `#CEO succession`, `#semiconductor regulation`, `#market reaction`
+**标签**: `#美股市场`, `#AI供应链`, `#英伟达`, `#美联储政策`, `#科技财报`
+
+---
+
+<a id="item-finance-news-7"></a>
+### [美国 10 月财政赤字创历史同期新高](https://wallstreetcn.com/articles/3785882) ⭐️ 8.0/10
+
+美国财政部数据显示，作为 2027 财年的首月，10 月美国财政赤字达 4040 亿美元，创历史同期新高，较去年同期的 2840 亿美元明显扩大。过去 12 个月，联邦债务利息支出占税收收入的比例升至 28.2%的历史新高。
+
+rss · 华尔街见闻 · 11月13日 08:32
+
+**「背景」** 美国联邦财政年度从 10 月起算，赤字是政府支出超过税收等收入的部分；债务利息是政府为已有国债支付的资金成本，会随债务规模和利率上升而增加。
+
+**标签**: `#美国财政赤字`, `#联邦债务利息`, `#国债收益率`, `#宏观财政政策`, `#全球市场影响`
+
+---
+
+<a id="item-finance-news-8"></a>
+### [英伟达 CEO 辞职引发 A 股算力链重挫](https://wallstreetcn.com/articles/3785855) ⭐️ 8.0/10
+
+11 月 13 日，英伟达 CEO 黄仁勋辞职的消息触发 A 股 AI 算力链重定价，创业板指收跌 3.32%，恒生科技指数收跌 2.37%。同日资金转向银行等低波动板块，上证 50 涨 0.1%，多只银行股创新高。
+
+rss · 华尔街见闻 · 11月13日 08:17
+
+**「背景」** 光模块、PCB 等 AI 硬件股此前估值高度依赖“英伟达资本开支持续超预期”的叙事；管理层变动让市场先降低这类绑定暴露，而寒武纪、海光信息等国产算力芯片因替代预期相对抗跌。
+
+**「影响」** 对持有 AI 硬件股的投资者而言，前期涨幅较大的光模块和 PCB 板块单日承压更重，资金明显转向银行、白酒等低波动价值方向。
+
+**标签**: `#A股`, `#光模块/CPO`, `#AI算力链`, `#英伟达`, `#港股科技`
+
+---
+
+<a id="item-finance-news-9"></a>
+### [芝加哥联储官员称通胀工作尚未完成，12 月加息预期升温](https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html) ⭐️ 7.0/10
+
+芝加哥联储主席古尔斯比说，在 10 月生产者价格环比上涨 0.3%、同比上涨 6.5%且消费者价格涨幅高于预期后，美联储“肯定还有工作要做”，以重新确立其实现 2%通胀目标的可信度。据 CME FedWatch，市场已完全定价 12 月 8 日至 9 日 FOMC 会议加息 25 个基点，并给出超过 10%概率加息 50 个基点。
+
+rss · CNBC Finance · 11月13日 14:22
+
+**「背景」** 美联储的通胀目标为 2%，PPI 衡量批发价格，FOMC 是负责决定利率的委员会；Goolsbee 提到的 AI 数据中心建设属于企业投资需求，可能通过推高相关商品与服务价格影响通胀。
+
+**标签**: `#Fed policy`, `#inflation`, `#interest rates`, `#AI capex`, `#macro`
 
 ---
 
 <a id="item-finance-news-10"></a>
-### [问界新 M8 上市，华为与赛力斯重申分工](https://wallstreetcn.com/articles/3785903) ⭐️ 8.0/10
+### [FAA 结束全国地面停飞，美国航班延误或延续至周末](https://www.bloomberg.com/news/articles/2026-11-14/faa-lifts-ground-stop-allowing-flights-to-resume-after-outage) ⭐️ 7.0/10
 
-11 月 13 日，问界新 M8 上市，售价 37.98 万至 46.98 万元。余承东与赛力斯董事长张兴海重申合作分工：华为继续主导产品定义、产品设计、核心技术和质量流程体系，赛力斯主导整车制造、研发工程实施及营销、销售、服务和升级维护，华为也会全面参与。
+美国当局结束全国范围 FAA 地面停飞，此前约四小时中断影响数千架航班。延误预计延续至周末。
 
-rss · 华尔街见闻 · 11月13日 12:54
+rss · Bloomberg Business · 11月14日 01:28
 
-**「背景」** 9 月双方曾说明问界的产品定义和产品设计改由赛力斯主导，引发用户担心问界是否退出华为渠道、软件升级是否放缓；同期销量承压，10 月新 M8 销量仅 720 辆，鸿蒙智行交付量同比下降 50.8%，大型 SUV 竞争也在加剧。
+**「背景」** “地面停飞令”是美国联邦航空管理局（FAA）要求航班在起飞前暂停离地、留在地面等待的临时管制措施。
 
-**「影响」** 分工澄清主要影响犹豫购车用户和问界门店订单：此前渠道传闻曾让新 M8 预售订单低于门店预期，并促使部分顾客转看其他品牌，消息传出后订单有所回升。
+**「影响」** 全国停飞和后续延误已使大量美国旅客滞留，并让出行混乱延续到周末，增加航班恢复和旅客改期压力。
 
-**标签**: `#赛力斯`, `#华为汽车`, `#问界M8`, `#智能驾驶`, `#新能源汽车`
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://en.m.wikipedia.org/wiki/2026_FAA_communication_outage">2026 FAA communication outage - Wikipedia</a></li>
+<li><a href="https://www.nbcnews.com/news/us-news/faa-orders-nationwide-ground-stop-departing-flights-reasons-safety-rcna609247">FAA orders nationwide ground stop for all departing flights for...</a></li>
+
+</ul>
+</details>
+
+**标签**: `#FAA`, `#air travel`, `#US infrastructure`, `#aviation disruption`, `#Bloomberg`
 
 ---
 
 <a id="item-finance-news-11"></a>
-### [美国 10 月财政赤字创同期新高，利息占税收 28.2%](https://wallstreetcn.com/articles/3785882) ⭐️ 8.0/10
+### [英国央行首席经济学家预计 2027 年仍需进一步加息](https://www.cls.cn/detail/2534438) ⭐️ 7.0/10
 
-美国财政部数据显示，2027 财年首月（10 月）赤字达 4040 亿美元，高于去年同期的 2840 亿美元；过去 12 个月联邦债务利息支出占税收收入 28.2%，创历史新高。
+英国央行首席经济学家皮尔表示，除 12 月 17 日下次货币政策会议加息外，目前预计 2027 年还需进一步加息，以使通胀在一段时间内回落至 2%目标。
 
-rss · 华尔街见闻 · 11月13日 08:32
+rss · 财联社电报\(RSSHub\) · 11月14日 05:09
 
-**「背景」** 美国联邦财年从每年 10 月 1 日开始，因此报道中的“2027 财年 10 月”指 2026 年 10 月，也是该财年第一个月。这里的赤字是政府支出超过税收等收入的金额；“过去 12 个月”是滚动口径，用于比较利息支出占税收收入的比例。
+**「背景」** 英国央行（英格兰银行）负责制定货币政策，其公开目标是将通胀稳定在 2%。
 
-**「影响」** 利息负担上升意味着更多财政收入用于偿债，可能压缩其他公共服务支出，并增加市场对美国国债供给和融资成本的关注。
-
-**标签**: `#US fiscal deficit`, `#Treasury interest payments`, `#sovereign debt sustainability`, `#macroeconomic data`, `#fiscal policy`
+**标签**: `#英国央行`, `#货币政策`, `#通胀目标`, `#加息预期`, `#全球利率`
 
 ---
 
 <a id="item-finance-news-12"></a>
-### [英伟达 CEO 辞职冲击 AI 算力链，光模块大跌、银行走强](https://wallstreetcn.com/articles/3785855) ⭐️ 8.0/10
+### [中国商飞 10 吨级电动商用飞机 CE-25A 完成有人驾驶首飞](https://www.cls.cn/detail/2534428) ⭐️ 7.0/10
 
-11 月 13 日，英伟达 CEO 黄仁勋辞职消息引发 A 股与港股 AI 算力链下跌，创业板指收跌 3.32%，光模块龙头中际旭创、新易盛、天孚通信分别跌 8.39%、8.76%、10.94%，银行板块逆势走强。
+据中国商飞消息，我国自主研制的 10 吨级电动商用飞机 CE-25A 于 11 月 14 日在山东滨州完成首次有人驾驶智能飞行。该机型定位城市间商业飞行，可搭载 19 名乘客，最大起飞重量 10 吨，航程 400 公里。
 
-rss · 华尔街见闻 · 11月13日 08:17
+rss · 财联社电报\(RSSHub\) · 11月14日 04:05
 
-**「背景」** 此前 A 股光模块估值高度依赖“英伟达 AI 资本开支持续超预期”的预期，因此人事变动触发筹码修正；有分析师称实际产品影响最早要到 2028 年才可能显现。
+**「背景」** CE-25A 是中国商飞研制的首款电动商用飞机，定位为可搭载 19 名乘客、航程 400 公里的城市间短途商业飞行机型；此次完成首次有人驾驶智能飞行，意味着该机型进入载人飞行验证阶段。
 
-**「影响」** 对持有高估值 AI 硬件的投资者而言，短期风险偏好下降促使资金转向银行、白酒等低波动板块，但基本面后果尚未被证实。
-
-**标签**: `#A股`, `#光模块`, `#英伟达`, `#AI算力链`, `#港股科技`
+**标签**: `#低空经济`, `#电动航空`, `#中国商飞`, `#国产飞机`, `#航空制造`
 
 ---
 
 <a id="item-finance-news-13"></a>
-### [微软核心服务全球宕机：Outlook 报障峰值超 13 万条](https://wallstreetcn.com/articles/3785878) ⭐️ 8.0/10
+### [吴清：A 股长期资金净买入超 1.5 万亿元](https://www.cls.cn/detail/2534427) ⭐️ 7.0/10
 
-微软 Outlook、Teams、Copilot 和 Microsoft 365 服务自周四起全球宕机，Downdetector 显示 Outlook 报障峰值超过 13 万条；微软高管称暂无迹象显示由恶意攻击引发。
+证监会主席吴清 11 月 14 日在 2026 中国资本市场学术年会表示，长钱长投制度体系不断完善；据其介绍，2024 年以来社保、保险、年金净买入 A 股超 1.5 万亿元，今年前九个月股票、债券等直接融资占社会融资增量比重已近 50%。
 
-rss · 华尔街见闻 · 11月13日 07:31
+rss · 财联社电报\(RSSHub\) · 11月14日 04:04
 
-**「背景」** Downdetector 的报障数来自用户集中反馈，不直接等于实际受影响人数。
+**「背景」** 长钱长投通常指社保、保险、年金等长期资金持续配置权益市场；直接融资指企业或政府通过股票、债券等直接从市场融资，而非依赖银行贷款。
 
-**「影响」** 历峰集团和 Workhorse Group 推迟财报发布，日本部分银行及证券机构重启传真机确认交易。
-
-**标签**: `#微软服务宕机`, `#全球IT基础设施`, `#云与AI服务`, `#金融市场运营`, `#A股科技主题`
+**标签**: `#A-share`, `#institutional investors`, `#long-term capital`, `#direct financing`, `#policy signal`
 
 ---
 
 <a id="item-finance-news-14"></a>
-### [美联储官员称通胀仍过高，市场定价后续加息](https://wallstreetcn.com/articles/3785874) ⭐️ 8.0/10
+### [两款商保创新药目录药品转入 2026 年国家基本医保目录](https://www.cls.cn/detail/2534419) ⭐️ 7.0/10
 
-纽约联储主席威廉姆斯 11 月 12 日称，在 10 月核心 CPI 环比上涨 0.3%并连续第三个月超预期后，美国通胀仍过高，需采取行动确保通胀及时且持续回落至 2%目标；利率期货显示投资者预计美联储接下来三次会议分别加息。
+2026 年国家基本医疗保险、生育保险和工伤保险药品目录调整结果发布，盐酸沙丙蝶呤片和瑞基奥仑赛注射液从商保创新药目录转入基本医保目录。
 
-rss · 华尔街见闻 · 11月13日 06:34
+rss · 财联社电报\(RSSHub\) · 11月14日 03:43
 
-**「背景」** 威廉姆斯作为联邦公开市场委员会（FOMC）常任投票委员，本周多位美联储官员也释放鹰派信号，其中理事沃勒称若通胀居高不下，12 月应加息 50 基点并收回此前三次预防性降息。
+**「此前支付路径」** CAR-T 疗法因费用较高，此前主要依赖商业健康保险等多元支付渠道探索市场可及性，未大规模进入国家基本医保目录。
 
-**标签**: `#美联储政策`, `#美国通胀`, `#利率预期`, `#全球宏观`, `#风险资产`
+**「影响」** 对需要这两款药的患者和商业健康保险支付方，费用承担渠道从商保扩展到基本医保；对山东新时代和药明巨诺，国内准入扩大，但具体价格与销量影响未披露。
+
+**标签**: `#A股医药`, `#创新药`, `#CAR-T`, `#医保目录`, `#罕见病药`
 
 ---
 
 <a id="item-finance-news-15"></a>
-### [英伟达暴跌后散户半小时买入逾 1 亿美元](https://wallstreetcn.com/articles/3785867) ⭐️ 8.0/10
+### [信达生物 7 款产品纳入 2026 年医保目录](https://www.cls.cn/detail/2534414) ⭐️ 7.0/10
 
-英伟达股价因 CEO 黄仁勋辞职报道在周四盘初一度下跌 14%，散户随后在开盘半小时内买入逾 1.11 亿美元，推动收盘跌幅收窄至 5%以内。
+信达生物称，包括 GCG/GLP-1 双受体激动剂玛仕度肽在内的 7 款产品纳入 2026 年新版国家医保目录，使公司 20 款已上市产品中 17 款进入报销覆盖。
 
-rss · 华尔街见闻 · 11月13日 05:56
+rss · 财联社电报\(RSSHub\) · 11月14日 03:15
 
-**「背景」** “抄底”指投资者在股价大跌时买入；Vanda Research 称这次半小时散户资金流入创历史纪录，显示部分投资者仍愿意在管理层动荡和近期下跌后买入英伟达。
+**「背景」** 国家医保目录是中国用于确定药品报销资格的官方清单，进入目录通常意味着符合条件的患者用药更可能获得医保支付，具体比例和适用条件由目录及地方医保政策决定。
 
-**标签**: `#英伟达`, `#AI算力`, `#散户资金流`, `#投行评级`, `#A股AI主题`
+**标签**: `#biopharma`, `#medical insurance`, `#China healthcare`, `#GLP-1`, `#Innovent`
 
 ---
 
 <a id="item-finance-news-16"></a>
-### [芝加哥联储主席称通胀仍待处理](https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html) ⭐️ 7.0/10
+### [美国 FTC 起诉阻止 Cencora 出售兽医业务](https://news.google.com/rss/articles/CBMisgFBVV95cUxNcXdFLTNlbU5kN1Z1Z2p6cDJRSnlsUEpWMm9KdkEwOUlMVHE3a2pmemF5cFJjcjNVS2Z5cG9aUkx0R0RMMy16YmtVbzc5bHljYVdMY2ZERm54Q29lZTM2VWVzV3ptU3EyVUtvWERjUFlLT3lrNjNGaWlta0RERWh0SnNtalREUm5ZVlFoODlaWGdULWZ3eDdScC1TeDZpX0IxM2NqdUYwZzdnNkItVGd6UUxB?oc=5) ⭐️ 7.0/10
 
-芝加哥联储主席古尔斯比表示，美联储在通胀问题上“肯定还有工作要做”，并称其正进一步偏离 2%目标。10 月生产者价格指数环比上涨 0.3%、同比上涨 6.5%（为 2022 年 11 月以来最高）；据 CME FedWatch，市场完全定价 12 月 8 日至 9 日联邦公开市场委员会会议加息 25 个基点，并有超过 10%概率加息 50 个基点。
+美国联邦贸易委员会（FTC）已提起诉讼，要求阻止 Cencora 以 35 亿美元向 Covetrus 出售其兽医业务部门。来源未披露诉讼结果或交易是否仍可能完成。
 
-rss · CNBC Finance · 11月13日 14:22
+google\_news · Reuters · 11月13日 18:24
 
-**「背景」** 美联储通常以 2%的年度通胀率为目标，而古尔斯比是芝加哥联储主席，目前不是负责设定利率的联邦公开市场委员会投票成员，但将于 2027 年拥有投票权。
+**「背景」** Cencora 前身为 AmerisourceBergen，是一家连接制药企业、药房和医疗服务提供者的美国药品批发与分销公司。
 
-**标签**: `#Federal Reserve`, `#Inflation data`, `#Interest rate expectations`, `#US macro`, `#AI data centers`
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Cencora">Cencora - Wikipedia</a></li>
+<li><a href="https://www.cencora.com/">Creating healthier futures | Cencora</a></li>
+
+</ul>
+</details>
+
+**标签**: `#antitrust`, `#M&amp;A`, `#healthcare distribution`, `#veterinary`, `#regulatory`
 
 ---
 
 <a id="item-finance-news-17"></a>
-### [高盛发布 2027 年宏观展望](https://wallstreetcn.com/articles/3785912) ⭐️ 7.0/10
+### [中国铁路前 10 个月客运量创纪录](https://www.bloomberg.com/news/articles/2026-11-14/china-railways-set-record-with-4-13-billion-trips-in-10-months) ⭐️ 6.0/10
 
-高盛发布 2027 年宏观展望，预测全球 GDP 增速将从 2026 年的 2.7%小幅升至 2.8%，并预计美联储在 2026 年 12 月和 2027 年 3 月各加息一次、2027 年 12 月启动降息。
+中国交通运输部数据显示，2026 年前 10 个月铁路客运量达 41.3 亿人次，创历史新高，同比增长 4.7%。
 
-rss · 华尔街见闻 · 11月13日 22:03
+rss · Bloomberg Markets · 11月14日 02:04
 
-**「背景」** 该展望认为，2026 年伊朗战争推高能源价格，但人工智能相关资本开支（企业投资数据中心、芯片等）和财政扩张抵消了部分冲击，因此增长虽小幅提速，下行风险仍集中在能源、债市和 AI 投资周期。
+**「背景」** 交通运输部公布全国铁路客运量，该数据通常用于衡量国内人员流动和出行活动。
 
-**标签**: `#Macro Outlook`, `#AI Capex`, `#Monetary Policy`, `#China Growth`, `#Market Risk`
+**标签**: `#China railways`, `#passenger traffic`, `#economic data`, `#domestic mobility`, `#transport sector`
 
 ---
 
 <a id="item-finance-news-18"></a>
-### [美联储 12 月加息路径因通胀根源分歧升温](https://wallstreetcn.com/articles/3785917) ⭐️ 7.0/10
+### [国家数据局会议提出加快高质量数据集与数据标注建设](https://www.cls.cn/detail/2534436) ⭐️ 6.0/10
 
-美国财政部长贝森特与芝加哥联储主席古尔斯比公开就通胀根源发生分歧，令美联储 12 月 8 日至 9 日会议政策路径不确定性上升；部分官员讨论加息 50 个基点而非通常 25 个基点，但尚未形成已落地政策。
+据国家数据局消息，11 月 10 日在厦门召开的现场会提出，将加快推进高质量数据集建设和数据标注产业发展。
 
-rss · 华尔街见闻 · 11月13日 21:54
+rss · 财联社电报\(RSSHub\) · 11月14日 04:53
 
-**「背景」** 贝森特称通胀主要来自伊朗战争引发的能源供应冲击，古尔斯比称通胀已扩散至服务业并受 AI 数据中心需求推升；美联储以 2%通胀为目标，近期强于预期的就业和通胀数据使官员更关注需求过热。
+**「背景」** 国家数据局此次现场会以“先行先试”方式聚焦人工智能训练所需的数据供给。数据标注指为原始数据添加标签、类别或质量信息，以便模型学习。
 
-**标签**: `#美联储政策`, `#美国通胀`, `#利率预期`, `#AI数据中心`, `#宏观分歧`
+**标签**: `#国家数据局`, `#高质量数据集`, `#数据标注`, `#AI数据供应链`, `#A股AI主题`
 
 ---

@@ -5,371 +5,311 @@ date: 2026-11-14
 lang: en
 ---
 
-> From 215 items, 21 important content pieces were selected
+> From 234 items, 18 important content pieces were selected
 
 ---
-
-**Technology News**
-1. [Jensen Huang’s Nvidia Exit Raises AI Boom Uncertainty](#item-tech-news-1) ⭐️ 9.0/10
-2. [QTS Cuts Planned AI Data-Center Debt Sale by About 60%](#item-tech-news-2) ⭐️ 8.0/10
-3. [Ackman Comments on Huang&\#x27;s Nvidia Exit and Anthropic IPO Roadshow](#item-tech-news-3) ⭐️ 8.0/10
 
 **Financial News**
-1. [FAA Orders Nationwide U.S. Flight Ground Stop](#item-finance-news-1) ⭐️ 9.0/10
-2. [US stocks mixed as PPI fuels Fed hike bets; Nvidia falls](#item-finance-news-2) ⭐️ 9.0/10
-3. [Nvidia Valuation Hits Lowest Since 2012 After CEO Departure](#item-finance-news-3) ⭐️ 9.0/10
-4. [Lutnick Faces Questions Over Nvidia Export-Control Enforcement](#item-finance-news-4) ⭐️ 8.0/10
-5. [Anthropic Plans Large IPO at $1.33 Trillion Target](#item-finance-news-5) ⭐️ 8.0/10
-6. [OpenAI disbands robotics team](#item-finance-news-6) ⭐️ 8.0/10
-7. [NVIDIA shares fall 14% after reported Huang dismissal](#item-finance-news-7) ⭐️ 8.0/10
-8. [US Producer Prices Stay High; China Credit Weakens](#item-finance-news-8) ⭐️ 8.0/10
-9. [Nvidia starts CEO search after Huang resignation](#item-finance-news-9) ⭐️ 8.0/10
-10. [Huawei Reaffirms Lead Role in AITO M8 Launch](#item-finance-news-10) ⭐️ 8.0/10
-11. [US October deficit hits record; interest takes 28% of tax revenue](#item-finance-news-11) ⭐️ 8.0/10
-12. [Nvidia CEO Resignation Hits China AI Hardware Stocks](#item-finance-news-12) ⭐️ 8.0/10
-13. [Microsoft Outage Disrupts Outlook, Teams and Copilot](#item-finance-news-13) ⭐️ 8.0/10
-14. [Williams Says More Action Needed to Return Inflation to 2%](#item-finance-news-14) ⭐️ 8.0/10
-15. [Nvidia Retail Buying Narrows Selloff After CEO Resignation Reports](#item-finance-news-15) ⭐️ 8.0/10
-16. [Chicago Fed&\#x27;s Goolsbee says more work needed on inflation as markets price December rate hike](#item-finance-news-16) ⭐️ 7.0/10
-17. [Goldman Sachs Sees Modest 2027 Global Growth With Downside Risks](#item-finance-news-17) ⭐️ 7.0/10
-18. [Treasury Secretary and Fed Official Split on Inflation Cause Ahead of December Rate Decision](#item-finance-news-18) ⭐️ 7.0/10
-
----
-
-## Technology News
-
-<a id="item-tech-news-1"></a>
-### [Jensen Huang’s Nvidia Exit Raises AI Boom Uncertainty](https://www.bloomberg.com/news/newsletters/2026-11-13/huang-s-exit-leaves-silicon-valley-unsure-about-ai-boom-s-future) ⭐️ 9.0/10
-
-Bloomberg reports that Jensen Huang left his role as Nvidia’s chief executive after personal conduct issues, including an alleged affair with a Chinese spy, as described by Bloomberg’s Ian King. The exit removes the longtime leader of the leading AI chip vendor and raises questions for investors and AI infrastructure buyers about continuity of Nvidia’s strategy and the financing ecosystem supporting the AI boom. The report does not specify a successor or immediate operational impact.
-
-rss · Bloomberg Technology · Nov 13, 20:18
-
-**「Background」** Bloomberg reported that Nvidia removed CEO Jensen Huang after allegations of multiple affairs, including one with a woman suspected of being a Chinese spy. The company&\#x27;s subsequent framing of his exit as a resignation rather than a planned succession makes the current uncertainty about the AI infrastructure boom more specific.
-
-**「Impact」** For Nvidia investors, partners, and customers building AI data centers, the leadership change introduces transition risk at a company central to AI computing supply, though the report does not detail any immediate product, policy, or operational changes.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-12/jensen-huang-face-of-the-ai-boom-ousted-by-nvidia-board-as-ceo">Jensen Huang Removed as Nvidia CEO Following Affairs, Board ...</a></li>
-<li><a href="https://www.cbsnews.com/news/nvidia-jensen-huang-resigns-competitors/">Jensen Huang&#x27;s exit rocks Nvidia and creates openings for ...</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia`, `#AI infrastructure`, `#executive change`, `#capital markets`, `#AI boom`
-
----
-
-<a id="item-tech-news-2"></a>
-### [QTS Cuts Planned AI Data-Center Debt Sale by About 60%](https://www.bloomberg.com/news/articles/2026-11-13/blackstone-s-qts-is-cutting-ai-debt-sale-by-more-than-half) ⭐️ 8.0/10
-
-Blackstone-backed QTS is reducing a planned private AI data-center debt sale by about 60% after failing to attract enough investor demand. The company also declined to pay much higher yields to secure the financing. The change affects a debt offering intended to support data-center infrastructure rather than a completed funding round.
-
-rss · Bloomberg Technology · Nov 13, 21:35
-
-**「Background」** QTS is a data center operator backed by Blackstone Inc., and private debt sales are non-public credit offerings used to fund infrastructure projects. In these markets, investor demand and required yields can determine how much debt an operator is able to raise.
-
-**「Impact」** For QTS and its sponsor, the cut means substantially less debt capital than originally planned for the offering. For AI data-center operators and private-credit investors, it signals that financing appetite may be selective unless operators accept higher yields or find alternative sources of capital.
-
-**Tags**: `#AI data centers`, `#private debt markets`, `#compute capex`, `#Blackstone`, `#infrastructure financing`
-
----
-
-<a id="item-tech-news-3"></a>
-### [Ackman Comments on Huang&\#x27;s Nvidia Exit and Anthropic IPO Roadshow](https://www.bloomberg.com/news/videos/2026-11-13/ackman-on-huang-s-exit-anthropic-ipo-roadshow-video) ⭐️ 8.0/10
-
-In a Bloomberg interview, Bill Ackman said it was sad to see Jensen Huang leave Nvidia and added that Huang would go on to do something great. Ackman also said he was impressed by Anthropic CEO Dario Amodei&\#x27;s presentation at the company&\#x27;s IPO roadshow event in New York. The remarks are investor commentary on two AI capital-market developments, not a detailed announcement, technical release, or independently confirmed capability change.
-
-rss · Bloomberg Technology · Nov 13, 19:42
-
-**「Background」** Bill Ackman is the founder and CEO of Pershing Square, so his comments represent an investor perspective rather than a company announcement. The two events he addressed are Jensen Huang’s departure from Nvidia and Anthropic’s IPO roadshow, a pre-listing investor presentation in New York led by CEO Dario Amodei.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/video/ackman-huangs-exit-anthropic-ipo-194527836.html?fr=sycsrp_catchall">Ackman on Huang&#x27;s Exit, Anthropic IPO Roadshow - Yahoo Finance</a></li>
-<li><a href="https://subvolts.com/anthropic/web/news/ackman-on-huangs-exit-anthropic-ipo-roadshow-41f024/">Ackman on Anthropic IPO Roadshow, Huang&#x27;s Nvidia Exit | Subvolts</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia leadership`, `#Anthropic IPO`, `#AI capital markets`, `#compute supply chain`
+1. [Anthropic IPO roadshow: CEO says market timing not key](#item-finance-news-1) ⭐️ 9.0/10
+2. [Lutnick Faces Scrutiny Over Nvidia Ties](#item-finance-news-2) ⭐️ 8.0/10
+3. [FAA Grounds US Departures After Air Traffic Control Issues](#item-finance-news-3) ⭐️ 8.0/10
+4. [SpaceX Starship Double-Recovery Test Loses Booster](#item-finance-news-4) ⭐️ 8.0/10
+5. [Wall Street CN Morning Digest: China Credit and US Inflation Data](#item-finance-news-5) ⭐️ 8.0/10
+6. [US Stocks Mixed as Inflation and Nvidia Turmoil Weigh on Tech](#item-finance-news-6) ⭐️ 8.0/10
+7. [U.S. October Deficit Hits Record as Interest Burden Rises](#item-finance-news-7) ⭐️ 8.0/10
+8. [Nvidia CEO Resignation Triggers China AI Hardware Selloff](#item-finance-news-8) ⭐️ 8.0/10
+9. [Chicago Fed&\#x27;s Goolsbee Says More Work Needed on Inflation](#item-finance-news-9) ⭐️ 7.0/10
+10. [FAA Ends Ground Stop; Delays Expected to Continue](#item-finance-news-10) ⭐️ 7.0/10
+11. [BoE Chief Economist Forecasts More Rate Hikes](#item-finance-news-11) ⭐️ 7.0/10
+12. [COMAC says 10-tonne electric aircraft CE-25A completes first crewed flight](#item-finance-news-12) ⭐️ 7.0/10
+13. [CSRC Chief Highlights Long-Term Fund Buying](#item-finance-news-13) ⭐️ 7.0/10
+14. [Two innovative drugs enter China&\#x27;s 2026 basic medical insurance list](#item-finance-news-14) ⭐️ 7.0/10
+15. [Innovent Biologics Adds Seven Products to China&\#x27;s 2026 Medical Insurance Catalog](#item-finance-news-15) ⭐️ 7.0/10
+16. [US FTC sues to block Cencora&\#x27;s $3.5 billion veterinary unit sale to Covetrus](#item-finance-news-16) ⭐️ 7.0/10
+17. [China Railways Carry Record 4.13 Billion Passengers in First 10 Months of 2026](#item-finance-news-17) ⭐️ 6.0/10
+18. [National Data Bureau highlights high-quality datasets for AI](#item-finance-news-18) ⭐️ 6.0/10
 
 ---
 
 ## Financial News
 
 <a id="item-finance-news-1"></a>
-### [FAA Orders Nationwide U.S. Flight Ground Stop](https://www.bloomberg.com/news/videos/2026-11-13/flights-halted-across-us-faa-cites-safety-reasons-video) ⭐️ 9.0/10
+### [Anthropic IPO roadshow: CEO says market timing not key](https://wallstreetcn.com/articles/3785931) ⭐️ 9.0/10
 
-The Federal Aviation Administration issued a nationwide ground stop affecting all U.S. airports, citing extraordinary safety circumstances. Bloomberg reported that the action was linked to communication issues affecting air traffic control, with departing flights to remain grounded until further notice.
+Anthropic CEO Dario Amodei said the company is not waiting for favorable market conditions as it prepares an IPO targeting a valuation of about $1.33 trillion or higher. Reports say the proposed $70-$78 per-share offering could raise more than $61 billion, plus $26 billion in private placements.
 
-rss · Bloomberg Markets · Nov 13, 22:10
+rss · 华尔街见闻 · Nov 14, 01:37
 
-**「Background」** The FAA’s nationwide ground stop is a rare safety action; its last two countrywide halts came after the Sept. 11, 2001 attacks and a 2023 outage of its NOTAM system, which issues safety notices to pilots. The current disruption was linked to communication problems in the air traffic control network that helps controllers talk with pilots.
+**「Background」** Anthropic, an AI company founded by former OpenAI members and preparing for a November 2026 IPO, is pricing its listing against a backdrop of AI-sector volatility and a recent SpaceX IPO that set the record it may try to beat.
 
-**「Travel disruption」** The nationwide ground stop immediately disrupted U.S. air travel, canceling or delaying thousands of flights and leading airlines to cut weekend schedules and offer fee-free changes.
+**「Impact」** AI and semiconductor investors may view the large planned offering and Nvidia/Google-backed private placements as a test of whether investors will fund AI companies&\#x27; heavy compute costs after a sector sell-off.
 
-**Tags**: `#US aviation`, `#FAA`, `#air traffic control`, `#transportation disruption`, `#Bloomberg`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Anthropic">Anthropic - Wikipedia</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Anthropic IPO`, `#AI industry economics`, `#capital markets`, `#Nvidia supply chain`, `#market volatility`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [US stocks mixed as PPI fuels Fed hike bets; Nvidia falls](https://wallstreetcn.com/articles/3785885) ⭐️ 9.0/10
+### [Lutnick Faces Scrutiny Over Nvidia Ties](https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html) ⭐️ 8.0/10
 
-US stocks ended mixed Friday, with the Nasdaq down 0.9% and the Dow up 0.1%, after October producer prices rose 6.5% year over year, the fastest since November 2022, reinforcing market expectations for a December Federal Reserve rate hike of at least 25 basis points. Nvidia fell 2.01% and was down about 11% for the week amid its CEO&\#x27;s resignation.
+CNBC reported scrutiny of Commerce Secretary Howard Lutnick, whose sons lead Cantor Fitzgerald, after Axios said he resisted a crackdown on suspected Nvidia chip smugglers and Nvidia CEO Jensen Huang resigned. Filings reviewed by CNBC show Cantor’s reported Nvidia share count fell about 49% from September 2025 to March 2026.
 
-rss · 华尔街见闻 · Nov 13, 22:54
+rss · CNBC Finance · Nov 13, 23:42
 
-**「Background」** PPI measures wholesale prices and can affect the Federal Reserve&\#x27;s rate outlook; Nvidia&\#x27;s next earnings are on Nov. 17, its first under a temporary CEO.
+**「Background」** Cantor Fitzgerald, now led by Commerce Secretary Howard Lutnick’s sons, is a Wall Street firm that discloses stock holdings in quarterly securities filings; its reported Nvidia stake fell by about half from September 2025 to March 2026, while Nvidia has been central to U.S. efforts to restrict advanced AI chip sales to China.
 
-**Tags**: `#A股AI产业链`, `#英伟达领导层危机`, `#美国通胀与美联储`, `#AI资本开支`, `#Anthropic IPO`
+**Tags**: `#Nvidia`, `#AI chips`, `#export controls`, `#China semiconductor supply chain`, `#Cantor Fitzgerald`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [Nvidia Valuation Hits Lowest Since 2012 After CEO Departure](https://wallstreetcn.com/articles/3785898) ⭐️ 9.0/10
+### [FAA Grounds US Departures After Air Traffic Control Issues](https://www.bloomberg.com/news/videos/2026-11-13/flights-grounded-across-us-video) ⭐️ 8.0/10
 
-Nvidia shares closed down 4.34% at $166.19 on Thursday, leaving a forward price-to-earnings multiple of about 12x, its lowest since 2012, after CEO Jensen Huang’s departure.
+The FAA issued a nationwide ground stop for all US airports and departing flights on Nov. 13, 2026, citing extraordinary safety circumstances after communication problems affected air traffic control. As of 6:40 p.m. ET that day, FlightAware data showed more than 3,300 flights canceled and more than 10,200 delayed, with departures to remain grounded until further notice.
 
-rss · 华尔街见闻 · Nov 13, 11:19
+rss · Bloomberg Markets · Nov 13, 22:33
 
-**「Background」** Bulls cite analyst claims of sold-out 2027 orders and last quarter’s 106% year-over-year revenue growth to $96.2 billion, while bears focus on succession and UBS’s warning that up to $50 billion of quarterly Nvidia funding for AI firms could pause.
+**「Background」** A ground stop keeps departures on the ground so air traffic controllers can safely separate, or de-conflict, aircraft; nationwide orders are rare, with the FAA’s prior recent examples occurring after the September 11, 2001 attacks and a January 2023 alert-system outage.
 
-**「Impact」** CoreWeave fell more than 11% premarket on Thursday as investors weighed UBS’s warning that a pause in Nvidia’s AI financing could tighten funding while the company marketed a debt offering of more than $4 billion.
+**「Impact」** The nationwide ground stop disrupted US air travel, causing more than 3,300 flight cancellations and over 10,200 delays and forcing airlines to cut weekend flights.
 
-**Tags**: `#英伟达`, `#AI算力`, `#黄仁勋离职`, `#A股AI主题`, `#估值重定价`
+**Tags**: `#US aviation`, `#air traffic control`, `#FAA`, `#market disruption`, `#travel`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [Lutnick Faces Questions Over Nvidia Export-Control Enforcement](https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html) ⭐️ 8.0/10
+### [SpaceX Starship Double-Recovery Test Loses Booster](https://wallstreetcn.com/articles/3785933) ⭐️ 8.0/10
 
-CNBC reported that Commerce Secretary Howard Lutnick faces questions after Nvidia CEO Jensen Huang’s resignation and Axios’ report that Lutnick received a classified intelligence warning about Huang’s ties to a suspected Chinese spy and resisted a crackdown on Megaspeed, a Singapore-based company suspected of funneling Nvidia AI chips to China. Cantor Fitzgerald, now led by his sons, reported a nearly 50% decline in its Nvidia shares between September 2025 and March 2026, from 3.5 million shares worth US$652 million to 1.78 million shares worth US$310 million.
+On Nov. 13 US local time, SpaceX’s 15th Starship integrated flight test lost its first booster-catch attempt: V3 Booster 22 splashed down and exploded after an anomaly, while Ship 42 deployed 26 Starlink V3 satellites and planned a next-day first upper-stage catch test.
 
-rss · CNBC Finance · Nov 13, 23:42
+rss · 华尔街见闻 · Nov 14, 03:22
 
-**「Background」** Nvidia CEO Jensen Huang resigned amid U.S. scrutiny over suspected Chinese spy ties and concerns about the diversion of advanced AI chips to China. The report focuses on Commerce Secretary Howard Lutnick’s former firm Cantor Fitzgerald, now led by his sons, and its Nvidia holdings and business ties to the chipmaker.
+**「Background」** Starship is designed to reuse both its booster and upper ship separately, and SpaceX had already caught earlier boosters with tower arms. This flight was the first attempt to catch the redesigned V3 booster and the first planned catch of the upper ship.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html">Howard Lutnick&#x27;s sons&#x27; Nvidia ties amid Jensen Huang China ...</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia`, `#AI chips`, `#export controls`, `#corporate governance`, `#Cantor Fitzgerald`
+**Tags**: `#SpaceX Starship`, `#reusable launch`, `#Starlink V3`
 
 ---
 
 <a id="item-finance-news-5"></a>
-### [Anthropic Plans Large IPO at $1.33 Trillion Target](https://wallstreetcn.com/articles/3785931) ⭐️ 8.0/10
+### [Wall Street CN Morning Digest: China Credit and US Inflation Data](https://wallstreetcn.com/articles/3785925) ⭐️ 8.0/10
 
-Anthropic is preparing an initial public offering \(IPO\) with a target valuation of about $1.33 trillion or higher, according to a Wall Street Journal report, and plans to offer 825 million shares at $70-$78 each. CEO Dario Amodei said in the roadshow that the company will price conservatively and aim to “underpromise, overdeliver.”
+China&\#x27;s October new total social financing was 1.15 trillion yuan and RMB loans fell 100 billion yuan. US October PPI rose 6.5% year-on-year, the highest since November 2022, while markets still expected a 25-basis-point December Federal Reserve rate hike.
 
-rss · 华尔街见闻 · Nov 14, 01:37
+rss · 华尔街见闻 · Nov 13, 23:12
 
-**「Background」** The valuation target is below earlier market expectations of up to $2 trillion, and the listing is planned during a volatile period for AI stocks.
+**「Background」** China’s central bank publishes monthly social financing and credit data, while U.S. producer-price and Federal Reserve reports are used by markets to gauge whether inflation could force a December rate increase.
 
-**「Impact」** If the final amount raised exceeds $75 billion, the offering would surpass SpaceX&\#x27;s June IPO record and set a new fundraising benchmark for global capital markets.
+**「Impact」** US airlines and passengers faced nationwide departure suspensions after an air-traffic communications failure, and airline shares fell after regular trading.
 
-**Tags**: `#Anthropic IPO`, `#AI行业经济`, `#算力资本开支`, `#科技股估值`, `#全球资本市场`
+**Tags**: `#中国宏观流动性`, `#美国通胀与美联储政策`, `#A股与港股市场`, `#全球科技与AI供应链`, `#重大公司事件`
 
 ---
 
 <a id="item-finance-news-6"></a>
-### [OpenAI disbands robotics team](https://wallstreetcn.com/articles/3785914) ⭐️ 8.0/10
+### [US Stocks Mixed as Inflation and Nvidia Turmoil Weigh on Tech](https://wallstreetcn.com/articles/3785885) ⭐️ 8.0/10
 
-Fortune reported that OpenAI disbanded its standalone robotics team and reassigned researchers to core divisions, saying general models such as GPT-6 Astra can be used directly for robot control. In a reported Nvidia simulation benchmark, Astra-powered agents achieved a 74.8% success rate, compared with 51.0% for the best specialized robot model on that benchmark.
+US stocks ended mixed after October producer price index \(PPI\) rose 6.5% year over year, the fastest annual increase since November 2022, and market pricing showed at least a 0.25-percentage-point December Federal Reserve rate hike was nearly certain.
 
-rss · 华尔街见闻 · Nov 14, 01:09
+rss · 华尔街见闻 · Nov 13, 22:54
 
-**「Background」** OpenAI previously disbanded its robotics team in 2020, rebuilt it in 2024 through a partnership with humanoid-robot startup Figure, and ended that partnership in 2025. The latest dissolution follows reported progress with GPT-6 Astra, which OpenAI says can control simulated robots directly, and occurs amid cost pressure from a reported $10.9 billion operating loss in the most recent quarter and preparation for a possible 2027 public listing.
+**「Background」** Nvidia, a major AI chipmaker and key driver of US tech stocks, has been unsettled by reports of CEO Jensen Huang&\#x27;s resignation. The US October PPI, a wholesale price gauge, rose 6.5% from a year earlier, the fastest pace since November 2022, reinforcing expectations of further Federal Reserve rate hikes.
 
-**「Impact」** Robotics startups and investors in embodied-AI firms may face pressure to reassess valuations because OpenAI’s reported shift suggests general frontier models can directly control robots, weakening the premise that each robot needs a proprietary AI stack.
+**「Impact」** Nvidia&\#x27;s leadership crisis pressured chip and AI-linked stocks, with the Philadelphia Semiconductor Index down 3.4% and Nvidia&\#x27;s market value slipping below $4 trillion.
 
-**Tags**: `#OpenAI`, `#机器人/具身智能`, `#AI应用`, `#公司战略`, `#A股主题`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://en.m.wikipedia.org/wiki/Nvidia">Nvidia - Wikipedia</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#美股市场`, `#AI供应链`, `#英伟达`, `#美联储政策`, `#科技财报`
 
 ---
 
 <a id="item-finance-news-7"></a>
-### [NVIDIA shares fall 14% after reported Huang dismissal](https://wallstreetcn.com/articles/3785919) ⭐️ 8.0/10
+### [U.S. October Deficit Hits Record as Interest Burden Rises](https://wallstreetcn.com/articles/3785882) ⭐️ 8.0/10
 
-NVIDIA shares fell about 14% in the week ended Nov. 13, 2026, their worst weekly decline since April 2025, after the board reportedly dismissed CEO Jensen Huang over a personal scandal and wiped out more than $620 billion in market value.
+U.S. Treasury data show the first month of fiscal 2027 posted a record October deficit of $404 billion, up from $284 billion a year earlier, while federal interest payments reached 28.2% of tax revenue over the past 12 months.
 
-rss · 华尔街见闻 · Nov 13, 23:44
+rss · 华尔街见闻 · Nov 13, 08:32
 
-**「Background」** Huang&\#x27;s removal, with CFO Colette Kress as interim CEO, comes before NVIDIA&\#x27;s Nov. 17 quarterly report and after shares had already slipped from an early-October record amid doubts about AI data-center spending.
+**「Background」** The U.S. fiscal year starts in October, and the 28.2% figure is a trailing 12-month ratio of federal interest payments to tax revenue, not a single-month result.
 
-**「Impact」** The reported dismissal led at least 13 analysts to cut Buy ratings and increased Hold-rated analysts to 15, the most since 2023, according to Bloomberg data, raising near-term uncertainty for investors.
-
-**Tags**: `#NVIDIA`, `#AI supply chain`, `#CEO departure`, `#analyst downgrades`, `#earnings uncertainty`
+**Tags**: `#美国财政赤字`, `#联邦债务利息`, `#国债收益率`, `#宏观财政政策`, `#全球市场影响`
 
 ---
 
 <a id="item-finance-news-8"></a>
-### [US Producer Prices Stay High; China Credit Weakens](https://wallstreetcn.com/articles/3785925) ⭐️ 8.0/10
+### [Nvidia CEO Resignation Triggers China AI Hardware Selloff](https://wallstreetcn.com/articles/3785855) ⭐️ 8.0/10
 
-A November 14, 2026 Wall Street CN morning digest reported US October producer prices rose 6.5% year over year, the highest since November 2022, and US Federal Reserve officials warned inflation is spreading.
+Nvidia’s CEO resignation triggered a sell-off in China’s AI computing supply-chain stocks on Nov 13, 2026, with the ChiNext index falling 3.32% and the Hang Seng Tech Index closing down 2.37%. Banks rose, helping the Shanghai 50 gain 0.1%.
 
-rss · 华尔街见闻 · Nov 13, 23:12
+rss · 华尔街见闻 · Nov 13, 08:17
 
-**「Background」** The digest also reported China’s October yuan loans fell 100 billion yuan, versus a 1.08 trillion yuan increase in September, while markets still expected a 0.25 percentage point December US rate hike.
+**「Background」** The sell-off reflected the sector’s tight link to expectations for Nvidia-led AI spending; broker research still pointed to strong overseas optical-communications demand and rising domestic chip orders.
 
-**「Impact」** Nvidia investors and AI-linked technology stocks face added uncertainty because the company’s reported CEO succession search raises questions about leadership stability and the future of its unlaunched $500 billion AI financing platform.
+**「Impact」** The shift pushed investors toward lower-volatility value stocks, with five city commercial banks closing at record highs.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.reuters.com/business/media-telecom/arms-haas-approached-by-nvidia-board-part-ceo-search-ft-reports-2026-11-13/">Nvidia approaches Arm CEO Haas as employees seek Huang&#x27;s ...</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#China credit data`, `#US inflation and Fed policy`, `#Nvidia and AI supply chain`, `#A-share tech themes`, `#SpaceX-Tesla merger rumors`
+**Tags**: `#A股`, `#光模块/CPO`, `#AI算力链`, `#英伟达`, `#港股科技`
 
 ---
 
 <a id="item-finance-news-9"></a>
-### [Nvidia starts CEO search after Huang resignation](https://wallstreetcn.com/articles/3785915) ⭐️ 8.0/10
+### [Chicago Fed&\#x27;s Goolsbee Says More Work Needed on Inflation](https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html) ⭐️ 7.0/10
 
-Nvidia, the roughly $4 trillion AI chipmaker, has begun a CEO succession search after founder Jensen Huang resigned following reports of an affair; the Financial Times said the board contacted Arm CEO Rene Haas, while Nvidia said no candidate has been formally approached.
+Chicago Fed President Austan Goolsbee said the central bank likely needs to act on inflation after October producer prices rose 0.3% from the previous month and 6.5% from a year earlier, the highest annual gain since November 2022.
 
-rss · 华尔街见闻 · Nov 13, 21:54
+rss · CNBC Finance · Nov 13, 14:22
 
-**「Background」** Rene Haas previously worked at Nvidia for about seven years, rising to vice president and general manager of computing products, and is reported to have been a protégé of Jensen Huang. He now leads Arm, whose processor designs are widely used in mobile chips and underpin Nvidia&\#x27;s AI hardware.
+**「Background」** The Federal Reserve aims to keep inflation near 2%, and recent producer-price data, which measures wholesale prices, showed a 6.5% annual gain in October, the highest since November 2022.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/technology/articles/could-former-nvidia-executive-replace-221603173.html?fr=sycsrp_catchall">Could a Former Nvidia Executive Replace Jensen Huang? Arm’s ...</a></li>
+**「Impact」** Futures markets are fully pricing a quarter-point Federal Reserve rate increase at the Dec. 8-9 meeting, with more than a 10% implied probability of a half-point move.
 
-</ul>
-</details>
-
-**Tags**: `#Nvidia`, `#AI chips`, `#CEO succession`, `#semiconductor regulation`, `#market reaction`
+**Tags**: `#Fed policy`, `#inflation`, `#interest rates`, `#AI capex`, `#macro`
 
 ---
 
 <a id="item-finance-news-10"></a>
-### [Huawei Reaffirms Lead Role in AITO M8 Launch](https://wallstreetcn.com/articles/3785903) ⭐️ 8.0/10
+### [FAA Ends Ground Stop; Delays Expected to Continue](https://www.bloomberg.com/news/articles/2026-11-14/faa-lifts-ground-stop-allowing-flights-to-resume-after-outage) ⭐️ 7.0/10
 
-At the AITO new M8 launch on Nov 13, Huawei executive Richard Yu said Huawei will continue to lead product definition and design, reversing a Sept 15 statement that assigned those roles to Seres; the new M8 is priced at RMB 379,800–469,800.
+US authorities lifted a nationwide FAA ground stop after a four-hour shutdown disrupted thousands of flights, with delays expected to continue into the weekend.
 
-rss · 华尔街见闻 · Nov 13, 12:54
+rss · Bloomberg Business · Nov 14, 01:28
 
-**「Background」** The Sept 15 statement had reassigned AITO product definition and design to Seres, while from Sept 16 new dealer order settlements moved to a Seres affiliate.
+**「Background」** A nationwide FAA ground stop temporarily prevents aircraft from departing, and the four-hour shutdown disrupted thousands of flights before being lifted.
 
-**「Impact」** The clarification matters for prospective AITO buyers and Seres/Huawei auto-chain investors because the September cooperation changes had made some buyers hesitant, and AITO’s October M8 sales fell to 720 units from 17,484 units a year earlier.
+**「Impact」** The FAA’s nationwide ground stop disrupted thousands of flights and stranded passengers, with delays expected to spill into the weekend.
 
-**Tags**: `#赛力斯`, `#华为汽车`, `#问界M8`, `#智能驾驶`, `#新能源汽车`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://en.m.wikipedia.org/wiki/2026_FAA_communication_outage">2026 FAA communication outage - Wikipedia</a></li>
+<li><a href="https://www.nbcnews.com/news/us-news/faa-orders-nationwide-ground-stop-departing-flights-reasons-safety-rcna609247">FAA orders nationwide ground stop for all departing flights for...</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#FAA`, `#air travel`, `#US infrastructure`, `#aviation disruption`, `#Bloomberg`
 
 ---
 
 <a id="item-finance-news-11"></a>
-### [US October deficit hits record; interest takes 28% of tax revenue](https://wallstreetcn.com/articles/3785882) ⭐️ 8.0/10
+### [BoE Chief Economist Forecasts More Rate Hikes](https://www.cls.cn/detail/2534438) ⭐️ 7.0/10
 
-US Treasury data show the federal deficit reached $404 billion in October, the first month of fiscal 2027, up from $284 billion a year earlier, while federal interest payments over the past 12 months equaled a record 28.2% of tax revenue.
+Bank of England Chief Economist Pill said the central bank will take necessary measures to bring inflation back to 2% over time and currently expects another rate hike at its Dec. 17 meeting, plus further hikes in 2027.
 
-rss · 华尔街见闻 · Nov 13, 08:32
+rss · 财联社电报\(RSSHub\) · Nov 14, 05:09
 
-**「Background」** The U.S. fiscal year begins in October, so the reported month is the first month of fiscal 2027, and interest payments are the cost of servicing accumulated federal debt.
+**「Background」** The Bank of England’s main inflation target is 2%, and it uses interest-rate changes to help push inflation toward that level; higher rates cool spending and prices, while lower rates can support growth.
 
-**Tags**: `#US fiscal deficit`, `#Treasury interest payments`, `#sovereign debt sustainability`, `#macroeconomic data`, `#fiscal policy`
+**Tags**: `#英国央行`, `#货币政策`, `#通胀目标`, `#加息预期`, `#全球利率`
 
 ---
 
 <a id="item-finance-news-12"></a>
-### [Nvidia CEO Resignation Hits China AI Hardware Stocks](https://wallstreetcn.com/articles/3785855) ⭐️ 8.0/10
+### [COMAC says 10-tonne electric aircraft CE-25A completes first crewed flight](https://www.cls.cn/detail/2534428) ⭐️ 7.0/10
 
-Nvidia announced on Nov 12 US time that CEO Jensen Huang had resigned, with CFO Colette Kress named interim CEO; Nvidia shares fell 4.34% and lost nearly $182bn in market value. China’s ChiNext index closed 3.32% lower on Nov 13 as AI-hardware shares sold off.
+COMAC said its CE-25A, a 10-tonne electric commercial aircraft, completed its first crewed intelligent flight in Binzhou, Shandong, on Nov. 14. The company describes it as its first electric commercial aircraft, designed for intercity service with 19 seats and a 400 km range.
 
-rss · 华尔街见闻 · Nov 13, 08:17
+rss · 财联社电报\(RSSHub\) · Nov 14, 04:05
 
-**「Background」** The decline centered on optical modules and PCB suppliers \(parts used in AI servers\), whose recent gains were tied to expectations of continued Nvidia-led AI spending.
+**「Background」** The flight is a test by COMAC, which the source says is developing CE-25A as its first electric commercial aircraft, and it does not by itself establish safety certification or commercial service.
 
-**Tags**: `#A股`, `#光模块`, `#英伟达`, `#AI算力链`, `#港股科技`
+**Tags**: `#低空经济`, `#电动航空`, `#中国商飞`, `#国产飞机`, `#航空制造`
 
 ---
 
 <a id="item-finance-news-13"></a>
-### [Microsoft Outage Disrupts Outlook, Teams and Copilot](https://wallstreetcn.com/articles/3785878) ⭐️ 8.0/10
+### [CSRC Chief Highlights Long-Term Fund Buying](https://www.cls.cn/detail/2534427) ⭐️ 7.0/10
 
-Microsoft said on Friday there was no sign of a cyberattack behind a global outage affecting Outlook, Teams and Copilot, after Downdetector recorded more than 130,000 Outlook problem reports at peak.
+China Securities Regulatory Commission Chairman Wu Qing said long-term investment systems are improving, citing more than RMB 1.5 trillion in net A-share purchases by social security, insurance and pension funds since 2024. He also said direct financing from stocks and bonds accounted for nearly 50% of new social financing in the first nine months of 2026.
 
-rss · 华尔街见闻 · Nov 13, 07:31
+rss · 财联社电报\(RSSHub\) · Nov 14, 04:04
 
-**「Background」** Microsoft 365 is a widely used suite of email and collaboration tools for businesses and governments.
+**「Background」** The remarks were made at the 2026 China Capital Markets Annual Academic Conference and did not announce a new regulatory change.
 
-**「Impact」** The Financial Times reported that Richemont and Workhorse Group delayed earnings releases, while some Japanese banks and securities firms used fax machines to confirm transactions.
-
-**Tags**: `#微软服务宕机`, `#全球IT基础设施`, `#云与AI服务`, `#金融市场运营`, `#A股科技主题`
+**Tags**: `#A-share`, `#institutional investors`, `#long-term capital`, `#direct financing`, `#policy signal`
 
 ---
 
 <a id="item-finance-news-14"></a>
-### [Williams Says More Action Needed to Return Inflation to 2%](https://wallstreetcn.com/articles/3785874) ⭐️ 8.0/10
+### [Two innovative drugs enter China&\#x27;s 2026 basic medical insurance list](https://www.cls.cn/detail/2534419) ⭐️ 7.0/10
 
-New York Fed President John Williams said inflation remains too high and more policy action is needed to return it to 2%. Rate futures show investors expect the Fed to raise rates at each of the next three meetings.
+Cailian Press reported that China released the 2026 national basic medical insurance drug list adjustment, moving Sapropterin hydrochloride tablets and Relma-cel injection from the commercial insurance innovative-drug list into the basic insurance list after negotiation.
 
-rss · 华尔街见闻 · Nov 13, 06:34
+rss · 财联社电报\(RSSHub\) · Nov 14, 03:43
 
-**「Background」** Williams spoke after October core CPI, which excludes food and energy, rose 0.3% month-on-month, above expectations for a third straight month.
+**「Background」** CAR-T therapies are engineered immune-cell treatments that can be very expensive, so before this change some products were mainly covered through commercial insurance rather than China&\#x27;s basic national medical insurance.
 
-**Tags**: `#美联储政策`, `#美国通胀`, `#利率预期`, `#全球宏观`, `#风险资产`
+**「Impact」** The move gives patients using these two high-cost therapies a public reimbursement route through China’s basic medical insurance, rather than relying mainly on commercial insurance, and may improve payment access for the manufacturers.
+
+**Tags**: `#A股医药`, `#创新药`, `#CAR-T`, `#医保目录`, `#罕见病药`
 
 ---
 
 <a id="item-finance-news-15"></a>
-### [Nvidia Retail Buying Narrows Selloff After CEO Resignation Reports](https://wallstreetcn.com/articles/3785867) ⭐️ 8.0/10
+### [Innovent Biologics Adds Seven Products to China&\#x27;s 2026 Medical Insurance Catalog](https://www.cls.cn/detail/2534414) ⭐️ 7.0/10
 
-Nvidia shares fell as much as 14% from their prior close on Nov. 12 after reports that CEO Jensen Huang resigned following an alleged affair with an executive who reported to him, then closed down less than 5% after retail investors bought an estimated record $111 million in the first 30 minutes, according to Vanda Research.
+Innovent Biologics said seven marketed products, including mazdutide, were added to China&\#x27;s new 2026 national medical insurance catalog, bringing 17 of its 20 marketed products into reimbursement coverage.
 
-rss · 华尔街见闻 · Nov 13, 05:56
+rss · 财联社电报\(RSSHub\) · Nov 14, 03:15
 
-**「Background」** The episode followed a broader Nvidia selloff that had erased more than $1 trillion in market cap in five weeks since the Nasdaq&\#x27;s recent high, and it came ahead of next week&\#x27;s earnings call and Anthropic&\#x27;s planned public listing, both seen as key tests for AI-market sentiment.
+**「Background」** China’s national medical insurance catalog is a government list of drugs and treatments that public insurance pays for.
 
-**Tags**: `#英伟达`, `#AI算力`, `#散户资金流`, `#投行评级`, `#A股AI主题`
+**「Reimbursement reach」** The catalog inclusion makes seven Innovent products reimbursable for insured patients in China, potentially improving affordability and uptake, though the financial effect was not quantified.
+
+**Tags**: `#biopharma`, `#medical insurance`, `#China healthcare`, `#GLP-1`, `#Innovent`
 
 ---
 
 <a id="item-finance-news-16"></a>
-### [Chicago Fed&\#x27;s Goolsbee says more work needed on inflation as markets price December rate hike](https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html) ⭐️ 7.0/10
+### [US FTC sues to block Cencora&\#x27;s $3.5 billion veterinary unit sale to Covetrus](https://news.google.com/rss/articles/CBMisgFBVV95cUxNcXdFLTNlbU5kN1Z1Z2p6cDJRSnlsUEpWMm9KdkEwOUlMVHE3a2pmemF5cFJjcjNVS2Z5cG9aUkx0R0RMMy16YmtVbzc5bHljYVdMY2ZERm54Q29lZTM2VWVzV3ptU3EyVUtvWERjUFlLT3lrNjNGaWlta0RERWh0SnNtalREUm5ZVlFoODlaWGdULWZ3eDdScC1TeDZpX0IxM2NqdUYwZzdnNkItVGd6UUxB?oc=5) ⭐️ 7.0/10
 
-Chicago Fed President Austan Goolsbee said the central bank &quot;has definitely got work to do&quot; on inflation after October producer prices rose 6.5% from a year earlier, the highest annual gain since November 2022, and futures markets fully priced a quarter-point rate increase at the Fed&\#x27;s Dec. 8-9 meeting.
+Reuters reports that the US Federal Trade Commission has filed a lawsuit to block Cencora&\#x27;s $3.5 billion sale of its veterinary unit to Covetrus.
 
-rss · CNBC Finance · Nov 13, 14:22
+google\_news · Reuters · Nov 13, 18:24
 
-**「Background」** Chicago Fed President Austan Goolsbee’s comments followed U.S. Bureau of Labor Statistics reports that producer prices, a measure of wholesale inflation, rose 6.5% year over year in October and consumer prices exceeded expectations, keeping inflation above the Fed’s 2% target.
+**「Background」** Cencora, formerly known as AmerisourceBergen, is a U.S. drug wholesale and distribution company.
 
-**Tags**: `#Federal Reserve`, `#Inflation data`, `#Interest rate expectations`, `#US macro`, `#AI data centers`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Cencora">Cencora - Wikipedia</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#antitrust`, `#M&amp;A`, `#healthcare distribution`, `#veterinary`, `#regulatory`
 
 ---
 
 <a id="item-finance-news-17"></a>
-### [Goldman Sachs Sees Modest 2027 Global Growth With Downside Risks](https://wallstreetcn.com/articles/3785912) ⭐️ 7.0/10
+### [China Railways Carry Record 4.13 Billion Passengers in First 10 Months of 2026](https://www.bloomberg.com/news/articles/2026-11-14/china-railways-set-record-with-4-13-billion-trips-in-10-months) ⭐️ 6.0/10
 
-Goldman Sachs forecasts global GDP growth will edge up to 2.8% in 2027 from 2.7% in 2026, but says risks are skewed lower because of Iran, bond-market stress and a possible peak in AI investment.
+China’s railways carried a record 4.13 billion passengers in the first 10 months of 2026, up 4.7% from the same period a year earlier, according to the Ministry of Transport.
 
-rss · 华尔街见闻 · Nov 13, 22:03
+rss · Bloomberg Markets · Nov 14, 02:04
 
-**「Background」** The outlook follows 2026 growth that held up despite an Iran-war energy shock, supported by AI spending and fiscal expansion.
+**「Background」** The 4.7% increase compares January–October 2026 with the same period in 2025, and the figure counts completed passenger journeys on China’s railway system.
 
-**「Impact」** If tighter financial conditions and bond-market stress materialize, households and firms could face higher borrowing costs, while AI-linked exporters could be exposed to slower investment.
-
-**Tags**: `#Macro Outlook`, `#AI Capex`, `#Monetary Policy`, `#China Growth`, `#Market Risk`
+**Tags**: `#China railways`, `#passenger traffic`, `#economic data`, `#domestic mobility`, `#transport sector`
 
 ---
 
 <a id="item-finance-news-18"></a>
-### [Treasury Secretary and Fed Official Split on Inflation Cause Ahead of December Rate Decision](https://wallstreetcn.com/articles/3785917) ⭐️ 7.0/10
+### [National Data Bureau highlights high-quality datasets for AI](https://www.cls.cn/detail/2534436) ⭐️ 6.0/10
 
-US Treasury Secretary Scott Bessent and Chicago Fed President Austan Goolsbee publicly disagreed over the cause of inflation, with Bessent calling it an energy-supply shock from the Iran war and Goolsbee pointing to broader services demand. The split came as some Fed officials discussed a possible 50-basis-point increase, or half a percentage point, at the Dec 8-9 meeting instead of the usual 25 basis points.
+China’s National Data Bureau said in a Nov. 10 meeting in Xiamen that it will accelerate high-quality dataset construction and the data-annotation industry to support AI, noting that model developers now need the right, sufficient and high-quality data rather than merely more data.
 
-rss · 华尔街见闻 · Nov 13, 21:54
+rss · 财联社电报\(RSSHub\) · Nov 14, 04:53
 
-**「Background」** The debate is whether inflation is mainly a cost shock from energy prices or broader demand pressure that could keep prices rising above the Fed&\#x27;s 2% target.
+**「Background」** China’s National Data Bureau held a Nov. 10 pilot-site meeting in Xiamen to promote high-quality AI datasets and data annotation, reflecting a policy shift from merely collecting data to making it accurate, sufficient, and usable for model training.
 
-**「Impact」** Investors and borrowers face less predictable December rate guidance because policymakers disagree on whether energy costs or broader demand should drive policy.
-
-**Tags**: `#美联储政策`, `#美国通胀`, `#利率预期`, `#AI数据中心`, `#宏观分歧`
+**Tags**: `#国家数据局`, `#高质量数据集`, `#数据标注`, `#AI数据供应链`, `#A股AI主题`
 
 ---
