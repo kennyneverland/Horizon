@@ -60,6 +60,13 @@
         "repo": "triton",
         "enabled": true,
         "profile": "tech-news"
+      },
+      {
+        "type": "repo_releases",
+        "owner": "ggml-org",
+        "repo": "llama.cpp",
+        "enabled": true,
+        "profile": "tech-news"
       }
     ],
     "hackernews": {
