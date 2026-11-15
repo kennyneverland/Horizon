@@ -281,7 +281,7 @@
     "category_groups": {
       "ai-hardware": {
         "name": "AI硬件与算力",
-        "limit": 5,
+        "limit": 3,
         "categories": [
           "ai-hardware"
         ]
@@ -309,7 +309,7 @@
       },
       "finance-news": {
         "name": "财经新闻",
-        "limit": 10,
+        "limit": 12,
         "categories": [
           "finance-news"
         ]
