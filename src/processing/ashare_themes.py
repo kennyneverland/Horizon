@@ -106,14 +106,20 @@ class ThemeIndex:
         self._load()
 
     def _read_index(self) -> Optional[dict]:
-        """The index ships zlib-compressed and base64-encoded to stay small."""
+        """The index ships zlib-compressed and base64-encoded to stay small.
+
+        It is split over a few part files so that no single one grows past what
+        the contents API will accept; the parts are byte-concatenated before
+        decoding, and base64 ignores the newlines between them.
+        """
+        parts = [self.path, *sorted(self.path.parent.glob(self.path.name + ".p[0-9]*"))]
         try:
-            raw = self.path.read_bytes()
-        except FileNotFoundError:
-            logger.info("A-share theme index not found at %s; skipping", self.path)
-            return None
+            raw = b"".join(part.read_bytes() for part in parts if part.exists())
         except OSError as exc:
             logger.warning("A-share theme index unreadable (%s); skipping", exc)
+            return None
+        if not raw:
+            logger.info("A-share theme index not found at %s; skipping", self.path)
             return None
         try:
             if raw[:1] in (b"{", b"["):
