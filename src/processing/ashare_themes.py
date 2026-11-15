@@ -61,8 +61,8 @@ MIN_SCORE = 0.5
 # otherwise a weak second hit just adds a wrong name list.
 RELATIVE_CUTOFF = 0.72
 MAX_THEMES_PER_ITEM = 2
-# Three names is what fits on one line next to the theme label.
-MAX_MEMBERS = 3
+# Five names covers the leading row of a theme without turning the line into a list.
+MAX_MEMBERS = 5
 # Requests are cheap but lianban rate-limits aggressively, so the run is capped.
 MAX_THEME_FETCH = 6
 # The theme lookup only means something to the finance reader; other profiles
