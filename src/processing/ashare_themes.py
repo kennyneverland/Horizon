@@ -24,8 +24,12 @@ phrases. Without the alias layer a headline like "黄仁勋离职后持股减持
 scores nothing, because it never says 英伟达.
 
 Members are fetched at render time, one request per matched theme, capped per
-run. A failed fetch drops the name list and keeps the theme label, so a
-blocked request degrades the line instead of the digest.
+run. lianban already sorts every theme page by three-month relative strength
+and recomputes it after each close, so the page order *is* the ranking: the
+first names are the strongest in the theme. No re-ranking happens here.
+
+A failed fetch drops the name list and keeps the theme label, so a blocked
+request degrades the line instead of the digest.
 
 Everything here is a lookup, not a recommendation: the rendered line is marked
 as inferred and carries the source attribution.
@@ -68,11 +72,19 @@ FETCH_TIMEOUT = 12.0
 SOURCE_LABEL = "连板网 lianban.net"
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
-_CODE_RE = re.compile(r"(\d{6})")
 _ITEMLIST_RE = re.compile(
     r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', re.S
 )
 _GU_ANCHOR_RE = re.compile(r'<a href="/gu/(\d{6})\.html">([^<]+)</a>')
+# The page body states the ranking explicitly: "收录 66 只成员（按近3月相对
+# 强度降序）——移远通信、阿尔特、…等。" The JSON-LD ItemList is in ticker-code
+# order instead, so it is only used to attach codes to these names.
+_RANKED_RE = re.compile(
+    r"收录\s*\d+\s*只成员[（(]按近3月相对强度降序[）)]\s*[—\-–]+\s*([^。]+)"
+)
+_NAME_PREFIX_RE = re.compile(r"^(XD|XR|DR|\*?ST|N|C)")
+# A JSON-LD member reads "移远通信(603236)".
+_LISTED_RE = re.compile(r"^(.*?)\s*\((\d{6})\)\s*$")
 
 
 def _normalise(text: Any) -> str:
@@ -129,7 +141,9 @@ class ThemeIndex:
             return
 
         # v2: each theme is one row [id, name, member_count, strong, medium,
-        # weak, leaders] with the term layers as comma-joined strings.
+        # weak, leaders]. The trailing leaders column is no longer read: the
+        # page's own strength ranking replaced it, and the index is kept as-is
+        # to avoid a rebuild just to drop a column.
         rows = doc.get("themes")
         if not isinstance(rows, list):
             logger.warning("A-share theme index has no themes; skipping")
@@ -138,15 +152,11 @@ class ThemeIndex:
         for row in rows:
             if not isinstance(row, list) or len(row) < 7:
                 continue
-            sid, name, count, strong, medium, weak, leaders = row[:7]
+            sid, name, count, strong, medium, weak = row[:6]
             if not name:
                 continue
             slug = f"/ticai/{sid}.html"
-            self.themes[slug] = {
-                "name": name,
-                "n": count,
-                "leaders": [code for code in str(leaders or "").split(",") if code],
-            }
+            self.themes[slug] = {"name": name, "n": count}
             for layer, weight in ((strong, 1.0), (medium, 0.75), (weak, 0.5)):
                 for term in str(layer or "").split(","):
                     self._add_term(term, weight, slug)
@@ -250,7 +260,6 @@ class ThemeIndex:
                     "score": round(score, 2),
                     "term": term,
                     "members_count": theme.get("n"),
-                    "leaders": theme.get("leaders") or [],
                 }
             )
         return chosen
@@ -290,21 +299,12 @@ class MemberFetcher:
             if response.headers.get("Content-Encoding") == "gzip":
                 raw = gzip.decompress(raw)
         html = raw.decode("utf-8", "ignore")
-
-        for match in _ITEMLIST_RE.finditer(html):
-            try:
-                payload = json.loads(match.group(1))
-            except ValueError:
-                continue
-            if payload.get("@type") != "ItemList":
-                continue
-            names = [
-                (entry.get("name") or "").strip()
-                for entry in payload.get("itemListElement") or []
-            ]
-            names = [name for name in names if name]
-            if names:
-                return names
+        listed = _parse_itemlist(html)
+        ranked = _parse_ranked_names(html)
+        if ranked:
+            return _merge_ranked_with_codes(ranked, listed)
+        if listed:
+            return listed
 
         # Fallback for a page without JSON-LD: the member grid links to /gu/.
         seen: set[str] = set()
@@ -333,37 +333,88 @@ class MemberFetcher:
             return names
 
 
-def pick_members(
-    members: Sequence[str], leaders: Sequence[str], limit: int = MAX_MEMBERS
-) -> List[str]:
-    """Prefer the industry leaders from stockinsky, then keep the page order.
+def _parse_itemlist(html: str) -> List[str]:
+    """Member names in ticker-code order, straight from the page's JSON-LD."""
+    for match in _ITEMLIST_RE.finditer(html):
+        try:
+            payload = json.loads(match.group(1))
+        except ValueError:
+            continue
+        if payload.get("@type") != "ItemList":
+            continue
+        names = [
+            (entry.get("name") or "").strip()
+            for entry in payload.get("itemListElement") or []
+        ]
+        names = [name for name in names if name]
+        if names:
+            return names
+    return []
 
-    lianban lists members by ticker code, not by how central they are to the
-    theme, so the first three rows of a 66-name theme can include a cable maker
-    that merely trades on the label. Intersecting with stockinsky's leader list
-    puts the actual supply-chain names first without inventing anything: every
-    name returned here is still a member of the lianban theme.
+
+def _strip_name_prefix(name: str) -> str:
+    """Drop the XD/ST/N markers so a name matches across the two listings."""
+    return _NAME_PREFIX_RE.sub("", name).strip()
+
+
+def _parse_ranked_names(html: str) -> List[str]:
+    """The body's ranked list: strongest first, recomputed every close."""
+    text = re.sub(r"<[^>]+>", " ", html)
+    text = re.sub(r"\s+", " ", text)
+    match = _RANKED_RE.search(text)
+    if not match:
+        return []
+    names = []
+    for raw_name in match.group(1).split("、"):
+        name = re.sub(r"等$", "", raw_name.strip()).strip()
+        if name:
+            names.append(name)
+    return names
+
+
+def _merge_ranked_with_codes(ranked: Sequence[str], listed: Sequence[str]) -> List[str]:
+    """Keep the ranked order and attach a ticker code to each name.
+
+    The body lists only the leading names before "等", so the remaining members
+    follow in the JSON-LD order. Only the first few are ever shown, and those
+    always come from the ranked list.
     """
-    by_code: Dict[str, str] = {}
-    for member in members:
-        match = _CODE_RE.search(member)
-        if match:
-            by_code.setdefault(match.group(1), member)
+    code_of: Dict[str, str] = {}
+    for entry in listed:
+        match = _LISTED_RE.match(entry)
+        if not match:
+            continue
+        name, code = match.group(1).strip(), match.group(2)
+        code_of.setdefault(name, code)
+        code_of.setdefault(_strip_name_prefix(name), code)
 
-    picked: List[str] = []
-    for code in leaders:
-        member = by_code.get(code)
-        if member and member not in picked:
-            picked.append(member)
-        if len(picked) >= limit:
-            return picked
+    merged: List[str] = []
+    used: set[str] = set()
+    for name in ranked:
+        code = code_of.get(name) or code_of.get(_strip_name_prefix(name))
+        if code and code in used:
+            continue
+        if code:
+            used.add(code)
+            merged.append(f"{name}({code})")
+        else:
+            merged.append(name)
+    for entry in listed:
+        match = _LISTED_RE.match(entry)
+        if match and match.group(2) not in used:
+            used.add(match.group(2))
+            merged.append(entry)
+    return merged
 
-    for member in members:
-        if member not in picked:
-            picked.append(member)
-        if len(picked) >= limit:
-            break
-    return picked
+
+def pick_members(members: Sequence[str], limit: int = MAX_MEMBERS) -> List[str]:
+    """Take the leading names in the order lianban already ranked them.
+
+    Every theme page is sorted by three-month relative strength and recomputed
+    after each close, so no re-ranking is applied here: the page order is the
+    ranking the reader asked for.
+    """
+    return list(members[:limit])
 
 
 def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
@@ -412,7 +463,7 @@ async def attach_themes(
 
     for theme in themes:
         members = await fetcher.get(theme["slug"])
-        theme["members"] = pick_members(members, theme.get("leaders") or [])
+        theme["members"] = pick_members(members)
     item.metadata["ashare_themes"] = themes
 
 
