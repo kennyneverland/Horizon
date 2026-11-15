@@ -162,6 +162,35 @@
         "enabled": true,
         "category": "ai-industry",
         "profile": "tech-news"
+      },
+      {
+        "name": "CNBC Top News",
+        "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news",
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "MarketWatch",
+        "url": "https://feeds.marketwatch.com/marketwatch/topstories/",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
+      },
+      {
+        "name": "Nikkei Asia",
+        "url": "https://asia.nikkei.com/rss/feed/nar",
+        "enabled": true,
+        "category": "asia-business",
+        "profile": "finance-news"
+      },
+      {
+        "name": "BBC Business",
+        "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
