@@ -16,6 +16,7 @@ from .prompting.analysis import analysis_system_prompt, analysis_user_prompt
 from .utils import gather_ai_tasks, parse_json_response
 from .errors import AIProviderUnavailableError
 from ..models import ContentAnalysis, ContentItem
+from ..processing.ashare_themes import MemberFetcher, ThemeIndex, attach_themes
 from ..processing.china_focus import boost_analysis
 from ..processing.citation_check import adjust_analysis
 from ..processing.content import select_content, split_content
@@ -33,6 +34,7 @@ class ContentAnalyzer:
         *,
         concurrency: int = 1,
         throttle_sec: float = 0.0,
+        ashare_themes: bool = True,
     ):
         self.client = ai_client
         self.profiles = profiles
@@ -40,6 +42,12 @@ class ContentAnalyzer:
         self.console = console or Console(stderr=True)
         self.concurrency = max(concurrency, 1)
         self.throttle_sec = max(throttle_sec, 0.0)
+        self.theme_index = ThemeIndex() if ashare_themes else None
+        self.member_fetcher = (
+            MemberFetcher()
+            if self.theme_index is not None and self.theme_index.available
+            else None
+        )
 
     @staticmethod
     def _parse_json_response(response: str) -> Optional[dict]:
@@ -183,6 +191,8 @@ class ContentAnalyzer:
         if item.processing:
             adjusted = await adjust_analysis(item, result)
             item.processing.analysis = boost_analysis(item, adjusted)
+            if self.theme_index is not None and self.member_fetcher is not None:
+                await attach_themes(item, self.theme_index, self.member_fetcher)
 
     @classmethod
     def _validate_analysis_response(
