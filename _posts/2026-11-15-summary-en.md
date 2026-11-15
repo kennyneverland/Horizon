@@ -5,526 +5,442 @@ date: 2026-11-15
 lang: en
 ---
 
-> From 170 items, 23 important content pieces were selected
+> From 251 items, 20 important content pieces were selected
 
 ---
 
 **Technology News**
-1. [Nvidia Names Colette Kress Interim CEO After Huang Departs](#item-tech-news-1) ⭐️ 8.0/10
-2. [Anthropic IPO Tests AI Investor Appetite Amid Nvidia Ties](#item-tech-news-2) ⭐️ 7.0/10
-3. [OpenAI disbands robotics team, shifts to general models](#item-tech-news-3) ⭐️ 7.0/10
-4. [意大利因相册读取违规对Meta罚款8.05亿欧元](#item-tech-news-4) ⭐️ 7.0/10
-5. [Tesla Cybercab Terms Require $299 Monthly Subscription to Operate](#item-tech-news-5) ⭐️ 7.0/10
+1. [Anthropic IPO Tests AI Investor Appetite](#item-tech-news-1) ⭐️ 8.0/10
+2. [Nvidia Names Colette Kress Interim CEO After Huang Departure](#item-tech-news-2) ⭐️ 8.0/10
+3. [Italy fines Meta €805 million over Facebook Android photo access](#item-tech-news-3) ⭐️ 8.0/10
+4. [Tesla Cybercab Terms Require $299 Monthly Autonomous Subscription](#item-tech-news-4) ⭐️ 8.0/10
 
 **Financial News**
-1. [Arcfox Commits Full EV Lineup to CATL Swap Network as Stations Target 6,000](#item-finance-news-1) ⭐️ 8.0/10
-2. [Report: Anthropic Seeks $100 Billion IPO at $1.4 Trillion Valuation](#item-finance-news-2) ⭐️ 7.5/10
-3. [Tesla Opens Invited Cybercab Sales at $29,990](#item-finance-news-3) ⭐️ 7.5/10
-4. [Nvidia Leadership Change Raises AI Financing Risks](#item-finance-news-4) ⭐️ 7.5/10
-5. [US Investigates Possible L3Harris Fault in FAA Shutdown](#item-finance-news-5) ⭐️ 7.0/10
-6. [TCL CSOT Moves Printed OLED Toward Scale Commercialization](#item-finance-news-6) ⭐️ 7.0/10
-7. [Jensen Huang’s Nvidia stake faces scrutiny after departure](#item-finance-news-7) ⭐️ 7.0/10
-8. [Starship upper stage caught from orbit; booster missed](#item-finance-news-8) ⭐️ 7.0/10
-9. [Iran&\#x27;s Navy Says Three Tankers Hit Mines in Hormuz](#item-finance-news-9) ⭐️ 7.0/10
-10. [US Stocks Rebound Despite Nvidia CEO Exit](#item-finance-news-10) ⭐️ 6.5/10
-11. [Anthropic IPO Reportedly Bars Mainland China and Hong Kong Orders](#item-finance-news-11) ⭐️ 6.5/10
-12. [Foundation Robotics Startup Misses Payroll After CEO Loan](#item-finance-news-12) ⭐️ 6.0/10
-13. [Oil Market Remains Oversupplied Despite Hormuz Tanker Attacks](#item-finance-news-13) ⭐️ 6.0/10
-14. [Beijing Stock Exchange Marks Fifth Anniversary](#item-finance-news-14) ⭐️ 6.0/10
-15. [Iran Says Tankers Struck Mines Near Strait of Hormuz](#item-finance-news-15) ⭐️ 6.0/10
-16. [Nissan cuts China sales target but plans more investment](#item-finance-news-16) ⭐️ 6.0/10
-17. [Novo&\#x27;s Wegovy pill linked to 6% weight loss in three months](#item-finance-news-17) ⭐️ 6.0/10
-18. [Italy Fines Meta $887 Million Over Android Data Access](#item-finance-news-18) ⭐️ 6.0/10
+1. [US stocks rebound despite Nvidia CEO exit and Fed hawkishness](#item-finance-news-1) ⭐️ 8.0/10
+2. [Huang&\#x27;s $135 Billion Nvidia Stake Draws Attention After Departure](#item-finance-news-2) ⭐️ 8.0/10
+3. [FAA Ground Stop Followed L3Harris Telecom Upgrade](#item-finance-news-3) ⭐️ 8.0/10
+4. [Nvidia shareholders ask board to weigh Huang return](#item-finance-news-4) ⭐️ 8.0/10
+5. [Microsoft outage disrupts Asia operations](#item-finance-news-5) ⭐️ 8.0/10
+6. [Iranian navy reports three tankers ablaze after mines in Hormuz](#item-finance-news-6) ⭐️ 8.0/10
+7. [Nvidia CEO Resignation and AI Trade Outlook](#item-finance-news-7) ⭐️ 7.0/10
+8. [Reported Trump Administration Clash Over Nvidia China Chip Curbs](#item-finance-news-8) ⭐️ 7.0/10
+9. [Anthropic IPO Could Lift Co-Founder Stakes to $17-$18 Billion Each](#item-finance-news-9) ⭐️ 7.0/10
+10. [Nvidia Leadership Turmoil and Hot Inflation Data Rattle AI Trade](#item-finance-news-10) ⭐️ 7.0/10
+11. [Nvidia CEO departure raises succession and governance questions](#item-finance-news-11) ⭐️ 7.0/10
+12. [Digital Realty plans additional $10bn for Japan data centers](#item-finance-news-12) ⭐️ 7.0/10
+13. [JD.com completes $1.5bn German appliance retailer takeover](#item-finance-news-13) ⭐️ 7.0/10
+14. [Eric Trump-Backed Robot Startup Missed Payroll After $4.6 Million CEO Loan](#item-finance-news-14) ⭐️ 6.0/10
+15. [Odd Lots Podcast Discusses Nvidia After Jensen Huang](#item-finance-news-15) ⭐️ 6.0/10
+16. [WHI on track for Japan&\#x27;s largest IPO in 2026](#item-finance-news-16) ⭐️ 6.0/10
 
 ---
 
 ## Technology News
 
 <a id="item-tech-news-1"></a>
-### [Nvidia Names Colette Kress Interim CEO After Huang Departs](https://www.bloomberg.com/news/videos/2026-11-14/nvidia-looks-for-a-new-era-after-huang-video) ⭐️ 8.0/10
+### [Anthropic IPO Tests AI Investor Appetite](https://www.bloomberg.com/news/videos/2026-11-14/anthropic-ipo-tests-investor-appetite-for-ai-video) ⭐️ 8.0/10
 
-Bloomberg reported that Nvidia CEO Jensen Huang abruptly departed and longtime CFO Colette Kress was appointed interim CEO. The coverage framed the change as a succession challenge for a company Huang led for more than three decades, with questions about Nvidia’s China strategy and whether AI chip rivals could gain ground. Bloomberg also linked the transition to reported allegations involving Huang’s alleged affairs with employees and a suspected Chinese spy, raising national-security questions beyond Nvidia’s corporate governance. The reports did not identify a permanent successor or quantify the market impact.
+Bloomberg reported that Anthropic’s upcoming IPO is heavily oversubscribed and could test investor appetite for AI, with the offering expected to follow SpaceX’s debut. The report tied the offering to Nvidia’s planned investment in Anthropic and broader AI supply-chain dynamics, while noting Jensen Huang’s central role connecting companies powering the AI boom. The supplied source does not give IPO pricing, share count, or a closing date.
 
-rss · Bloomberg Technology · Nov 14, 14:25
+rss · Bloomberg Technology · Nov 14, 15:54
 
-**「Background」** Jensen Huang led Nvidia for more than three decades and was closely associated with the company’s AI-chip strategy and China-facing relationships. His abrupt departure is therefore a significant leadership transition for a major AI hardware vendor, with questions about succession, China strategy, and competitive continuity.
+**「Background」** Anthropic’s upcoming IPO is being described as a test of investor appetite for AI companies because it is poised to follow SpaceX’s blockbuster debut and is linked to Nvidia’s planned investment in Anthropic. The offering’s reported heavy oversubscription shows strong initial demand, while Nvidia’s role in the AI supply chain and Jensen Huang’s central position make the listing sensitive to broader expectations about the sector.
 
-**「Market and ecosystem impact」** Nvidia’s abrupt CEO transition immediately repriced the company and parts of the AI-infrastructure market: Nvidia shares fell as much as 13% at the open and its market cap dropped below $4 trillion, while AMD gained and AI-cloud names such as CoreWeave, IREN, and Nebius declined. For investors and AI partners, the move raises near-term uncertainty around leadership continuity, China strategy, and Nvidia’s competitive position in AI chips.
+**「Impact」** For investors and AI companies, the oversubscribed offering makes Anthropic a near-term sentiment gauge for AI capital markets, especially because Nvidia’s planned investment links model development to compute supply. The source does not indicate any immediate change to developer access, product pricing, or API availability.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/technology/live/nvidia-live-updates-jensen-huang-ousted-cfo-colette-kress-to-serve-as-interim-ceo-165956717.html">Nvidia live updates: Jensen Huang ousted, CFO Colette Kress to serve as interim CEO</a></li>
-<li><a href="https://www.cnbc.com/2026/11/12/nvidia-jensen-huang-ceo-live-updates.html">Nvidia CEO Jensen Huang resigns: Live updates</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia CEO succession`, `#China AI strategy`, `#AI infrastructure`, `#A-share catalysts`
+**Tags**: `#AI IPO`, `#capital markets`, `#Anthropic`, `#Nvidia`, `#AI investor sentiment`
 
 ---
 
 <a id="item-tech-news-2"></a>
-### [Anthropic IPO Tests AI Investor Appetite Amid Nvidia Ties](https://www.bloomberg.com/news/videos/2026-11-14/anthropic-ipo-tests-investor-appetite-for-ai-video) ⭐️ 7.0/10
+### [Nvidia Names Colette Kress Interim CEO After Huang Departure](https://www.bloomberg.com/news/videos/2026-11-14/nvidia-looks-for-a-new-era-after-huang-video) ⭐️ 8.0/10
 
-Bloomberg reports that Anthropic’s upcoming IPO is being framed as a test of investor appetite for AI, with the offering described as heavily oversubscribed and expected to follow SpaceX’s debut. The report also links the offering to Nvidia’s planned investment in Anthropic and Jensen Huang’s departure as background factors, though it does not provide confirmed deal terms or financial details.
+Bloomberg reports that Nvidia has appointed longtime CFO Colette Kress as interim CEO following Jensen Huang&\#x27;s abrupt departure. The coverage frames the transition as a test of whether Nvidia can preserve its AI-chip leadership, manage its China strategy, and maintain relationships Huang built over more than three decades. No permanent successor is identified in the supplied report.
 
-rss · Bloomberg Technology · Nov 14, 15:54
+rss · Bloomberg Technology · Nov 14, 14:25
 
-**「Background」** Anthropic’s IPO is closely tied to its relationship with Nvidia, whose CEO Jensen Huang had described Nvidia’s roughly $10 billion commitment to Anthropic as likely its final major investment before Anthropic and OpenAI go public. Huang’s reported departure from Nvidia adds another layer of uncertainty to the AI-supply-chain narrative behind the offering.
+**「Background」** Jensen Huang resigned as Nvidia’s president, CEO, and board member effective immediately, ending his 33-year tenure as co-founder and installing CFO Colette Kress as interim CEO. The announcement triggered a roughly 10% premarket share decline and comes before Nvidia’s scheduled Nov. 17 earnings report, sharpening questions about leadership stability and succession.
 
-**「Impact」** For investors, the IPO’s oversubscription and Nvidia-related positioning make it a near-term signal of whether public markets will continue to fund large AI companies, but the absence of disclosed terms limits concrete expectations.
+**「Impact」** For investors and AI-chip rivals, the immediate consequence is uncertainty over whether interim leadership can keep Nvidia&\#x27;s China relationships and strategic influence intact while a permanent CEO is chosen.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.tradingkey.com/analysis/stocks/us-stocks/261648397-jensen-huang-nvidia-30-billion-openai-tradingkey">Nvidia Locks 30 Billion in OpenAI, 100 Billion Partnership Falls Through, Jensen Huang: No More Investing</a></li>
-<li><a href="https://www.bitget.com/news/detail/12560605369274">NVIDIA&#x27;s Jensen Huang: Anthropic and OpenAI Set to Go Public, NVIDIA May Not Invest Further  | Bitget News</a></li>
-<li><a href="https://www.facebook.com/FortuneMagazine/videos/-httpsbitly4kqiznpthe-timing-of-jensen-huangs-dramatic-exit-has-thrown-new-press/2117396838886334">🔗: https://bit.ly/4kQiZNp
-The timing of Jensen Huang&#x27;s dramatic exit has thrown new pressure on Anthropic&#x27;s hotly anticipated IPO.
-
-On #FortuneDaily, #TermSheet Editor Allie Garfinkle breaks down why investors and analysts don&#x27;t expect the Nvidia shake-up to hurt Anthropic&#x27;s core business, and why it could still complicate the broader AI narrative. | Fortune</a></li>
+<li><a href="https://mashable.com/tech/jensen-huang-resigns-nvidia-ceo">Jensen Huang resigns as Nvidia CEO, Colette Kress takes over | Mashable</a></li>
+<li><a href="https://www.cnbcafrica.com/2026/nvidia-ceo-jensen-huang-resigns-colette-kress-named-interim-chief">Nvidia CEO Jensen Huang resigns, Colette Kress named interim chief | CNBC Africa</a></li>
+<li><a href="https://techcrunch.com/2026/11/12/jensen-huang-is-out-at-nvidia-who-is-colette-kress-his-interim-replacement">Jensen Huang is out at Nvidia — who is Colette Kress, his interim replacement?</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#AI IPO`, `#Anthropic`, `#Nvidia`, `#capital markets`, `#AI investor sentiment`
+**Tags**: `#Nvidia`, `#CEO succession`, `#China strategy`, `#AI infrastructure`, `#executive leadership`
 
 ---
 
 <a id="item-tech-news-3"></a>
-### [OpenAI disbands robotics team, shifts to general models](https://fortune.com/2026/11/13/openai-disbands-robotics-team-as-its-general-models-start-running-robots/) ⭐️ 7.0/10
+### [Italy fines Meta €805 million over Facebook Android photo access](https://www.garanteprivacy.it/home/docweb/-/docweb-display/docweb/10321080) ⭐️ 8.0/10
 
-OpenAI has reportedly disbanded its independent robotics team and reassigned researchers to broader research groups. The company said robotics remains central to its long-term vision, and that general frontier models such as GPT-6 Astra can now control robots directly without a dedicated robotics team. This follows an earlier 2020 disbandment, a 2024 rebuild with a Figure partnership that ended in February 2025, and OpenAI’s continued work on a self-developed humanoid robot targeted for a first public demonstration in 2027.
+Italy&\#x27;s privacy regulator fined Meta €805 million after finding that Facebook&\#x27;s Android photo-album recommendation feature accessed photos, videos, and metadata from about 20 million Italian users without specific consent. The regulator said the feature, launched in 2023, was enabled by default and used broad permission prompts. Meta must make the feature default-off and obtain separate user consent within 60 days, or keep it disabled for users who have not given valid authorization.
 
-telegram · zaihuapd · Nov 14, 04:00
+telegram · zaihuapd · Nov 14, 14:37
 
-**「Background」** OpenAI rebuilt a standalone robotics team in 2024 and partnered with Figure to develop AI for humanoid robots, but that partnership ended in February 2025 when Figure said it would build its own robot AI. The current reorganization reflects a broader industry bet that general-purpose models can control embodied devices, while OpenAI still says it is developing a humanoid robot with a public demonstration targeted for 2027.
+**「Background」** Italian privacy enforcement has previously targeted Meta, including a 2019 decision that regulators said contributed to the larger sanction. The current case began after a July 2025 consumer complaint and focuses on whether a single gallery permission and generic notice can provide valid consent when the feature is enabled by default.
 
-**「Impact」** Robotics partners such as Figure, whose collaboration with OpenAI ended in February 2025, and other humanoid developers may need to rely on OpenAI’s general frontier models rather than a dedicated internal robotics team for model-driven control.
+**「Impact」** The decision requires Meta to change consent handling for Italian Facebook Android users, effectively turning the photo-access feature into an opt-in capability. If the 60-day requirement is not met, the regulator&\#x27;s order points to a concrete product-compliance consequence: the feature cannot be enabled for users without valid consent.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://fortune.com/2026/11/13/openai-disbands-robotics-team-as-its-general-models-start-running-robots">Exclusive: OpenAI disbands its robotics team as its general-purpose AI models start running robots | Fortune</a></li>
+<li><a href="https://www.aljazeera.com/news/2026/11/14/italy-fines-meta-880m-over-photo-privacy">Italy fines Meta $880m over photo privacy | Technology News | Al Jazeera</a></li>
+<li><a href="https://www.facebook.com/stk206/posts/your-phones-photo-gallery-just-cost-meta-805-millionitalys-data-protection-autho/1149565830780341">Stk206</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#OpenAI`, `#robotics strategy`, `#humanoid robots`, `#AI applications`, `#industry structure`
+**Tags**: `#privacy regulation`, `#Meta`, `#EU enforcement`, `#platform compliance`, `#data governance`
 
 ---
 
 <a id="item-tech-news-4"></a>
-### [意大利因相册读取违规对Meta罚款8.05亿欧元](https://www.garanteprivacy.it/home/docweb/-/docweb-display/docweb/10321080) ⭐️ 7.0/10
+### [Tesla Cybercab Terms Require $299 Monthly Autonomous Subscription](https://www.tesla.com/configurator/api/v4/terms?category=autonomy_subs&amp;amp;locale=en_US&amp;amp;model=cc&amp;amp;saleType=Sale) ⭐️ 8.0/10
 
-意大利隐私监管机构 Garante Privacy 对 Meta 处以 8.05 亿欧元罚款，原因是 Facebook Android 应用在 2023 年上线的相册推荐功能中，未经具体同意读取约 2000 万意大利用户的照片、视频及元数据。该功能默认开启且授权提示笼统；Meta 须在 60 天内改为默认关闭并单独征得用户同意，否则不得对未有效授权用户启用。
-
-telegram · zaihuapd · Nov 14, 14:37
-
-**「Background」** The feature at issue is Facebook&\#x27;s Android photo-gallery recommendation function, which launched in 2023 and was enabled by default with broad permission prompts. That design allowed the app to access users&\#x27; photos, videos, and metadata without obtaining specific consent for the data use.
-
-**「影响」** 该处罚直接约束 Meta 在意大利运营 Facebook Android 应用的方式，尤其是涉及相册数据的默认权限设置和同意流程；用户后续需要面对更明确、单独触发的授权机制。
-
-**Tags**: `#监管处罚`, `#Meta`, `#隐私合规`, `#欧盟数字政策`, `#平台运营`
-
----
-
-<a id="item-tech-news-5"></a>
-### [Tesla Cybercab Terms Require $299 Monthly Subscription to Operate](https://www.tesla.com/configurator/api/v4/terms?category=autonomy_subs&amp;amp;locale=en_US&amp;amp;model=cc&amp;amp;saleType=Sale) ⭐️ 7.0/10
-
-Tesla published Cybercab autonomy subscription terms stating that the vehicle is priced at $29,990 and requires a $299 monthly subscription, without which the vehicle cannot operate. Tesla may change the subscription price with one month’s notice, and nonpayment or violations can lead to suspension or cancellation, with three warnings triggering a one-week autonomy suspension. The terms limit Cybercabs to designated operating areas and prohibit unauthorized connection to ride-hailing, delivery, or rental platforms. Electrek notes that Cybercab and the Robotaxi version of Model Y use AI4 hardware and the same autonomy software, while consumer FSD still requires human supervision.
+Tesla&\#x27;s published Cybercab subscription terms list a $29,990 vehicle price plus a mandatory $299 monthly autonomous subscription, stating that the vehicle cannot run without it. The terms allow Tesla to adjust the subscription price with one month&\#x27;s notice and impose usage limits: operation only in designated areas and no unauthorized connection to ride-hailing, delivery, or rental platforms. Electrek notes that Cybercab and the robotaxi Model Y use AI4 hardware and the same autonomous software, while ordinary-owner FSD still requires human supervision.
 
 telegram · zaihuapd · Nov 15, 01:10
 
-**「Background」** Tesla had already opened Cybercab orders for select personal-use buyers at $29,990, with a $1,000 non-refundable deposit and a required $299 monthly Autonomy Subscription, targeting December deliveries in Austin. The new agreement explains the conditions attached to that subscription, including personal-use limits and enforcement actions.
+**「Background」** The Cybercab was previously limited to Tesla’s own robotaxi fleet, according to TeslaRati, and Electrek reported that select customers can now order one for personal use with estimated December 2026 deliveries in Austin, Texas. The new terms therefore shift the vehicle from fleet-only operation to consumer ownership, while tying its basic operation to a mandatory autonomy subscription.
 
-**「Impact」** For prospective Cybercab buyers, autonomy is structured as a recurring service and a control point rather than a one-time feature, requiring a $299 monthly budget and acceptance of Tesla-defined operating zones and platform restrictions. This can limit resale flexibility, third-party fleet use, and unauthorized deployment in ride-hailing, delivery, or rental operations.
+**「Impact」** For prospective Cybercab buyers, the terms make autonomous operation a recurring paid service rather than a one-time feature, adding $299 per month and Tesla-controlled restrictions to the $29,990 purchase. The one-month price-adjustment right and suspension rules mean total ownership cost and vehicle usability depend on ongoing compliance with Tesla&\#x27;s subscription policy.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.teslarati.com/tesla-cybercab-29990-december-deliveries">Tesla Cybercab goes on sale for $29,990, slated for December deliveries</a></li>
-<li><a href="https://www.facebook.com/groups/1743863285929939/posts/4588901594759413">TESLA Owners &amp; Enthusiasts: Mods &amp; Upgrades (DSDMods.com) | Tesla has just officially announced that select customers are now being invited to purchase Cybercab for personal use | Facebook</a></li>
+<li><a href="https://electrek.co/2026/11/13/tesla-cybercab-personal-use-orders-299-subscription-geofence">Tesla Cybercab orders open at $29,990 + $299/mo, only in Robotaxi zones | Electrek</a></li>
+<li><a href="https://www.teslarati.com/tesla-cybercab-arrives-steep-ownership-fine-print">Tesla Cybercab arrives with steep ownership fine print</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#特斯拉`, `#Robotaxi`, `#自动驾驶订阅`, `#AI商业化`, `#定价政策`
+**Tags**: `#Tesla`, `#robotaxi`, `#autonomous driving`, `#subscription pricing`, `#AI commercialization`
 
 ---
 
 ## Financial News
 
 <a id="item-finance-news-1"></a>
-### [Arcfox Commits Full EV Lineup to CATL Swap Network as Stations Target 6,000](https://wallstreetcn.com/articles/3785945) ⭐️ 8.0/10
+### [US stocks rebound despite Nvidia CEO exit and Fed hawkishness](https://wallstreetcn.com/articles/3785940) ⭐️ 8.0/10
 
-Arcfox launched battery-swap versions of the Beta S3 and Beta T1, and BAIC New Energy Chairman Liu Guanqiao said all Arcfox Beta, Alpha and WenDao models are planned to offer swap versions by 2027. CATL’s Chocolate passenger swap network had grown from more than 1,000 stations at end-2025 to more than 2,500 by Sept 29, 2026, and targets 6,000 by 2027.
-
-rss · 华尔街见闻 · Nov 14, 10:40
-
-**「Background」** Arcfox, BAIC&\#x27;s EV brand, first tested CATL&\#x27;s shared battery-swap system in May 2026 with the Beta S3, where drivers exchange a depleted battery for a charged one, and BAIC New Energy chairman Liu Guanqiao said about 70% of buyers chose the swap version; CATL&\#x27;s network grew from over 1,000 stations at end-2025 to over 2,500 by Sept 2026.
-
-**「Impact」** For households, battery rental lowers Arcfox’s upfront vehicle prices to as low as RMB52,000, while the full-line rollout is intended to help CATL raise utilization across its expanding swap network.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://m.sohu.com/a/1101259424_122014422?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334">租电价低至5.2万元！极狐加码换电车型，宁德时代计划2027年建成6000座换电站_搜狐网</a></li>
-<li><a href="https://wallstreetcn.com/articles/3785945">宁德时代等来一个敢押全系的盟友</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#CATL`, `#battery swap`, `#EV infrastructure`, `#A-share themes`, `#BAIC BluePark`
-
----
-
-<a id="item-finance-news-2"></a>
-### [Report: Anthropic Seeks $100 Billion IPO at $1.4 Trillion Valuation](https://wallstreetcn.com/articles/3785948) ⭐️ 7.5/10
-
-According to a Wall Street CN report, Anthropic is pursuing a record-scale IPO that could raise up to $100 billion at a valuation of up to $1.4 trillion, with seven tech companies including Nvidia, Microsoft and Broadcom reportedly committing to invest $26 billion immediately after listing.
-
-rss · 华尔街见闻 · Nov 14, 11:47
-
-**「Background」** Anthropic’s initial public offering \(IPO\) is seeking a valuation of up to about $1.4 trillion, below prior Wall Street estimates of about $2 trillion and above its May funding round at $965 billion. Some of its backers are chip and cloud suppliers that are also customers, and Nvidia’s reported ~$10 billion commitment now faces uncertainty after CEO Jensen Huang resigned days before the planned debut.
-
-**「Impact」** The reported IPO effort would give Anthropic public-market funding for compute, data-center and chip spending, directly testing investor appetite for AI infrastructure and affecting suppliers such as Nvidia, Microsoft and Broadcom.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/markets/article/anthropic-seeks-14-trillion-valuation-in-ipo-130300928.html">Anthropic seeks $1.4 trillion valuation in highly anticipated IPO, reportedly aiming for Nov. 19 or Nov. 20 debut</a></li>
-<li><a href="https://www.tikr.com/blog/google-nvidia-and-microsoft-literally-feeding-themselves-money-with-26-billion-anthropic-ipo-buy">Google, Nvidia and Microsoft “Literally Feeding Themselves Money” with $26 Billion Anthropic IPO Buy | TIKR.com</a></li>
-<li><a href="https://www.businessinsider.com/jensen-huang-fall-could-reshape-anthropic-ipo-ai-chip-race-2026-11">How Jensen Huang&#x27;s Fall Could Reshape Anthropic IPO and AI Chip Race - Business Insider</a></li>
-<li><a href="https://techstartups.com/2026/08/21/top-tech-news-today-august-21-2026-anthropic-apple-broadcom-google-nvidia-openai-tesla-more">Top Tech News Today, August 21, 2026: Anthropic, Apple, Broadcom, Google, Nvidia, OpenAI Tesla &amp; More - Tech Startups</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Anthropic IPO`, `#AI supply chain`, `#tech capital markets`, `#AI infrastructure financing`, `#Nvidia`, `#未证实`
-
----
-
-<a id="item-finance-news-3"></a>
-### [Tesla Opens Invited Cybercab Sales at $29,990](https://wallstreetcn.com/articles/3785947) ⭐️ 7.5/10
-
-Tesla said on Nov. 13 that it invited select customers to buy the steering-wheel-free Cybercab for personal use starting at $29,990 plus a $299 monthly autonomous subscription, with first deliveries expected in December 2026.
-
-rss · 华尔街见闻 · Nov 14, 11:30
-
-**「Background」** The Cybercab is a steering wheel-free two-seater previously used in Tesla&\#x27;s Austin robotaxi service, and the US safety regulator has opened an audit into how Tesla self-certified it under federal motor-vehicle safety standards for vehicles lacking traditional human controls.
-
-**「Impact」** The invited personal sale would extend Cybercab beyond Tesla’s Austin robotaxi fleet, while the reported U.S. safety regulator NHTSA investigation adds uncertainty to the December delivery target.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.nhtsa.gov/press-releases/investigation-tesla-cybercab-self-certification">NHTSA Investigates Tesla Cybercab Compliance| NHTSA</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#特斯拉`, `#Cybercab`, `#自动驾驶`, `#Robotaxi`, `#监管风险`, `#未证实`
-
----
-
-<a id="item-finance-news-4"></a>
-### [Nvidia Leadership Change Raises AI Financing Risks](https://wallstreetcn.com/articles/3785942) ⭐️ 7.5/10
-
-Nvidia announced CEO Jensen Huang resigned and CFO Colette Kress became interim CEO; Wall Street analysts pointed to $530.5bn of reported financing commitments in Nvidia filings and warned that reduced backing could tighten AI infrastructure funding.
-
-rss · 华尔街见闻 · Nov 14, 09:44
-
-**「Background」** Nvidia had expanded its role in AI infrastructure financing through equity investments and guarantees, including a $30 billion investment in OpenAI and a $2 billion stake in CoreWeave, while its $500 billion platform was a third-party capital target rather than a firm Nvidia commitment; Jensen Huang resigned as CEO after reports of personal scandals, and CFO Colette Kress was named interim CEO.
-
-**「Impact」** AI cloud companies that rely on Nvidia-backed financing could face higher borrowing costs if investors reprice Nvidia’s guarantees, analysts said.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/technology/article/nvidia-ceo-huang-resigns-amid-affair-scandals-board-names-cfo-colette-kress-interim-ceo-135801377.html">Nvidia CEO Huang resigns amid affair scandals, board names CFO Colette Kress interim CEO</a></li>
-<li><a href="https://www.cnbc.com/2026/11/12/nvidia-jensen-huang-ceo-live-updates.html">Nvidia CEO Jensen Huang resigns: Live updates</a></li>
-<li><a href="https://coinalertnews.com/news/2026/09/11/nvidia-ceo-rejects-circular-financing">NVIDIA CEO Jensen Huang Rejects Circular Financing Label for AI Investments</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia`, `#AI infrastructure financing`, `#semiconductor supply chain`, `#neoclouds`, `#A-share AI themes`, `#未证实`
-
----
-
-<a id="item-finance-news-5"></a>
-### [US Investigates Possible L3Harris Fault in FAA Shutdown](https://www.bloomberg.com/news/articles/2026-11-14/duffy-probing-possible-l3harris-incompetence-in-faa-meltdown) ⭐️ 7.0/10
-
-Transportation Secretary Sean Duffy said officials are investigating whether L3Harris Technologies was at fault for an FAA traffic-control system shutdown that grounded flights nationwide for more than four hours.
-
-rss · Bloomberg Business · Nov 14, 17:24
-
-**「Background」** The FAA oversees US air traffic control, and Bloomberg Intelligence’s senior airlines analyst said the shutdown highlights the difficulty of modernizing an aging system while keeping flights moving safely.
-
-**「Impact」** The nationwide ground stop disrupted airline schedules and passenger travel, while the investigation places L3Harris under scrutiny over its role in FAA aviation systems.
-
-**Tags**: `#FAA`, `#aviation`, `#L3Harris`, `#transportation`, `#regulatory investigation`
-
----
-
-<a id="item-finance-news-6"></a>
-### [TCL CSOT Moves Printed OLED Toward Scale Commercialization](https://wallstreetcn.com/articles/3785949) ⭐️ 7.0/10
-
-TCL CSOT said its 13-year printed OLED program is moving toward scale commercialization, with a planned 8.6-generation Guangzhou line requiring about 29.5 billion yuan and targeting Q4 2027 mass production, with capacity of about 22,500 glass substrates per month for mid-size IT panels.
-
-rss · 华尔街见闻 · Nov 14, 16:41
-
-**「Background」** Printed OLED deposits organic material like an inkjet printer instead of using fine metal masks in evaporated OLED production, and TCL CSOT said its current 5.5-generation line is at about 70% yield, aiming to match other OLED products within one to 1.5 years.
-
-**Tags**: `#printed OLED`, `#TCL CSOT`, `#display panel capacity`, `#OLED supply chain`, `#A-share tech theme`
-
----
-
-<a id="item-finance-news-7"></a>
-### [Jensen Huang’s Nvidia stake faces scrutiny after departure](https://wallstreetcn.com/articles/3785938) ⭐️ 7.0/10
-
-Nvidia founder Jensen Huang’s departure has put his reported 812 million-share stake, worth about $135 billion, under scrutiny as a potential overhang on the stock, according to William Blair analysts. Harvard governance expert Jesse Fried said Huang cannot compliantly sell while holding material non-public negative information, and Nvidia’s earnings next Tuesday could clear some legal obstacles if negative information is disclosed.
-
-rss · 华尔街见闻 · Nov 14, 06:29
-
-**「Background」** Huang resigned as Nvidia CEO and board member effective Nov 12, but his existing shares—counted as beneficially owned through trusts and family entities—remain his unless he chooses to sell them. Nvidia&\#x27;s 2026 proxy showed he beneficially owned about 870.6 million shares, or 3.58% of the company, as of March 23.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.instagram.com/p/DfstTIVgVPA">Instagram</a></li>
-<li><a href="https://www.tradingkey.com/analysis/stocks/us-stocks/262302041-is-jensen-huang-leaving-nvidia-potential-ceo-successors-nvda-stock-tradingkey">Is Jensen Huang Leaving Nvidia? Potential Successors and Risks Facing NVDA Stock</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Nvidia`, `#Jensen Huang`, `#Shareholding Overhang`, `#AI Supply Chain`, `#Corporate Governance`
-
----
-
-<a id="item-finance-news-8"></a>
-### [Starship upper stage caught from orbit; booster missed](https://news.google.com/rss/articles/CBMipgFBVV95cUxQS3BNak83bkJ3N2NOejJudW5NdDlHQl9tTmZ1OUFSak9iRTZmMlo1OFAyWVJnU25GdjRLbVNOSllnekdvdm1tcFlxbnJRY2RnRks4WG4ybjZlX3dnNE1HQ3E5S0dpVGxwNDZqLTVwM3JlLWJmMDYtNjhZVXgycFJjbzFPME50Z0ViRHNWTDhYSmdfeW80UDl4NlduZGdLR0R5ZmpIa05B?oc=5) ⭐️ 7.0/10
-
-SpaceX&\#x27;s Starship upper stage returned to its landing pad from orbit and was caught by a launch-tower arm, but the booster failed to recover.
-
-google\_news · Reuters · Nov 14, 21:40
-
-**「Background」** In the 15th test flight, SpaceX tried to recover both rocket stages for the first time; the booster aborted its return after an engine shut down early, while the upper stage deployed 26 Starlink V3 satellites before re-entering.
-
-**Tags**: `#SpaceX`, `#Starship`, `#reusable rockets`, `#aerospace`, `#commercial space`
-
----
-
-<a id="item-finance-news-9"></a>
-### [Iran&\#x27;s Navy Says Three Tankers Hit Mines in Hormuz](https://news.google.com/rss/articles/CBMisAFBVV95cUxPZWt1cHFualJEVktnTTVvd21uVnljc0FqR2dRaWpaRnYwZ3luZ2t1dUlJNVUtLTVlWHJFOS1ocDBlaVZsTFNZdjRMeldFVFE1Q0Jqem9FbU9fMmp1YTBUTUhqTmYzR3FJN1Z1Y1dHY2d0Yjlzb2lBR0JvNllyT3pScjI2SEpkbkhiYzZSWW9Tb3dwemdWaVVmMjBPbXZqd0hOZzdpRDVSZlVlbzBnV1BjMQ?oc=5) ⭐️ 7.0/10
-
-Reuters reported that Iran&\#x27;s navy said three tankers were on fire after hitting mines in the Strait of Hormuz.
-
-google\_news · Reuters · Nov 14, 22:54
-
-**「Background」** The Strait of Hormuz is a narrow waterway through which Iran has said it is targeting oil tankers that use routes it calls unauthorized, and naval mines are underwater explosive devices. Recent Iranian military statements have reported multiple tanker fires in or near the strait, while the US imposed a naval blockade on Iranian ports, helped tankers travel the strait, and said it had cleared key routes.
-
-**「Impact」** If confirmed, tanker strikes in the Strait of Hormuz could raise insurance and shipping costs, divert vessel traffic, and pressure oil markets, as Hormuz transits were reported about 65% below pre-war levels and Brent crude traded above $100.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.arabnews.com/middle-east/iran-says-three-oil-tankers-on-fire-in-hormuz-3010988">Arab News | Iran says three oil tankers on fire in Hormuz</a></li>
-<li><a href="https://www.reuters.com/world/middle-east/irans-irgc-says-four-tankers-ablaze-after-hitting-mines-near-strait-hormuz-2026-11-04">Iran&#x27;s IRGC says four tankers ablaze after hitting mines near Strait of Hormuz | Reuters</a></li>
-<li><a href="https://www.newstalkzb.co.nz/news/world/iran-says-four-tankers-on-fire-after-hitting-mines-in-strait-of-hormuz">Article Name Iran says four tankers on fire after hitting mines in Strait of Hormuz</a></li>
-<li><a href="https://gulfnews.com/world/mena/iran-fires-cruise-missiles-at-oil-tanker-in-strait-of-hormuz-setting-vessel-ablaze-near-oman-report-1.500635675">Iran fires cruise missiles at oil tanker in Strait of Hormuz setting vessel ablaze near Oman: Report</a></li>
-<li><a href="https://www.investing.com/news/economy-news/iran-says-four-tankers-hit-mines-in-hormuz-as-shipping-crisis-deepens-5027172">Iran says four tankers hit mines in Hormuz as shipping crisis deepens</a></li>
-<li><a href="https://www.cnbc.com/2026/03/17/iran-war-uae-energy-gas-field-oil-fujairah-strait-of-hormuz.html">Iran hits UAE energy supplies, tanker struck near Strait of Hormuz</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#energy markets`, `#shipping`, `#geopolitical risk`, `#oil supply`, `#Middle East`
-
----
-
-<a id="item-finance-news-10"></a>
-### [US Stocks Rebound Despite Nvidia CEO Exit](https://wallstreetcn.com/articles/3785940) ⭐️ 6.5/10
-
-US stocks rebounded despite Nvidia founder Jensen Huang’s resignation and hotter US inflation data, with the S&amp;P 500 rising 2% for the week.
+US stocks rebounded despite reports that Nvidia CEO Jensen Huang resigned, hotter inflation and Fed hawkishness, with the S&amp;P 500 up 2% for the week and the Philadelphia Semiconductor Index posting its best week since April. The wrap said short sellers had largely covered positions, while officials floated a possible December 50-basis-point rate hike and 2-year US Treasury yields rose about 35 basis points for the week.
 
 rss · 华尔街见闻 · Nov 14, 08:34
 
-**「Background」** The rebound was described as a short squeeze: after hedge funds cut leverage and net long positions to multi-year lows, negative news left few sellers, so short sellers had to buy back shares to cover. It followed Jensen Huang’s resignation as Nvidia CEO, with CFO Colette Kress named interim CEO and Harvey Jones becoming the company’s first-ever Board chair, while Fed officials including Lorie Logan signaled that rates may need to rise further.
+**「Background」** Nvidia founder Jensen Huang resigned in November 2026 after a board investigation into personal-conduct and security allegations, while Fed Governor Christopher Waller said a core CPI rise of 0.3% or more could justify a 50 basis point hike at the December meeting.
 
-**「Impact」** Hedge funds had already sold down semiconductor and AI bets, leaving few sellers to absorb negative news; that helped stocks rebound even as hotter inflation and Fed-tightening expectations pushed Treasury yields higher, squeezing bondholders and costly AI borrowers.
+**「Impact」** The Nvidia leadership change redirected investor flows toward rival AI chipmakers and supply-chain names, with KeyBanc analysts citing Broadcom, Monolithic Power Systems and Lattice Semiconductor as beneficiaries of rising AI server demand.
 
 <details><summary>References</summary>
 <ul>
 <li><a href="https://mexicobusiness.news/cloudanddata/news/jensen-huang-resigns-nvidia-colette-kress-named-interim-ceo">Jensen Huang Resigns From NVIDIA; Colette Kress Named Interim CEO</a></li>
-<li><a href="https://www.tradingkey.com/zh-hant/news/economic-indicator?pageIndex=2">財經指標 | 最新財經新聞資訊 | 即時行情追踪 - Tradingkey</a></li>
-<li><a href="https://www.goldmansachs.com/insights/articles/how-hedge-funds-are-trading-semiconductor-stocks">How Hedge Funds Are Trading Semiconductor Stocks | Goldman Sachs</a></li>
+<li><a href="https://www.fresnobee.com/news/nation-world/national/article318012957.html">Investors boost odds of half-point Fed hike as core CPI rise meets Waller&#x27;s bar | Fresno Bee</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/articles/broadcom-rallies-5-traders-bet-160244890.html">Broadcom Rallies 5% as Traders Bet on Chip Rivals After Jensen Huang’s Exit; NVIDIA Falls 5%, AMD Climbs 2%</a></li>
+<li><a href="https://au.finance.yahoo.com/news/2-ai-stocks-stand-supply-094610299.html">These 2 AI stocks stand out as supply chain winners, says KeyBanc</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#AI supply chain`, `#US inflation`, `#Fed policy`, `#equity positioning`, `#未证实`
+**Tags**: `#Nvidia leadership change`, `#AI supply chain`, `#US inflation`, `#Fed policy`, `#short squeeze`
+
+---
+
+<a id="item-finance-news-2"></a>
+### [Huang&\#x27;s $135 Billion Nvidia Stake Draws Attention After Departure](https://wallstreetcn.com/articles/3785938) ⭐️ 8.0/10
+
+Nvidia founder Jensen Huang&\#x27;s departure has focused attention on his roughly 812 million shares, worth about $135 billion, which William Blair analysts say recently weighed on the stock and could remain constrained by disclosure rules and market liquidity.
+
+rss · 华尔街见闻 · Nov 14, 06:29
+
+**「Background」** Jensen Huang resigned as Nvidia president, CEO and board member with immediate effect after 33 years, and CFO Colette Kress was named interim CEO. His roughly 811.5 million shares are mostly in trusts he co-trustees with his wife, and U.S. insider-trading rules block sales while he still knows important, not-yet-public information; his previous Rule 10b5-1 plan, which allowed scheduled sales, expired at the end of 2025.
+
+**「Impact」** Nvidia shareholders and investors in AI-hardware supply chains may face volatility if Huang begins selling his 812 million-share stake, because that holding equals about six trading days of Nvidia volume and leadership uncertainty can prompt large investors to reduce exposure.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.cnbc.com/2026/11/12/nvidia-jensen-huang-ceo-live-updates.html">Nvidia CEO Jensen Huang resigns: Live updates</a></li>
+<li><a href="https://www.nacionale.com/en/articles/can-jensen-huang-sell-nvidia-shares-after-resigning-insider-trading-rules-form-144">Can Jensen Huang sell his Nvidia shares now?</a></li>
+<li><a href="https://www.youtube.com/watch?v=AYiJ39SOitM">NVIDIA&#x27;s Jensen Huang Under Investigation!!  What Happens to NVDA Stock Now?</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#英伟达`, `#黄仁勋`, `#股票减持`, `#AI供应链`, `#公司治理`
+
+---
+
+<a id="item-finance-news-3"></a>
+### [FAA Ground Stop Followed L3Harris Telecom Upgrade](https://www.cnbc.com/2026/11/14/faa-ground-stop-flights-resume-delays.html) ⭐️ 8.0/10
+
+U.S. officials said the longest halt in U.S. flight departures since 9/11—a nationwide FAA ground stop lasting more than four hours on Nov. 13—followed a router problem during an L3Harris-managed telecom upgrade. Friday&\#x27;s disruptions included more than 9,000 U.S. flight cancellations, about a third of that day&\#x27;s schedule, though some were weather-related.
+
+rss · CNBC Top News · Nov 15, 02:53
+
+**「Background」** L3Harris has been the FAA&\#x27;s legacy telecommunications contractor for more than 20 years and owns the network used for air traffic control communications and radar feeds, which is why a copper-to-fiber upgrade at a remote facility was central to the disruption.
+
+**「Travel and airline operations」** The ground stop disrupted passengers and forced airlines to cancel or delay flights and reposition crews and aircraft.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.foxbusiness.com/fox-news-air-space/who-l3harris-federal-contractor-sec-duffy-says-may-have-caused-faa-outage">Sean Duffy says L3Harris work may have caused FAA nationwide ground stop | Fox Business</a></li>
+<li><a href="https://www.transportation.gov/briefing-room/icymi-us-transportation-secretary-sean-p-duffy-provides-update-restoration-airspace">ICYMI: U.S. Transportation Secretary Sean P. Duffy Provides Update on Restoration of Airspace Following Nationwide Ground Stop | US Department of Transportation</a></li>
+<li><a href="https://www.yahoo.com/news/us/live/faa-ground-stop-latest-updates-duffy-blames-contractor-l3harris-thousands-more-flights-canceled-saturday-no-sign-of-cyberattack-161329174.html">FAA ground stop latest updates: Duffy blames contractor L3Harris; thousands more flights canceled Saturday; no sign of cyberattack</a></li>
+<li><a href="https://www.ctpublic.org/2026-11-14/faa-blames-fridays-ground-stop-on-equipment-issue-during-telecoms-network-upgrade">FAA blames Friday&#x27;s ground stop on &#x27;equipment issue&#x27; during telecoms network upgrade | Connecticut Public</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#FAA ground stop`, `#L3Harris`, `#aviation infrastructure`, `#airline disruptions`, `#transportation policy`
+
+---
+
+<a id="item-finance-news-4"></a>
+### [Nvidia shareholders ask board to weigh Huang return](https://www.cnbc.com/2026/11/14/nvidia-investors-jensen-huang-return-board-letter.html) ⭐️ 8.0/10
+
+Two major Nvidia shareholders—Altimeter Capital, with a 9.4 million-share stake worth nearly $1.9 billion as of June 30, and Atreides Management, with 1.2 million shares worth nearly $250 million—urged the board to consider a deliberate leadership process that includes Jensen Huang&\#x27;s possible return after his resignation amid affair allegations. The letter said interim CEO Colette Kress can lead while facts are known and did not call for immediate reinstatement.
+
+rss · CNBC Top News · Nov 14, 17:46
+
+**「Background」** Huang resigned after multiple affair allegations, including one involving suspected Chinese spy Alice Huang, who worked with customer Megaspeed; the Justice Department is investigating Megaspeed for allegedly redirecting restricted Nvidia AI chips to China.
+
+**Tags**: `#Nvidia`, `#AI chips`, `#Corporate governance`, `#US-China tech policy`, `#A-share AI supply chain`
+
+---
+
+<a id="item-finance-news-5"></a>
+### [Microsoft outage disrupts Asia operations](https://asia.nikkei.com/business/technology/microsoft-outage-wreaks-havoc-in-asia-exposing-dependence-risk) ⭐️ 8.0/10
+
+Microsoft apologized Friday for a wide-ranging outage that shut down Outlook and other Microsoft 365 services for nearly 24 hours, saying the problem stemmed from a network capacity upgrade and was resolved Saturday.
+
+rss · Nikkei Asia · Nov 15, 03:38
+
+**「Background」** The disruption recalled the 2024 CrowdStrike update fault, one of the world’s biggest IT outages, and highlighted dependence on a small set of critical cloud and software providers.
+
+**「Impact」** The outage forced some businesses to reschedule earnings or reroute email traffic, including Workhorse Group’s third-quarter release from Nov. 12 to Nov. 16.
+
+**Tags**: `#Microsoft`, `#technology outage`, `#cloud infrastructure`, `#Asia markets`, `#operational risk`
+
+---
+
+<a id="item-finance-news-6"></a>
+### [Iranian navy reports three tankers ablaze after mines in Hormuz](https://news.google.com/rss/articles/CBMisAFBVV95cUxPZWt1cHFualJEVktnTTVvd21uVnljc0FqR2dRaWpaRnYwZ3luZ2t1dUlJNVUtLTVlWHJFOS1ocDBlaVZsTFNZdjRMeldFVFE1Q0Jqem9FbU9fMmp1YTBUTUhqTmYzR3FJN1Z1Y1dHY2d0Yjlzb2lBR0JvNllyT3pScjI2SEpkbkhiYzZSWW9Tb3dwemdWaVVmMjBPbXZqd0hOZzdpRDVSZlVlbzBnV1BjMQ?oc=5) ⭐️ 8.0/10
+
+Iran&\#x27;s navy said three tankers caught fire after hitting mines in the Strait of Hormuz, according to Reuters.
+
+google\_news · Reuters · Nov 14, 22:54
+
+**「Background」** Iran’s Revolutionary Guard had earlier in November 2026 said four tankers struck mines and caught fire while attempting prohibited routes near the Strait of Hormuz, and the latest three-tanker claim has not been independently confirmed.
+
+**「Impact」** Tanker operators, cargo insurers and oil markets face higher freight and insurance costs because Hormuz shipping traffic has remained about 65% below pre-war levels and mine strikes have lengthened voyages and raised supply-risk concerns.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://x.com/Reuters/status/2121630532228293091">Reuters on X: &quot;Iran&#x27;s navy says oil tanker on fire after hitting mine in Hormuz https://t.co/O1eAiszwtT&quot; / X</a></li>
+<li><a href="https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis">2026 Strait of Hormuz crisis</a></li>
+<li><a href="https://www.reuters.com/world/middle-east/irans-irgc-says-four-tankers-ablaze-after-hitting-mines-near-strait-hormuz-2026-11-04">Iran&#x27;s IRGC says four tankers ablaze after hitting mines near Strait of Hormuz | Reuters</a></li>
+<li><a href="https://houseofsaud.com/iran-four-tankers-hormuz-mines-oct30">Iran Says 4 Oil Tankers Hit Mines in Hormuz</a></li>
+<li><a href="https://www.investing.com/news/economy-news/iran-says-four-tankers-hit-mines-in-hormuz-as-shipping-crisis-deepens-5027172">Iran says four tankers hit mines in Hormuz as shipping crisis deepens</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Geopolitics`, `#Energy`, `#Shipping`, `#Oil`, `#Markets`
+
+---
+
+<a id="item-finance-news-7"></a>
+### [Nvidia CEO Resignation and AI Trade Outlook](https://www.cnbc.com/2026/11/14/nvidia-ai-trade-data-centers-congress.html) ⭐️ 7.0/10
+
+Nvidia founder and CEO Jensen Huang resigned, with CFO Colette Kress becoming interim CEO before next Tuesday’s third-quarter earnings report. Yorkville Ives estimated that a Democratic-controlled Congress could prevent 10%-20% of planned data centers from being built.
+
+rss · CNBC Finance · Nov 14, 15:50
+
+**「Background」** The comments followed Nvidia’s longest weekly losing streak since 2012 and the Nov. 3 election giving Democrats control of Congress.
+
+**Tags**: `#Nvidia`, `#AI supply chain`, `#data centers`, `#ETF commentary`, `#tech policy`
+
+---
+
+<a id="item-finance-news-8"></a>
+### [Reported Trump Administration Clash Over Nvidia China Chip Curbs](https://www.bloomberg.com/news/videos/2026-11-14/bessent-lutnick-clash-over-nvidia-china-curbs-video) ⭐️ 7.0/10
+
+Bloomberg reported Axios coverage saying senior Trump administration officials, including Scott Bessent and Commerce Secretary Howard Lutnick, are clashing over restricting advanced Nvidia chips to China and over scrutiny of Lutnick’s handling of Megaspeed.
+
+rss · Bloomberg Markets · Nov 14, 14:30
+
+**「Background」** The Commerce Department administers U.S. export controls on sensitive high-tech goods, and Nvidia’s advanced chips are central to the debate because Chinese firms reportedly accessed them through Singapore-based Megaspeed, which Nvidia lists as a partner.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.pbs.org/newshour/politics/bessent-blames-lutnicks-commerce-department-for-not-restricting-nvidia-chips-to-china">Bessent blames Lutnick&#x27;s Commerce Department for not restricting Nvidia chips to China | PBS News</a></li>
+<li><a href="https://apnews.com/article/nvidia-megaspeed-scott-bessent-howard-lutnick-17582a5098a5fb4c8fe866a084a6e52b">Bessent says Lutnick&#x27;s Commerce Department slow to restrict Megaspeed | AP News</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Nvidia`, `#chip export controls`, `#US-China tech policy`, `#AI supply chain`, `#semiconductors`
+
+---
+
+<a id="item-finance-news-9"></a>
+### [Anthropic IPO Could Lift Co-Founder Stakes to $17-$18 Billion Each](https://www.cnbc.com/2026/11/14/meet-the-seven-co-founders-of-anthropic.html) ⭐️ 7.0/10
+
+CNBC reports Anthropic&\#x27;s IPO is expected to begin trading on Nov. 19 with a target valuation near $1.4 trillion. Each of the seven co-founders could see a roughly 1.4% stake rise from about $14 billion at the last private valuation to about $17-$18 billion at the target price of $70-$78 per share.
+
+rss · CNBC Top News · Nov 14, 12:15
+
+**「Background」** Anthropic was founded in 2021 by former OpenAI researchers led by siblings Dario and Daniela Amodei after they left over concerns about AI safety and commercialization.
+
+**Tags**: `#Anthropic IPO`, `#AI industry`, `#technology finance`, `#founder wealth`, `#market valuation`
+
+---
+
+<a id="item-finance-news-10"></a>
+### [Nvidia Leadership Turmoil and Hot Inflation Data Rattle AI Trade](https://www.cnbc.com/investingclub/2026/11/14/nvidias-leadership-crisis-rattles-wall-street-how-were-adjusting.html) ⭐️ 7.0/10
+
+Nvidia shares fell nearly 13% last week after reports that its board was investigating CEO Jensen Huang and that he resigned, and CNBC&\#x27;s Investing Club downgraded the stock to a hold-equivalent rating. The article also cited an October producer price index, a wholesale inflation measure, rising 6.5% year over year—its highest in nearly four years—as fueling concerns about multiple Federal Reserve rate hikes.
+
+rss · CNBC Top News · Nov 14, 18:48
+
+**「Background」** Nvidia’s reported leadership crisis centers on CEO Jensen Huang resigning Thursday while the board investigates allegations about his personal relationships, including a woman suspected of spying for China, with CFO Colette Kress named interim CEO, or temporary chief executive.
+
+**「Impact」** AI-linked investors and semiconductor markets face greater uncertainty from Nvidia&\#x27;s leadership vacuum and Fed rate-hike fears, while CNBC&\#x27;s Investing Club said Nvidia&\#x27;s turmoil could create market-share openings for AMD.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.facebook.com/wpxi/posts/nvidia-ceo-jensen-huang-resigned-thursday-as-the-companys-board-investigated-all/1560440532786738">1.2K views | Nvidia CEO Jensen Huang resigned Thursday as the company&#x27;s board investigated allegations about his personal relationships. Colette Kress was named interim CEO. #Nvidia #News | WPXI-TV Pittsburgh</a></li>
+<li><a href="https://finance.yahoo.com/technology/article/nvidia-ceo-huang-resigns-amid-affair-scandals-board-names-cfo-colette-kress-interim-ceo-135801377.html">Nvidia CEO Huang resigns amid affair scandals, board names CFO Colette Kress interim CEO</a></li>
+<li><a href="https://www.tradingkey.com/news/stocks/250662577-trump-new-chinese-chipmaker-export-blacklist-tradingkey-estebanma">Just After U.S.-China Trade Deal, Trump Stirs the Pot — New Chip Export Blacklist Against China</a></li>
+<li><a href="https://www.youtube.com/watch?v=vO_kT_4MIiY">Stocks Rise Ahead of PPI; Microsoft Outage; Nvidia Fallout</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Nvidia leadership`, `#AI supply chain`, `#semiconductor stocks`, `#inflation and Fed policy`, `#portfolio strategy`
 
 ---
 
 <a id="item-finance-news-11"></a>
-### [Anthropic IPO Reportedly Bars Mainland China and Hong Kong Orders](https://m.economictimes.com/markets/us-stocks/news/anthropic-ipo-share-orders-from-china-are-said-to-be-rebuffed/articleshow/135809948.cms) ⭐️ 6.5/10
+### [Nvidia CEO departure raises succession and governance questions](https://www.cnbc.com/2026/11/14/nvidia-jensen-huang-ceo-succession-risk.html) ⭐️ 7.0/10
 
-A report says Anthropic&\#x27;s IPO will not accept orders from mainland China and Hong Kong investors, with restrictions said to be linked to U.S. ITAR export controls. The offering is reported to price Nov. 18 and list the next day under ticker ANT, targeting a $1.4 trillion valuation and up to $90.4 billion in proceeds, with subscription demand about 6 times sellable shares.
+Nvidia&\#x27;s board began searching for a permanent CEO after Jensen Huang resigned, with Chief Financial Officer Colette Kress serving as interim CEO. The company said operations, customer commitments and its product roadmap would continue without interruption.
 
-telegram · zaihuapd · Nov 14, 10:18
+rss · CNBC Top News · Nov 14, 07:08
 
-**「Background」** Anthropic has filed a US IPO registration for a Nasdaq listing, and the reported order limits stem from US export-control rules such as ITAR, which can restrict foreign participation in transactions involving defense-related technology.
+**「Background」** The analysis framed the change as a governance test because Huang had been central to Nvidia&\#x27;s AI-chip strategy, investor confidence and relationships with critical suppliers.
 
-**「Impact」** The reported exclusion limits direct access for mainland China and Hong Kong investors to the listing, while some reportedly seek exposure through offshore structures such as BVI trusts, SPVs and swaps.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://the-decoder.com/banks-bar-chinese-and-hong-kong-investors-from-anthropic-ipo-over-us-export-controls">Banks bar Chinese and Hong Kong investors from Anthropic IPO over US export controls</a></li>
-<li><a href="https://www.anthropic.com/news/s1-sec">Anthropic files S-1 with the SEC for proposed initial public offering \ Anthropic</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Anthropic IPO`, `#AI capital markets`, `#China investor restrictions`, `#export controls`, `#A-share AI theme`, `#未证实`
+**Tags**: `#Nvidia`, `#CEO succession`, `#AI supply chain`, `#semiconductor governance`, `#market risk`
 
 ---
 
 <a id="item-finance-news-12"></a>
-### [Foundation Robotics Startup Misses Payroll After CEO Loan](https://www.cnbc.com/2026/11/14/foundation-payroll-ceo-loan.html) ⭐️ 6.0/10
+### [Digital Realty plans additional $10bn for Japan data centers](https://asia.nikkei.com/business/technology/artificial-intelligence/digital-realty-trust-to-spend-10bn-more-on-japan-data-centers-ceo) ⭐️ 7.0/10
 
-CNBC reported that Foundation Future Industries, a defense-robotics startup backed by Eric Trump, missed payroll on Oct. 30 as cash reserves dwindled, and that CEO and co-founder Sankaet Pathak borrowed $4.6 million from the company in 2025 to buy a home.
+Digital Realty Trust&\#x27;s CEO said the company will spend an additional $10 billion on data centers in Japan.
 
-rss · CNBC Finance · Nov 14, 12:00
+rss · Nikkei Asia · Nov 15, 03:38
 
-**「Background」** Pathak is Foundation’s sole board member and owns most of its shares. The company is seeking hundreds of millions of dollars at a $3 billion valuation, and its widely reported $24 million Pentagon-contract claim comes from contracts won by acquired firm Boardwalk Robotics, not Foundation itself.
+**「Background」** Digital Realty Trust is a U.S. data-center operator that runs its Japan business through MC Digital Realty, a 50/50 joint venture with Mitsubishi Corp., and Japan is described as its largest Asian investment destination. Before the reported $10 billion plan, the company had roughly 170-193 megawatts of data-center capacity in Japan, mainly around Tokyo and Osaka.
 
-**Tags**: `#defense robotics`, `#startup financing`, `#corporate governance`, `#Pentagon contracts`, `#Eric Trump`
+**「Impact」** The additional $10bn would help ease Japan&\#x27;s tight data-center supply by adding AI-ready, high-density, liquid-cooled capacity for cloud and enterprise customers.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://mlq.ai/news/digital-realty-plans-to-spend-10-billion-more-on-japan-data-centers-over-the-next-decade-nikkei-reports">Digital Realty plans to spend $10 billion more on Japan data centers over the next decade, Nikkei reports | MLQ.ai</a></li>
+<li><a href="https://cryptobriefing.com/digital-realty-japan-data-center-10-billion">Digital Realty Trust boosts Japan data center investment by $10B</a></li>
+<li><a href="https://asia.nikkei.com/business/technology/artificial-intelligence/digital-realty-trust-to-spend-10bn-more-on-japan-data-centers-ceo">Digital Realty Trust to spend $10bn more on Japan data centers: CEO - Nikkei Asia</a></li>
+<li><a href="https://finance.yahoo.com/sectors/technology/articles/digital-realty-opens-nrt14-data-023500897.html">Digital Realty Opens NRT14 Data Center, Third Facility at NRT Campus in Japan</a></li>
+<li><a href="https://www.imarcgroup.com/japan-data-center-market">Japan Data Center Market Size, Share, Trends and Forecast by Component, Type, Enterprise Size, End User, and Region, 2026-2034</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#data centers`, `#AI infrastructure`, `#Japan`, `#capital expenditure`, `#Digital Realty`
 
 ---
 
 <a id="item-finance-news-13"></a>
-### [Oil Market Remains Oversupplied Despite Hormuz Tanker Attacks](https://www.bloomberg.com/news/articles/2026-11-14/the-oil-market-is-brimming-with-crude-despite-tanker-attacks) ⭐️ 6.0/10
+### [JD.com completes $1.5bn German appliance retailer takeover](https://asia.nikkei.com/business/business-deals/china-s-jd.com-completes-1.5bn-takeover-of-german-appliance-retailer) ⭐️ 7.0/10
 
-Bloomberg reports that crude supply remains abundant despite repeated tanker attacks by Tehran near the Strait of Hormuz more than eight months into the Iran war.
+Chinese e-commerce company JD.com has completed a $1.5bn takeover of a German appliance retailer, according to Nikkei Asia.
 
-rss · Bloomberg Markets · Nov 14, 08:30
+rss · Nikkei Asia · Nov 15, 03:38
 
-**「Why tanker attacks matter」** The Strait of Hormuz is a narrow shipping route that normally carries about one-fifth of global oil, so attacks there can raise supply fears even when crude inventories are plentiful.
-
-**「Impact」** The tanker attacks have pushed supertanker charter rates above $1.2 million a day on Gulf-to-China routes, raising transport costs for crude oil.
+**「Background」** Ceconomy, the German electronics retailer operating MediaMarkt and Saturn, was conditionally approved for acquisition by the EU under its Foreign Subsidies Regulation, with market conditions attached.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://discoveryalert.com.au/iran-deal-strait-hormuz-oil-prices-asx-rba-2026">Iran Deal &amp; Strait of Hormuz: Oil Price Impact 2026</a></li>
-<li><a href="https://au.finance.yahoo.com/news/oil-prices-rise-investors-monitor-104853177.html">Oil prices rise as investors monitor shipping disruption in the Strait of Hormuz</a></li>
-<li><a href="https://www.youtube.com/watch?v=OyvROCL630c">Inside the 2026 Tanker War: Hormuz Strikes, Soaring Rates &amp; Diesel Shortages</a></li>
+<li><a href="https://digg.com/tech/mhtttw2e">JD.com completes $1.5 billion Ceconomy takeover, Nikkei Asia reports · Digg</a></li>
+<li><a href="https://asia.nikkei.com/business/business-deals/china-s-jd.com-completes-1.5bn-takeover-of-german-appliance-retailer">China&#x27;s JD.com completes $1.5bn takeover of German appliance retailer - Nikkei Asia</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#oil markets`, `#geopolitical risk`, `#Strait of Hormuz`, `#energy supply`, `#commodities`
+**Tags**: `#JD.com`, `#cross-border acquisition`, `#retail`, `#Germany`, `#e-commerce`
 
 ---
 
 <a id="item-finance-news-14"></a>
-### [Beijing Stock Exchange Marks Fifth Anniversary](https://www.cls.cn/detail/2534594) ⭐️ 6.0/10
+### [Eric Trump-Backed Robot Startup Missed Payroll After $4.6 Million CEO Loan](https://www.cnbc.com/2026/11/14/foundation-payroll-ceo-loan.html) ⭐️ 6.0/10
 
-As of its fifth anniversary, the Beijing Stock Exchange has 355 listed companies and about 800 billion yuan in total market capitalization; it has also facilitated nearly 900 billion yuan in cumulative small- and medium-sized enterprise financing since opening.
+According to people with direct knowledge, Eric Trump-backed Foundation Future Industries missed Oct. 30 payroll after CEO Sankaet Pathak borrowed $4.6 million from the company in 2025 to buy a luxury home.
 
-rss · 财联社电报\(RSSHub\) · Nov 14, 23:31
+rss · CNBC Finance · Nov 14, 12:00
 
-**「Background」** The Beijing Stock Exchange opened in November 2021 as China&\#x27;s third domestic stock exchange and is designed to serve innovative small and medium-sized enterprises, including specialized SMEs known as “专精特新” \(professional, refined, distinctive, innovative\), by linking with the NEEQ system to provide direct financing channels.
+**「Background」** Pathak is Foundation&\#x27;s only board member and owns most of its shares, a structure that allowed the loan; he previously founded Synapse, whose 2024 collapse left thousands of customers locked out of savings accounts.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.bseinfo.net/company/introduce.html">本所简介 - 北京证券交易所</a></li>
-<li><a href="https://www.seftb.org/cp-4-1542-3ad8e-1.html">北京證交所成立進展觀察-海基會兩岸經貿網</a></li>
+**「Impact」** The unpaid October payroll directly affects Foundation&\#x27;s employees, while the loan and Pathak&\#x27;s control raise oversight concerns for prospective investors as the startup seeks hundreds of millions at a $3 billion valuation.
 
-</ul>
-</details>
-
-**Tags**: `#Beijing Stock Exchange`, `#A-share market`, `#SME financing`, `#market participation`, `#capital markets`
+**Tags**: `#defense technology`, `#humanoid robots`, `#startup financing`, `#corporate governance`, `#US defense contracts`
 
 ---
 
 <a id="item-finance-news-15"></a>
-### [Iran Says Tankers Struck Mines Near Strait of Hormuz](https://www.cls.cn/detail/2534589) ⭐️ 6.0/10
+### [Odd Lots Podcast Discusses Nvidia After Jensen Huang](https://www.bloomberg.com/news/audio/2026-11-14/odd-lots-wall-street-and-the-post-huang-nvidia-era-podcast) ⭐️ 6.0/10
 
-Iran&\#x27;s Revolutionary Guard Navy said two tankers struck mines and caught fire near the Strait of Hormuz, a narrow oil shipping route, and two others turned back after warnings. The account came only from the Iranian military and gave no vessel names, damage or supply disruption.
+A Bloomberg Odd Lots podcast discussed uncertainty about Nvidia&\#x27;s future after Jensen Huang&\#x27;s leadership, including the next CEO, possible government crackdowns on its business practices in Asia, and potential spillover across the AI ecosystem. Bernstein analyst Stacy Rasgon is described as not optimistic about Nvidia&\#x27;s short-term future.
 
-rss · 财联社电报\(RSSHub\) · Nov 14, 21:57
+rss · Bloomberg Markets · Nov 14, 09:00
 
-**「Background」** The Strait of Hormuz is a narrow oil-shipping chokepoint, and Iran has said vessels must use Tehran-designated routes. The IRGC’s claim came less than 24 hours after Iran reported three tankers hit mines in the same waterway, with no independent maritime confirmation.
+**「Background」** The podcast’s post-Huang focus follows reports of Nvidia CEO Jensen Huang’s resignation and concerns about the absence of a clear successor.
+
+**「Impact」** Nvidia’s leadership transition may push enterprise AI buyers and investors to reassess reliance on Nvidia and its partners, while uncertainty could affect rival chipmakers and pending AI-company listings.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://houseofsaud.com/irgc-2-tankers-mines-hormuz-nov14">IRGC Claims 2 More Tankers Hit Mines in Hormuz Nov 14</a></li>
+<li><a href="https://www.cnbc.com/video/2024/05/28/nvidia-still-looks-relatively-inexpensive-for-its-growth-trajectory-says-bernsteins-stacy-rasgon.html">Nvidia still looks relatively inexpensive for its growth trajectory, says Bernstein&#x27;s Stacy Rasgon</a></li>
+<li><a href="https://www.cnbc.com/video/2024/10/16/ai-demand-is-still-strong-it-will-probably-exceed-expectations-says-bernsteins-stacy-rasgon.html">AI demand is still strong, it will probably exceed expectations, says Bernstein&#x27;s Stacy Rasgon</a></li>
+<li><a href="https://www.networkworld.com/article/4248180/nvidias-leadership-crisis-puts-enterprise-ais-dependence-on-one-company-under-scrutiny.html">Nvidia&#x27;s leadership crisis puts enterprise AI&#x27;s dependence on one company under scrutiny | Network World</a></li>
+<li><a href="https://mynorthwest.com/national/fallout-from-the-nvidia-scandal-may-dampen-the-exuberance-around-the-ai-boom/4299132">Fallout from the Nvidia scandal may dampen the exuberance around the AI boom - MyNorthwest.com</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#原油市场`, `#霍尔木兹海峡`, `#航运风险`, `#地缘政治`, `#能源运输`
+**Tags**: `#Nvidia leadership`, `#AI supply chain`, `#semiconductor regulation`, `#analyst commentary`
 
 ---
 
 <a id="item-finance-news-16"></a>
-### [Nissan cuts China sales target but plans more investment](https://wallstreetcn.com/articles/3785943) ⭐️ 6.0/10
+### [WHI on track for Japan&\#x27;s largest IPO in 2026](https://asia.nikkei.com/business/markets/ipo/bain-and-gic-backed-whi-on-track-for-japan-s-largest-ipo-in-2026) ⭐️ 6.0/10
 
-Nissan lowered its 2026 China retail sales expectation from 580,000 vehicles to 370,000-400,000 vehicles. Nissan and its Chinese partner Dongfeng said they would increase investment over the next three years and launch plug-in hybrid vehicles, which can run partly on battery power, with pre-sale prices starting at 129,900 yuan.
+Bain- and GIC-backed WHI is reportedly on track for what would be Japan&\#x27;s largest initial public offering in 2026.
 
-rss · 华尔街见闻 · Nov 14, 09:39
+rss · Nikkei Asia · Nov 15, 03:38
 
-**「Background」** Nissan sells in China through joint ventures with Dongfeng, and its China sales have fallen for several years, reaching 653,000 units in 2025, amid a shift toward new-energy vehicles such as plug-in hybrids \(PHEVs, which can run on battery and gasoline\).
-
-**「Impact」** Nissan said China-developed plug-in hybrid and pickup vehicles would use its overseas dealer network to spread development costs, with exports planned to reach more than 30 countries by the end of 2026.
+**「Background」** WHI Holdings is a Japanese human-resource systems developer backed by funds advised by Bain Capital, a U.S. investment firm, and GIC, Singapore&\#x27;s sovereign wealth fund; its Dec. 15, 2026 listing on the Tokyo Stock Exchange&\#x27;s Prime Market will sell existing shares held by these funds rather than issue new stock.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.nissan.com.cn/all-news/all-pressrelease/6049">日产汽车公布2026财年上半年财报，重申全年财务展望</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/2027865400747078336">日产巨亏后推新规划：精简产品 中国市场2030财年重回年销百万</a></li>
+<li><a href="https://asia.nikkei.com/business/markets/ipo/bain-and-gic-backed-whi-on-track-for-japan-s-largest-ipo-in-2026">Bain- and GIC-backed WHI on track for Japan&#x27;s largest IPO in 2026 - Nikkei Asia</a></li>
+<li><a href="https://www.ipox.com/ipo-calendar/whi-holdings">WHI Holdings · IPOX®</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#日产中国`, `#新能源汽车`, `#合资车企`, `#出口`, `#销量预期`
-
----
-
-<a id="item-finance-news-17"></a>
-### [Novo&\#x27;s Wegovy pill linked to 6% weight loss in three months](https://news.google.com/rss/articles/CBMi4gFBVV95cUxNQkdyMW8wZ1VqOEc4U1NpVGM1MU95bENTYXZzb0Z4SmhpamNyWlFyQlNWWVdWbk9WMW1NemttalZtbThJQVg5czVCRXM4cDJwT0hWYlJSc253T3JNSmxnWTFac1p5QjhWRU90ZXByVENNdmtCWGdBRmt2WXQtb3luQ1dwN2o3MnJtQmR4YmEwNG82WERJa2FHRW9YUUtGN1RiM0w1Y1F6eDlQWmpETmdwOU1SVmtXa0xzYk1OcnhiMXFiSVZCQ1NCYUh4dDdJNkt4a0FlQW14ZDlCRWJqNkd2WDVn?oc=5) ⭐️ 6.0/10
-
-According to Reuters, real-world data show Novo&\#x27;s Wegovy pill helped patients lose about 6% of their weight over three months.
-
-google\_news · Reuters · Nov 14, 17:24
-
-**「Background」** Novo Nordisk&\#x27;s Wegovy pill is an oral GLP-1 drug for obesity that became available in early January 2026, and real-world studies observe patient outcomes without proving the drug caused them.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.novomedlink.com/obesity/products/treatments/wegovy/efficacy-safety/chronic-weight-management.html">Chronic Weight Management Trial Results | Wegovy® (semaglutide)</a></li>
-<li><a href="https://www.cnbc.com/2026/04/07/novo-nordisks-wegovy-pill-launch-draws-new-wave-of-patients-to-glp-1s.html#MainContent">Novo Nordisk&#x27;s Wegovy pill launch draws new wave of patients to GLP-1s</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Novo Nordisk`, `#pharmaceuticals`, `#obesity drugs`, `#clinical data`, `#healthcare`
-
----
-
-<a id="item-finance-news-18"></a>
-### [Italy Fines Meta $887 Million Over Android Data Access](https://news.google.com/rss/articles/CBMiowFBVV95cUxQSVFmcHRvNGEzVXRKbU5Kc0JhSDV4R2o0bnpXSUJMZnRMc1E2ckNCRzBaWDhzY2xObHVtNmtiWmdoX3g4NlVsYkc1bzFDbVB0T016LWczNHJ6bGx2ZXlQeDZPUGNjeXJPaWZ3Wm5DdU9za21PMXFlZVVDckh5Q1I0QnROcElOTnA2bGMzczBMbFJweW1ISkkwWUgzNXJpTU95N0NR?oc=5) ⭐️ 6.0/10
-
-Reuters reports that Italy has fined Meta $887 million over access to Android users&\#x27; data.
-
-google\_news · Reuters · Nov 14, 18:12
-
-**「Background」** Italy’s privacy regulator, the Garante, began investigating in 2025 a Facebook Android feature that had been available since 2023 and could access users’ photos, videos and related file information from their galleries.
-
-**「Impact」** Meta must disable the default Facebook gallery-suggestion feature in Italy within 60 days and seek separate consent, reducing automatic access to photos and videos for about 20 million Android users.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.investing.com/news/stock-market-news/italy-fines-meta-887-million-over-android-users-data-access-5027329">Italy fines Meta $887 million over Android users’ data access</a></li>
-<li><a href="https://mlq.ai/news/italys-privacy-watchdog-fines-meta-805-million-euros-for-accessing-android-users-photos-without-consent">Italy&#x27;s privacy watchdog fines Meta 805 million euros for accessing Android users&#x27; photos without consent | MLQ.ai</a></li>
-<li><a href="https://apnews.com/article/italy-meta-android-facebook-feature-9b3073c52464d5cd0e8facbc57285194">Italy fines Meta $887M over access to users&#x27; photos | AP News</a></li>
-<li><a href="https://live.euronext.com/en/financial-news/italy-fines-meta-887-million-over-android-users-data-access">Italy fines Meta $887 million over Android users&#x27; data access | live</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Meta`, `#regulatory fines`, `#data privacy`, `#Italy`, `#global tech`
+**Tags**: `#Japan IPO`, `#Private equity`, `#Sovereign wealth fund`, `#Equity markets`, `#Financing`
 
 ---
