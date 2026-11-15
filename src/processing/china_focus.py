@@ -17,8 +17,13 @@ are required:
 
 A rating change on a US name is left alone, and so is a China story with no
 rating action. The rule only adds a constant; the item still competes on score
-and the configured quotas still apply. Items the citation check tagged
-unverified are never boosted.
+and the configured quotas still apply.
+
+A Chinese write-up retelling a foreign call often has no reachable primary
+source, so the citation check may tag it unverified and subtract half a point.
+That tag stays as a reader-facing warning, but it does not block the boost: the
+rating action is the signal, and the reader decides how much weight to give an
+unconfirmed retelling.
 """
 
 from __future__ import annotations
@@ -26,8 +31,6 @@ from __future__ import annotations
 import logging
 import re
 from typing import Any
-
-from .citation_check import UNVERIFIED_TAG
 
 logger = logging.getLogger(__name__)
 
@@ -104,9 +107,6 @@ def boost_analysis(item: Any, analysis: Any, *, boost: float = RATING_BOOST) -> 
     if score is None or score < MIN_SCORE_TO_BOOST or score >= MAX_SCORE:
         return analysis
 
-    tags = list(getattr(analysis, "tags", None) or [])
-    if UNVERIFIED_TAG in tags:
-        return analysis
     if not matches_rating_action(item):
         return analysis
 
