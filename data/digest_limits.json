@@ -1,8 +1,8 @@
 {
   "per_source_limit": 8,
   "publisher_limits": {
-    "华尔街见闻": 4,
-    "Bloomberg": 10
+    "华尔街见闻": 2,
+    "Bloomberg": 8
   },
   "domestic_publishers": ["zaihuapd", "speckx"]
 }
