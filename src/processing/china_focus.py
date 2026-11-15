@@ -51,7 +51,7 @@ _FOREIGN_INSTITUTION_RE = re.compile(
     r"bank of america|bofa|nomura|hsbc|barclays|macquarie|blackrock|"
     r"bridgewater|jefferies|bernstein|clsa|daiwa|mizuho|evercore|wedbush|stifel)\b"
     r"|deutsche bank|societe generale|wells fargo|"
-    r"|高盛|摩根士丹利|大摩|小摩|摩根大通|瑞银|花旗|美银|美国银行|野村|汇丰|"
+    r"高盛|摩根士丹利|大摩|小摩|摩根大通|瑞银|花旗|美银|美国银行|野村|汇丰|"
     r"巴克莱|麦格理|贝莱德|桥水|德意志银行|杰富瑞|伯恩斯坦|里昂|大和|瑞穗",
     re.IGNORECASE,
 )
