@@ -60,14 +60,15 @@ MIN_SCORE = 0.5
 # The runner-up theme is only shown when it is nearly as strong as the leader,
 # otherwise a weak second hit just adds a wrong name list.
 RELATIVE_CUTOFF = 0.72
-MAX_THEMES_PER_ITEM = 2
+MAX_THEMES_PER_ITEM = 3
 # Five names covers the leading row of a theme without turning the line into a list.
 MAX_MEMBERS = 5
 # Requests are cheap but lianban rate-limits aggressively, so the run is capped.
-MAX_THEME_FETCH = 6
-# The theme lookup only means something to the finance reader; other profiles
-# keep their items untouched.
-THEME_PROFILES = frozenset({"finance-news"})
+# Fetches are serialised and cached per theme, so a repeated theme costs nothing.
+MAX_THEME_FETCH = 12
+# The theme lookup means something to every reader who follows the AI and
+# computing supply chain, so the AI profiles carry it too; tech-blog does not.
+THEME_PROFILES = frozenset({"finance-news", "tech-news", "ai-hardware", "ai-app"})
 FETCH_TIMEOUT = 12.0
 SOURCE_LABEL = "连板网 lianban.net"
 
