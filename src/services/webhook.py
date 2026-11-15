@@ -2,6 +2,8 @@
 
 import json
 import logging
+from functools import lru_cache
+from pathlib import Path
 import os
 import re
 from rich.console import Console
@@ -247,6 +249,25 @@ def redact_headers(headers: dict[str, str]) -> dict[str, str]:
     }
 
 
+# Optional overlay: one greeting line per endpoint, positional against the
+# URLs in ``url_env``. Read from a file rather than the typed config because it
+# is a single recipient's greeting, not a delivery setting.
+BANNER_OVERLAY_PATH = Path("data/webhook_banners.json")
+
+
+@lru_cache(maxsize=4)
+def _load_banners(path: str) -> tuple[str, ...]:
+    """Read the per-endpoint banner list, or () when the overlay is absent."""
+    try:
+        doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (FileNotFoundError, OSError, ValueError):
+        return ()
+    rows = doc.get("banners") if isinstance(doc, dict) else None
+    if not isinstance(rows, list):
+        return ()
+    return tuple(str(row or "").strip() for row in rows)
+
+
 class WebhookNotifier:
     """Sends webhook notifications after pipeline completion or failure."""
 
@@ -322,6 +343,27 @@ class WebhookNotifier:
         self.urls = [self._validate_url(part) for part in raw_urls]
         self.url = self.urls[0]
 
+    def _banner_for(self, url: Optional[str]) -> str:
+        """Return the per-endpoint banner, already spaced to sit above the body.
+
+        The banner is a greeting for one recipient, not a delivery setting, so
+        it lives in ``data/webhook_banners.json`` rather than in the typed
+        config. Its entries are positional against the URLs in ``url_env``:
+        entry 0 belongs to the first URL, an empty entry means no banner. That
+        is what lets a second recipient see a line the primary one does not.
+        """
+        banners = _load_banners(str(BANNER_OVERLAY_PATH))
+        if not url or not banners:
+            return ""
+        try:
+            index = self.urls.index(url)
+        except ValueError:
+            return ""
+        if index >= len(banners):
+            return ""
+        text = banners[index]
+        return f"{text}\n\n" if text else ""
+
     def _render_request_components(
         self, variables: dict
     ) -> tuple[str, str | None, dict[str, str]]:
@@ -332,6 +374,9 @@ class WebhookNotifier:
         body_content = None
         raw_body = variables.get("_request_body_override", self.config.request_body)
         body_variables = _prepare_variables_for_body(raw_body, variables)
+        if "banner" not in body_variables:
+            body_variables = dict(body_variables)
+            body_variables["banner"] = self._banner_for(self.url)
 
         if raw_body:
             if isinstance(raw_body, (dict, list)):
