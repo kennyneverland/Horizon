@@ -24,6 +24,23 @@ def _escape_markdown(value: object) -> str:
     return _MARKDOWN_BLOCK_START.sub(r"\1\\\2", escaped)
 
 
+# Tags that must lead the tag line and stand out from the plain ``#tag`` chips.
+_PINNED_TAGS = ("未证实",)
+
+
+def _format_tags(tags: list[str]) -> list[str]:
+    """Render digest tags, pinning emphasis tags to the front and bolding them.
+
+    Server酱 renders Markdown only, so font size cannot be changed; a bold
+    full-width bracket is the strongest emphasis available.
+    """
+    pinned = [tag for tag in tags if tag in _PINNED_TAGS]
+    rest = [tag for tag in tags if tag not in _PINNED_TAGS]
+    formatted = [f"**【{_escape_markdown(tag)}】**" for tag in pinned]
+    formatted.extend(f"`#{_escape_markdown(tag)}`" for tag in rest)
+    return formatted
+
+
 def _safe_url(value: object) -> Optional[str]:
     """Return an HTML/Markdown-safe HTTP(S) URL, or None for unsafe URLs."""
     raw = str(value).strip()
@@ -456,7 +473,7 @@ class DailySummarizer:
             ]
 
         if analysis and analysis.tags:
-            tags_str = ", ".join([f"`#{_escape_markdown(t)}`" for t in analysis.tags])
+            tags_str = ", ".join(_format_tags(analysis.tags))
             lines.append("")
             lines.append(f"**{labels['tags']}**: {tags_str}")
 
