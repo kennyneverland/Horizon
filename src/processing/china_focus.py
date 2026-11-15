@@ -80,6 +80,7 @@ _CHINA_MARKET_RE = re.compile(
     re.IGNORECASE,
 )
 
+
 _CJK_RE = re.compile(r"[\u4e00-\u9fff]")
 
 
