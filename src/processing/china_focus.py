@@ -37,6 +37,9 @@ logger = logging.getLogger(__name__)
 # A rating call is the reader's core signal, so it clears the finance
 # threshold from a low starting score without outranking a systemic event.
 RATING_BOOST = 1.5
+# A Chinese retelling is one step removed from the source and occasionally
+# garbled in translation, so it earns less than the original call.
+DOMESTIC_BOOST = 1.0
 # Rating items often score low as "routine analyst opinion"; this floor keeps
 # genuine noise out while still lifting a mid-range call.
 MIN_SCORE_TO_BOOST = 4.5
@@ -77,6 +80,8 @@ _CHINA_MARKET_RE = re.compile(
     re.IGNORECASE,
 )
 
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+
 
 def publisher_label(item: Any) -> str:
     """Return the feed label an item came from, lowercased."""
@@ -87,6 +92,13 @@ def publisher_label(item: Any) -> str:
             if value:
                 return str(value).strip().lower()
     return str(getattr(item, "author", "") or "").strip().lower()
+
+
+def is_chinese_source(item: Any) -> bool:
+    """Return True for a Chinese-language item, by title or feed label."""
+    if _CJK_RE.search(str(getattr(item, "title", "") or "")):
+        return True
+    return bool(_CJK_RE.search(publisher_label(item)))
 
 
 def matches_rating_action(item: Any) -> bool:
@@ -101,7 +113,7 @@ def matches_rating_action(item: Any) -> bool:
     )
 
 
-def boost_analysis(item: Any, analysis: Any, *, boost: float = RATING_BOOST) -> Any:
+def boost_analysis(item: Any, analysis: Any, *, boost: Any = None) -> Any:
     """Return ``analysis`` unchanged, or a boosted copy for a China rating call."""
     score = getattr(analysis, "score", None)
     if score is None or score < MIN_SCORE_TO_BOOST or score >= MAX_SCORE:
@@ -110,9 +122,14 @@ def boost_analysis(item: Any, analysis: Any, *, boost: float = RATING_BOOST) -> 
     if not matches_rating_action(item):
         return analysis
 
-    adjusted = round(min(score + boost, MAX_SCORE), 1)
+    amount = (
+        boost
+        if boost is not None
+        else (DOMESTIC_BOOST if is_chinese_source(item) else RATING_BOOST)
+    )
+    adjusted = round(min(score + amount, MAX_SCORE), 1)
     reason = getattr(analysis, "reason", "") or ""
-    note = f"境外机构对中国市场/个股的评级调整，加权 +{boost:g} 分"
+    note = f"境外机构对中国市场/个股的评级调整，加权 +{amount:g} 分"
 
     logger.info(
         "rating watch: %s boosted %.1f -> %.1f (publisher=%r)",

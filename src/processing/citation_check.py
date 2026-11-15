@@ -6,6 +6,12 @@ the item still scores well on importance, so unverified claims can crowd out
 solid reporting. This module looks for an independent, non-Chinese source for
 the same story and lowers the score when none is found.
 
+A Chinese write-up that retells a foreign rating call ("高盛上调中国股市评级")
+is treated the same way even without an explicit attribution phrase: sell-side
+notes are rarely public, so the tag is what tells the reader the call could not
+be confirmed. Those items are checked from a lower starting score, because the
+rating boost applied afterwards can still carry them into the digest.
+
 The check is deliberately conservative: it only subtracts ``CITATION_PENALTY``
 and tags the item as ``未证实``. It never drops the item, because a paywalled or
 exclusive story can legitimately have no reachable source.
@@ -19,12 +25,17 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional
 from urllib.parse import urlsplit
 
+from .china_focus import matches_rating_action
+
 logger = logging.getLogger(__name__)
 
 CITATION_PENALTY = 0.5
 # Below this score an item rarely survives the profile thresholds, so the extra
 # lookup would only burn search credits.
 MIN_SCORE_TO_CHECK = 6.0
+# A rating retelling is boosted after this stage, so a lower starting score can
+# still reach the digest; checking it is worth the lookup.
+MIN_SCORE_TO_CHECK_RATING = 4.5
 # Hard budget per run: the digest runs once a day and Tavily's free tier is
 # 1000 credits/month shared with the enrichment stage.
 MAX_CHECKS_PER_RUN = 12
@@ -109,6 +120,14 @@ def is_attributed_chinese_item(item: Any) -> bool:
     return bool(_ATTRIBUTION_RE.search(text))
 
 
+def is_foreign_rating_retelling(item: Any) -> bool:
+    """Return True for a Chinese write-up retelling a foreign rating call."""
+    title = getattr(item, "title", "") or ""
+    if not _CJK_RE.search(title):
+        return False
+    return matches_rating_action(item)
+
+
 def build_query(item: Any) -> str:
     """Build a search query that pulls the credited outlet into the results."""
     text = f"{getattr(item, 'title', '')}\n{getattr(item, 'content', '') or ''}"
@@ -147,7 +166,7 @@ async def verify_item(
     """Look for an independent source behind an attributed Chinese write-up."""
     global _checks_used
 
-    if not is_attributed_chinese_item(item):
+    if not (is_attributed_chinese_item(item) or is_foreign_rating_retelling(item)):
         return CitationVerdict()
     if _checks_used >= MAX_CHECKS_PER_RUN:
         logger.info("citation check budget exhausted, skipping %s", getattr(item, "id", "?"))
@@ -184,7 +203,14 @@ async def adjust_analysis(
 ) -> Any:
     """Return ``analysis`` unchanged, or a downgraded copy when unverified."""
     score = getattr(analysis, "score", None)
-    if score is None or score < MIN_SCORE_TO_CHECK:
+    if score is None:
+        return analysis
+    floor = (
+        MIN_SCORE_TO_CHECK_RATING
+        if is_foreign_rating_retelling(item)
+        else MIN_SCORE_TO_CHECK
+    )
+    if score < floor:
         return analysis
 
     verdict = await verify_item(item, search=search)
