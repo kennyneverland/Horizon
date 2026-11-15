@@ -255,6 +255,9 @@ class WebhookNotifier:
         self.console = console if console is not None else Console(stderr=True)
         self.icons = icons if icons is not None else get_icons()
         self.url = None
+        # Every URL found in ``url_env``; the first one is the primary endpoint.
+        self.urls: List[str] = []
+        self._fanout = False
         self._validate_config()  # sets self.url or raises ValueError
 
     def _validate_url(self, url: str) -> str:
@@ -308,8 +311,16 @@ class WebhookNotifier:
             )
             return
 
-        # env var exists — validate the URL value (strip + scheme + hostname + httpx check)
-        self.url = self._validate_url(raw_url)
+        # env var exists — validate every URL it holds. Several endpoints may be
+        # listed so one digest can reach more than one subscriber; the first is
+        # the primary and its delivery result is the one reported.
+        raw_urls = [part.strip() for part in re.split(r"[,\n]+", raw_url) if part.strip()]
+        if not raw_urls:
+            raise ValueError(
+                f"Webhook URL is empty (env var '{self.config.url_env}' is set but empty)"
+            )
+        self.urls = [self._validate_url(part) for part in raw_urls]
+        self.url = self.urls[0]
 
     def _render_request_components(
         self, variables: dict
@@ -573,6 +584,39 @@ class WebhookNotifier:
             }
         ]
 
+    async def _notify_each(self, variables: dict) -> WebhookDeliveryResult:
+        """Deliver to every configured endpoint, reporting the primary result.
+
+        A secondary endpoint failing (expired key, exhausted quota) must not
+        fail the run or hide the primary delivery, so only the first URL's
+        result is returned and the others are logged.
+        """
+        primary = self.url
+        result: Optional[WebhookDeliveryResult] = None
+        self._fanout = True
+        try:
+            for index, url in enumerate(self.urls):
+                self.url = url
+                outcome = await self.notify(variables)
+                if index == 0:
+                    result = outcome
+                elif not outcome.sent:
+                    logger.warning(
+                        "Webhook delivery to endpoint %d failed: %s",
+                        index + 1,
+                        outcome.detail,
+                    )
+                    self.console.print(
+                        f"[yellow]Webhook endpoint {index + 1} failed "
+                        f"({outcome.status.value}): {redact_url(url)}[/yellow]"
+                    )
+        finally:
+            self._fanout = False
+            self.url = primary
+        if result is None:
+            return WebhookDeliveryResult(WebhookDeliveryStatus.SKIPPED)
+        return result
+
     async def notify(self, variables: dict) -> WebhookDeliveryResult:
         """Send a webhook notification with template variable substitution.
 
@@ -601,6 +645,9 @@ class WebhookNotifier:
                 WebhookDeliveryStatus.SKIPPED,
                 detail=f"Webhook URL environment variable '{self.config.url_env}' is not set.",
             )
+
+        if len(self.urls) > 1 and not self._fanout:
+            return await self._notify_each(variables)
 
         request_url, body_content, headers = self._render_request_components(variables)
         safe_url = redact_url(request_url)
