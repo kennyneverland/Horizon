@@ -8,6 +8,7 @@ from urllib.parse import quote, urlsplit
 
 from .localization import normalize_language
 from ..models import ContentItem
+from ..processing.ashare_themes import format_theme_line, source_footer
 
 
 _CJK = r"[\u4e00-\u9fff\u3400-\u4dbf]"
@@ -288,7 +289,14 @@ class DailySummarizer:
             )
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
-        return normalize_language(header + toc + "".join(body_sections), language)
+        body = header + toc + "".join(body_sections)
+        # lianban's CC BY 4.0 licence requires attribution wherever its member
+        # lists are shown; it only appears when a theme line was actually rendered.
+        if language == "zh" and any(
+            (item.metadata or {}).get("ashare_themes") for item in items
+        ):
+            body = body.rstrip("\n") + f"\n\n{_escape_markdown(source_footer())}\n"
+        return normalize_language(body, language)
 
     def generate_webhook_overview(
         self,
@@ -455,6 +463,14 @@ class DailySummarizer:
                     block_title = _pangu(block_title)
                     block_content = _pangu(block_content)
                 lines.extend(["", f"**「{block_title}」** {block_content}"])
+
+        # A-share theme lookup: a plain rule match, so it is labelled as inferred
+        # and never phrased as advice. Only the Chinese digest carries it.
+        if language == "zh":
+            themes = (item.metadata or {}).get("ashare_themes") or []
+            theme_line = format_theme_line(themes)
+            if theme_line:
+                lines.extend(["", _escape_markdown(theme_line)])
 
         sources = artifact.sources if artifact else []
         if sources:
