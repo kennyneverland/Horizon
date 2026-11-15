@@ -1,0 +1,7 @@
+{
+  "note": "One greeting line per endpoint, placed above the digest body. Positional against the URLs in HORIZON_WEBHOOK_URL: entry 0 belongs to the first URL, entry 1 to the second. An empty string means that endpoint gets no banner. Markdown bold renders; ServerChan does not render HTML, so a line cannot be centred.",
+  "banners": [
+    "",
+    "**噜妹天天发财！**"
+  ]
+}

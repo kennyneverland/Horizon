@@ -338,7 +338,7 @@
     ],
     "request_body": {
       "title": "#{message_title}",
-      "desp": "#{summary?limit=25000&split=---}"
+      "desp": "#{banner}#{summary?limit=25000&split=---}"
     },
     "headers": ""
   }
