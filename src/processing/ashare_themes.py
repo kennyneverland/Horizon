@@ -78,7 +78,10 @@ FETCH_RETRY_WAIT = 1.5
 FETCH_SPACING = 0.4
 # The theme lookup means something to every reader who follows the AI and
 # computing supply chain, so the AI profiles carry it too; tech-blog does not.
-THEME_PROFILES = frozenset({"finance-news", "tech-news", "ai-hardware", "ai-app"})
+# China-market items are the ones most likely to name a theme directly.
+THEME_PROFILES = frozenset(
+    {"finance-news", "china-market", "tech-news", "ai-hardware", "ai-app"}
+)
 FETCH_TIMEOUT = 12.0
 SOURCE_LABEL = "连板网 lianban.net"
 # A matched theme says the story is about that sector; it does not say whether
