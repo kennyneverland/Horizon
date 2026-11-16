@@ -532,6 +532,26 @@
       },
       {
         "enabled": true,
+        "query": "AI inference cost",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "AI API pricing",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
         "query": "copper clad laminate price",
         "language": "en",
         "country": "US",
@@ -579,26 +599,6 @@
         "max_results": 10,
         "category": "finance",
         "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "AI inference cost",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
-      },
-      {
-        "enabled": true,
-        "query": "AI API pricing",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
       }
     ],
     "insightintochina": {
@@ -653,19 +653,19 @@
     "time_window_hours": 24
   },
   "digest": {
-    "max_items": 38,
+    "max_items": 35,
     "group_by": "profile",
     "category_groups": {
       "ai-hardware": {
         "name": "AI硬件与算力",
-        "limit": 9,
+        "limit": 6,
         "categories": [
           "ai-hardware"
         ]
       },
       "ai-app": {
         "name": "AI应用与智能体",
-        "limit": 5,
+        "limit": 6,
         "categories": [
           "ai-app"
         ]
