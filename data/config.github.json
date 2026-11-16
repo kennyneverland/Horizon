@@ -431,6 +431,12 @@
         "profile": "china-market"
       }
     ],
+    "insightintochina": {
+      "enabled": true,
+      "max_articles": 20,
+      "category": "china-research",
+      "profile": "china-market"
+    },
     "reddit": {
       "enabled": false,
       "subreddits": [
