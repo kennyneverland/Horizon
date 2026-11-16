@@ -65,7 +65,10 @@ MAX_THEMES_PER_ITEM = 3
 MAX_MEMBERS = 5
 # Requests are cheap but lianban rate-limits aggressively, so the run is capped.
 # Fetches are serialised and cached per theme, so a repeated theme costs nothing.
-MAX_THEME_FETCH = 16
+MAX_THEME_FETCH = 24
+# The lookup runs twice per item: once on the headline and summary, once again
+# after enrichment, when the background and impact blocks exist. Only the first
+# sighting of a theme costs a request, so the cap covers both passes.
 # A page that answers without a member list is treated as a miss, not as an
 # empty theme: lianban throttles by serving a stub page, so one retry after a
 # short pause usually recovers it.
@@ -282,6 +285,13 @@ class ThemeIndex:
 class MemberFetcher:
     """Fetch and cache one theme's member list from lianban."""
 
+    # lianban limits by client address, not by object, so the cache, the request
+    # budget and the lock belong to the process. The analyser and the enricher
+    # each hold a fetcher; separate budgets would double the requests per run.
+    _shared_cache: Dict[str, List[str]] = {}
+    _shared_used = 0
+    _shared_lock: Optional[asyncio.Lock] = None
+
     def __init__(
         self,
         budget: int = MAX_THEME_FETCH,
@@ -291,10 +301,11 @@ class MemberFetcher:
         self.budget = budget
         self.timeout = timeout
         self.base_url = base_url.rstrip("/")
-        self._cache: Dict[str, List[str]] = {}
-        self._used = 0
+        self._cache = MemberFetcher._shared_cache
+        if MemberFetcher._shared_lock is None:
+            MemberFetcher._shared_lock = asyncio.Lock()
         # Fetches are serialised: parallel requests are what trips the limiter.
-        self._lock = asyncio.Lock()
+        self._lock = MemberFetcher._shared_lock
 
     def _fetch_sync(self, slug: str) -> List[str]:
         url = self.base_url + slug
@@ -335,7 +346,7 @@ class MemberFetcher:
         async with self._lock:
             if slug in self._cache:
                 return self._cache[slug]
-            if self._used >= self.budget:
+            if MemberFetcher._shared_used >= self.budget:
                 logger.warning(
                     "Theme member budget (%d) exhausted; %s and later themes "
                     "render without members",
@@ -343,7 +354,7 @@ class MemberFetcher:
                     slug,
                 )
                 return []
-            self._used += 1
+            MemberFetcher._shared_used += 1
             names: List[str] = []
             for attempt in range(1, FETCH_ATTEMPTS + 1):
                 await asyncio.sleep(
@@ -474,30 +485,43 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
     return f"可能相关：{'；'.join(parts)}（规则匹配推测，非投资建议）"
 
 
+def matching_text(item: Any) -> str:
+    """Everything the lookup may read: headline, summary, enriched blocks.
+
+    The analysis pass only has the first two, so most theme terms stay unseen
+    until the background and impact blocks exist.
+    """
+    parts: List[str] = [item.title or ""]
+    processing = getattr(item, "processing", None)
+    analysis = processing.analysis if processing else None
+    if analysis and analysis.summary:
+        parts.append(analysis.summary)
+    if processing:
+        for artifact in processing.artifacts.values():
+            for block in artifact.blocks:
+                if block.content:
+                    parts.append(block.content)
+    return " ".join(part for part in parts if part)
+
+
 async def attach_themes(
     item: Any,
     index: ThemeIndex,
     fetcher: MemberFetcher,
 ) -> None:
-    """Match the item against the index and store the result on its metadata."""
+    """Match the item against the index and store the result on its metadata.
+
+    Runs twice per item: after analysis, and again after enrichment. The second
+    call reads a superset of the first call's text, so it replaces the list; the
+    member lists come from the shared cache and cost no extra request.
+    """
     if not index.available or item.metadata is None:
-        return
-    if item.metadata.get("ashare_themes"):
         return
     profile = item.processing.classification.profile if item.processing else None
     if profile not in THEME_PROFILES:
         return
 
-    analysis = item.processing.analysis if item.processing else None
-    text = " ".join(
-        part
-        for part in (
-            item.title or "",
-            analysis.summary if analysis else "",
-        )
-        if part
-    )
-    themes = index.match(text)
+    themes = index.match(matching_text(item))
     if not themes:
         return
 
