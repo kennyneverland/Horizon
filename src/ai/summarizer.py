@@ -28,11 +28,10 @@ def _escape_markdown(value: object) -> str:
 def _quote_block(text: str) -> str:
     """Wrap one annotation block in a Markdown quote.
 
-    Server酱 strips HTML and its page renders every heading level from h4 down at
-    body size, so neither font size nor colour can be set directly. A quote
-    block is the one construct that still separates these blocks from the news
-    body there: the push page indents it and paints it grey behind a left bar,
-    which is visibly different from a plain paragraph.
+    Server酱 strips HTML, so font size and colour cannot be set directly. A
+    quote is the strongest structural cue Markdown still offers: renderers give
+    it its own indent and colour, which keeps these annotation blocks distinct
+    from the news body.
     """
     return "\n".join("> " + line if line.strip() else ">" for line in text.splitlines())
 
