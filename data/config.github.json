@@ -305,6 +305,20 @@
         "enabled": true,
         "category": "finance",
         "profile": "finance-news"
+      },
+      {
+        "name": "FT Chinese Economy",
+        "url": "https://www.ft.com/chinese-economy?format=rss",
+        "enabled": true,
+        "category": "asia-business",
+        "profile": "finance-news"
+      },
+      {
+        "name": "FT Chinese Business",
+        "url": "https://www.ft.com/chinese-business-finance?format=rss",
+        "enabled": true,
+        "category": "asia-business",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
