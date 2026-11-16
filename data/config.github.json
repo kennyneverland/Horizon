@@ -93,7 +93,7 @@
         "url": "https://vllm.ai/blog/rss.xml",
         "enabled": true,
         "category": "llm-inference",
-        "profile": "tech-blog",
+        "profile": "tech-news",
         "content_extractor": "trafilatura"
       },
       {
@@ -101,7 +101,7 @@
         "url": "https://www.seangoedecke.com/rss.xml",
         "enabled": true,
         "category": "software-engineering",
-        "profile": "tech-blog",
+        "profile": "tech-news",
         "content_extractor": "trafilatura"
       },
       {
@@ -732,16 +732,9 @@
       },
       "tech-news": {
         "name": "科技新闻",
-        "limit": 3,
+        "limit": 5,
         "categories": [
           "tech-news"
-        ]
-      },
-      "tech-blog": {
-        "name": "技术博客",
-        "limit": 2,
-        "categories": [
-          "tech-blog"
         ]
       },
       "finance-news": {
@@ -765,7 +758,6 @@
       "ai-hardware",
       "ai-app",
       "tech-news",
-      "tech-blog",
       "finance-news",
       "china-market"
     ]
