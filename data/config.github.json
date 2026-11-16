@@ -187,6 +187,51 @@
         ]
       },
       {
+        "name": "雷峰网",
+        "url": "https://www.leiphone.com/feed",
+        "enabled": true,
+        "category": "ai-application",
+        "profile": [
+          "ai-app"
+        ]
+      },
+      {
+        "name": "InfoQ中文",
+        "url": "https://www.infoq.cn/feed",
+        "enabled": true,
+        "category": "ai-application",
+        "profile": [
+          "ai-app"
+        ]
+      },
+      {
+        "name": "TechCrunch AI",
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "enabled": true,
+        "category": "ai-application",
+        "profile": [
+          "ai-app"
+        ]
+      },
+      {
+        "name": "The Verge AI",
+        "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+        "enabled": true,
+        "category": "ai-application",
+        "profile": [
+          "ai-app"
+        ]
+      },
+      {
+        "name": "The Decoder",
+        "url": "https://the-decoder.com/feed/",
+        "enabled": true,
+        "category": "ai-application",
+        "profile": [
+          "ai-app"
+        ]
+      },
+      {
         "name": "CNBC Top News",
         "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
         "enabled": true,
