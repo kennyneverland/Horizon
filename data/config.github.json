@@ -532,6 +532,56 @@
       },
       {
         "enabled": true,
+        "query": "copper clad laminate price",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "ABF substrate supply",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "silicon wafer price",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "MLCC price",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "liquid cooling demand",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
         "query": "AI inference cost",
         "language": "en",
         "country": "US",
@@ -603,12 +653,12 @@
     "time_window_hours": 24
   },
   "digest": {
-    "max_items": 34,
+    "max_items": 38,
     "group_by": "profile",
     "category_groups": {
       "ai-hardware": {
         "name": "AI硬件与算力",
-        "limit": 5,
+        "limit": 9,
         "categories": [
           "ai-hardware"
         ]
