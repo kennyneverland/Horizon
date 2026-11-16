@@ -13,24 +13,24 @@ from typing import Any, Dict, List, Literal, Optional, Sequence
 from pydantic import BaseModel, Field
 
 from .utils import gather_ai_tasks, parse_json_response
-from ..processing.ashare_themes import NEGATIVE, POSITIVE, matching_text
+from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, matching_text
 
 logger = logging.getLogger(__name__)
 
 EXCERPT_CHARS = 1200
 
-SYSTEM_PROMPT = """你是 A 股题材影响判定助手。给定一条新闻和它已经匹配上的题材，判断这条新闻对每个题材是积极影响还是负面影响。
+SYSTEM_PROMPT = """你是 A 股题材影响判定助手。给定一条新闻和它已经匹配上的题材，判断这条新闻对每个题材是积极影响、负面影响，还是多空交织。
 
 判定规则：
 - 逐个题材独立判断。不要用整条新闻的情绪套给所有题材。
 - 判断对象是该题材所对应板块及其成分股的基本面或预期，不是新闻里被点名的那家公司本身。
 - 同一件事对不同题材经常方向相反。例如出口管制对国产替代题材偏积极、对依赖海外供应链的题材偏消极；价格战对头部厂商偏积极、对二三线厂商偏消极。
-- 只能二选一，只输出 positive 或 negative，不要输出中性、不确定或"影响有限"。
-- 证据很弱时也要给出更直接的一侧，并在 reason 里注明依据薄弱。
+- 三个方向：positive（积极影响）、negative（负面影响）、neutral（多空交织，或只是提到该题材、看不出明确方向）。
+- 不要为了凑方向强行二选一：消息只是顺带提及该题材，或者利好利空同时存在且量级相当，就判 neutral。
 - reason 不超过 15 个汉字，说明方向依据，不要复述新闻内容。
 
 输出格式：只输出一个 JSON 对象，不要任何解释文字。
-{"themes": [{"name": "<题材名>", "direction": "positive", "reason": "<方向依据>"}]}
+{"themes": [{"name": "<题材名>", "direction": "positive|negative|neutral", "reason": "<方向依据>"}]}
 name 必须与给定题材名逐字一致，不要新增题材，不要漏掉给定题材。"""
 
 
@@ -38,7 +38,7 @@ class ThemeVerdict(BaseModel):
     """One theme's direction for one item."""
 
     name: str
-    direction: Literal["positive", "negative"]
+    direction: Literal["positive", "negative", "neutral"]
     reason: str = ""
 
 
@@ -138,6 +138,6 @@ class ThemeDirectionJudge:
         return (
             f"新闻内容：{text}\n\n"
             f"已匹配题材：{names}\n\n"
-            f"请判断这条新闻对上述每一个题材是 {POSITIVE}（积极影响）还是 "
-            f"{NEGATIVE}（负面影响），按给定格式输出 JSON。"
+            f"请判断这条新闻对上述每一个题材是 {POSITIVE}（积极影响）、"
+            f"{NEGATIVE}（负面影响）还是 {NEUTRAL}（多空交织），按给定格式输出 JSON。"
         )
