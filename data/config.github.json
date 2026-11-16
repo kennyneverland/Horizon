@@ -114,7 +114,7 @@
       },
       {
         "name": "GitHub Trending - Daily",
-        "url": "https://mshibanashi.github.io/GitHubTrendingRSS/daily/all.xml",
+        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
         "enabled": true,
         "category": "github-trending",
         "profile": "tech-news"
