@@ -21,6 +21,7 @@ The reader tracks A-share themes and Hong Kong listings directly, with a focus o
 - **A-share thematic catalysts.** Policy signals, regulatory changes, major orders, capacity or supply announcements, and company disclosures that could plausibly reprice themes such as AI applications, computing power, optical modules, servers, or domestic semiconductors. State the affected theme when you score it.
 - **Foreign institution calls on China.** Rating changes, target-price revisions, and view shifts by international banks or asset managers on Chinese equities or mainland technology names, especially when the rationale is stated.
 - **Cross-border capital and policy.** Southbound and northbound flows, Stock Connect changes, IPO and refinancing rules, and regulatory actions with a clear read-through to listed companies.
+- **Overseas read-through.** Price hikes, capacity additions, shortages, or export restrictions by non-Chinese suppliers when they plausibly shift pricing power, orders, or market share toward Chinese peers or supply-chain names. Score 5-8 when the transmission path is concrete (same product, same customers, substitutable capacity, or a named Chinese beneficiary); score low when the link is only generic sector sentiment.
 
 These preferences shift scores within the 7-10 band. Keep the credibility bar: reported facts must stay distinguishable from forecasts, market chatter, and unverified retellings, and rumor or stock-touting content should not score high merely because it is topical.
 
