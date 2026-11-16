@@ -334,7 +334,7 @@ class MemberFetcher:
             try:
                 names = await asyncio.to_thread(self._fetch_sync, slug)
             except Exception as exc:  # noqa: BLE001 - a blocked fetch must not fail the run
-                logger.info("Member fetch failed for %s: %s", slug, exc)
+                logger.warning("Member fetch failed for %s: %s", slug, exc)
                 names = []
             self._cache[slug] = names
             return names
