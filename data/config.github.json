@@ -599,6 +599,66 @@
         "max_results": 10,
         "category": "finance",
         "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "enterprise AI spending",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "AI copilot adoption",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "AI agent enterprise",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "AI SaaS pricing",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "China AI agent",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "China AI application",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
       }
     ],
     "insightintochina": {
