@@ -482,36 +482,6 @@
       },
       {
         "enabled": true,
-        "query": "memory chip price hike",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "semiconductor price increase",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "transformer price increase",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
         "query": "HBM price increase",
         "language": "en",
         "country": "US",
