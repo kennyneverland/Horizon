@@ -291,6 +291,13 @@
         "enabled": true,
         "category": "asia-business",
         "profile": "finance-news"
+      },
+      {
+        "name": "ChinaTalk",
+        "url": "https://www.chinatalk.media/feed",
+        "enabled": true,
+        "category": "china-policy",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
