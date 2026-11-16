@@ -65,7 +65,14 @@ MAX_THEMES_PER_ITEM = 3
 MAX_MEMBERS = 5
 # Requests are cheap but lianban rate-limits aggressively, so the run is capped.
 # Fetches are serialised and cached per theme, so a repeated theme costs nothing.
-MAX_THEME_FETCH = 12
+MAX_THEME_FETCH = 16
+# A page that answers without a member list is treated as a miss, not as an
+# empty theme: lianban throttles by serving a stub page, so one retry after a
+# short pause usually recovers it.
+FETCH_ATTEMPTS = 2
+FETCH_RETRY_WAIT = 1.5
+# Spacing two different themes apart keeps a burst from tripping the limiter.
+FETCH_SPACING = 0.4
 # The theme lookup means something to every reader who follows the AI and
 # computing supply chain, so the AI profiles carry it too; tech-blog does not.
 THEME_PROFILES = frozenset({"finance-news", "tech-news", "ai-hardware", "ai-app"})
@@ -324,18 +331,44 @@ class MemberFetcher:
             names.append(f"{name}({code})")
         return names
 
-    async def get(self, slug: str) -> List[str]:
+    async def get(self, slug: str, expected: Optional[int] = None) -> List[str]:
         async with self._lock:
             if slug in self._cache:
                 return self._cache[slug]
             if self._used >= self.budget:
+                logger.warning(
+                    "Theme member budget (%d) exhausted; %s and later themes "
+                    "render without members",
+                    self.budget,
+                    slug,
+                )
                 return []
             self._used += 1
-            try:
-                names = await asyncio.to_thread(self._fetch_sync, slug)
-            except Exception as exc:  # noqa: BLE001 - a blocked fetch must not fail the run
-                logger.warning("Member fetch failed for %s: %s", slug, exc)
-                names = []
+            names: List[str] = []
+            for attempt in range(1, FETCH_ATTEMPTS + 1):
+                await asyncio.sleep(
+                    FETCH_SPACING if attempt == 1 else FETCH_RETRY_WAIT
+                )
+                try:
+                    names = await asyncio.to_thread(self._fetch_sync, slug)
+                except Exception as exc:  # noqa: BLE001 - a blocked fetch must not fail the run
+                    logger.warning(
+                        "Member fetch failed for %s (attempt %d/%d): %s",
+                        slug,
+                        attempt,
+                        FETCH_ATTEMPTS,
+                        exc,
+                    )
+                    names = []
+                if names:
+                    break
+            if not names:
+                logger.warning(
+                    "No members parsed for theme %s (index lists %s); the page "
+                    "answered without a member list",
+                    slug,
+                    expected if expected is not None else "?",
+                )
             self._cache[slug] = names
             return names
 
@@ -469,7 +502,7 @@ async def attach_themes(
         return
 
     for theme in themes:
-        members = await fetcher.get(theme["slug"])
+        members = await fetcher.get(theme["slug"], theme.get("members_count"))
         theme["members"] = pick_members(members)
     item.metadata["ashare_themes"] = themes
 
