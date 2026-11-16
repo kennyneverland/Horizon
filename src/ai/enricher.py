@@ -194,6 +194,13 @@ class ContentEnricher:
                     raise
                 except Exception as exc:
                     logger.error("Error enriching item %s: %s", item.id, exc)
+                    if self._apply_analysis_fallback(item):
+                        logger.warning(
+                            "Kept item %s with its analysis summary only; the "
+                            "enriched blocks are missing for this run",
+                            item.id,
+                        )
+                        return item.id, None
                     return item.id, exc
                 finally:
                     progress.advance(task_id)
@@ -218,6 +225,38 @@ class ContentEnricher:
                 if exc is not None
             },
         )
+
+    def _apply_analysis_fallback(self, item: ContentItem) -> bool:
+        """Keep a failed item in the digest using its first-pass analysis.
+
+        The daily summary only renders items that carry an artifact for the
+        language, so a single enrichment failure used to drop the story from
+        the digest entirely. Reusing the analysis summary keeps the item, just
+        without the background and impact blocks.
+        """
+        processing = item.processing
+        analysis = processing.analysis if processing else None
+        summary = (analysis.summary or "").strip() if analysis else ""
+        if not summary:
+            return False
+        for language in self.languages:
+            if language in processing.artifacts:
+                continue
+            processing.artifacts[language] = ContentArtifact(
+                language=language,
+                title=normalize_language(item.title, language),
+                blocks=[
+                    ContentBlock(
+                        id="summary",
+                        type="section",
+                        title="",
+                        content=summary,
+                        primary=True,
+                    )
+                ],
+                sources=[],
+            )
+        return True
 
     async def _enrich_item(self, item: ContentItem) -> None:
         if not item.processing or not item.processing.analysis:
