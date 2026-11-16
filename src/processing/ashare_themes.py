@@ -83,10 +83,18 @@ FETCH_TIMEOUT = 12.0
 SOURCE_LABEL = "连板网 lianban.net"
 # A matched theme says the story is about that sector; it does not say whether
 # the story helps or hurts it. The direction pass asks the model for that, and
-# these are the only two answers it may give.
+# these are the only answers it may give.
 POSITIVE = "positive"
 NEGATIVE = "negative"
-DIRECTION_LABELS = {POSITIVE: "积极影响", NEGATIVE: "负面影响"}
+# A story can mention a theme without pushing it either way, and a miss must
+# stay distinguishable from that, so neutral is a verdict and a missing one is
+# not.
+NEUTRAL = "neutral"
+DIRECTION_LABELS = {
+    POSITIVE: "积极影响",
+    NEGATIVE: "负面影响",
+    NEUTRAL: "可能相关",
+}
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
 _ITEMLIST_RE = re.compile(
@@ -478,12 +486,12 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
     """Render the reader-facing line for one item, or '' when nothing matched.
 
     Themes are grouped by the direction the story was judged to have on their
-    constituents: positive first, negative second. A theme the direction pass
-    left without a verdict (its call failed, or the item never reached it) is
-    still shown, but in a group that claims no direction, so a missing verdict
-    is never read as a neutral one.
+    constituents: positive, then negative, then neutral. A theme the direction
+    pass left without a verdict (its call failed, or the item never reached it)
+    is still shown, but in a group that claims no direction at all, so a miss is
+    never read as a neutral verdict.
     """
-    groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
+    groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], NEUTRAL: [], "": []}
     for theme in themes:
         members = theme.get("members") or []
         label = str(theme["name"])
@@ -491,11 +499,16 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
             # Full-width brackets keep the line out of the markdown escaper.
             shown = [m.replace("(", "（").replace(")", "）") for m in members]
             label = f"{label} → {'、'.join(shown)}"
+        # The one-line reason is the only record of why a theme was read that
+        # way: items are never serialised, so nothing else survives the run.
+        reason = str(theme.get("direction_reason") or "").strip()
+        if reason:
+            label = f"{label}（{reason}）"
         direction = theme.get("direction")
         groups[direction if direction in DIRECTION_LABELS else ""].append(label)
 
     parts: List[str] = []
-    for direction in (POSITIVE, NEGATIVE):
+    for direction in (POSITIVE, NEGATIVE, NEUTRAL):
         if groups[direction]:
             parts.append(f"{DIRECTION_LABELS[direction]}：{'，'.join(groups[direction])}")
     if groups[""]:
