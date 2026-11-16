@@ -6,9 +6,16 @@ on:
     paths: ['docs/**', 'skills/horizon/**', 'LICENSE', '.github/workflows/deploy-docs.yml']
   workflow_dispatch:
 
+# Shares the gh-pages publish queue with the daily run, so the two never
+# force-push over each other's output.
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     env:
