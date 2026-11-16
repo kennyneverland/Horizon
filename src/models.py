@@ -20,6 +20,7 @@ class SourceType(str, Enum):
     OSSINSIGHT = "ossinsight"
     GDELT = "gdelt"
     GOOGLE_NEWS = "google_news"
+    INSIGHT_INTO_CHINA = "insightintochina"
 
 
 class SourceDefinition(NamedTuple):
@@ -41,6 +42,7 @@ SOURCE_REGISTRY = {
     SourceType.OSSINSIGHT.value: SourceDefinition("ossinsight"),
     SourceType.GDELT.value: SourceDefinition("gdelt"),
     SourceType.GOOGLE_NEWS.value: SourceDefinition("google_news"),
+    SourceType.INSIGHT_INTO_CHINA.value: SourceDefinition("insightintochina"),
 }
 
 ProfileRoute = Optional[Union[str, List[str]]]
@@ -534,6 +536,19 @@ class GoogleNewsSourcesConfig(BaseModel):
         return ", ".join(query.query for query in self.queries if query.query)
 
 
+class InsightIntoChinaConfig(BaseModel):
+    """InsightIntoChina public research list configuration.
+
+    The site has no RSS endpoint: the scraper reads its homepage list and
+    fetches each article page, so ``max_articles`` bounds the requests per run.
+    """
+
+    enabled: bool = False
+    max_articles: int = Field(default=15, gt=0, le=50)
+    category: Optional[str] = None
+    profile: ProfileRoute = None
+
+
 class SourcesConfig(BaseModel):
     """All sources configuration."""
 
@@ -547,6 +562,7 @@ class SourcesConfig(BaseModel):
     ossinsight: OSSInsightConfig = Field(default_factory=OSSInsightConfig)
     gdelt: Optional[GDELTConfig] = None
     google_news: Optional[GoogleNewsSourcesConfig] = None
+    insightintochina: Optional[InsightIntoChinaConfig] = None
 
 
 class WebhookConfig(BaseModel):
