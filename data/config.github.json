@@ -509,6 +509,76 @@
         "max_results": 10,
         "category": "finance",
         "profile": "china-market"
+      },
+      {
+        "enabled": true,
+        "query": "HBM price increase",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "AI server demand",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "CoWoS capacity",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "AI server PCB",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "optical module demand",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-hardware"
+      },
+      {
+        "enabled": true,
+        "query": "AI inference cost",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
+      },
+      {
+        "enabled": true,
+        "query": "AI API pricing",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "ai-app"
       }
     ],
     "insightintochina": {
