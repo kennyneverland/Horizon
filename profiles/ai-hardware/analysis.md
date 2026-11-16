@@ -30,6 +30,7 @@ The reader is a technology and market practitioner based in mainland China. With
 
 - **Capacity, capex, and supply.** Data-centre buildouts, accelerator allocation, fab and packaging capacity, memory supply, lead times, and the spending plans behind them.
 - **Cost of compute.** Chip and server pricing, power contracts, cooling and interconnect cost, utilisation and rental rates, and shifts in token cost that follow.
+- **Upstream materials and components.** Wafer, photoresist, CCL and copper foil, ABF substrates, lead frames, passive components such as MLCC and inductors, connectors and high-speed cable, and cooling hardware. Price moves, allocation, lead times, and customer qualification matter most when they transmit into AI server, packaging, or module cost.
 - **Power and infrastructure.** Grid connection queues, turbines, nuclear and storage deals, substations and transformers signed to feed data centres.
 - **China's supply chain.** Domestic accelerators and fabs, export controls and their workarounds, localisation of equipment, materials, memory, and packaging.
 - **Catalysts for China A-share themes.** Events, disclosures, executive remarks, or policy signals that could plausibly reprice listed A-share themes such as computing power, optical modules, liquid cooling, servers, PCB, power equipment, or domestic chips. State the affected theme when you score it.
