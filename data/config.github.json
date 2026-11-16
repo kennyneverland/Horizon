@@ -319,6 +319,50 @@
         "enabled": true,
         "category": "asia-business",
         "profile": "finance-news"
+      },
+      {
+        "name": "TechNode",
+        "url": "https://technode.com/feed/",
+        "enabled": true,
+        "category": "china-tech",
+        "profile": [
+          "ai-app",
+          "tech-news"
+        ]
+      },
+      {
+        "name": "Tech in Asia",
+        "url": "https://www.techinasia.com/feed",
+        "enabled": true,
+        "category": "asia-tech",
+        "profile": [
+          "ai-app"
+        ]
+      },
+      {
+        "name": "Fabricated Knowledge",
+        "url": "https://www.fabricatedknowledge.com/feed",
+        "enabled": true,
+        "category": "semiconductors",
+        "profile": [
+          "ai-hardware"
+        ]
+      },
+      {
+        "name": "More Than Moore",
+        "url": "https://morethanmoore.substack.com/feed",
+        "enabled": true,
+        "category": "semiconductors",
+        "profile": [
+          "ai-hardware"
+        ]
+      },
+      {
+        "name": "Rhodium Group",
+        "url": "https://rhg.com/research/feed/",
+        "enabled": true,
+        "category": "china-policy",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
