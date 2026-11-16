@@ -499,6 +499,41 @@ class GoogleNewsConfig(BaseModel):
     profile: ProfileRoute = None
 
 
+class GoogleNewsSourcesConfig(BaseModel):
+    """One or more Google News queries.
+
+    The configuration accepts either a single query object or a list of them
+    and always stores a list, so ``sources.google_news`` keeps behaving like a
+    single source object for callers that read ``.enabled``.
+    """
+
+    queries: List[GoogleNewsConfig] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_queries(cls, value: Any) -> Any:
+        if isinstance(value, dict) and "queries" not in value:
+            return {"queries": [value]}
+        if isinstance(value, list):
+            return {"queries": value}
+        return value
+
+    @property
+    def enabled(self) -> bool:
+        """True when at least one configured query is enabled."""
+        return any(query.enabled for query in self.queries)
+
+    @enabled.setter
+    def enabled(self, value: bool) -> None:
+        for query in self.queries:
+            query.enabled = value
+
+    @property
+    def query(self) -> str:
+        """All configured queries joined for display purposes."""
+        return ", ".join(query.query for query in self.queries if query.query)
+
+
 class SourcesConfig(BaseModel):
     """All sources configuration."""
 
@@ -511,7 +546,7 @@ class SourcesConfig(BaseModel):
     openbb: Optional[OpenBBConfig] = None
     ossinsight: OSSInsightConfig = Field(default_factory=OSSInsightConfig)
     gdelt: Optional[GDELTConfig] = None
-    google_news: Optional[GoogleNewsConfig] = None
+    google_news: Optional[GoogleNewsSourcesConfig] = None
 
 
 class WebhookConfig(BaseModel):
