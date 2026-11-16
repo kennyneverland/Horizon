@@ -81,6 +81,12 @@ FETCH_SPACING = 0.4
 THEME_PROFILES = frozenset({"finance-news", "tech-news", "ai-hardware", "ai-app"})
 FETCH_TIMEOUT = 12.0
 SOURCE_LABEL = "连板网 lianban.net"
+# A matched theme says the story is about that sector; it does not say whether
+# the story helps or hurts it. The direction pass asks the model for that, and
+# these are the only two answers it may give.
+POSITIVE = "positive"
+NEGATIVE = "negative"
+DIRECTION_LABELS = {POSITIVE: "积极影响", NEGATIVE: "负面影响"}
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
 _ITEMLIST_RE = re.compile(
@@ -469,20 +475,34 @@ def pick_members(members: Sequence[str], limit: int = MAX_MEMBERS) -> List[str]:
 
 
 def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
-    """Render the reader-facing line for one item, or '' when nothing matched."""
-    parts: List[str] = []
+    """Render the reader-facing line for one item, or '' when nothing matched.
+
+    Themes are grouped by the direction the story was judged to have on their
+    constituents: positive first, negative second. A theme the direction pass
+    left without a verdict (its call failed, or the item never reached it) is
+    still shown, but in a group that claims no direction, so a missing verdict
+    is never read as a neutral one.
+    """
+    groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
     for theme in themes:
         members = theme.get("members") or []
-        label = theme["name"]
+        label = str(theme["name"])
         if members:
             # Full-width brackets keep the line out of the markdown escaper.
             shown = [m.replace("(", "（").replace(")", "）") for m in members]
-            parts.append(f"{label} → {'、'.join(shown)}")
-        else:
-            parts.append(label)
+            label = f"{label} → {'、'.join(shown)}"
+        direction = theme.get("direction")
+        groups[direction if direction in DIRECTION_LABELS else ""].append(label)
+
+    parts: List[str] = []
+    for direction in (POSITIVE, NEGATIVE):
+        if groups[direction]:
+            parts.append(f"{DIRECTION_LABELS[direction]}：{'，'.join(groups[direction])}")
+    if groups[""]:
+        parts.append(f"方向待定：{'，'.join(groups[''])}")
     if not parts:
         return ""
-    return f"可能相关：{'；'.join(parts)}（规则匹配推测，非投资建议）"
+    return f"{'；'.join(parts)}（题材为规则匹配、方向为模型推测，非投资建议）"
 
 
 def matching_text(item: Any) -> str:
