@@ -2,13 +2,21 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # GitHub scheduled workflows use UTC. 00:45 UTC is 08:45 Asia/Shanghai.
+    # GitHub scheduled workflows use UTC. 00:00 UTC is 08:00 Asia/Shanghai.
     - cron: '0 0 * * *'
   workflow_dispatch:      # Allow manual trigger
+
+# The daily run and the docs deploy both force-push to gh-pages, so they share
+# one queue: a second run waits for the first instead of overwriting its output.
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
 
 jobs:
   daily-summary:
     runs-on: ubuntu-24.04
+    # A normal run takes about 25 minutes; this bounds one that hangs.
+    timeout-minutes: 45
     permissions:
       contents: write  # Needed to commit changes
 
