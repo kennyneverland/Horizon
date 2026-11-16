@@ -21,6 +21,7 @@ from tenacity import retry, retry_if_exception_type, retry_if_not_exception_type
 from .client import AIClient
 from .errors import AIProviderUnavailableError
 from .localization import normalize_language
+from .theme_direction import ThemeDirectionJudge
 from .prompting.enrichment import (
     MAX_TOOL_REQUESTS,
     artifact_prompt,
@@ -132,6 +133,11 @@ class ContentEnricher:
         self.tools = tools or ToolRegistry()
         self.concurrency = max(concurrency, 1)
         self._theme_index: Optional[ThemeIndex] = None
+        # One extra short call per item that matched themes, sharing the
+        # enrichment concurrency so the run does not fan out any wider.
+        self._direction_judge = ThemeDirectionJudge(
+            ai_client, concurrency=self.concurrency
+        )
         self._validate_profile_tools()
 
     def _validate_profile_tools(self) -> None:
@@ -298,14 +304,16 @@ class ContentEnricher:
         """Re-run the A-share theme lookup now that the enriched blocks exist.
 
         The analysis pass only sees the headline and the one-line summary, and
-        most theme terms first appear in the background or impact block. This is
-        a lookup, not another model call: it costs no tokens.
+        most theme terms first appear in the background or impact block. The
+        lookup itself is token-free; the direction verdict that follows it is
+        one short call, and only for items that matched a theme.
         """
         if self._theme_index is None:
             self._theme_index = ThemeIndex()
         if not self._theme_index.available:
             return
         await attach_themes(item, self._theme_index, MemberFetcher())
+        await self._direction_judge.judge(item)
 
     @staticmethod
     def _expand_request_source_refs(
