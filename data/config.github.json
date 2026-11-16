@@ -37,6 +37,10 @@
       "ai-app": {
         "threshold": 6.8,
         "topic_dedup": true
+      },
+      "china-market": {
+        "threshold": 6.0,
+        "topic_dedup": true
       }
     }
   },
@@ -162,18 +166,14 @@
         "url": "https://hub.slarker.me/cls/telegraph",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "华尔街见闻",
         "url": "https://dedicated.wallstreetcn.com/rss.xml",
         "enabled": true,
         "category": "finance",
-        "profile": [
-          "finance-news",
-          "ai-hardware",
-          "ai-app"
-        ]
+        "profile": "china-market"
       },
       {
         "name": "量子位",
@@ -269,66 +269,56 @@
         "url": "https://seekingalpha.com/api/sa/combined/KWEB.xml",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "KraneShares",
         "url": "https://kraneshares.com/feed/",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "SCMP Business",
         "url": "https://www.scmp.com/rss/92/feed",
         "enabled": true,
         "category": "asia-business",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "Caixin Global",
         "url": "https://www.caixinglobal.com/rss/",
         "enabled": true,
         "category": "asia-business",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "ChinaTalk",
         "url": "https://www.chinatalk.media/feed",
         "enabled": true,
         "category": "china-policy",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "第一财经",
         "url": "https://hub.slarker.me/yicai/news",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "FT Chinese Economy",
         "url": "https://www.ft.com/chinese-economy?format=rss",
         "enabled": true,
         "category": "asia-business",
-        "profile": "finance-news"
+        "profile": "china-market"
       },
       {
         "name": "FT Chinese Business",
         "url": "https://www.ft.com/chinese-business-finance?format=rss",
         "enabled": true,
         "category": "asia-business",
-        "profile": "finance-news"
-      },
-      {
-        "name": "TechNode",
-        "url": "https://technode.com/feed/",
-        "enabled": true,
-        "category": "china-tech",
-        "profile": [
-          "ai-app",
-          "tech-news"
-        ]
+        "profile": "china-market"
       },
       {
         "name": "Tech in Asia",
@@ -362,19 +352,31 @@
         "url": "https://rhg.com/research/feed/",
         "enabled": true,
         "category": "china-policy",
-        "profile": "finance-news"
+        "profile": "china-market"
       }
     ],
-    "google_news": {
-      "enabled": true,
-      "query": "site:reuters.com business",
-      "language": "en",
-      "country": "US",
-      "ceid": "US:en",
-      "max_results": 40,
-      "category": "finance",
-      "profile": "finance-news"
-    },
+    "google_news": [
+      {
+        "enabled": true,
+        "query": "site:reuters.com business",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 40,
+        "category": "finance",
+        "profile": "finance-news"
+      },
+      {
+        "enabled": true,
+        "query": "site:capitaleconomics.com China",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 15,
+        "category": "finance",
+        "profile": "china-market"
+      }
+    ],
     "reddit": {
       "enabled": false,
       "subreddits": [
@@ -421,7 +423,7 @@
     "time_window_hours": 24
   },
   "digest": {
-    "max_items": 30,
+    "max_items": 34,
     "group_by": "profile",
     "category_groups": {
       "ai-hardware": {
@@ -454,9 +456,16 @@
       },
       "finance-news": {
         "name": "财经新闻",
-        "limit": 12,
+        "limit": 8,
         "categories": [
           "finance-news"
+        ]
+      },
+      "china-market": {
+        "name": "中国股市",
+        "limit": 8,
+        "categories": [
+          "china-market"
         ]
       }
     },
@@ -467,7 +476,8 @@
       "ai-app",
       "tech-news",
       "tech-blog",
-      "finance-news"
+      "finance-news",
+      "china-market"
     ]
   },
   "webhook": {
