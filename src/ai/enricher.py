@@ -31,6 +31,7 @@ from .prompting.enrichment import (
 )
 from .utils import gather_ai_tasks, parse_json_response
 from ..models import ArtifactSource, ContentArtifact, ContentBlock, ContentItem
+from ..processing.ashare_themes import MemberFetcher, ThemeIndex, attach_themes
 from ..processing.profiles import LoadedProfile, ProfileBlock, ProfileRegistry
 from ..processing.tools import ToolRegistry, ToolResult
 
@@ -130,6 +131,7 @@ class ContentEnricher:
         self.console = console or Console(stderr=True)
         self.tools = tools or ToolRegistry()
         self.concurrency = max(concurrency, 1)
+        self._theme_index: Optional[ThemeIndex] = None
         self._validate_profile_tools()
 
     def _validate_profile_tools(self) -> None:
@@ -290,6 +292,20 @@ class ContentEnricher:
                 sources=[source for source in sources.values() if source.id in referenced],
             )
         item.processing.artifacts.update(artifacts)
+        await self._refresh_themes(item)
+
+    async def _refresh_themes(self, item: ContentItem) -> None:
+        """Re-run the A-share theme lookup now that the enriched blocks exist.
+
+        The analysis pass only sees the headline and the one-line summary, and
+        most theme terms first appear in the background or impact block. This is
+        a lookup, not another model call: it costs no tokens.
+        """
+        if self._theme_index is None:
+            self._theme_index = ThemeIndex()
+        if not self._theme_index.available:
+            return
+        await attach_themes(item, self._theme_index, MemberFetcher())
 
     @staticmethod
     def _expand_request_source_refs(

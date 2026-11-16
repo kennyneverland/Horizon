@@ -94,6 +94,19 @@
     {"w": 1.0, "themes": ["跨境电商"], "terms": ["cross-border e-commerce", "shein", "temu"]},
     {"w": 0.85, "themes": ["电商概念"], "terms": ["e-commerce", "ecommerce"]},
     {"w": 0.9, "themes": ["移动支付"], "terms": ["mobile payment"]},
-    {"w": 0.9, "themes": ["跨境支付"], "terms": ["cross-border payment"]}
+    {"w": 0.9, "themes": ["跨境支付"], "terms": ["cross-border payment"]},
+    {"w": 1.0, "themes": ["AI智能体"], "terms": ["autonomous agent", "agent platform", "ai assistant", "copilot", "智能体", "智能代理", "ai 代理", "智能助手"]},
+    {"w": 0.85, "themes": ["AI智能体"], "terms": ["agent", "agents"]},
+    {"w": 0.9, "themes": ["垂直应用软件"], "terms": ["ai application", "ai applications", "ai app", "ai apps", "ai software", "enterprise ai", "ai adoption", "ai deployment", "ai 应用", "ai应用", "ai 落地", "行业大模型"]},
+    {"w": 0.9, "themes": ["云计算"], "terms": ["iaas", "paas", "公有云", "私有云", "云服务"]},
+    {"w": 1.0, "themes": ["数据中心"], "terms": ["ai data center"]},
+    {"w": 0.85, "themes": ["数据中心"], "terms": ["idc"]},
+    {"w": 1.0, "themes": ["AI制药（医疗）"], "terms": ["ai 制药", "ai 医疗", "ai healthcare", "clinical ai", "ai diagnostics", "医疗 ai"]},
+    {"w": 0.85, "themes": ["在线教育"], "terms": ["ai education", "ai tutoring", "ai 教育", "教育 ai"]},
+    {"w": 0.85, "themes": ["机器人"], "terms": ["embodied ai", "具身智能", "人形机器人"]},
+    {"w": 1.0, "themes": ["AI语料"], "terms": ["ai 语料", "语料", "语料库", "training corpus"]},
+    {"w": 1.0, "themes": ["AI眼镜"], "terms": ["ai 眼镜"]},
+    {"w": 0.8, "themes": ["游戏概念"], "terms": ["ai game", "ai games", "ai 游戏", "生成式游戏"]},
+    {"w": 0.8, "themes": ["互联网电商"], "terms": ["ai shopping", "ai commerce", "agentic commerce"]}
   ]
 }
