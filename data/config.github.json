@@ -298,6 +298,13 @@
         "enabled": true,
         "category": "china-policy",
         "profile": "finance-news"
+      },
+      {
+        "name": "第一财经",
+        "url": "https://hub.slarker.me/yicai/news",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
