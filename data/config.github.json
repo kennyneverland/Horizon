@@ -263,6 +263,34 @@
         "enabled": true,
         "category": "finance",
         "profile": "finance-news"
+      },
+      {
+        "name": "Seeking Alpha China ETF",
+        "url": "https://seekingalpha.com/api/sa/combined/KWEB.xml",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
+      },
+      {
+        "name": "KraneShares",
+        "url": "https://kraneshares.com/feed/",
+        "enabled": true,
+        "category": "finance",
+        "profile": "finance-news"
+      },
+      {
+        "name": "SCMP Business",
+        "url": "https://www.scmp.com/rss/92/feed",
+        "enabled": true,
+        "category": "asia-business",
+        "profile": "finance-news"
+      },
+      {
+        "name": "Caixin Global",
+        "url": "https://www.caixinglobal.com/rss/",
+        "enabled": true,
+        "category": "asia-business",
+        "profile": "finance-news"
       }
     ],
     "google_news": {
