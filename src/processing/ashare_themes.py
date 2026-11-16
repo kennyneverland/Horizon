@@ -113,6 +113,13 @@ _RANKED_RE = re.compile(
 _NAME_PREFIX_RE = re.compile(r"^(XD|XR|DR|\*?ST|N|C)")
 # A JSON-LD member reads "移远通信(603236)".
 _LISTED_RE = re.compile(r"^(.*?)\s*\((\d{6})\)\s*$")
+# Theme pages moved from /ticai/<id>.html to /ticai/<pinyin>-<hash>.html and the
+# old numeric URLs now answer 404. The listing page is the only place that pairs
+# a theme name with its current URL, so it is read once per run.
+_THEME_LINK_RE = re.compile(
+    r'href="(/ticai/[a-z0-9]+-[0-9a-f]{4}\.html)"[^>]*>(.*?)</a>', re.S
+)
+_THEME_LINK_NAME_RE = re.compile(r"^(.*?)热度第")
 
 
 def _normalise(text: Any) -> str:
@@ -120,6 +127,23 @@ def _normalise(text: Any) -> str:
     if not text:
         return ""
     return unicodedata.normalize("NFKC", str(text)).lower()
+
+
+def _parse_theme_links(html: str) -> Dict[str, str]:
+    """Map a theme name to its current page path, from the listing page.
+
+    Each entry reads ``AIGC概念热度第252 · 117只``, so the name is everything
+    before 热度第. Names are folded, so a match does not depend on width or case.
+    """
+    slugs: Dict[str, str] = {}
+    for match in _THEME_LINK_RE.finditer(html):
+        path, label = match.group(1), match.group(2)
+        text = re.sub(r"<[^>]+>", "", label).strip()
+        name_match = _THEME_LINK_NAME_RE.match(text)
+        name = (name_match.group(1) if name_match else text).strip()
+        if name:
+            slugs.setdefault(_normalise(name), path)
+    return slugs
 
 
 class ThemeIndex:
@@ -306,6 +330,7 @@ class MemberFetcher:
     # budget and the lock belong to the process. The analyser and the enricher
     # each hold a fetcher; separate budgets would double the requests per run.
     _shared_cache: Dict[str, List[str]] = {}
+    _shared_slugs: Optional[Dict[str, str]] = None
     _shared_used = 0
     _shared_lock: Optional[asyncio.Lock] = None
 
@@ -324,8 +349,7 @@ class MemberFetcher:
         # Fetches are serialised: parallel requests are what trips the limiter.
         self._lock = MemberFetcher._shared_lock
 
-    def _fetch_sync(self, slug: str) -> List[str]:
-        url = self.base_url + slug
+    def _get(self, url: str) -> str:
         request = urllib.request.Request(
             url,
             headers={
@@ -340,7 +364,31 @@ class MemberFetcher:
             raw = response.read()
             if response.headers.get("Content-Encoding") == "gzip":
                 raw = gzip.decompress(raw)
-        html = raw.decode("utf-8", "ignore")
+        return raw.decode("utf-8", "ignore")
+
+    def _load_slugs(self) -> Dict[str, str]:
+        """Read the listing page once and keep the name-to-URL map for the run."""
+        try:
+            html = self._get(self.base_url + "/ticai/")
+        except Exception as exc:  # noqa: BLE001 - a stale URL must not fail the run
+            logger.warning(
+                "Theme listing page unavailable (%s); keeping the stored URLs", exc
+            )
+            return {}
+        slugs = _parse_theme_links(html)
+        logger.info("lianban theme listing: %d current page URLs", len(slugs))
+        return slugs
+
+    def _resolve_slug(self, slug: str, name: Optional[str]) -> str:
+        """Return the theme's current page path, falling back to the stored one."""
+        if not name:
+            return slug
+        if MemberFetcher._shared_slugs is None:
+            MemberFetcher._shared_slugs = self._load_slugs()
+        return MemberFetcher._shared_slugs.get(_normalise(name)) or slug
+
+    def _fetch_sync(self, slug: str) -> List[str]:
+        html = self._get(self.base_url + slug)
         listed = _parse_itemlist(html)
         ranked = _parse_ranked_names(html)
         if ranked:
@@ -359,8 +407,15 @@ class MemberFetcher:
             names.append(f"{name}({code})")
         return names
 
-    async def get(self, slug: str, expected: Optional[int] = None) -> List[str]:
+    async def get(
+        self,
+        slug: str,
+        expected: Optional[int] = None,
+        name: Optional[str] = None,
+    ) -> List[str]:
         async with self._lock:
+            # The stored path may predate a change of URL scheme on the site.
+            slug = self._resolve_slug(slug, name)
             if slug in self._cache:
                 return self._cache[slug]
             if MemberFetcher._shared_used >= self.budget:
@@ -562,7 +617,9 @@ async def attach_themes(
         return
 
     for theme in themes:
-        members = await fetcher.get(theme["slug"], theme.get("members_count"))
+        members = await fetcher.get(
+            theme["slug"], theme.get("members_count"), theme.get("name")
+        )
         theme["members"] = pick_members(members)
     item.metadata["ashare_themes"] = themes
 
