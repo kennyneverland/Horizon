@@ -469,6 +469,16 @@
         "max_results": 10,
         "category": "finance",
         "profile": "china-market"
+      },
+      {
+        "enabled": true,
+        "query": "China \"price increase\"",
+        "language": "en",
+        "country": "US",
+        "ceid": "US:en",
+        "max_results": 10,
+        "category": "finance",
+        "profile": "china-market"
       }
     ],
     "insightintochina": {
