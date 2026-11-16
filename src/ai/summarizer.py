@@ -25,6 +25,18 @@ def _escape_markdown(value: object) -> str:
     return _MARKDOWN_BLOCK_START.sub(r"\1\\\2", escaped)
 
 
+def _quote_block(text: str) -> str:
+    """Wrap one annotation block in a Markdown quote.
+
+    Server酱 strips HTML and its page renders every heading level from h4 down at
+    body size, so neither font size nor colour can be set directly. A quote
+    block is the one construct that still separates these blocks from the news
+    body there: the push page indents it and paints it grey behind a left bar,
+    which is visibly different from a plain paragraph.
+    """
+    return "\n".join("> " + line if line.strip() else ">" for line in text.splitlines())
+
+
 # Tags that must lead the tag line and stand out from the plain ``#tag`` chips.
 _PINNED_TAGS = ("未证实",)
 
@@ -73,6 +85,7 @@ LABELS = {
         "discussion": "Discussion",
         "references": "References",
         "tags": "Tags",
+        "themes": "Themes",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
         "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
         "empty_body": (
@@ -93,6 +106,7 @@ LABELS = {
         "discussion": "社区讨论",
         "references": "参考链接",
         "tags": "标签",
+        "themes": "A股题材",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
         "empty_body": (
@@ -462,7 +476,9 @@ class DailySummarizer:
                 if language == "zh":
                     block_title = _pangu(block_title)
                     block_content = _pangu(block_content)
-                lines.extend(["", f"**「{block_title}」** {block_content}"])
+                lines.extend(
+                    ["", _quote_block(f"**「{block_title}」** {block_content}")]
+                )
 
         # A-share theme lookup: a plain rule match, so it is labelled as inferred
         # and never phrased as advice. Only the Chinese digest carries it.
@@ -470,7 +486,14 @@ class DailySummarizer:
             themes = (item.metadata or {}).get("ashare_themes") or []
             theme_line = format_theme_line(themes)
             if theme_line:
-                lines.extend(["", _escape_markdown(theme_line)])
+                lines.extend(
+                    [
+                        "",
+                        _quote_block(
+                            f"**「{labels['themes']}」** {_escape_markdown(theme_line)}"
+                        ),
+                    ]
+                )
 
         sources = artifact.sources if artifact else []
         if sources:
