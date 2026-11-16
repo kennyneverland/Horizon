@@ -281,21 +281,21 @@
     "category_groups": {
       "ai-hardware": {
         "name": "AI硬件与算力",
-        "limit": 3,
+        "limit": 5,
         "categories": [
           "ai-hardware"
         ]
       },
       "ai-app": {
         "name": "AI应用与智能体",
-        "limit": 4,
+        "limit": 5,
         "categories": [
           "ai-app"
         ]
       },
       "tech-news": {
         "name": "科技新闻",
-        "limit": 6,
+        "limit": 3,
         "categories": [
           "tech-news"
         ]
