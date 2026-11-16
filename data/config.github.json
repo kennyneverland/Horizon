@@ -716,27 +716,6 @@
     "max_items": 35,
     "group_by": "profile",
     "category_groups": {
-      "ai-hardware": {
-        "name": "AI硬件与算力",
-        "limit": 6,
-        "categories": [
-          "ai-hardware"
-        ]
-      },
-      "ai-app": {
-        "name": "AI应用与智能体",
-        "limit": 6,
-        "categories": [
-          "ai-app"
-        ]
-      },
-      "tech-news": {
-        "name": "科技新闻",
-        "limit": 5,
-        "categories": [
-          "tech-news"
-        ]
-      },
       "finance-news": {
         "name": "财经新闻",
         "limit": 8,
@@ -750,16 +729,37 @@
         "categories": [
           "china-market"
         ]
+      },
+      "tech-news": {
+        "name": "科技新闻",
+        "limit": 5,
+        "categories": [
+          "tech-news"
+        ]
+      },
+      "ai-hardware": {
+        "name": "AI硬件与算力",
+        "limit": 6,
+        "categories": [
+          "ai-hardware"
+        ]
+      },
+      "ai-app": {
+        "name": "AI应用与智能体",
+        "limit": 6,
+        "categories": [
+          "ai-app"
+        ]
       }
     },
     "default_group": "other",
     "default_group_limit": null,
     "profile_order": [
-      "ai-hardware",
-      "ai-app",
-      "tech-news",
       "finance-news",
-      "china-market"
+      "china-market",
+      "tech-news",
+      "ai-hardware",
+      "ai-app"
     ]
   },
   "webhook": {
