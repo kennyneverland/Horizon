@@ -29,6 +29,7 @@ from .scrapers.openbb import OpenBBScraper
 from .scrapers.ossinsight import OSSInsightScraper
 from .scrapers.gdelt import GDELTScraper
 from .scrapers.google_news import GoogleNewsScraper
+from .scrapers.insightintochina import InsightIntoChinaScraper
 from .ai.client import AIClient, create_ai_client
 from .ai.errors import AIProviderUnavailableError
 from .ai.analyzer import ContentAnalyzer
@@ -515,6 +516,18 @@ class HorizonOrchestrator:
             if self.config.sources.google_news and self.config.sources.google_news.enabled:
                 gn_scraper = GoogleNewsScraper(self.config.sources.google_news, client)
                 tasks.append(self._fetch_with_progress("Google News", gn_scraper, since))
+
+            # InsightIntoChina research list (HTML only, no RSS endpoint)
+            if (
+                self.config.sources.insightintochina
+                and self.config.sources.insightintochina.enabled
+            ):
+                iic_scraper = InsightIntoChinaScraper(
+                    self.config.sources.insightintochina, client
+                )
+                tasks.append(
+                    self._fetch_with_progress("InsightIntoChina", iic_scraper, since)
+                )
 
             # Fetch all concurrently
             outcomes = await asyncio.gather(*tasks)
