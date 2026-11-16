@@ -22,6 +22,8 @@ Design notes:
   publisher is also exposed via ``entry.source.title``; it is captured into
   the ``source_name`` metadata key defensively.
 * A single malformed entry is skipped, not allowed to abort the batch.
+* Several queries may be configured at once; each one is fetched as an
+  independent request so a failing query does not drop the others.
 """
 
 from __future__ import annotations
@@ -38,7 +40,12 @@ import feedparser
 import httpx
 
 from .base import BaseScraper, FetchResult
-from ..models import ContentItem, GoogleNewsConfig, SourceType
+from ..models import (
+    ContentItem,
+    GoogleNewsConfig,
+    GoogleNewsSourcesConfig,
+    SourceType,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,46 +56,70 @@ class GoogleNewsScraper(BaseScraper):
     SOURCE_TYPE = SourceType.GOOGLE_NEWS
     BASE_URL = "https://news.google.com/rss/search"
 
-    def __init__(self, config: GoogleNewsConfig, http_client: httpx.AsyncClient):
+    def __init__(
+        self,
+        config: "GoogleNewsConfig | GoogleNewsSourcesConfig",
+        http_client: httpx.AsyncClient,
+    ):
         """Initialize the scraper.
 
         Args:
-            config: Google News source configuration.
+            config: One Google News query, or a wrapper holding several.
             http_client: Shared async HTTP client.
         """
         super().__init__({"google_news": config}, http_client)
-        self.gn_config = config
+        self._configs = self._normalize_configs(config)
+
+    @staticmethod
+    def _normalize_configs(
+        config: "GoogleNewsConfig | GoogleNewsSourcesConfig | None",
+    ) -> List[GoogleNewsConfig]:
+        """Return the configured queries as a list, tolerating a single one."""
+        if config is None:
+            return []
+        if isinstance(config, GoogleNewsConfig):
+            return [config]
+        queries = getattr(config, "queries", None)
+        if queries is not None:
+            return list(queries)
+        return []
 
     async def fetch(self, since: datetime) -> FetchResult:
         result = FetchResult()
-        if self.gn_config.enabled:
-            await result.collect("search", self._fetch_articles(since))
+        for config in self._configs:
+            if not config.enabled:
+                continue
+            label = (config.query or "").strip() or "search"
+            await result.collect(label, self._fetch_articles(config, since))
         return result
 
-    async def _fetch_articles(self, since: datetime) -> List[ContentItem]:
-        """Fetch articles from the Google News RSS search endpoint.
+    async def _fetch_articles(
+        self, config: GoogleNewsConfig, since: datetime
+    ) -> List[ContentItem]:
+        """Fetch articles for one query from the Google News RSS endpoint.
 
         Args:
+            config: The query to run.
             since: Only fetch items published after this time (used to derive
                 the Google News ``when:``/``after:`` query operator).
 
         Returns:
             List[ContentItem]: Fetched content items.
         """
-        if not self.gn_config.enabled:
+        if not config.enabled:
             return []
 
-        base_query = (self.gn_config.query or "").strip()
+        base_query = (config.query or "").strip()
         if not base_query:
             return []
 
         query = f"{base_query} {self._time_operator(since)}"
 
-        ceid = self.gn_config.ceid or f"{self.gn_config.country}:{self.gn_config.language}"
+        ceid = config.ceid or f"{config.country}:{config.language}"
         params: dict[str, Any] = {
             "q": query,
-            "hl": self.gn_config.language,
-            "gl": self.gn_config.country,
+            "hl": config.language,
+            "gl": config.country,
             "ceid": ceid,
         }
 
@@ -102,9 +133,9 @@ class GoogleNewsScraper(BaseScraper):
 
         items: List[ContentItem] = []
         for entry in feed.entries:
-            if len(items) >= self.gn_config.max_results:
+            if len(items) >= config.max_results:
                 break
-            item = self._entry_to_item(entry)
+            item = self._entry_to_item(entry, config)
             if item is not None and item.published_at >= self._ensure_utc(since):
                 items.append(item)
         return items
@@ -125,7 +156,9 @@ class GoogleNewsScraper(BaseScraper):
             return f"when:{hours}h"
         return f"after:{since_utc.strftime('%Y-%m-%d')}"
 
-    def _entry_to_item(self, entry: Any) -> Optional[ContentItem]:
+    def _entry_to_item(
+        self, entry: Any, config: GoogleNewsConfig
+    ) -> Optional[ContentItem]:
         """Map one Google News RSS entry into a ContentItem.
 
         Returns None when the entry has no title/link or an unparseable
@@ -151,9 +184,9 @@ class GoogleNewsScraper(BaseScraper):
             entry_hash = hashlib.sha256(str(entry_id).encode("utf-8")).hexdigest()[:16]
 
             meta = {
-                "gn_query": self.gn_config.query,
+                "gn_query": config.query,
                 "source_name": source_name,
-                "category": self.gn_config.category,
+                "category": config.category,
             }
 
             return ContentItem(
@@ -164,7 +197,7 @@ class GoogleNewsScraper(BaseScraper):
                 content=self._extract_content(entry),
                 author=source_name,
                 published_at=published,
-                profile=self.gn_config.profile,
+                profile=config.profile,
                 metadata={k: v for k, v in meta.items() if v is not None},
             )
         except Exception as exc:
