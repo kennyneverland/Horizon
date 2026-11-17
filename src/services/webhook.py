@@ -56,6 +56,15 @@ _PLACEHOLDER_RE = re.compile(r"#\{(\w+)(\?\w+=[^}]+)?\}")
 _SENSITIVE_HEADER_RE = re.compile(
     r"(authorization|token|secret|signature|key|password)", re.IGNORECASE
 )
+# The digest emits its reference list as a collapsed <details> block. That works
+# on the published page but not in a chat message: the webhook renderer takes
+# Markdown only and ignores HTML, so the block arrived as a flat wall of links
+# that cost about 29% of the body and pushed the tail of the digest out of the
+# message. Only the labelled reference block is dropped; the page keeps it.
+_REFERENCE_DETAILS_RE = re.compile(
+    r"<details>\s*<summary>\s*(?:参考链接|References)\s*</summary>.*?</details>",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 def _truncate(value: str, limit: int, split: str) -> str:
@@ -147,7 +156,7 @@ def _render(
 
 def _format_markdown_for_webhook(value: str) -> str:
     """Flatten HTML constructs that chat/webhook Markdown often cannot render."""
-    return clean_app_summary_markdown(value)
+    return clean_app_summary_markdown(_REFERENCE_DETAILS_RE.sub("", value))
 
 
 def _prepare_variables_for_body(
@@ -562,7 +571,7 @@ class WebhookNotifier:
 
         delivery = getattr(self.config, "delivery", "summary")
         if delivery == "summary_and_items":
-            item_messages: List[dict[str, Any]] = []
+            item_messages: List[dict] = []
             overview = summarizer.generate_webhook_overview(
                 important_items,
                 date,
