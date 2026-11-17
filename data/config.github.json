@@ -46,33 +46,10 @@
   },
   "sources": {
     "github": [
-      {
-        "type": "user_events",
-        "username": "karpathy",
-        "enabled": true,
-        "profile": "tech-news"
-      },
-      {
-        "type": "repo_releases",
-        "owner": "vllm-project",
-        "repo": "vllm",
-        "enabled": true,
-        "profile": "tech-news"
-      },
-      {
-        "type": "repo_releases",
-        "owner": "sgl-project",
-        "repo": "sglang",
-        "enabled": true,
-        "profile": "tech-news"
-      },
-      {
-        "type": "repo_releases",
-        "owner": "triton-lang",
-        "repo": "triton",
-        "enabled": true,
-        "profile": "tech-news"
-      }
+      {"type": "user_events", "username": "karpathy", "enabled": true, "profile": "tech-news"},
+      {"type": "repo_releases", "owner": "vllm-project", "repo": "vllm", "enabled": true, "profile": "tech-news"},
+      {"type": "repo_releases", "owner": "sgl-project", "repo": "sglang", "enabled": true, "profile": "tech-news"},
+      {"type": "repo_releases", "owner": "triton-lang", "repo": "triton", "enabled": true, "profile": "tech-news"}
     ],
     "hackernews": {
       "enabled": true,
@@ -81,47 +58,11 @@
       "profile": "tech-news"
     },
     "rss": [
-      {
-        "name": "Simon Willison",
-        "url": "https://simonwillison.net/atom/everything/",
-        "enabled": true,
-        "category": "ai-tools",
-        "profile": "tech-news",
-        "max_items": 3
-      },
-      {
-        "name": "vLLM Blog",
-        "url": "https://vllm.ai/blog/rss.xml",
-        "enabled": true,
-        "category": "llm-inference",
-        "profile": "tech-news",
-        "content_extractor": "trafilatura"
-      },
-      {
-        "name": "Sean Goedecke",
-        "url": "https://www.seangoedecke.com/rss.xml",
-        "enabled": true,
-        "category": "software-engineering",
-        "profile": "tech-news",
-        "content_extractor": "trafilatura"
-      },
-      {
-        "name": "CNBC Finance",
-        "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
-        "enabled": true,
-        "category": "finance",
-        "profile": "finance-news",
-        "content_extractor": "trafilatura",
-        "max_items": 8
-      },
-      {
-        "name": "GitHub Trending - Daily",
-        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
-        "enabled": true,
-        "category": "github-trending",
-        "profile": "tech-news",
-        "max_items": 10
-      },
+      {"name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "enabled": true, "category": "ai-tools", "profile": "tech-news", "max_items": 3},
+      {"name": "vLLM Blog", "url": "https://vllm.ai/blog/rss.xml", "enabled": true, "category": "llm-inference", "profile": "tech-news", "content_extractor": "trafilatura"},
+      {"name": "Sean Goedecke", "url": "https://www.seangoedecke.com/rss.xml", "enabled": true, "category": "software-engineering", "profile": "tech-news", "content_extractor": "trafilatura"},
+      {"name": "CNBC Finance", "url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664", "enabled": true, "category": "finance", "profile": "finance-news", "content_extractor": "trafilatura", "max_items": 8},
+      {"name": "GitHub Trending - Daily", "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml", "enabled": true, "category": "github-trending", "profile": "tech-news", "max_items": 10},
       {
         "name": "Semianalysis",
         "url": "https://newsletter.semianalysis.com/feed",
@@ -163,22 +104,8 @@
         ],
         "max_items": 6
       },
-      {
-        "name": "LWN.net",
-        "url": "https://lwn.net/headlines/rss",
-        "enabled": true,
-        "category": "linux-kernel",
-        "profile": "tech-news",
-        "max_items": 4
-      },
-      {
-        "name": "Bloomberg Markets",
-        "url": "https://feeds.bloomberg.com/markets/news.rss",
-        "enabled": true,
-        "category": "finance",
-        "profile": "finance-news",
-        "max_items": 10
-      },
+      {"name": "LWN.net", "url": "https://lwn.net/headlines/rss", "enabled": true, "category": "linux-kernel", "profile": "tech-news", "max_items": 4},
+      {"name": "Bloomberg Markets", "url": "https://feeds.bloomberg.com/markets/news.rss", "enabled": true, "category": "finance", "profile": "finance-news", "max_items": 10},
       {
         "name": "Bloomberg Technology",
         "url": "https://feeds.bloomberg.com/technology/news.rss",
@@ -191,30 +118,9 @@
         ],
         "max_items": 14
       },
-      {
-        "name": "Bloomberg Business",
-        "url": "https://feeds.bloomberg.com/business/news.rss",
-        "enabled": true,
-        "category": "business",
-        "profile": "finance-news",
-        "max_items": 10
-      },
-      {
-        "name": "财联社电报(RSSHub)",
-        "url": "https://hub.slarker.me/cls/telegraph",
-        "enabled": true,
-        "category": "finance",
-        "profile": "china-market",
-        "max_items": 15
-      },
-      {
-        "name": "华尔街见闻",
-        "url": "https://dedicated.wallstreetcn.com/rss.xml",
-        "enabled": true,
-        "category": "finance",
-        "profile": "china-market",
-        "max_items": 6
-      },
+      {"name": "Bloomberg Business", "url": "https://feeds.bloomberg.com/business/news.rss", "enabled": true, "category": "business", "profile": "finance-news", "max_items": 10},
+      {"name": "财联社电报(RSSHub)", "url": "https://hub.slarker.me/cls/telegraph", "enabled": true, "category": "finance", "profile": "china-market", "max_items": 15},
+      {"name": "华尔街见闻", "url": "https://dedicated.wallstreetcn.com/rss.xml", "enabled": true, "category": "finance", "profile": "china-market", "max_items": 6},
       {
         "name": "量子位",
         "url": "https://www.qbitai.com/feed",
@@ -233,7 +139,8 @@
         "enabled": true,
         "category": "ai-application",
         "profile": [
-          "ai-app"
+          "ai-app",
+          "tech-news"
         ],
         "max_items": 10
       },
@@ -243,7 +150,8 @@
         "enabled": true,
         "category": "ai-application",
         "profile": [
-          "ai-app"
+          "ai-app",
+          "tech-news"
         ],
         "max_items": 10
       },
@@ -253,7 +161,8 @@
         "enabled": true,
         "category": "ai-application",
         "profile": [
-          "ai-app"
+          "ai-app",
+          "tech-news"
         ],
         "max_items": 10
       },
@@ -263,7 +172,8 @@
         "enabled": true,
         "category": "ai-application",
         "profile": [
-          "ai-app"
+          "ai-app",
+          "tech-news"
         ],
         "max_items": 10
       },
@@ -273,7 +183,8 @@
         "enabled": true,
         "category": "ai-application",
         "profile": [
-          "ai-app"
+          "ai-app",
+          "tech-news"
         ],
         "max_items": 6
       },
@@ -290,101 +201,25 @@
         "content_extractor": "trafilatura",
         "max_items": 12
       },
-      {
-        "name": "MarketWatch",
-        "url": "https://feeds.marketwatch.com/marketwatch/topstories/",
-        "enabled": true,
-        "category": "finance",
-        "profile": "finance-news",
-        "max_items": 10
-      },
-      {
-        "name": "Nikkei Asia",
-        "url": "https://asia.nikkei.com/rss/feed/nar",
-        "enabled": true,
-        "category": "asia-business",
-        "profile": "finance-news",
-        "max_items": 12
-      },
-      {
-        "name": "BBC Business",
-        "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
-        "enabled": true,
-        "category": "finance",
-        "profile": "finance-news",
-        "max_items": 10
-      },
-      {
-        "name": "Seeking Alpha China ETF",
-        "url": "https://seekingalpha.com/api/sa/combined/KWEB.xml",
-        "enabled": true,
-        "category": "finance",
-        "profile": "china-market",
-        "max_items": 3
-      },
-      {
-        "name": "KraneShares",
-        "url": "https://kraneshares.com/feed/",
-        "enabled": true,
-        "category": "finance",
-        "profile": "china-market",
-        "max_items": 3
-      },
-      {
-        "name": "SCMP Business",
-        "url": "https://www.scmp.com/rss/92/feed",
-        "enabled": true,
-        "category": "asia-business",
-        "profile": "china-market",
-        "max_items": 10
-      },
-      {
-        "name": "Caixin Global",
-        "url": "https://www.caixinglobal.com/rss/",
-        "enabled": true,
-        "category": "asia-business",
-        "profile": "china-market",
-        "max_items": 8
-      },
-      {
-        "name": "ChinaTalk",
-        "url": "https://www.chinatalk.media/feed",
-        "enabled": true,
-        "category": "china-policy",
-        "profile": "china-market",
-        "max_items": 3
-      },
-      {
-        "name": "第一财经",
-        "url": "https://hub.slarker.me/yicai/news",
-        "enabled": true,
-        "category": "finance",
-        "profile": "china-market",
-        "max_items": 12
-      },
-      {
-        "name": "FT Chinese Economy",
-        "url": "https://www.ft.com/chinese-economy?format=rss",
-        "enabled": true,
-        "category": "asia-business",
-        "profile": "china-market",
-        "max_items": 4
-      },
-      {
-        "name": "FT Chinese Business",
-        "url": "https://www.ft.com/chinese-business-finance?format=rss",
-        "enabled": true,
-        "category": "asia-business",
-        "profile": "china-market",
-        "max_items": 3
-      },
+      {"name": "MarketWatch", "url": "https://feeds.marketwatch.com/marketwatch/topstories/", "enabled": true, "category": "finance", "profile": "finance-news", "max_items": 10},
+      {"name": "Nikkei Asia", "url": "https://asia.nikkei.com/rss/feed/nar", "enabled": true, "category": "asia-business", "profile": "finance-news", "max_items": 12},
+      {"name": "BBC Business", "url": "https://feeds.bbci.co.uk/news/business/rss.xml", "enabled": true, "category": "finance", "profile": "finance-news", "max_items": 10},
+      {"name": "Seeking Alpha China ETF", "url": "https://seekingalpha.com/api/sa/combined/KWEB.xml", "enabled": true, "category": "finance", "profile": "china-market", "max_items": 3},
+      {"name": "KraneShares", "url": "https://kraneshares.com/feed/", "enabled": true, "category": "finance", "profile": "china-market", "max_items": 3},
+      {"name": "SCMP Business", "url": "https://www.scmp.com/rss/92/feed", "enabled": true, "category": "asia-business", "profile": "china-market", "max_items": 10},
+      {"name": "Caixin Global", "url": "https://www.caixinglobal.com/rss/", "enabled": true, "category": "asia-business", "profile": "china-market", "max_items": 8},
+      {"name": "ChinaTalk", "url": "https://www.chinatalk.media/feed", "enabled": true, "category": "china-policy", "profile": "china-market", "max_items": 3},
+      {"name": "第一财经", "url": "https://hub.slarker.me/yicai/news", "enabled": true, "category": "finance", "profile": "china-market", "max_items": 12},
+      {"name": "FT Chinese Economy", "url": "https://www.ft.com/chinese-economy?format=rss", "enabled": true, "category": "asia-business", "profile": "china-market", "max_items": 4},
+      {"name": "FT Chinese Business", "url": "https://www.ft.com/chinese-business-finance?format=rss", "enabled": true, "category": "asia-business", "profile": "china-market", "max_items": 3},
       {
         "name": "Tech in Asia",
         "url": "https://www.techinasia.com/feed",
         "enabled": true,
         "category": "asia-tech",
         "profile": [
-          "ai-app"
+          "ai-app",
+          "tech-news"
         ],
         "max_items": 8
       },
@@ -406,72 +241,15 @@
           "ai-hardware"
         ]
       },
-      {
-        "name": "Rhodium Group",
-        "url": "https://rhg.com/research/feed/",
-        "enabled": true,
-        "category": "china-policy",
-        "profile": "china-market",
-        "max_items": 3
-      },
-      {
-        "name": "Gawin Research",
-        "url": "https://gawinresearch.com/rss/",
-        "enabled": true,
-        "category": "china-research",
-        "profile": "china-market",
-        "max_items": 6
-      },
-      {
-        "name": "CNA Business",
-        "url": "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml",
-        "enabled": true,
-        "category": "asia-business",
-        "profile": "china-market",
-        "max_items": 10
-      }
+      {"name": "Rhodium Group", "url": "https://rhg.com/research/feed/", "enabled": true, "category": "china-policy", "profile": "china-market", "max_items": 3},
+      {"name": "Gawin Research", "url": "https://gawinresearch.com/rss/", "enabled": true, "category": "china-research", "profile": "china-market", "max_items": 6},
+      {"name": "CNA Business", "url": "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml", "enabled": true, "category": "asia-business", "profile": "china-market", "max_items": 10}
     ],
     "google_news": [
-      {
-        "enabled": true,
-        "query": "site:reuters.com business",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 20,
-        "category": "finance",
-        "profile": "finance-news"
-      },
-      {
-        "enabled": true,
-        "query": "site:capitaleconomics.com China",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 15,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China advanced packaging semiconductor",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China silicon carbide",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
+      {"enabled": true, "query": "site:reuters.com business", "language": "en", "country": "US", "ceid": "US:en", "max_results": 20, "category": "finance", "profile": "finance-news"},
+      {"enabled": true, "query": "site:capitaleconomics.com China", "language": "en", "country": "US", "ceid": "US:en", "max_results": 15, "category": "finance", "profile": "china-market"},
+      {"enabled": true, "query": "China advanced packaging semiconductor", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "china-market"},
+      {"enabled": true, "query": "China silicon carbide", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "china-market"},
       {
         "enabled": true,
         "query": "China earnings revisions",
@@ -480,7 +258,10 @@
         "ceid": "US:en",
         "max_results": 10,
         "category": "finance",
-        "profile": "china-market"
+        "profile": [
+          "china-market",
+          "finance-news"
+        ]
       },
       {
         "enabled": true,
@@ -490,108 +271,21 @@
         "ceid": "US:en",
         "max_results": 10,
         "category": "finance",
-        "profile": "china-market"
+        "profile": [
+          "china-market",
+          "finance-news"
+        ]
       },
-      {
-        "enabled": true,
-        "query": "HBM price increase",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "AI server demand",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "CoWoS capacity",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "AI server PCB",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "optical module demand",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "copper clad laminate price",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "ABF substrate supply",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "silicon wafer price",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "MLCC price",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
-      {
-        "enabled": true,
-        "query": "liquid cooling demand",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-hardware"
-      },
+      {"enabled": true, "query": "HBM price increase", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "AI server demand", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "CoWoS capacity", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "AI server PCB", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "optical module demand", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "copper clad laminate price", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "ABF substrate supply", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "silicon wafer price", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "MLCC price", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
+      {"enabled": true, "query": "liquid cooling demand", "language": "en", "country": "US", "ceid": "US:en", "max_results": 10, "category": "finance", "profile": "ai-hardware"},
       {
         "enabled": true,
         "query": "AI (\"inference cost\" OR \"API pricing\" OR \"SaaS pricing\")",
@@ -600,7 +294,10 @@
         "ceid": "US:en",
         "max_results": 10,
         "category": "finance",
-        "profile": "ai-app"
+        "profile": [
+          "ai-app",
+          "tech-news"
+        ]
       },
       {
         "enabled": true,
@@ -610,7 +307,10 @@
         "ceid": "US:en",
         "max_results": 10,
         "category": "finance",
-        "profile": "ai-app"
+        "profile": [
+          "ai-app",
+          "tech-news"
+        ]
       },
       {
         "enabled": true,
@@ -620,7 +320,11 @@
         "ceid": "US:en",
         "max_results": 10,
         "category": "finance",
-        "profile": "ai-app"
+        "profile": [
+          "ai-app",
+          "tech-news",
+          "china-market"
+        ]
       }
     ],
     "insightintochina": {
@@ -632,24 +336,8 @@
     "reddit": {
       "enabled": false,
       "subreddits": [
-        {
-          "subreddit": "MachineLearning",
-          "enabled": true,
-          "sort": "hot",
-          "time_filter": "day",
-          "fetch_limit": 10,
-          "min_score": 60,
-          "profile": "tech-news"
-        },
-        {
-          "subreddit": "LocalLLaMA",
-          "enabled": true,
-          "sort": "hot",
-          "time_filter": "day",
-          "fetch_limit": 10,
-          "min_score": 60,
-          "profile": "tech-news"
-        }
+        {"subreddit": "MachineLearning", "enabled": true, "sort": "hot", "time_filter": "day", "fetch_limit": 10, "min_score": 60, "profile": "tech-news"},
+        {"subreddit": "LocalLLaMA", "enabled": true, "sort": "hot", "time_filter": "day", "fetch_limit": 10, "min_score": 60, "profile": "tech-news"}
       ],
       "users": [],
       "fetch_comments": 10
