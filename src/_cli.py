@@ -7,6 +7,9 @@ import argparse
 # module docstring explains why the patches are not applied in place yet.
 from .processing import compat_patches as _compat_patches  # noqa: F401
 
+# Lets RSSSourceConfig keep the per-source max_items the config declares.
+from .processing import source_caps as _source_caps  # noqa: F401
+
 
 def add_log_level_argument(
     parser: argparse.ArgumentParser, default: str = "WARNING"
