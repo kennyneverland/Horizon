@@ -2,11 +2,6 @@
 
 import argparse
 
-# Installs the cross-group dedup and technology-section patches. Imported here
-# rather than in main.py so the install happens for every CLI entrypoint; the
-# module docstring explains why the patches are not applied in place yet.
-from .processing import compat_patches as _compat_patches  # noqa: F401
-
 # Lets RSSSourceConfig keep the per-source max_items the config declares.
 from .processing import source_caps as _source_caps  # noqa: F401
 
