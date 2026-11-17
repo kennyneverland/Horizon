@@ -1,8 +1,8 @@
-"""Runtime patches for two digest behaviours that cannot be edited in place.
+"""Runtime patches for digest behaviours that cannot be edited in place.
 
 The repository connector rejects writes above roughly 20 KB, so
 ``src/orchestrator.py`` (46 KB) and ``src/ai/summarizer.py`` (20 KB) cannot be
-changed through it. Both fixes are installed here at import time instead:
+changed through it. The fixes are installed here at import time instead:
 
 * ``HorizonOrchestrator.filter_items`` deduplicated topics inside each profile
   bucket separately, so one event could survive in several sections under
@@ -11,9 +11,19 @@ changed through it. Both fixes are installed here at import time instead:
 * ``DailySummarizer.generate_summary`` rendered 科技新闻, AI硬件与算力 and
   AI应用与智能体 as three peer sections. The patched version nests them under
   a single 科技新闻 heading.
+* ``scrapers.google_news`` issued its queries 1.2 s apart and retried a 429
+  twice; on 2026-11-17 four of nineteen queries were still lost and twelve more
+  needed a retry. The module reads its pacing from module-level constants, so
+  raising them here is enough to slow every query down.
+* ``HorizonOrchestrator.apply_balanced_digest`` stopped at the per-group caps
+  and never spent the slots a starved group left unused, so the digest shipped
+  25 of 35 items on 2026-11-17 while 21 eligible items were dropped. The patched
+  version fills the leftover slots from the backlog, allowing a group to
+  overflow by half its limit so one section cannot swallow the digest.
 
-Both are behaviour-preserving outside their stated scope. Delete this module and
-apply the edits to the two source files directly once they can be written.
+All of these are behaviour-preserving outside their stated scope. Delete this
+module and apply the edits to the source files directly once they can be
+written.
 """
 
 from __future__ import annotations
@@ -22,6 +32,7 @@ import logging
 from typing import List, Optional
 
 from ..ai.summarizer import DailySummarizer, _escape_markdown, _pangu
+from ..scrapers import google_news as _google_news
 from ..orchestrator import (
     BalancedDigestResult,
     FilteringPipelineResult,
@@ -31,7 +42,15 @@ from ..orchestrator import (
 logger = logging.getLogger(__name__)
 
 _original_filter_items = HorizonOrchestrator.filter_items
+_original_apply_balanced_digest = HorizonOrchestrator.apply_balanced_digest
 _original_generate_summary = DailySummarizer.generate_summary
+
+# Google News answers 429 aggressively to shared CI IPs. The scraper reads these
+# at call time, so overriding them here paces every query without touching the
+# module.
+_google_news.REQUEST_INTERVAL_SEC = 5.0
+_google_news.RETRY_AFTER_429_SEC = 15.0
+_google_news.MAX_429_RETRIES = 3
 
 # The three technology groups read as one section with sub-headings rather than
 # as three peers of 财经新闻 and 中国股市.
@@ -70,6 +89,9 @@ async def _filter_items_with_cross_group_dedup(
     )
     deduped = base.items
 
+    if log:
+        _log_profile_pass_rate(self, items, deduped)
+
     if topic_dedup and deduped:
 
         def _enabled(item) -> bool:
@@ -104,6 +126,105 @@ async def _filter_items_with_cross_group_dedup(
         topic_dedup_count=len(deduped),
         topic_dedup_removed=removed,
         balanced_digest=balanced,
+    )
+
+
+def _profile_of(item, default: str) -> str:
+    """Resolved profile id for an item, falling back to the configured default."""
+    classification = item.processing.classification if item.processing else None
+    profile_id = classification.profile if classification else None
+    return profile_id if isinstance(profile_id, str) and profile_id else default
+
+
+def _count_by_profile(items, default: str) -> dict:
+    counts: dict = {}
+    for item in items:
+        profile_id = _profile_of(item, default)
+        counts[profile_id] = counts.get(profile_id, 0) + 1
+    return counts
+
+
+def _log_profile_pass_rate(self, before, after) -> None:
+    """Print how many items each profile kept out of the ones it analysed.
+
+    A group that renders 3/10 can be short of supply or short of items clearing
+    its threshold, and the run log did not say which. This line separates them:
+    ``3/41`` is a threshold problem, ``3/4`` is a supply problem.
+    """
+    default = self.profiles.default_profile
+    analysed = _count_by_profile(before, default)
+    kept = _count_by_profile(after, default)
+    keys = sorted(set(analysed) | set(kept), key=lambda k: -analysed.get(k, 0))
+    parts = [f"{key} {kept.get(key, 0)}/{analysed.get(key, 0)}" for key in keys]
+    self.console.print(
+        "      profile pass-rate (kept/analysed): " + ", ".join(parts)
+    )
+
+
+def _apply_balanced_digest_filling_unused(self, items, *, log: bool = True):
+    """Apply the per-group quotas, then spend the slots they left unused."""
+    result = _original_apply_balanced_digest(self, items, log=log)
+    digest = self.config.digest
+    max_items = digest.max_items
+    if not max_items or len(result.items) >= max_items:
+        return result
+
+    groups = digest.category_groups
+    category_to_group = {}
+    for group_key, group in groups.items():
+        for category in group.categories:
+            category_to_group.setdefault(category, group_key)
+    default_group = digest.default_group
+
+    counts = dict(result.group_counts)
+    limits = dict(result.group_limits)
+
+    def _overflow_cap(group_key: str):
+        limit = limits.get(group_key)
+        if limit is None:
+            return None
+        return limit + max(2, limit // 2)
+
+    chosen = {id(item) for item in result.items}
+    leftovers = [item for item in items if id(item) not in chosen]
+    leftovers.sort(key=_score_of, reverse=True)
+
+    selected = list(result.items)
+    added = 0
+    for item in leftovers:
+        if len(selected) >= max_items:
+            break
+        if digest.group_by == "profile":
+            category = (
+                item.processing.classification.profile if item.processing else None
+            )
+        else:
+            category = item.metadata.get("category")
+        group_key = (
+            category_to_group.get(category, default_group)
+            if isinstance(category, str)
+            else default_group
+        )
+        cap = _overflow_cap(group_key)
+        if cap is not None and counts.get(group_key, 0) >= cap:
+            continue
+        selected.append(item)
+        counts[group_key] = counts.get(group_key, 0) + 1
+        added += 1
+
+    if not added:
+        return result
+    if log:
+        self.console.print(
+            f"{self.icons['balance']} Filled {added} unused slots from the backlog "
+            f"→ {len(selected)}/{max_items} items\n"
+        )
+    return BalancedDigestResult(
+        items=selected,
+        enabled=result.enabled,
+        group_counts=counts,
+        group_limits=limits,
+        duplicate_categories=result.duplicate_categories,
     )
 
 
@@ -150,5 +271,6 @@ async def _generate_summary_with_tech_section(
     return _nest_tech_sections(text, child_names, parent_title)
 
 
+HorizonOrchestrator.apply_balanced_digest = _apply_balanced_digest_filling_unused
 HorizonOrchestrator.filter_items = _filter_items_with_cross_group_dedup
 DailySummarizer.generate_summary = _generate_summary_with_tech_section
