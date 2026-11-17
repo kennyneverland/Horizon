@@ -381,7 +381,7 @@
         ]
       },
       "tech-news": {
-        "name": "科技新闻",
+        "name": "其他科技行业动态",
         "limit": 5,
         "categories": [
           "tech-news",
