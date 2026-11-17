@@ -22,6 +22,12 @@ logger = logging.getLogger(__name__)
 RSS_USER_AGENT = "Horizon/0.1.0 (+https://github.com/Thysrael/Horizon)"
 MAX_CONCURRENT_FEEDS = 3
 
+# A feed that publishes 50 entries a day can only ever place a couple of them in
+# the digest, so every entry past the cap is pure analysis cost. Cap at fetch
+# time; a per-source ``max_items`` in the config overrides this default once the
+# model exposes the field.
+MAX_ITEMS_PER_FEED = int(os.environ.get("HORIZON_MAX_ITEMS_PER_FEED", "8"))
+
 # Rate-limited feeds (e.g. Reddit RSS answers bursts with 429) are retried with
 # linear backoff, honouring a numeric Retry-After header up to the cap.
 RATE_LIMIT_RETRIES = 3
@@ -134,7 +140,10 @@ class RSSScraper(BaseScraper):
         if feed.bozo and not feed.entries:
             raise ValueError("Invalid RSS/Atom feed")
 
+        cap = getattr(source, "max_items", None) or MAX_ITEMS_PER_FEED
         for ordinal, entry in enumerate(feed.entries, start=1):
+            if len(result.items) >= cap:
+                break
             try:
                 published_at = self._parse_date(entry)
                 # Some feeds (e.g. GitHub Trending) publish entries without any
@@ -181,6 +190,11 @@ class RSSScraper(BaseScraper):
                 error = f"{type(exc).__name__}: {reason}"
                 result.failures[label] = error
                 logger.warning("Skipping RSS entry %s: %s", label, error)
+
+        if not result.items and not result.failures:
+            # "Fetched but nothing in the window" is different from "fetch
+            # failed"; without this line the two look identical in the log.
+            logger.warning("RSS feed %s: 0 items in window", source.name)
 
         # A feed with only rejected entries is not a successful empty response.
         result.successful = int(bool(result.items) or not result.failures)
