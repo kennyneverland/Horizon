@@ -38,6 +38,10 @@ from .ai.enricher import ContentEnricher, EnrichmentBatchResult
 from .ai.tokens import get_usage_snapshot
 from .processing import ProfileRegistry
 from .processing.content import COMMENTS_MARKER, split_content
+from .processing.digest_rules import (
+    apply_digest_with_rules,
+    filter_items_with_cross_group_dedup,
+)
 from .processing.tools import ToolRegistry
 
 
@@ -797,7 +801,32 @@ class HorizonOrchestrator:
         apply_balance: bool = True,
         log: bool = True,
     ) -> FilteringPipelineResult:
-        """Apply score thresholding, optional topic dedup, and digest balancing."""
+        """Threshold, deduplicate across every profile, then balance.
+
+        The threshold pass itself is ``_filter_items_base``; running the AI
+        dedup once over the whole pool instead of once per profile is what
+        keeps one event from appearing in several sections at once.
+        """
+        return await filter_items_with_cross_group_dedup(
+            self,
+            items,
+            self._filter_items_base,
+            threshold=threshold,
+            topic_dedup=topic_dedup,
+            apply_balance=apply_balance,
+            log=log,
+        )
+
+    async def _filter_items_base(
+        self,
+        items: List[ContentItem],
+        *,
+        threshold: Optional[float] = None,
+        topic_dedup: bool = True,
+        apply_balance: bool = True,
+        log: bool = True,
+    ) -> FilteringPipelineResult:
+        """Score thresholding and per-profile topic dedup."""
         threshold_items = []
         for item in items:
             if self.passes_profile_filter(item, threshold):
@@ -930,6 +959,21 @@ class HorizonOrchestrator:
         return score is not None and score >= effective_threshold
 
     def apply_balanced_digest(
+        self,
+        items: List[ContentItem],
+        *,
+        log: bool = True,
+    ) -> BalancedDigestResult:
+        """Apply group quotas, then reserve priority slots and fill leftovers.
+
+        ``_apply_balanced_digest_base`` is the plain quota pass; the rules that
+        run on top of it live in ``processing.digest_rules``.
+        """
+        return apply_digest_with_rules(
+            self, items, self._apply_balanced_digest_base, log=log
+        )
+
+    def _apply_balanced_digest_base(
         self,
         items: List[ContentItem],
         *,
