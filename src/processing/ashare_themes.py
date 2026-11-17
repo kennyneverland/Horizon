@@ -65,10 +65,13 @@ MAX_THEMES_PER_ITEM = 3
 MAX_MEMBERS = 5
 # Requests are cheap but lianban rate-limits aggressively, so the run is capped.
 # Fetches are serialised and cached per theme, so a repeated theme costs nothing.
-MAX_THEME_FETCH = 24
-# The lookup runs twice per item: once on the headline and summary, once again
-# after enrichment, when the background and impact blocks exist. Only the first
-# sighting of a theme costs a request, so the cap covers both passes.
+# The lookup runs once per item now, in the enrichment pass, and only the items
+# that reach the digest get there: at most 35 items x 3 themes = 105 lookups,
+# and the repeated themes are served from the cache. 24 was sized for a budget
+# shared with the analysis pass, and it left the tail of the digest without
+# member lists once the analysis pass had spent it, so the cap is set to cover
+# the whole published set instead.
+MAX_THEME_FETCH = 60
 # A page that answers without a member list is treated as a miss, not as an
 # empty theme: lianban throttles by serving a stub page, so one retry after a
 # short pause usually recovers it.
@@ -327,12 +330,14 @@ class MemberFetcher:
     """Fetch and cache one theme's member list from lianban."""
 
     # lianban limits by client address, not by object, so the cache, the request
-    # budget and the lock belong to the process. The analyser and the enricher
-    # each hold a fetcher; separate budgets would double the requests per run.
+    # budget and the lock belong to the process. The enrichment pass holds the
+    # only fetcher now, so a per-run budget is not double-spent.
     _shared_cache: Dict[str, List[str]] = {}
     _shared_slugs: Optional[Dict[str, str]] = None
     _shared_used = 0
     _shared_lock: Optional[asyncio.Lock] = None
+    # The budget is reported once, not once per theme that ran into it.
+    _shared_exhausted = False
 
     def __init__(
         self,
@@ -419,12 +424,17 @@ class MemberFetcher:
             if slug in self._cache:
                 return self._cache[slug]
             if MemberFetcher._shared_used >= self.budget:
-                logger.warning(
-                    "Theme member budget (%d) exhausted; %s and later themes "
-                    "render without members",
-                    self.budget,
-                    slug,
-                )
+                # Reported once per run: a digest that runs out of budget
+                # would otherwise log the same line for every later theme.
+                if not MemberFetcher._shared_exhausted:
+                    MemberFetcher._shared_exhausted = True
+                    logger.warning(
+                        "Theme member budget (%d) exhausted after %d fetches; "
+                        "%s and the themes after it render without members",
+                        self.budget,
+                        MemberFetcher._shared_used,
+                        slug,
+                    )
                 return []
             MemberFetcher._shared_used += 1
             names: List[str] = []
@@ -579,8 +589,8 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
 def matching_text(item: Any) -> str:
     """Everything the lookup may read: headline, summary, enriched blocks.
 
-    The analysis pass only has the first two, so most theme terms stay unseen
-    until the background and impact blocks exist.
+    The enrichment pass calls this once per item, after the background and
+    impact blocks exist, so the terms that only appear there are still seen.
     """
     parts: List[str] = [item.title or ""]
     processing = getattr(item, "processing", None)
@@ -602,9 +612,10 @@ async def attach_themes(
 ) -> None:
     """Match the item against the index and store the result on its metadata.
 
-    Runs twice per item: after analysis, and again after enrichment. The second
-    call reads a superset of the first call's text, so it replaces the list; the
-    member lists come from the shared cache and cost no extra request.
+    Runs once per item, from the enrichment pass. The analysis pass used to run
+    it as well, on the headline and summary alone, which spent the shared
+    request budget on candidates that were dropped before the digest was built
+    and left the published items at the end of the run without member lists.
     """
     if not index.available or item.metadata is None:
         return
