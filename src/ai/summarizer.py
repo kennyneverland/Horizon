@@ -9,6 +9,11 @@ from urllib.parse import quote, urlsplit
 from .localization import normalize_language
 from ..models import ContentItem
 from ..processing.ashare_themes import format_theme_line, source_footer
+from ..processing.digest_rules import (
+    TECH_CHILD_IDS,
+    TECH_PARENT_TITLE,
+    nest_tech_sections,
+)
 
 
 _CJK = r"[\u4e00-\u9fff\u3400-\u4dbf]"
@@ -309,7 +314,21 @@ class DailySummarizer:
             (item.metadata or {}).get("ashare_themes") for item in items
         ):
             body = body.rstrip("\n") + f"\n\n{_escape_markdown(source_footer())}\n"
-        return normalize_language(body, language)
+        text = normalize_language(body, language)
+        # The three technology groups render as one section with sub-headings
+        # rather than as peers of 财经新闻 and 中国股市.
+        child_names = set()
+        for profile_id in TECH_CHILD_IDS:
+            name = _escape_markdown(self.profile_name(profile_id, language))
+            if language == "zh":
+                name = _pangu(name)
+            child_names.add(name)
+        parent_title = _escape_markdown(
+            TECH_PARENT_TITLE.get(language, TECH_PARENT_TITLE["en"])
+        )
+        if language == "zh":
+            parent_title = _pangu(parent_title)
+        return nest_tech_sections(text, child_names, parent_title)
 
     def generate_webhook_overview(
         self,
