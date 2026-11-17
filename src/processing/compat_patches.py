@@ -20,6 +20,10 @@ changed through it. The fixes are installed here at import time instead:
   25 of 35 items on 2026-11-17 while 21 eligible items were dropped. The patched
   version fills the leftover slots from the backlog, allowing a group to
   overflow by half its limit so one section cannot swallow the digest.
+* The cross-group dedup pass cost 24 minutes on 2026-11-17 because it compared
+  all 80 candidates against each other. Only the top few per group can ever be
+  published, so the pool is trimmed to ``limit + max(5, limit // 2)`` per group
+  before the AI pass runs.
 
 All of these are behaviour-preserving outside their stated scope. Delete this
 module and apply the edits to the source files directly once they can be
@@ -65,70 +69,6 @@ def _score_of(item) -> float:
     return float(analysis.score)
 
 
-async def _filter_items_with_cross_group_dedup(
-    self,
-    items,
-    *,
-    threshold: Optional[float] = None,
-    topic_dedup: bool = True,
-    apply_balance: bool = True,
-    log: bool = True,
-):
-    """Threshold and sort as before, then deduplicate across every profile.
-
-    The original ran one AI dedup pass per profile bucket, which is why the same
-    event could appear in five groups at once: no two copies shared a bucket.
-    """
-    base = await _original_filter_items(
-        self,
-        items,
-        threshold=threshold,
-        topic_dedup=False,
-        apply_balance=False,
-        log=log,
-    )
-    deduped = base.items
-
-    if log:
-        _log_profile_pass_rate(self, items, deduped)
-
-    if topic_dedup and deduped:
-
-        def _enabled(item) -> bool:
-            profile_id = (
-                item.processing.classification.profile
-                if item.processing
-                else self.profiles.default_profile
-            )
-            settings = self.config.processing.profile_settings.get(profile_id)
-            return settings is None or settings.topic_dedup
-
-        candidates = [item for item in deduped if _enabled(item)]
-        untouched = [item for item in deduped if not _enabled(item)]
-        deduped = untouched + await self.merge_topic_duplicates(candidates, log=log)
-        deduped.sort(key=_score_of, reverse=True)
-
-    removed = base.threshold_count - len(deduped)
-    if log and removed:
-        self.console.print(
-            f"{self.icons['cleanup']} Removed {removed} topic duplicates "
-            f"→ {len(deduped)} unique items (cross-group)\n"
-        )
-
-    balanced = (
-        self.apply_balanced_digest(deduped, log=log)
-        if apply_balance
-        else BalancedDigestResult(items=deduped)
-    )
-    return FilteringPipelineResult(
-        items=balanced.items,
-        threshold_count=base.threshold_count,
-        topic_dedup_count=len(deduped),
-        topic_dedup_removed=removed,
-        balanced_digest=balanced,
-    )
-
-
 def _profile_of(item, default: str) -> str:
     """Resolved profile id for an item, falling back to the configured default."""
     classification = item.processing.classification if item.processing else None
@@ -158,6 +98,113 @@ def _log_profile_pass_rate(self, before, after) -> None:
     parts = [f"{key} {kept.get(key, 0)}/{analysed.get(key, 0)}" for key in keys]
     self.console.print(
         "      profile pass-rate (kept/analysed): " + ", ".join(parts)
+    )
+
+
+def _trim_for_dedup(self, candidates):
+    """Keep only the per-group items that could still reach the digest.
+
+    The balancer never publishes more than ``limit`` items from a group and can
+    only overflow to ``limit + max(2, limit // 2)`` when filling unused slots,
+    so anything below that cut is dropped later regardless. Trimming before the
+    AI pass keeps the pairwise comparison small: 80 candidates cost 24 minutes
+    on 2026-11-17, and that grows faster than the item count.
+    """
+    groups = self.config.digest.category_groups
+    budgets = {}
+    for group_key, group in groups.items():
+        if group.limit:
+            budgets[group_key] = group.limit + max(5, group.limit // 2)
+    if not budgets:
+        return candidates
+
+    kept = []
+    taken: dict = {}
+    for item in candidates:
+        profile_id = _profile_of(item, self.profiles.default_profile)
+        budget = budgets.get(profile_id)
+        if budget is None:
+            kept.append(item)
+            continue
+        used = taken.get(profile_id, 0)
+        if used >= budget:
+            continue
+        taken[profile_id] = used + 1
+        kept.append(item)
+
+    if len(kept) < len(candidates):
+        self.console.print(
+            f"      dedup pool trimmed {len(candidates)} → {len(kept)} items "
+            f"(每组保留 限额+5 名)\n"
+        )
+    return kept
+
+
+async def _filter_items_with_cross_group_dedup(
+    self,
+    items,
+    *,
+    threshold: Optional[float] = None,
+    topic_dedup: bool = True,
+    apply_balance: bool = True,
+    log: bool = True,
+):
+    """Threshold and sort as before, then deduplicate across every profile.
+
+    The original ran one AI dedup pass per profile bucket, which is why the same
+    event could appear in five groups at once: no two copies shared a bucket.
+    """
+    base = await _original_filter_items(
+        self,
+        items,
+        threshold=threshold,
+        topic_dedup=False,
+        apply_balance=False,
+        log=log,
+    )
+    deduped = base.items
+
+    if log:
+        _log_profile_pass_rate(self, items, deduped)
+
+    removed = 0
+    if topic_dedup and deduped:
+
+        def _enabled(item) -> bool:
+            profile_id = (
+                item.processing.classification.profile
+                if item.processing
+                else self.profiles.default_profile
+            )
+            settings = self.config.processing.profile_settings.get(profile_id)
+            return settings is None or settings.topic_dedup
+
+        candidates = [item for item in deduped if _enabled(item)]
+        untouched = [item for item in deduped if not _enabled(item)]
+        candidates.sort(key=_score_of, reverse=True)
+        candidates = _trim_for_dedup(self, candidates)
+        merged = await self.merge_topic_duplicates(candidates, log=log)
+        removed = len(candidates) - len(merged)
+        deduped = untouched + merged
+        deduped.sort(key=_score_of, reverse=True)
+
+    if log and removed:
+        self.console.print(
+            f"{self.icons['cleanup']} Removed {removed} topic duplicates "
+            f"→ {len(deduped)} unique items (cross-group)\n"
+        )
+
+    balanced = (
+        self.apply_balanced_digest(deduped, log=log)
+        if apply_balance
+        else BalancedDigestResult(items=deduped)
+    )
+    return FilteringPipelineResult(
+        items=balanced.items,
+        threshold_count=base.threshold_count,
+        topic_dedup_count=len(deduped),
+        topic_dedup_removed=removed,
+        balanced_digest=balanced,
     )
 
 
