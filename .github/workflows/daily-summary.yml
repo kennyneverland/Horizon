@@ -16,7 +16,7 @@ jobs:
   daily-summary:
     runs-on: ubuntu-24.04
     # A normal run takes about 25 minutes; this bounds one that hangs.
-    timeout-minutes: 45
+    timeout-minutes: 75
     permissions:
       contents: write  # Needed to commit changes
 
@@ -51,7 +51,21 @@ jobs:
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
-        run: uv run horizon --hours 24
+        # shell: bash enables pipefail, so a failed run still fails the step
+        # even though the output goes through tee.
+        shell: bash
+        run: uv run horizon --hours 24 2>&1 | tee run.log
+        # The job log is only readable with admin rights on the repository, so a
+      # run that dies (timeout included) leaves nothing to review afterwards.
+      # The artifact keeps the same output reachable from the Actions API.
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: horizon-run-log
+          path: run.log
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Set current date as environment variable
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
