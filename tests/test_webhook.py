@@ -213,7 +213,10 @@ class TestRenderParameterized:
 
 
 class TestWebhookMarkdownFormatting:
-    def test_details_references_are_flattened_for_webhook(self):
+    def test_reference_block_is_dropped_from_webhook_body(self):
+        """The reference list is noise in a chat message: it cannot collapse
+        there, so it arrived as a wall of links and pushed the tail of the
+        digest out of the message."""
         summary = """## Item
 
 <a id="item-1"></a>
@@ -230,14 +233,48 @@ class TestWebhookMarkdownFormatting:
         assert "<details>" not in result
         assert "<summary>" not in result
         assert '<a id="item-1"></a>' not in result
-        assert "**参考链接**" in result
+        assert "参考链接" not in result
+        assert "Example A" not in result
+        assert "Example B" not in result
+        assert "## Item" in result
+
+    def test_reference_block_is_dropped_in_english_too(self):
+        summary = """## Item
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://example.com/a">Example A</a></li>
+</ul>
+</details>
+"""
+
+        result = _format_markdown_for_webhook(summary)
+
+        assert "References" not in result
+        assert "Example A" not in result
+
+    def test_other_details_blocks_are_still_flattened(self):
+        """Only the labelled reference block is dropped; other blocks keep the
+        existing flatten-and-sanitise behaviour."""
+        summary = """## Item
+
+<details><summary>Sources</summary>
+<ul>
+<li><a href="https://example.com/a">Example A</a></li>
+</ul>
+</details>
+"""
+
+        result = _format_markdown_for_webhook(summary)
+
+        assert "<details>" not in result
+        assert "**Sources**" in result
         assert "- [Example A](https://example.com/a)" in result
-        assert "- [Example B](https://example.com/b)" in result
 
     def test_details_references_with_unsafe_href_remain_plain_text(self):
         summary = """## Item
 
-<details><summary>References</summary>
+<details><summary>Sources</summary>
 <ul>
 <li><a href="javascript:alert(1)">click [me](https://evil.example)</a></li>
 </ul>
@@ -253,7 +290,7 @@ class TestWebhookMarkdownFormatting:
     def test_details_references_with_malformed_http_href_remain_plain_text(self):
         summary = """## Item
 
-<details><summary>References</summary>
+<details><summary>Sources</summary>
 <ul>
 <li><a href="https://safe.example/) [bad](javascript:alert(1))">click</a></li>
 </ul>
@@ -269,7 +306,7 @@ class TestWebhookMarkdownFormatting:
     def test_details_references_allow_balanced_parentheses_in_href(self):
         summary = """## Item
 
-<details><summary>References</summary>
+<details><summary>Sources</summary>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Colossus_(supercomputer)">Colossus</a></li>
 </ul>
@@ -284,18 +321,18 @@ class TestWebhookMarkdownFormatting:
         )
 
     def test_prepare_variables_changes_summary_for_any_post_body(self):
-        summary = "<details><summary>References</summary><ul><li>Plain item</li></ul></details>"
+        summary = "<details><summary>Sources</summary><ul><li>Plain item</li></ul></details>"
         variables = {"summary": summary, "date": "2026-04-24"}
         body = {"text": "#{summary}"}
 
         result = _prepare_variables_for_body(body, variables)
 
         assert result is not variables
-        assert result["summary"] == "**References**\n\n- Plain item"
+        assert result["summary"] == "**Sources**\n\n- Plain item"
         assert variables["summary"] == summary
 
     def test_prepare_variables_keeps_summary_unchanged_without_body(self):
-        summary = "<details><summary>References</summary><ul><li>Plain item</li></ul></details>"
+        summary = "<details><summary>Sources</summary><ul><li>Plain item</li></ul></details>"
         variables = {"summary": summary}
 
         result = _prepare_variables_for_body(None, variables)
@@ -323,12 +360,12 @@ class TestWebhookPreview:
 
         preview = notifier.build_preview(
             {
-                "summary": '<details><summary>References</summary><ul><li><a href="https://example.com">Example</a></li></ul></details>',
+                "summary": '<details><summary>Sources</summary><ul><li><a href="https://example.com">Example</a></li></ul></details>',
             }
         )
 
         assert preview["url"] == _TEST_URL
-        assert "**References**" in preview["body"]
+        assert "**Sources**" in preview["body"]
         assert "<details>" not in preview["body"]
         del os.environ[_TEST_URL_ENV]
 
