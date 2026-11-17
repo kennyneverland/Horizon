@@ -6,7 +6,7 @@ import hashlib
 import logging
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 from email.utils import parsedate_to_datetime
 import httpx
@@ -27,6 +27,15 @@ MAX_CONCURRENT_FEEDS = 3
 # time; a per-source ``max_items`` in the config overrides this default once the
 # model exposes the field.
 MAX_ITEMS_PER_FEED = int(os.environ.get("HORIZON_MAX_ITEMS_PER_FEED", "8"))
+
+# Weekly newsletters and research blogs publish nothing most days, so a 24-hour
+# window finds them empty and the ai-hardware group cannot fill its slots (3/6
+# on 2026-11-17). These values are hours added on top of the global window.
+EXTENDED_WINDOW_HOURS = {
+    "Semianalysis": 48,
+    "Fabricated Knowledge": 72,
+    "More Than Moore": 72,
+}
 
 # Rate-limited feeds (e.g. Reddit RSS answers bursts with 429) are retried with
 # linear backoff, honouring a numeric Retry-After header up to the cap.
@@ -140,6 +149,7 @@ class RSSScraper(BaseScraper):
         if feed.bozo and not feed.entries:
             raise ValueError("Invalid RSS/Atom feed")
 
+        feed_since = since - timedelta(hours=EXTENDED_WINDOW_HOURS.get(source.name, 0))
         cap = getattr(source, "max_items", None) or MAX_ITEMS_PER_FEED
         for ordinal, entry in enumerate(feed.entries, start=1):
             if len(result.items) >= cap:
@@ -151,7 +161,7 @@ class RSSScraper(BaseScraper):
                 # every item from the feed.
                 if published_at is None:
                     published_at = datetime.now(timezone.utc)
-                if published_at < since:
+                if published_at < feed_since:
                     continue
 
                 feed_id = str(source.url).split("//")[1].replace("/", "_")
