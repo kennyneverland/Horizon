@@ -6,13 +6,13 @@
     "api_key_env": "DASHSCOPE_API_KEY",
     "temperature": 0.3,
     "max_tokens": 8192,
-    "throttle_sec": 1,
+    "throttle_sec": 0.2,
     "languages": [
       "zh",
       "en"
     ],
-    "analysis_concurrency": 5,
-    "enrichment_concurrency": 5
+    "analysis_concurrency": 8,
+    "enrichment_concurrency": 6
   },
   "processing": {
     "profiles_dir": "profiles",
@@ -86,7 +86,8 @@
         "url": "https://simonwillison.net/atom/everything/",
         "enabled": true,
         "category": "ai-tools",
-        "profile": "tech-news"
+        "profile": "tech-news",
+        "max_items": 3
       },
       {
         "name": "vLLM Blog",
@@ -110,14 +111,16 @@
         "enabled": true,
         "category": "finance",
         "profile": "finance-news",
-        "content_extractor": "trafilatura"
+        "content_extractor": "trafilatura",
+        "max_items": 8
       },
       {
         "name": "GitHub Trending - Daily",
         "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
         "enabled": true,
         "category": "github-trending",
-        "profile": "tech-news"
+        "profile": "tech-news",
+        "max_items": 10
       },
       {
         "name": "Semianalysis",
@@ -127,21 +130,24 @@
         "profile": [
           "tech-news",
           "ai-hardware"
-        ]
+        ],
+        "max_items": 5
       },
       {
         "name": "LWN.net",
         "url": "https://lwn.net/headlines/rss",
         "enabled": true,
         "category": "linux-kernel",
-        "profile": "tech-news"
+        "profile": "tech-news",
+        "max_items": 4
       },
       {
         "name": "Bloomberg Markets",
         "url": "https://feeds.bloomberg.com/markets/news.rss",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "finance-news",
+        "max_items": 10
       },
       {
         "name": "Bloomberg Technology",
@@ -152,28 +158,32 @@
           "tech-news",
           "ai-hardware",
           "ai-app"
-        ]
+        ],
+        "max_items": 14
       },
       {
         "name": "Bloomberg Business",
         "url": "https://feeds.bloomberg.com/business/news.rss",
         "enabled": true,
         "category": "business",
-        "profile": "finance-news"
+        "profile": "finance-news",
+        "max_items": 10
       },
       {
         "name": "财联社电报(RSSHub)",
         "url": "https://hub.slarker.me/cls/telegraph",
         "enabled": true,
         "category": "finance",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 15
       },
       {
         "name": "华尔街见闻",
         "url": "https://dedicated.wallstreetcn.com/rss.xml",
         "enabled": true,
         "category": "finance",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 6
       },
       {
         "name": "量子位",
@@ -184,7 +194,8 @@
           "tech-news",
           "ai-app",
           "ai-hardware"
-        ]
+        ],
+        "max_items": 10
       },
       {
         "name": "雷峰网",
@@ -193,7 +204,8 @@
         "category": "ai-application",
         "profile": [
           "ai-app"
-        ]
+        ],
+        "max_items": 10
       },
       {
         "name": "InfoQ中文",
@@ -202,7 +214,8 @@
         "category": "ai-application",
         "profile": [
           "ai-app"
-        ]
+        ],
+        "max_items": 10
       },
       {
         "name": "TechCrunch AI",
@@ -211,7 +224,8 @@
         "category": "ai-application",
         "profile": [
           "ai-app"
-        ]
+        ],
+        "max_items": 10
       },
       {
         "name": "The Verge AI",
@@ -220,7 +234,8 @@
         "category": "ai-application",
         "profile": [
           "ai-app"
-        ]
+        ],
+        "max_items": 10
       },
       {
         "name": "The Decoder",
@@ -229,7 +244,8 @@
         "category": "ai-application",
         "profile": [
           "ai-app"
-        ]
+        ],
+        "max_items": 6
       },
       {
         "name": "CNBC Top News",
@@ -241,84 +257,96 @@
           "ai-hardware",
           "ai-app"
         ],
-        "content_extractor": "trafilatura"
+        "content_extractor": "trafilatura",
+        "max_items": 12
       },
       {
         "name": "MarketWatch",
         "url": "https://feeds.marketwatch.com/marketwatch/topstories/",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "finance-news",
+        "max_items": 10
       },
       {
         "name": "Nikkei Asia",
         "url": "https://asia.nikkei.com/rss/feed/nar",
         "enabled": true,
         "category": "asia-business",
-        "profile": "finance-news"
+        "profile": "finance-news",
+        "max_items": 12
       },
       {
         "name": "BBC Business",
         "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
         "enabled": true,
         "category": "finance",
-        "profile": "finance-news"
+        "profile": "finance-news",
+        "max_items": 10
       },
       {
         "name": "Seeking Alpha China ETF",
         "url": "https://seekingalpha.com/api/sa/combined/KWEB.xml",
         "enabled": true,
         "category": "finance",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 3
       },
       {
         "name": "KraneShares",
         "url": "https://kraneshares.com/feed/",
         "enabled": true,
         "category": "finance",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 3
       },
       {
         "name": "SCMP Business",
         "url": "https://www.scmp.com/rss/92/feed",
         "enabled": true,
         "category": "asia-business",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 10
       },
       {
         "name": "Caixin Global",
         "url": "https://www.caixinglobal.com/rss/",
         "enabled": true,
         "category": "asia-business",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 8
       },
       {
         "name": "ChinaTalk",
         "url": "https://www.chinatalk.media/feed",
         "enabled": true,
         "category": "china-policy",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 3
       },
       {
         "name": "第一财经",
         "url": "https://hub.slarker.me/yicai/news",
         "enabled": true,
         "category": "finance",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 12
       },
       {
         "name": "FT Chinese Economy",
         "url": "https://www.ft.com/chinese-economy?format=rss",
         "enabled": true,
         "category": "asia-business",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 4
       },
       {
         "name": "FT Chinese Business",
         "url": "https://www.ft.com/chinese-business-finance?format=rss",
         "enabled": true,
         "category": "asia-business",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 3
       },
       {
         "name": "Tech in Asia",
@@ -327,7 +355,8 @@
         "category": "asia-tech",
         "profile": [
           "ai-app"
-        ]
+        ],
+        "max_items": 8
       },
       {
         "name": "Fabricated Knowledge",
@@ -352,21 +381,24 @@
         "url": "https://rhg.com/research/feed/",
         "enabled": true,
         "category": "china-policy",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 3
       },
       {
         "name": "Gawin Research",
         "url": "https://gawinresearch.com/rss/",
         "enabled": true,
         "category": "china-research",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 6
       },
       {
         "name": "CNA Business",
         "url": "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml",
         "enabled": true,
         "category": "asia-business",
-        "profile": "china-market"
+        "profile": "china-market",
+        "max_items": 10
       }
     ],
     "google_news": [
@@ -376,7 +408,7 @@
         "language": "en",
         "country": "US",
         "ceid": "US:en",
-        "max_results": 40,
+        "max_results": 20,
         "category": "finance",
         "profile": "finance-news"
       },
@@ -387,16 +419,6 @@
         "country": "US",
         "ceid": "US:en",
         "max_results": 15,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China AI server PCB supply chain",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
         "category": "finance",
         "profile": "china-market"
       },
@@ -432,47 +454,7 @@
       },
       {
         "enabled": true,
-        "query": "China \"order backlog\"",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China \"capacity expansion\"",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China \"customer qualification\"",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China \"supply agreement\"",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "china-market"
-      },
-      {
-        "enabled": true,
-        "query": "China \"price increase\"",
+        "query": "China (\"order backlog\" OR \"capacity expansion\" OR \"customer qualification\" OR \"supply agreement\" OR \"price increase\")",
         "language": "en",
         "country": "US",
         "ceid": "US:en",
@@ -532,26 +514,6 @@
       },
       {
         "enabled": true,
-        "query": "AI inference cost",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
-      },
-      {
-        "enabled": true,
-        "query": "AI API pricing",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
-      },
-      {
-        "enabled": true,
         "query": "copper clad laminate price",
         "language": "en",
         "country": "US",
@@ -602,7 +564,7 @@
       },
       {
         "enabled": true,
-        "query": "enterprise AI spending",
+        "query": "AI (\"inference cost\" OR \"API pricing\" OR \"SaaS pricing\")",
         "language": "en",
         "country": "US",
         "ceid": "US:en",
@@ -612,7 +574,7 @@
       },
       {
         "enabled": true,
-        "query": "AI copilot adoption",
+        "query": "AI (\"enterprise spending\" OR \"copilot adoption\" OR \"agent adoption\")",
         "language": "en",
         "country": "US",
         "ceid": "US:en",
@@ -622,37 +584,7 @@
       },
       {
         "enabled": true,
-        "query": "AI agent enterprise",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
-      },
-      {
-        "enabled": true,
-        "query": "AI SaaS pricing",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
-      },
-      {
-        "enabled": true,
-        "query": "China AI agent",
-        "language": "en",
-        "country": "US",
-        "ceid": "US:en",
-        "max_results": 10,
-        "category": "finance",
-        "profile": "ai-app"
-      },
-      {
-        "enabled": true,
-        "query": "China AI application",
+        "query": "China (AI agent OR AI application)",
         "language": "en",
         "country": "US",
         "ceid": "US:en",
@@ -734,7 +666,8 @@
         "name": "科技新闻",
         "limit": 5,
         "categories": [
-          "tech-news"
+          "tech-news",
+          "tech-blog"
         ]
       },
       "ai-hardware": {
