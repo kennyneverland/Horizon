@@ -24,10 +24,13 @@ Design notes:
 * A single malformed entry is skipped, not allowed to abort the batch.
 * Several queries may be configured at once; each one is fetched as an
   independent request so a failing query does not drop the others.
+* Queries are spaced out and 429s are retried: Google throttles bursty RSS
+  search traffic by IP, and a dropped query loses all of its results.
 """
 
 from __future__ import annotations
 
+import asyncio
 import calendar
 import hashlib
 import logging
@@ -48,6 +51,14 @@ from ..models import (
 )
 
 logger = logging.getLogger(__name__)
+
+# On the 2026-11-17 run 19 queries were issued back to back and four of them
+# came back 429 within seven seconds; each one silently lost its whole result
+# set, including three of the ai-hardware queries. Space the requests out and
+# retry the ones that still get throttled.
+REQUEST_INTERVAL_SEC = 1.2
+RETRY_AFTER_429_SEC = 4.0
+MAX_429_RETRIES = 2
 
 
 class GoogleNewsScraper(BaseScraper):
@@ -86,12 +97,39 @@ class GoogleNewsScraper(BaseScraper):
 
     async def fetch(self, since: datetime) -> FetchResult:
         result = FetchResult()
+        first = True
         for config in self._configs:
             if not config.enabled:
                 continue
+            if not first:
+                await asyncio.sleep(REQUEST_INTERVAL_SEC)
+            first = False
             label = (config.query or "").strip() or "search"
-            await result.collect(label, self._fetch_articles(config, since))
+            await result.collect(label, self._fetch_with_retry(label, config, since))
         return result
+
+    async def _fetch_with_retry(
+        self, label: str, config: GoogleNewsConfig, since: datetime
+    ) -> List[ContentItem]:
+        """Fetch one query, retrying when Google answers 429.
+
+        A 429 is transient by definition, while dropping the query loses every
+        result it would have returned; that is how the ai-hardware group ended
+        up missing three of its queries on 2026-11-17.
+        """
+        for attempt in range(MAX_429_RETRIES + 1):
+            try:
+                return await self._fetch_articles(config, since)
+            except httpx.HTTPStatusError as exc:
+                if exc.response.status_code != 429 or attempt == MAX_429_RETRIES:
+                    raise
+                delay = RETRY_AFTER_429_SEC * (attempt + 1)
+                logger.warning(
+                    "Google News query %s rate-limited (429); retrying in %.0fs (%d/%d)",
+                    label, delay, attempt + 1, MAX_429_RETRIES,
+                )
+                await asyncio.sleep(delay)
+        return []
 
     async def _fetch_articles(
         self, config: GoogleNewsConfig, since: datetime
