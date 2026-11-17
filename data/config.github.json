@@ -134,6 +134,36 @@
         "max_items": 5
       },
       {
+        "name": "DigiTimes",
+        "url": "https://www.digitimes.com/rss/daily.xml",
+        "enabled": true,
+        "category": "semiconductors",
+        "profile": [
+          "ai-hardware"
+        ],
+        "max_items": 8
+      },
+      {
+        "name": "ServeTheHome",
+        "url": "https://www.servethehome.com/feed/",
+        "enabled": true,
+        "category": "semiconductors",
+        "profile": [
+          "ai-hardware"
+        ],
+        "max_items": 6
+      },
+      {
+        "name": "Semiconductor Digest",
+        "url": "https://www.semiconductor-digest.com/feed/",
+        "enabled": true,
+        "category": "semiconductors",
+        "profile": [
+          "ai-hardware"
+        ],
+        "max_items": 6
+      },
+      {
         "name": "LWN.net",
         "url": "https://lwn.net/headlines/rss",
         "enabled": true,
