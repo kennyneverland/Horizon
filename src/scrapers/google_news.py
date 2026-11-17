@@ -52,13 +52,14 @@ from ..models import (
 
 logger = logging.getLogger(__name__)
 
-# On the 2026-11-17 run 19 queries were issued back to back and four of them
-# came back 429 within seven seconds; each one silently lost its whole result
-# set, including three of the ai-hardware queries. Space the requests out and
-# retry the ones that still get throttled.
-REQUEST_INTERVAL_SEC = 1.2
-RETRY_AFTER_429_SEC = 4.0
-MAX_429_RETRIES = 2
+# On the 2026-11-17 run 19 queries were issued 1.2 s apart and four of them came
+# back 429 within seven seconds; each one silently lost its whole result set,
+# including three of the ai-hardware queries. Google throttles by IP, and CI
+# runners share addresses, so the pacing has to be slower than the default and
+# the throttled queries have to be retried rather than dropped.
+REQUEST_INTERVAL_SEC = 5.0
+RETRY_AFTER_429_SEC = 15.0
+MAX_429_RETRIES = 3
 
 
 class GoogleNewsScraper(BaseScraper):
