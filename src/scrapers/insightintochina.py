@@ -41,7 +41,12 @@ USER_AGENT = (
 MAX_CONCURRENT_ARTICLES = 4
 MAX_BODY_CHARS = 3000
 
-_ARTICLE_LINK_RE = re.compile(r'href="(/publish/[A-Za-z0-9_\-]+)"')
+# Accept both the relative form the site serves today (``href="/publish/x"``)
+# and an absolute or single-quoted variant, so a markup tweak cannot silently
+# reduce the list to zero.
+_ARTICLE_LINK_RE = re.compile(
+    r"""href=["'](?:https?://(?:www\.)?insightintochina\.com)?(/publish/[A-Za-z0-9_\-]+)["']"""
+)
 _H1_RE = re.compile(r"<h1[^>]*>(.*?)</h1>", re.S)
 _SECTION_RE = re.compile(r"<h2[^>]*>(.*?)</h2>\s*<p[^>]*>(.*?)</p>", re.S)
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -88,20 +93,37 @@ class InsightIntoChinaScraper(BaseScraper):
 
     async def _fetch_articles(self, since: datetime) -> List[ContentItem]:
         """Read the homepage list and fetch each listed article."""
-        response = await self.client.get(
-            BASE_URL + "/", follow_redirects=True, headers={"User-Agent": USER_AGENT}
-        )
-        response.raise_for_status()
-
         paths: List[str] = []
-        for match in _ARTICLE_LINK_RE.finditer(response.text):
-            path = match.group(1)
-            if path not in paths:
-                paths.append(path)
-        paths = paths[: max(0, self.cfg.max_articles)]
+        last_size = 0
+        for attempt in range(2):
+            response = await self.client.get(
+                BASE_URL + "/", follow_redirects=True, headers={"User-Agent": USER_AGENT}
+            )
+            response.raise_for_status()
+            last_size = len(response.text)
+            for match in _ARTICLE_LINK_RE.finditer(response.text):
+                path = match.group(1)
+                if path not in paths:
+                    paths.append(path)
+            if paths:
+                break
+            if attempt == 0:
+                # The list page sometimes answers 200 with a shell while it
+                # redeploys. On 2026-11-17 that cost the whole source for a run;
+                # one retry recovers it instead of dropping to zero articles.
+                logger.warning(
+                    "InsightIntoChina homepage returned no article links "
+                    "(%d bytes); retrying in 3s",
+                    last_size,
+                )
+                await asyncio.sleep(3.0)
 
+        paths = paths[: max(0, self.cfg.max_articles)]
         if not paths:
-            raise ValueError("InsightIntoChina homepage listed no articles")
+            raise ValueError(
+                "InsightIntoChina homepage listed no articles "
+                f"({last_size} bytes)"
+            )
 
         semaphore = asyncio.Semaphore(MAX_CONCURRENT_ARTICLES)
 
