@@ -12,7 +12,7 @@
       "en"
     ],
     "analysis_concurrency": 8,
-    "enrichment_concurrency": 6
+    "enrichment_concurrency": 10
   },
   "processing": {
     "profiles_dir": "profiles",
