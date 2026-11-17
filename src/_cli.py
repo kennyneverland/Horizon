@@ -2,6 +2,11 @@
 
 import argparse
 
+# Installs the cross-group dedup and technology-section patches. Imported here
+# rather than in main.py so the install happens for every CLI entrypoint; the
+# module docstring explains why the patches are not applied in place yet.
+from .processing import compat_patches as _compat_patches  # noqa: F401
+
 
 def add_log_level_argument(
     parser: argparse.ArgumentParser, default: str = "WARNING"
