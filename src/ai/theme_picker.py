@@ -29,6 +29,7 @@ is what makes that padding visible.
 import base64
 import json
 import logging
+import re
 import unicodedata
 import zlib
 from pathlib import Path
@@ -49,18 +50,28 @@ MAX_PICKS = 3
 MIN_PICK_SCORE = 60
 # Keyword recall: candidates whose terms the story actually touches.
 CANDIDATE_LIMIT = 30
-# Plus the largest themes by member count, so a story that names no keyword at
-# all still sees the broad sectors the market trades every day.
+# The largest themes by member count are a last resort, not a standing part of
+# every prompt: 集成电路制造 and 半导体 were offered for every story, which is
+# how a story about the domestic compute chain came back as 集成电路制造. They
+# are only added when the recall is genuinely thin, and the line says so.
+MIN_CANDIDATES = 8
 BIG_THEME_LIMIT = 5
 INDEX_PATH = Path("data/theme_index.json.gz.b64")
+# The same hand-maintained alias overlay the literal matcher reads. Without it
+# the model path only ever saw the keywords shipped in the index, so a story
+# phrased as 实体清单 or 铜连接 recalled nothing while the heat-list pass
+# matched fine.
+ALIAS_PATH = Path("data/theme_aliases.json")
 
-SYSTEM_PROMPT = """你是 A 股题材匹配助手。给定一条新闻和一份候选题材（每个题材带成分股数量和关键词），请选出这条新闻最相关的题材并给出相关度评分。
+SYSTEM_PROMPT = """你是 A 股题材匹配助手。给定一条新闻和一份候选题材（每个题材带成分股数量、主线状态和关键词），请选出这条新闻最相关的题材并给出相关度评分。
 
 规则：
 - 先写传导链，再选题材：事件改变了哪个环节（供给/需求/价格/成本/政策）→ 该环节对应哪个题材的成分股。只有传导链直接落在成分股主营上的题材才算相关。
 - 只能从给定候选里逐字选择，不得改写、合并或新造题材名。
 - 优先细分环节：候选里同时有宽泛概念和具体环节时，选传导落点最具体的那个。例如讲 GPU 租赁涨价，选「算力租赁」而不是「算力概念」；讲封装扩产，选「先进封装」或「集成电路封测」而不是「半导体」。只有当新闻影响整个板块时才用宽题材。
 - 不要选只是字面相近的题材。例如讲算力链的设备与服务，不等于「集成电路制造」；讲出口增速回落，不等于「AI芯片」。
+- 候选行里的「主线X 涨停N」是上一交易日该产业线的涨停家数，只说明资金当天是否在交易这个方向。涨停 0 或「今日归零」不代表这条新闻与它无关，仍按传导链判断；涨停多也不构成选中它的理由，不要用热度代替传导链。
+- 标了「大题材，需传导链」的候选是成员最多的宽泛板块：只有新闻影响整个板块时才选它，否则选更具体的环节。
 - 最多选 3 个，按相关度从高到低排列，三个要覆盖不同环节；同义或几乎重叠的题材只留一个（AIGC概念 与 ChatGPT概念、AI芯片 与 芯片概念 不要并列）。
 - 评分口径：80 以上 = 新闻直接改变该板块的景气或预期；60-79 = 有明确传导路径但间接；60 以下 = 只是沾边，不要输出。
 - reason 不超过 12 个汉字，写传导环节，不要复述新闻内容。
@@ -80,6 +91,19 @@ TERM_PROMPT = """你是 A 股行业分析师。读下面这条新闻，写出它
 
 输出格式：只输出 JSON，不要解释。
 {"terms": ["环节1", "环节2"]}"""
+
+
+# "券商称…" / "分析师表示…" name who is talking, not what the story is about.
+# Without this the phrase matched 券商概念 and 证券 on every broker-attributed
+# headline, which is how a BIS-rule story arrived with two broker themes.
+_ATTRIBUTION_RE = re.compile(
+    r"(券商|机构|分析师|投行|媒体|外媒|报道|消息人士|知情人士|研报)(称|表示|认为|指出|预计|分析|提到)"
+)
+
+
+def _strip_attribution(text: str) -> str:
+    """Drop attribution phrases before the literal keyword match."""
+    return _ATTRIBUTION_RE.sub(" ", text)
 
 
 def _fold(text: Any) -> str:
@@ -127,11 +151,14 @@ class ThemePicker:
         max_picks: int = MAX_PICKS,
         max_tokens: int = 500,
         candidate_limit: int = CANDIDATE_LIMIT,
+        mainline: Optional[Any] = None,
     ):
         self.client = ai_client
         self.max_picks = max(1, max_picks)
         self.max_tokens = max_tokens
         self.candidate_limit = max(1, candidate_limit)
+        # Optional daily mainline state; None keeps the plain candidate list.
+        self.mainline = mainline
         self._rows: Optional[List[dict]] = None
         self._known: dict[str, str] = {}
 
@@ -172,8 +199,41 @@ class ThemePicker:
                 )
         except (OSError, ValueError, zlib.error) as exc:
             logger.warning("Theme picker keyword recall unavailable: %s", exc)
+        if rows:
+            self._merge_aliases(rows)
         self._rows = rows
         return rows
+
+    @staticmethod
+    def _merge_aliases(rows: List[dict]) -> None:
+        """Fold the alias overlay into the recall keywords, in place."""
+        try:
+            doc = json.loads(ALIAS_PATH.read_text(encoding="utf-8"))
+        except (FileNotFoundError, OSError, ValueError):
+            return
+        by_name = {row["name"]: row for row in rows}
+        added = 0
+        for group in doc.get("groups") or []:
+            try:
+                weight = float(group.get("w", 1.0))
+            except (TypeError, ValueError):
+                continue
+            if weight <= 0:
+                continue
+            for theme_name in group.get("themes") or []:
+                row = by_name.get(str(theme_name).strip())
+                if row is None:
+                    continue
+                seen = {term for term, _ in row["terms"]}
+                for term in group.get("terms") or []:
+                    term = str(term).strip()
+                    if len(term) < 2 or term in seen:
+                        continue
+                    row["terms"].append((term, weight))
+                    seen.add(term)
+                    added += 1
+        if added:
+            logger.info("Theme picker alias recall: %d extra terms", added)
 
     def recall(
         self, text: str, names: Sequence[str], terms: Sequence[str] = ()
@@ -193,7 +253,7 @@ class ThemePicker:
                 {"name": name, "count": 0, "terms": []}
                 for name in names[: self.candidate_limit]
             ]
-        hay = _fold(text)
+        hay = _fold(_strip_attribution(text))
         links = [_fold(term) for term in terms if str(term).strip()]
         scored: List[tuple[float, dict]] = []
         for row in rows:
@@ -214,24 +274,36 @@ class ThemePicker:
         picked = [row for _, row in scored[: self.candidate_limit]]
         have = {row["name"] for row in picked}
         # A thin recall would otherwise leave the model choosing among the same
-        # five mega-sectors for every story, so only top up a short list.
-        if len(picked) < 15:
+        # mega-sectors for every story, so they are offered only when the recall
+        # is short, and flagged so the model has to show a transmission path.
+        if len(picked) < MIN_CANDIDATES:
             for row in sorted(rows, key=lambda item: -item["count"])[:BIG_THEME_LIMIT]:
                 if row["name"] in allowed and row["name"] not in have:
-                    picked.append(row)
+                    picked.append({**row, "big": True})
                     have.add(row["name"])
         return picked
 
-    @staticmethod
-    def _catalogue(candidates: Sequence[dict]) -> str:
-        """One line per candidate: name, member count, leading keywords."""
+    def _catalogue(self, candidates: Sequence[dict]) -> str:
+        """One line per candidate: name, members, mainline state, keywords.
+
+        The mainline field is what tells the model whether the direction is
+        being traded today. It sits next to the keywords rather than replacing
+        them: the keywords say what the theme holds, the limit-up count says
+        whether the market is paying for it this week.
+        """
         lines = []
         for row in candidates:
+            parts = [row["name"], f"成员{row['count']}"]
+            if self.mainline is not None:
+                tag = self.mainline.label(row["name"])
+                if tag:
+                    parts.append(tag)
             desc = "、".join(term for term, _ in row["terms"][:4])[:28]
-            count = row["count"]
-            lines.append(
-                f"{row['name']}｜成员{count}｜{desc}" if desc else f"{row['name']}｜成员{count}"
-            )
+            if desc:
+                parts.append(desc)
+            if row.get("big"):
+                parts.append("大题材，需传导链")
+            lines.append("｜".join(parts))
         return "\n".join(lines)
 
     async def _extract_terms(self, excerpt: str) -> List[str]:
@@ -286,7 +358,7 @@ class ThemePicker:
             system=SYSTEM_PROMPT,
             user=(
                 f"新闻内容：{excerpt}\n\n"
-                f"候选题材（共 {len(candidates)} 个，格式：题材名｜成分股数量｜关键词）：\n"
+                f"候选题材（共 {len(candidates)} 个，格式：题材名｜成分股数量｜主线状态｜关键词）：\n"
                 f"{catalogue}\n\n"
                 f"请从候选中选出这条新闻最相关的至多 {self.max_picks} 个题材，"
                 "给出相关度评分和传导环节，按给定格式输出 JSON。"
