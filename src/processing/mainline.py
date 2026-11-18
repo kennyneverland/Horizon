@@ -185,13 +185,20 @@ class MainlineState:
         return best
 
     def label(self, name: Any) -> str:
-        """Compact prompt field: which line, how many limit-ups, and its shape."""
+        """Compact prompt field: which line, how many limit-ups, and its shape.
+
+        The previous day's count rides along because a bare count cannot tell a
+        line that just accelerated (22 today, 5 yesterday) from one that is
+        already rolling over (22 today, 26 yesterday).
+        """
         state = self.for_theme(name)
         if not state:
             return ""
         tag = f"主线{state['line']} 涨停{state['today']}"
         if state["hot"]:
             tag += HOT_MARK
+        if state["today"] > 0:
+            tag += f" 前日{state['prev']}"
         if state["streak"] >= 3:
             tag += f" 连{state['streak']}日"
         if state["today"] == 0 and state["sum10"] > 0:
