@@ -107,6 +107,19 @@
     {"w": 1.0, "themes": ["AI语料"], "terms": ["ai 语料", "语料", "语料库", "training corpus"]},
     {"w": 1.0, "themes": ["AI眼镜"], "terms": ["ai 眼镜"]},
     {"w": 0.8, "themes": ["游戏概念"], "terms": ["ai game", "ai games", "ai 游戏", "生成式游戏"]},
-    {"w": 0.8, "themes": ["互联网电商"], "terms": ["ai shopping", "ai commerce", "agentic commerce"]}
+    {"w": 0.8, "themes": ["互联网电商"], "terms": ["ai shopping", "ai commerce", "agentic commerce"]},
+    {"w": 1.0, "themes": ["智算中心（AIDC）"], "terms": ["智算", "ai datacenter"]},
+    {"w": 0.9, "themes": ["算力概念"], "terms": ["算力链", "算力需求", "算力缺口", "算力基建", "算力网络", "算力集群"]},
+    {"w": 0.9, "themes": ["国产芯片", "半导体设备", "半导体材料"], "terms": ["出口管制", "实体清单", "技术封锁", "禁运", "断供", "export control", "export controls", "entity list"]},
+    {"w": 0.9, "themes": ["国产芯片"], "terms": ["国产替代", "国产化", "自主可控", "国产算力", "domestic substitution"]},
+    {"w": 0.85, "themes": ["液冷服务器", "数据中心"], "terms": ["服务器整机", "机柜", "机架"]},
+    {"w": 1.0, "themes": ["铜缆高速连接"], "terms": ["铜互连"]},
+    {"w": 0.9, "themes": ["存储芯片"], "terms": ["存储颗粒", "内存颗粒", "颗粒价格", "存储涨价", "memory pricing"]},
+    {"w": 1.0, "themes": ["半导体材料"], "terms": ["光刻胶", "硅片", "靶材"]},
+    {"w": 0.9, "themes": ["集成电路制造"], "terms": ["晶圆厂", "wafer fab"]},
+    {"w": 1.0, "themes": ["先进封装"], "terms": ["混合键合"]},
+    {"w": 0.9, "themes": ["国产软件"], "terms": ["基础软件"]},
+    {"w": 0.85, "themes": ["光通信模块", "CPO概念"], "terms": ["光模块", "硅光"]},
+    {"w": 0.9, "themes": ["PCB", "印制电路板"], "terms": ["高多层板"]}
   ]
 }
