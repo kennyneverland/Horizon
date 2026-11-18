@@ -22,6 +22,7 @@ from .client import AIClient
 from .errors import AIProviderUnavailableError
 from .localization import normalize_language
 from .theme_direction import ThemeDirectionJudge
+from .theme_picker import ThemePicker
 from .prompting.enrichment import (
     MAX_TOOL_REQUESTS,
     artifact_prompt,
@@ -138,6 +139,9 @@ class ContentEnricher:
         self._direction_judge = ThemeDirectionJudge(
             ai_client, concurrency=self.concurrency
         )
+        # Fallback for items the top-200 heat list does not name: one short
+        # call per such item, so the run does not fan out any wider.
+        self._theme_picker = ThemePicker(ai_client)
         self._validate_profile_tools()
 
     def _validate_profile_tools(self) -> None:
@@ -305,14 +309,17 @@ class ContentEnricher:
 
         The analysis pass only sees the headline and the one-line summary, and
         most theme terms first appear in the background or impact block. The
-        lookup itself is token-free; the direction verdict that follows it is
-        one short call, and only for items that matched a theme.
+        heat-list lookup itself is token-free; only an item the heat list misses
+        costs one short pick call, and the direction verdict that follows is one
+        more call per item that ended up with themes.
         """
         if self._theme_index is None:
             self._theme_index = ThemeIndex()
         if not self._theme_index.available:
             return
-        await attach_themes(item, self._theme_index, MemberFetcher())
+        await attach_themes(
+            item, self._theme_index, MemberFetcher(), picker=self._theme_picker
+        )
         await self._direction_judge.judge(item)
 
     @staticmethod
