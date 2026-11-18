@@ -38,12 +38,29 @@ from ..processing.ashare_themes import (
     MemberFetcher,
     ThemeIndex,
     attach_themes,
+    matching_text,
     pick_members,
 )
 from ..processing.profiles import LoadedProfile, ProfileBlock, ProfileRegistry
 from ..processing.tools import ToolRegistry, ToolResult
 
 logger = logging.getLogger(__name__)
+
+# The page ranks members by three-month relative strength, not by how well they
+# fit the story. Five is what a line can carry; the first item that names a
+# theme keeps the page order, and later items re-rank the same list against
+# their own story so the digest does not repeat one ticker set all day.
+MEMBER_LIMIT = 5
+MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题材和该题材的成分股名单，选出与这条新闻关系最直接的 5 只股票。
+
+规则：
+- 只能从名单里逐字选择，不要新造名称。
+- 按"新闻事件→该股票主营是否直接受影响"排序，越直接越靠前。
+- 只做业务相关判断，不考虑股价涨跌、市值大小。
+- 名单里确实没有直接相关的，按名单顺序补足 5 只。
+
+输出格式：只输出 JSON。
+{"picks": ["股票名", "股票名"]}"""
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
@@ -342,10 +359,11 @@ class ContentEnricher:
         whose verdict call failed still renders under 方向待定, so it is
         fetched here too.
 
-        Each theme's tickers are rendered once per run. The member list is the
-        page's three-month strength ranking, not a per-story pick, so repeating
-        it on every item put the same three names in nine of thirty-three lines
-        on 2026-11-18. Later items keep the theme and its reason only.
+        A theme's first item keeps the page order and shows five names. Later
+        items re-rank the same member list against their own story, because the
+        page order is a three-month strength ranking rather than a fit for the
+        story: repeating it unchanged put one ticker set in nine of thirty-three
+        lines on 2026-11-18.
         """
         themes = (item.metadata or {}).get("ashare_themes") or []
         fetcher = MemberFetcher()
@@ -353,15 +371,64 @@ class ContentEnricher:
             if theme.get("direction") == NEUTRAL or theme.get("members"):
                 continue
             key = str(theme.get("slug") or theme.get("name") or "")
-            if key and key in self._rendered_themes:
-                continue
-            if key:
-                self._rendered_themes.add(key)
             members = await fetcher.get(
                 theme["slug"], theme.get("members_count"), theme.get("name")
             )
             theme["member_total"] = len(members)
-            theme["members"] = pick_members(members)
+            if key and key in self._rendered_themes:
+                theme["members"] = await self._rank_members(
+                    item, str(theme.get("name") or ""), members
+                )
+                continue
+            if key:
+                self._rendered_themes.add(key)
+            theme["members"] = pick_members(members, MEMBER_LIMIT)
+
+    async def _rank_members(
+        self, item: ContentItem, theme_name: str, members: list[str]
+    ) -> list[str]:
+        """Re-rank a repeated theme's members against this story.
+
+        The page order is a three-month strength ranking, so the same theme on a
+        second story would otherwise print the same five tickers again. The
+        model sees the story and the theme's own list and keeps the names whose
+        business the event actually touches; anything it cannot place falls back
+        to the page order so the line is never short.
+        """
+        if len(members) <= MEMBER_LIMIT:
+            return list(members)
+        excerpt = " ".join(matching_text(item).split())[:800]
+        listing = "、".join(members[:120])
+        try:
+            response = await self.client.complete(
+                system=MEMBER_RANK_PROMPT,
+                user=f"新闻：{excerpt}\n\n题材：{theme_name}\n成分股：{listing}",
+                temperature=0,
+                max_tokens=160,
+            )
+        except Exception as exc:  # noqa: BLE001 - page order is still a valid line
+            logger.warning("Member re-rank failed for %s: %s", theme_name, exc)
+            return pick_members(members, MEMBER_LIMIT)
+        parsed = parse_json_response(response or "")
+        raw = parsed.get("picks") if isinstance(parsed, dict) else None
+        picked: list[str] = []
+        if isinstance(raw, list):
+            for entry in raw:
+                name = str(entry or "").strip()
+                name = name.split("（")[0].split("(")[0].strip()
+                if not name:
+                    continue
+                for member in members:
+                    if name in member and member not in picked:
+                        picked.append(member)
+                        break
+        for member in pick_members(members, MEMBER_LIMIT):
+            if member not in picked:
+                picked.append(member)
+        logger.warning(
+            "Member re-rank %s: %s", theme_name, "、".join(picked[:MEMBER_LIMIT])
+        )
+        return picked[:MEMBER_LIMIT]
 
     @staticmethod
     def _expand_request_source_refs(
