@@ -261,15 +261,26 @@ def commit_parts(paths: Sequence[Path], repo: str, token: str, branch: str = "ma
 
 
 async def refresh_theme_index(data_dir: Path) -> int:
-    """Rebuild the index and commit it; returns the number of themes written."""
-    html = fetch_listing()
+    """Rebuild the index and commit it; returns the theme count left on disk.
+
+    A listing that cannot be read leaves the shipped index alone: a Sunday
+    without a refresh costs nothing, a half-written catalogue costs the whole
+    next week's picks. The return value is 0 only when nothing could be read.
+    """
+    try:
+        html = fetch_listing()
+    except (OSError, zlib.error) as exc:
+        logger.warning("Theme listing unreachable (%s); keeping the current index", exc)
+        return 0
     listing = parse_listing(html)
     if len(listing) < 100:
+        kept = len(read_index(data_dir).get("themes") or [])
         logger.warning(
-            "Theme listing looks truncated (%d themes); keeping the current index",
+            "Theme listing looks truncated (%d themes); keeping the current %d themes",
             len(listing),
+            kept,
         )
-        return 0
+        return kept
     current = read_index(data_dir)
     before = len(current.get("themes") or [])
     document = build_document(listing, current)
