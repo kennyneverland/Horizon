@@ -105,7 +105,7 @@ DIRECTION_LABELS = {
 # 题材池只取 lianban 列表页热度排名前 200 的题材。该列表每个交易日收盘后按
 # 市场热度重排，前 200 是当天真正在被交易的题材；成员仍取页面自带的"近3月
 # 相对强度"前 5。2026-11-18 实测：794 个题材里 rank<=200 的有 181 个。
-# 列表页取不到时不做过滤（降级为全量），并打日志。
+# 前 200 一个都没命中时，回退到全量索引再匹配一次，避免题材行整条消失。
 HOT_THEME_LIMIT = 200
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
@@ -688,11 +688,20 @@ async def attach_themes(
     if profile not in THEME_PROFILES:
         return
 
-    themes = index.match(matching_text(item), allowed=fetcher.hot_names())
+    text = matching_text(item)
+    themes = index.match(text, allowed=fetcher.hot_names())
+    hot_hit = bool(themes)
+    if not themes:
+        # Nothing in the top-200 heat list names this story. Falling back to the
+        # full index keeps the line from disappearing entirely on a day when the
+        # story's sector is not being traded; the flag records which pass chose
+        # the theme, so a noisy fallback can be told apart from a hot match.
+        themes = index.match(text)
     if not themes:
         return
 
     for theme in themes:
+        theme["hot"] = hot_hit
         members = await fetcher.get(
             theme["slug"], theme.get("members_count"), theme.get("name")
         )
