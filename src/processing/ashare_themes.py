@@ -102,11 +102,11 @@ DIRECTION_LABELS = {
     NEUTRAL: "可能相关",
 }
 
-# 成员数超过这个数的题材，前几名是"近3月相对强度"排名，不是业务代表：芯片概念
-# 收录 290 只，2026-11-18 排第 3 的是北鼎股份（养生壶/烤箱），与芯片无关。宽口径
-# 题材只显示题材名和方向，不显示成员，避免把强度排名当成产业链名单。窄题材
-# （AI芯片 38 只、Kimi概念 16 只）照常显示。
-WIDE_THEME_MEMBER_LIMIT = 100
+# 题材池只取 lianban 列表页热度排名前 200 的题材。该列表每个交易日收盘后按
+# 市场热度重排，前 200 是当天真正在被交易的题材；成员仍取页面自带的"近3月
+# 相对强度"前 5。2026-11-18 实测：794 个题材里 rank<=200 的有 181 个。
+# 列表页取不到时不做过滤（降级为全量），并打日志。
+HOT_THEME_LIMIT = 200
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
 _ITEMLIST_RE = re.compile(
@@ -153,6 +153,24 @@ def _parse_theme_links(html: str) -> Dict[str, str]:
         if name:
             slugs.setdefault(_normalise(name), path)
     return slugs
+
+
+def _parse_hot_names(html: str, limit: int) -> set[str]:
+    """Theme names ranked inside the top ``limit`` of the listing page.
+
+    The listing reads ``AIGC概念热度第252 · 117只``; the rank is the market-heat
+    order recomputed after every close. Names are folded the same way as
+    ``_parse_theme_links`` so the two maps agree.
+    """
+    hot: set[str] = set()
+    for match in _THEME_LINK_RE.finditer(html):
+        label = re.sub(r"<[^>]+>", "", match.group(2)).strip()
+        entry = re.match(r"^(.*?)\s*热度第\s*(\d+)\s*·\s*(\d+)\s*只", label)
+        if not entry:
+            continue
+        if int(entry.group(2)) <= limit:
+            hot.add(_normalise(entry.group(1).strip()))
+    return hot
 
 
 class ThemeIndex:
@@ -258,8 +276,18 @@ class ThemeIndex:
         if added:
             logger.info("A-share alias overlay merged: %d terms", added)
 
-    def match(self, text: str, top_n: int = MAX_THEMES_PER_ITEM) -> List[Dict[str, Any]]:
-        """Return the themes this text names, strongest first."""
+    def match(
+        self,
+        text: str,
+        top_n: int = MAX_THEMES_PER_ITEM,
+        allowed: Optional[set[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Return the themes this text names, strongest first.
+
+        ``allowed`` restricts the answer to a set of folded theme names (the
+        top-N heat list). None means no restriction, which is also the fallback
+        when the listing page could not be read.
+        """
         if not self.available:
             return []
         haystack = _normalise(text)
@@ -311,6 +339,8 @@ class ThemeIndex:
                 break
             term = hit_term[slug]
             name = self.themes[slug]["name"]
+            if allowed is not None and _normalise(name) not in allowed:
+                continue
             # One mention should not produce two name lists: 券商 hits both
             # 证券 and 券商概念, and 电池 is contained in 固态电池.
             if term in seen_terms:
@@ -342,6 +372,8 @@ class MemberFetcher:
     _shared_slugs: Optional[Dict[str, str]] = None
     _shared_used = 0
     _shared_lock: Optional[asyncio.Lock] = None
+    # Folded names inside the top-N heat list; None until the listing is read.
+    _shared_hot: Optional[set[str]] = None
     # The budget is reported once, not once per theme that ran into it.
     _shared_exhausted = False
 
@@ -387,8 +419,26 @@ class MemberFetcher:
             )
             return {}
         slugs = _parse_theme_links(html)
-        logger.info("lianban theme listing: %d current page URLs", len(slugs))
+        MemberFetcher._shared_hot = _parse_hot_names(html, HOT_THEME_LIMIT)
+        # WARNING so the line reaches the Actions log: the default level is
+        # WARNING, and this is the only evidence that the heat filter loaded.
+        logger.warning(
+            "lianban theme listing: %d current page URLs, %d inside the top %d",
+            len(slugs),
+            len(MemberFetcher._shared_hot),
+            HOT_THEME_LIMIT,
+        )
         return slugs
+
+    def hot_names(self) -> Optional[set[str]]:
+        """Top-N heat names, or None when the listing page could not be read.
+
+        Reading the listing is the same request ``_resolve_slug`` needs, so this
+        only triggers it early; the result is cached for the run.
+        """
+        if MemberFetcher._shared_slugs is None:
+            MemberFetcher._shared_slugs = self._load_slugs()
+        return MemberFetcher._shared_hot
 
     def _resolve_slug(self, slug: str, name: Optional[str]) -> str:
         """Return the theme's current page path, falling back to the stored one."""
@@ -568,9 +618,8 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
     The two verdicts are separated by a blank line so they render as two quote
     paragraphs instead of one run-on line.
 
-    Members are omitted for wide themes: their page order is a three-month
-    relative-strength ranking, so the top five are the strongest recent movers
-    rather than the names that define the theme. Narrow themes keep them.
+    Every theme shown here already passed the top-N heat filter, so its member
+    list is the page's own three-month strength ranking, cut to the leading five.
     """
     groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
     for theme in themes:
@@ -578,9 +627,8 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
         if direction == NEUTRAL:
             continue
         members = theme.get("members") or []
-        total = theme.get("member_total") or 0
         label = str(theme["name"])
-        if members and total <= WIDE_THEME_MEMBER_LIMIT:
+        if members:
             # Full-width brackets keep the line out of the markdown escaper.
             shown = [m.replace("(", "（").replace(")", "）") for m in members]
             label = f"{label} → {'、'.join(shown)}"
@@ -640,7 +688,7 @@ async def attach_themes(
     if profile not in THEME_PROFILES:
         return
 
-    themes = index.match(matching_text(item))
+    themes = index.match(matching_text(item), allowed=fetcher.hot_names())
     if not themes:
         return
 
