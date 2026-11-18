@@ -16,6 +16,7 @@ from .storage.manager import ConfigError, StorageManager
 from .orchestrator import HorizonOrchestrator
 from .collection_window import collection_hours
 from .models import AIProvider
+from .processing.mainline import refresh as refresh_mainline
 from .processing.source_cap import apply_balanced_digest_with_cap, load_per_source_limit
 from .processing.theme_index_refresh import is_refresh_day, refresh_theme_index
 
@@ -133,6 +134,14 @@ def main():
             sys.exit(1)
 
         icons = get_icons(config.display.icon_style)
+
+        # The mainline matrix is a fact about the previous close, read once per
+        # run: the Sunday refresh records it and the digest annotates candidates
+        # with it. Losing it costs the annotation, never the run.
+        try:
+            refresh_mainline(data_dir)
+        except Exception as exc:  # noqa: BLE001 - annotation is optional
+            console.print(f"[yellow]Mainline snapshot unavailable: {exc}[/yellow]")
 
         # Sunday publishes no digest: the only job is keeping the theme
         # catalogue level with the listing page, so the next week's picks can
