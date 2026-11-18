@@ -17,6 +17,7 @@ from .orchestrator import HorizonOrchestrator
 from .collection_window import collection_hours
 from .models import AIProvider
 from .processing.source_cap import apply_balanced_digest_with_cap, load_per_source_limit
+from .processing.theme_index_refresh import is_refresh_day, refresh_theme_index
 
 
 console = Console(stderr=True)
@@ -132,6 +133,18 @@ def main():
             sys.exit(1)
 
         icons = get_icons(config.display.icon_style)
+
+        # Sunday publishes no digest: the only job is keeping the theme
+        # catalogue level with the listing page, so the next week's picks can
+        # reach themes the shipped snapshot does not carry yet.
+        if is_refresh_day():
+            console.print(
+                "[cyan]Sunday run: refreshing the lianban theme index instead of publishing[/cyan]"
+            )
+            theme_count = asyncio.run(refresh_theme_index(data_dir))
+            console.print(f"[green]Theme index holds {theme_count} themes[/green]")
+            return
+
         if config.ai.provider == AIProvider.OPENAI_CHATGPT:
             from .ai.chatgpt_auth import MANAGE_USAGE_URL
             console.print(f"Using ChatGPT plan. Manage usage: {MANAGE_USAGE_URL}")
