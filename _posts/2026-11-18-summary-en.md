@@ -5,423 +5,409 @@ date: 2026-11-18
 lang: en
 ---
 
-> From 433 items, 33 important content pieces were selected
+> From 429 items, 33 important content pieces were selected
 
 ---
 
 **Financial News**
-1. [Nvidia, Apple Face China Policy Dilemma](#item-finance-news-1) ⭐️ 8.0/10
-2. [Widespread tech and infrastructure outages prompt transparency calls](#item-finance-news-2) ⭐️ 7.5/10
-3. [APEC Summit: Trump, Xi and Putin Meet in Shenzhen](#item-finance-news-3) ⭐️ 7.0/10
-4. [Xi calls for removing trade barriers at APEC](#item-finance-news-4) ⭐️ 7.0/10
-5. [Iran Says It Targeted U.S. Sites in Kuwait as Brent Eases](#item-finance-news-5) ⭐️ 7.0/10
-6. [EU Preliminarily Finds Temu Breached Digital Services Act](#item-finance-news-6) ⭐️ 7.0/10
-7. [CAAM to assess 17 automakers&\#x27; 60-day supplier payment terms](#item-finance-news-7) ⭐️ 7.0/10
-8. [Foxconn Plans Sony Automotive Camera Module Acquisition](#item-finance-news-8) ⭐️ 7.0/10
+1. [U.S. Officials Rule Out Cyberattacks in Week of Tech Outages](#item-finance-news-1) ⭐️ 8.5/10
+2. [Nvidia Earnings Beat Lifts Shares and AI Cloud Providers](#item-finance-news-2) ⭐️ 8.0/10
+3. [Anthropic IPO expected above $70-$78 range](#item-finance-news-3) ⭐️ 8.0/10
+4. [China assesses automakers&\#x27; 60-day supplier payment terms](#item-finance-news-4) ⭐️ 8.0/10
+5. [APEC summit tests US-China trade truce](#item-finance-news-5) ⭐️ 7.0/10
+6. [BASF Proposes Evonik Takeover](#item-finance-news-6) ⭐️ 7.0/10
+7. [Anthropic Approaches Final IPO Pricing Amid Tech Volatility](#item-finance-news-7) ⭐️ 7.0/10
+8. [Xi Warns Against Trade Barriers Before Trump Talks](#item-finance-news-8) ⭐️ 7.0/10
 
 **China Markets**
-1. [PBOC Moves Main Policy Rate Anchor to Overnight Reverse Repo](#item-china-market-1) ⭐️ 9.0/10
-2. [Nvidia results and higher GPU rental prices lift China AI chip stocks](#item-china-market-2) ⭐️ 8.0/10
-3. [Hong Kong Starts Five-Year Paperless Share Market Transition](#item-china-market-3) ⭐️ 7.0/10
-4. [Broker Says Tighter U.S. Export Controls Could Boost China&\#x27;s Domestic Compute](#item-china-market-4) ⭐️ 7.0/10
-5. [JD Q3 profit rises as food-delivery losses narrow](#item-china-market-5) ⭐️ 6.0/10
-6. [Morgan Stanley Forecasts Chinese Overseas Holdings Could Reach US$10 Trillion by 2035](#item-china-market-6) ⭐️ 6.0/10
-7. [Lai Sun proposes Shanghai REIT spin-off to repay US$315m loan](#item-china-market-7) ⭐️ 6.0/10
-8. [China Export Growth and AI-Related Products](#item-china-market-8) ⭐️ 6.0/10
-9. [US export rule targets AI compute access for China](#item-china-market-9) ⭐️ 6.0/10
-10. [TCL Zhonghuan to lift Zhonghuan Leading stake to 98.52%](#item-china-market-10) ⭐️ 6.0/10
+1. [Tencent Q3 revenue rises 8% as AI spending weighs on cash flow](#item-china-market-1) ⭐️ 8.0/10
+2. [New Easy Sheng says no order cuts as 1.6T optical modules ramp up](#item-china-market-2) ⭐️ 7.0/10
+3. [FDA rejects US approval of Akeso’s ivonescimab, requires new phase 3 trial](#item-china-market-3) ⭐️ 7.0/10
+4. [BIS Tightens AI Export Controls on Advanced-Node ICs](#item-china-market-4) ⭐️ 7.0/10
+5. [China energy regulator coordinates basin hydro-wind-solar development](#item-china-market-5) ⭐️ 6.0/10
+6. [China Energy Regulator Explores Green Hydrogen Coupling](#item-china-market-6) ⭐️ 6.0/10
+7. [Galaxy plans humanoid-robot K-pop group; Mega Legend takes stake](#item-china-market-7) ⭐️ 6.0/10
+8. [US export rule targets AI compute leakage to China](#item-china-market-8) ⭐️ 6.0/10
+9. [South Korea challenges EU hybrid-vehicle safeguard probe](#item-china-market-9) ⭐️ 6.0/10
+10. [China targets lower enterprise logistics costs](#item-china-market-10) ⭐️ 6.0/10
 
 **AI Hardware &amp; Compute**
-1. [Nvidia, SPIL Announce Deal to Triple CoWoS Packaging Capacity by 2029](#item-ai-hardware-1) ⭐️ 9.0/10
-2. [SEC Probes Nvidia as Ex-CEO Huang Agrees to Testify](#item-ai-hardware-2) ⭐️ 8.0/10
-3. [Banks Pause $480M Loan for ByteDance-Linked GPU Financing](#item-ai-hardware-3) ⭐️ 8.0/10
-4. [Nvidia Reportedly Invests Over US$1B in Kinsus for AI Substrates](#item-ai-hardware-4) ⭐️ 8.0/10
-5. [Apple Reportedly Nears Four- to Five-Year Samsung DRAM Deal](#item-ai-hardware-5) ⭐️ 7.0/10
+1. [US Plan to Restrict Chinese Optical Module Imports Lifts Coherent, Lumentum](#item-ai-hardware-1) ⭐️ 8.0/10
+2. [US Advances Curbs on Chinese Optical Transceivers for Data Centers](#item-ai-hardware-2) ⭐️ 8.0/10
+3. [Reported Nvidia Investment in Kinsus to Expand ABF Capacity](#item-ai-hardware-3) ⭐️ 8.0/10
+4. [Taiwan Hai Long offshore wind project connects 1 GW to grid for TSMC](#item-ai-hardware-4) ⭐️ 7.0/10
+5. [Nvidia expands Foxconn role in next-gen GPU and networking platforms](#item-ai-hardware-5) ⭐️ 7.0/10
 
 **AI Applications**
-1. [OpenAI Sora Shutdown Raises Kuaishou Kling IPO Bet](#item-ai-app-1) ⭐️ 8.0/10
-2. [Nvidia and AMD back Genesis in reported Series A, valuation above 23 billion](#item-ai-app-2) ⭐️ 7.0/10
-3. [Alibaba Cloud Claims Hong Kong IaaS Lead and AI Adoption](#item-ai-app-3) ⭐️ 7.0/10
-4. [Model ML Raises $250M for AI Deal-Context Agents](#item-ai-app-4) ⭐️ 7.0/10
-5. [OpenAI GPT-6 Healthcare Agents Automate Prior Authorizations](#item-ai-app-5) ⭐️ 7.0/10
+1. [Isomorphic Labs Raises $5 Billion to Advance AI Drug Pipeline](#item-ai-app-1) ⭐️ 8.0/10
+2. [OpenAI Releases GPT-6.2 Astra and Sol With Lower API Pricing](#item-ai-app-2) ⭐️ 8.0/10
+3. [Pony AI Q3 Revenue Beat Estimates as Robotaxi Growth Slows](#item-ai-app-3) ⭐️ 7.0/10
+4. [Tencent AI Spending Squeezes Q3 Profit as Revenue Misses Estimates](#item-ai-app-4) ⭐️ 7.0/10
+5. [Model ML Raises $250M for Investment Banking AI Agents](#item-ai-app-5) ⭐️ 7.0/10
 
 **Technology News**
-1. [Nvidia Interim CEO Ends Hopper Chip Shipments to China](#item-tech-news-1) ⭐️ 9.0/10
-2. [OpenAI Launches GPT-6.2 Astra and Sol With Lower API Prices](#item-tech-news-2) ⭐️ 8.0/10
-3. [AMD Closes $8.2B Stock Acquisition as Fei-Fei Li Team Joins](#item-tech-news-3) ⭐️ 8.0/10
-4. [Nvidia Guides Record Revenue After Huang Exit; Board Won’t Reinstate Him](#item-tech-news-4) ⭐️ 8.0/10
-5. [Nvidia Reaffirms Open-Source AI and Hugging Face Acquisition After Huang Exit](#item-tech-news-5) ⭐️ 8.0/10
+1. [Nvidia interim CEO says it will stop selling chips to China](#item-tech-news-1) ⭐️ 9.0/10
+2. [Cloudflare frames Quad9 France DNS withdrawal as governance warning](#item-tech-news-2) ⭐️ 8.0/10
+3. [Nvidia Reaffirms Open-Source AI and Hugging Face Acquisition Plans](#item-tech-news-3) ⭐️ 8.0/10
+4. [Amazon and Google to Own Nearly 30% of Anthropic After IPO](#item-tech-news-4) ⭐️ 8.0/10
+5. [SEC Investigates Nvidia After Jensen Huang Exit and Spy Affair Report](#item-tech-news-5) ⭐️ 8.0/10
 
 ---
 
 ## Financial News
 
 <a id="item-finance-news-1"></a>
-### [Nvidia, Apple Face China Policy Dilemma](https://www.cnbc.com/2026/11/17/us-tech-firms-china-ties-political-pressure.html) ⭐️ 8.0/10
+### [U.S. Officials Rule Out Cyberattacks in Week of Tech Outages](https://www.cnbc.com/2026/11/17/apple-microsoft-faa-jpmorgan-outages.html) ⭐️ 8.5/10
 
-CNBC reports Nvidia CEO Jensen Huang resigned last week amid reports he had an affair with a woman U.S. intelligence suspects of being a Chinese spy, ahead of a Trump-Xi meeting this week. The Trump administration also tightened restrictions on Chinese companies&\#x27; remote access to advanced U.S. chips on Monday.
+Director of National Intelligence Jay Clayton said four major outages in four consecutive business days at Microsoft, the FAA, JPMorgan Chase, United Airlines, Apple and the NSA were not cyberattacks or coordinated nation-state activity.
 
-rss · CNBC Finance · Nov 17, 08:52
+rss · CNBC Top News · Nov 17, 22:03
 
-> **「Background」** Jensen Huang resigned after reports of an affair with Alice Huang, whom some U.S. intelligence sources suspect may be a Chinese spy, though the investigation is unresolved. At the same time, the U.S. and nine economies in the U.S.-led Pax Silica group signed the San Francisco Declaration to protect sensitive AI supply chains, adding to policy pressure on American tech firms operating in China.
+> **「Background」** Microsoft, the FAA, JPMorgan Chase, the NSA and Apple attributed the disruptions to routine technology problems, including an undetected Microsoft bug dating to July and an FAA router upgrade by contractor L3Harris Technologies.
 
-> **「Supply-chain and market risk」** Apple and other U.S. tech firms face supply-chain and market-access risk because China remains central to iPhone production and sales, while U.S.–China policy tensions could force costly diversification.
+> **「Impact」** Businesses, travelers and bank customers faced email, flight and transaction disruptions, and U.S. lawmakers called for more transparency, a congressional briefing and support for an AI safety bill.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.state.gov/releases/office-of-the-spokesman/2026/11/the-san-francisco-declaration-on-the-secure-foundations-of-enduring-prosperity">The San Francisco Declaration on the Secure Foundations of Enduring Prosperity - United States Department of State</a></li>
-<li><a href="https://www.cnn.com/2026/11/17/business/jensen-huang-nvidia-ceo-statement">Jensen Huang says he would be ‘honored’ to be reinstated as Nvidia CEO in new statement | CNN Business</a></li>
-<li><a href="https://cryptorank.io/news/feed/f6be4-apple-hardware-strategy-ternus-ceo">Apple Hardware Strategy: John Ternus CEO Era Unleashes Bold AI Devices | AI News AI | CryptoRank.io</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#U.S.-China tech relations`, `#semiconductor export controls`, `#AI supply chain`, `#Nvidia leadership`, `#Apple China exposure`
+**Tags**: `#Technology outages`, `#Cybersecurity`, `#Cloud and software infrastructure`, `#Regulatory scrutiny`, `#Financial services operations`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [Widespread tech and infrastructure outages prompt transparency calls](https://www.cnbc.com/2026/11/17/apple-microsoft-faa-jpmorgan-outages.html) ⭐️ 7.5/10
+### [Nvidia Earnings Beat Lifts Shares and AI Cloud Providers](https://www.cnbc.com/2026/11/18/nvidia-stock-earnings.html) ⭐️ 8.0/10
 
-A series of outages at Microsoft, Apple, JPMorgan, the FAA and the NSA disrupted email, banking and air travel over four consecutive business days, and U.S. officials said there was no cyberattack while lawmakers called for more transparency and potential AI safety measures.
+Nvidia shares rose nearly 4% in premarket after fiscal third-quarter revenue of $115.84 billion beat analysts&\#x27; $109.10 billion estimate by more than $6 billion, and fiscal fourth-quarter guidance of $130 billion topped the $125.1 billion consensus. The results came as a new U.S. rule restricts Chinese remote access to advanced chips, and Nvidia said its outlook assumes no data-center compute revenue from China.
 
-rss · CNBC Top News · Nov 17, 22:03
+rss · CNBC Top News · Nov 18, 10:00
 
-> **「Background」** The companies and agencies attributed the disruptions to bugs, updates or routine maintenance, with the FAA pointing to a router upgrade that overwhelmed its network.
+> **「Background」** The earnings report followed CEO Jensen Huang&\#x27;s resignation, and neoclouds—newer cloud providers built around AI computing—rose after the results.
 
-**Tags**: `#technology outages`, `#financial infrastructure`, `#AI policy`, `#cybersecurity`, `#US regulation`
+**Tags**: `#Nvidia`, `#AI supply chain`, `#earnings`, `#China export controls`, `#A-share themes`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [APEC Summit: Trump, Xi and Putin Meet in Shenzhen](https://www.cnbc.com/2026/11/18/apec-trump-xi-putin-shenzhen.html) ⭐️ 7.0/10
+### [Anthropic IPO expected above $70-$78 range](https://www.cnbc.com/2026/11/17/anthropic-ipo-price.html) ⭐️ 8.0/10
 
-U.S. President Donald Trump, Chinese President Xi Jinping and Russian President Vladimir Putin are gathering at the Asia-Pacific Economic Cooperation \(APEC\) summit in Shenzhen. The key U.S.-China issue is implementing a trade truce extended by two months to January 2027 and a September pledge to lower tariffs on $30 billion worth of goods, without a specified effective date.
+Anthropic is likely to price its Nasdaq IPO above the current $70-$78 range, according to sources cited by CNBC, with trading expected to begin Nov. 19.
 
-rss · CNBC Finance · Nov 18, 06:04
+rss · CNBC Top News · Nov 17, 14:34
 
-> **「Background」** The talks follow Washington’s scrutiny of Nvidia’s China chip sales and moves to tighten rules that had let Chinese companies access U.S. artificial-intelligence technology, which China has threatened to counter.
+> **「Background」** Anthropic’s IPO had a preliminary price range of $70-$78 per share, which is the baseline for the reported likely final price; the company plans to begin trading on Nasdaq under ticker “ANT” on Nov. 19.
 
-**Tags**: `#US-China relations`, `#AI chip regulation`, `#APEC summit`, `#domestic semiconductors`, `#global macro`
+> **「Impact」** The likely above-range pricing would make Anthropic’s Nasdaq debut a test of public-market appetite for AI stocks, because investors are already weighing the sector’s large compute commitments and projected AI-sector debt against slowing enthusiasm for AI.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html">Anthropic sets price range of $70 to $78 in upcoming IPO as AI lab marches toward Nasdaq</a></li>
+<li><a href="https://www.tradingkey.com/de/news/forex/261574708-fxstreet">South Korea: Unemployment Rate 3% (Januar) gegenüber 4% zuvor</a></li>
+<li><a href="https://global.morningstar.com/en-eu/stocks/anthropic-we-see-stock-undervalued-ipo-pricing-range">Anthropic: We See the Stock as Undervalued in the IPO Pricing Range</a></li>
+<li><a href="https://www.trendingtopics.eu/anthropic-ipo-ai-stocks-analysis">Anthropic IPO Meets a Worsening Market for AI Stocks | Trending Topics</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/article/anthropic-ipo-to-test-wall-streets-faith-in-ai-as-skepticism-mounts-180007104.html">Anthropic IPO to test Wall Street&#x27;s faith in AI as skepticism mounts</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#AI IPO`, `#Anthropic`, `#AI industry economics`, `#A-share AI themes`, `#Nasdaq listing`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [Xi calls for removing trade barriers at APEC](https://www.cnbc.com/2026/11/18/china-xi-trade-investment-barriers.html) ⭐️ 7.0/10
+### [China assesses automakers&\#x27; 60-day supplier payment terms](http://www.caam.org.cn/chn/5/cate_68/con_5237404.html) ⭐️ 8.0/10
 
-Chinese President Xi Jinping opened APEC by calling for removal of trade and investment barriers, tariff cuts, expanded market access, and closer digital-economy and AI coordination ahead of meetings with Trump and Putin.
-
-rss · CNBC Top News · Nov 18, 03:30
-
-> **「Background」** APEC is an annual Asia-Pacific Economic Cooperation forum; China is hosting the 2026 leaders’ summit in Shenzhen, where Xi is expected to meet U.S. President Donald Trump and Russian President Vladimir Putin. Xi’s remarks follow a 2025 summit where he proposed a global AI governance body while the U.S. resisted international AI regulation, and come amid new U.S. export restrictions on advanced AI chips that have strained a fragile trade truce.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.scmp.com/topics/2026-xi-trump-summits">2026 Xi-Trump summits: Latest News and Updates | South China Morning Post</a></li>
-<li><a href="https://www.cnbc.com/2025/11/01/chinas-xi-pushes-for-global-ai-body-at-apec-in-counter-to-us.html">China&#x27;s Xi pushes for global AI body at APEC in counter to U.S.</a></li>
-<li><a href="https://www.cnbc.com/amp/2025/11/01/chinas-xi-pushes-for-global-ai-body-at-apec-in-counter-to-us.html">China&#x27;s Xi pushes for global AI body at APEC in counter to U.S.</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#China macro policy`, `#APEC`, `#AI theme`, `#trade barriers`, `#market access`
-
----
-
-<a id="item-finance-news-5"></a>
-### [Iran Says It Targeted U.S. Sites in Kuwait as Brent Eases](https://www.cnbc.com/2026/11/18/trump-iran-war-hormuz-oil-.html) ⭐️ 7.0/10
-
-Iran said its army targeted U.S. drone and missile sites at Kuwait’s Ali Al Salem air base, while Brent crude settled down 0.48% to $92.7 per barrel amid signs that oil flows through the Strait of Hormuz, a narrow oil shipping route, were recovering.
-
-rss · CNBC Top News · Nov 18, 05:24
-
-> **「Background」** The Kuwait attack extended Iranian strikes on Gulf states hosting U.S. forces during the ninth-month U.S.-Israel war with Iran, and the IEA said global oil supply surpassed demand for the first time since the war began and forecast a fourth-quarter surplus.
-
-**Tags**: `#oil`, `#energy markets`, `#geopolitics`, `#Strait of Hormuz`, `#macro`
-
----
-
-<a id="item-finance-news-6"></a>
-### [EU Preliminarily Finds Temu Breached Digital Services Act](https://www.reuters.com/legal/litigation/eu-preliminarily-finds-temu-breaches-regulation-failing-tackle-illegal-good-2026-11-17/) ⭐️ 7.0/10
-
-The European Commission preliminarily found on Nov. 17, 2026 that Temu breached the EU&\#x27;s Digital Services Act by failing to take adequate measures to prevent illegal goods, citing deficiencies in compliance checks, content moderation and penalties.
-
-telegram · zaihuapd · Nov 17, 14:11
-
-> **「Background」** The EU’s Digital Services Act requires online platforms to assess and mitigate systemic risks from illegal products, with fines of up to 6% of global annual turnover. Temu was fined €200 million in May 2026 for inadequate risk assessment.
-
-> **「Impact」** If the EU’s preliminary findings are confirmed, Temu could face fines of up to 6% of its total annual global turnover, required corrective measures, and closer regulatory supervision, raising compliance and financial risk for the platform.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://digital-strategy.ec.europa.eu/en/news/commission-accepts-temus-corrective-measures-terminate-breach-digital-services-act">Commission accepts Temu&#x27;s corrective measures to terminate breach of the Digital Services Act | Shaping Europe’s digital future</a></li>
-<li><a href="https://www.dailysabah.com/business/economy/temu-could-be-hit-with-2nd-large-eu-fine-over-sale-of-illegal-items/amp">Temu could be hit with 2nd large EU fine over sale of illegal items | Daily Sabah</a></li>
-<li><a href="https://finance.yahoo.com/news/temu-doesn-t-properly-assess-102400451.html">Temu doesn’t properly assess illegal products on its platform: EU Commission</a></li>
-<li><a href="https://finance.yahoo.com/news/temu-risks-fines-6-revenue-094501562.html">Temu risks fines up to 6% of revenue as EC flags potential DSA breach</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#EU regulation`, `#Digital Services Act`, `#Temu`, `#e-commerce compliance`, `#platform risk`
-
----
-
-<a id="item-finance-news-7"></a>
-### [CAAM to assess 17 automakers&\#x27; 60-day supplier payment terms](http://www.caam.org.cn/chn/5/cate_68/con_5237404.html) ⭐️ 7.0/10
-
-China&\#x27;s CAAM, acting for MIIT, published a notice on Nov 16 to assess whether 17 major automakers have implemented 60-day payment terms for small and medium suppliers and require cash or bank-acceptance bills to cover at least 80% of payments to larger suppliers.
+China&\#x27;s Ministry of Industry and Information Technology commissioned the China Association of Automobile Manufacturers to assess whether 17 major automakers have implemented 60-day supplier payment terms, including criteria that payments to small and medium enterprises not exceed 60 days and that at least 80% of payments to larger suppliers be made in cash or bank acceptance bills. The review will check company payment systems, verify compliance and publish the results.
 
 telegram · zaihuapd · Nov 18, 01:15
 
-> **「Background」** The assessment follows a June 2025 pledge by 17 automakers to keep supplier payment terms within 60 days and a September 2026 MIIT and market-regulator notice that turned that pledge into administrative rules; weak auto-sector profit margins had encouraged some firms to extend payment cycles or use non-cash instruments such as bank-accepted bills, which suppliers may still have to wait on or discount to get cash.
+> **「Background」** The 60-day standard comes from China’s rules requiring large firms to pay small suppliers within 60 days, a June 2025 pledge by 17 automakers, and a September 2026 MIIT and market-regulator notice that moved the issue from voluntary industry commitments to administrative compliance.
 
 <details><summary>References</summary>
 <ul>
 <li><a href="http://wap.seccw.com/wap.php/Index/detail/id/52495.html">工信部委托中汽协评估17家车企供应商账期，每家抽查不少于15家供应商</a></li>
-<li><a href="https://finance.cctv.com/2026/11/17/ARTIzyqNQ9jzUhoYKnsySgWZ261117.shtml">工信部将约谈问题账期车企，中汽协开展账期调研评估_财经频道_央视网(cctv.com)</a></li>
+<li><a href="https://m.sohu.com/a/1103100364_121218495?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334">都市车界|车企“60天账期”迎来核验 17家重点车企纳入年度评估_搜狐网</a></li>
+<li><a href="https://www.cls.cn/detail/2535815">60天账期从“承诺”变“铁律” 17家车企将迎常态化年度“大考”</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#automotive supply chain`, `#SME payment policy`, `#MIIT regulation`, `#A-share autos`, `#CAAM`
+**Tags**: `#automotive supply chain`, `#payment terms`, `#SME liquidity`, `#A-share auto OEMs`, `#regulatory enforcement`
+
+---
+
+<a id="item-finance-news-5"></a>
+### [APEC summit tests US-China trade truce](https://www.cnbc.com/2026/11/18/apec-trump-xi-putin-shenzhen.html) ⭐️ 7.0/10
+
+US President Donald Trump, Chinese President Xi Jinping and Russian President Vladimir Putin are meeting at the APEC summit in Shenzhen, where expectations are low for breakthroughs and the key issue is implementing the US-China trade truce extended by two months to January 2027.
+
+rss · CNBC Finance · Nov 18, 06:04
+
+> **「Why it matters」** The truce, agreed around last year&\#x27;s APEC summit in South Korea, lowered tariffs and allowed some rare-earth flows; Washington is now tightening AI chip restrictions, and China has threatened countermeasures.
+
+**Tags**: `#APEC summit`, `#US-China relations`, `#AI chips`, `#rare earths`, `#energy markets`
+
+---
+
+<a id="item-finance-news-6"></a>
+### [BASF Proposes Evonik Takeover](https://www.bloomberg.com/news/articles/2026-11-18/basf-s-evonik-chase-poses-test-for-potential-merz-successor) ⭐️ 7.0/10
+
+BASF SE has proposed acquiring Evonik Industries AG to consolidate Germany’s struggling chemicals industry. Bloomberg reported that the bid is expected to join a wave of politically charged European deals this year.
+
+rss · Bloomberg Markets · Nov 18, 09:14
+
+> **「Deal context」** Evonik rejected BASF’s earlier €10.3 billion \($11.7 billion\) offer as too low; because Evonik’s 43% shareholder, the RAG Foundation, has a key committee including German politicians, political support is central to any deal.
+
+> **「Impact」** A completed BASF-Evonik combination would directly affect European chemicals suppliers, customers and workers by prompting antitrust-driven asset divestitures and possible job cuts as the companies pursue scale and cost synergies.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://sg.finance.yahoo.com/news/evonik-shares-rise-report-basf-154619675.html">Evonik shares rise on report BASF prepares renewed takeover offer</a></li>
+<li><a href="https://leadiq.com/c/basf/5a1d7e76240000240058aa06">BASF Company Overview, Contact Details &amp; Competitors | LeadIQ</a></li>
+<li><a href="https://www.linkedin.com/posts/sebastianpbell_%F0%9D%97%95%F0%9D%97%94%F0%9D%97%A6%F0%9D%97%99-%F0%9D%97%98%F0%9D%98%83%F0%9D%97%BC%F0%9D%97%BB%F0%9D%97%B6%F0%9D%97%B8-is-consolidation-activity-7510227403592626176-cp2F">🔴 𝗕𝗔𝗦𝗙 🤝 𝗘𝘃𝗼𝗻𝗶𝗸 🔴 Is consolidation the way forward for German Chemicals? BASF approaching Evonik could be more than just a M&amp;A story. It raises a much bigger question: 𝗖𝗮𝗻… | Sebastian Bell | 55 comments</a></li>
+<li><a href="https://chemanager-online.com/en/news/basf-and-evonik-in-merger-talks">BASF and Evonik in Merger Talks - Update • CHEManager is the market-leading medium for the management of the chemical and pharmaceutical industry</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#German chemicals`, `#M&amp;A`, `#European policy`, `#BASF`, `#Evonik`
+
+---
+
+<a id="item-finance-news-7"></a>
+### [Anthropic Approaches Final IPO Pricing Amid Tech Volatility](https://www.bloomberg.com/news/articles/2026-11-18/anthropic-approaches-final-ipo-hurdle-after-tech-stocks-churn) ⭐️ 7.0/10
+
+Bloomberg reports Anthropic PBC is approaching the pricing of what could be the biggest IPO of all time, as recent technology-stock volatility threatens to weigh on its debut.
+
+rss · Bloomberg Markets · Nov 18, 10:00
+
+> **「Background」** Anthropic has updated its S-1, the U.S. filing needed before a public offering, and is reported to plan selling 825 million shares at $70 to $78 each while also arranging a $26 billion private share purchase by major chip and cloud partners.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://finance.yahoo.com/markets/article/anthropic-seeks-14-trillion-valuation-in-ipo-130300928.html">Anthropic seeks $1.4 trillion valuation in highly anticipated IPO, reportedly aiming for Nov. 19 or Nov. 20 debut</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Anthropic IPO`, `#AI company financing`, `#technology IPO`, `#global tech markets`, `#AI supply chain`
 
 ---
 
 <a id="item-finance-news-8"></a>
-### [Foxconn Plans Sony Automotive Camera Module Acquisition](https://news.google.com/rss/articles/CBMivwFBVV95cUxNZGJaT3hzb2NaLWVpNEw5Z29uaXZUYkNEUTNxck1XdmpULWo3SVY0MEVZbEVHMFkyUzRlcDUtYW9OOXNaMFV6MUVzMFJ6SFJwcmdlSFNWTmxuVjJ1UEtic1dUS0tVZ3pQYkxKOW1lelZ2TkxMUWFkV1JZMXYxTmhUQUpRZ1RybmJYZ3l1ZUU5Y1RxRng1dXd0MzY1eE4xOGxRSE8yQnF6MUxhQjIxZGVGbk5NOUFiS1JlNk5QcFBnWQ?oc=5) ⭐️ 7.0/10
+### [Xi Warns Against Trade Barriers Before Trump Talks](https://www.bloomberg.com/news/articles/2026-11-18/xi-warns-against-rampant-protectionism-ahead-of-trump-talks) ⭐️ 7.0/10
 
-Reuters reports that Foxconn plans to acquire Sony Semiconductor Solutions&\#x27; automotive camera module business, but the item does not disclose deal size or terms.
+Xi Jinping warned against economic barriers and urged closer Asia-Pacific cooperation ahead of talks with Donald Trump, as new US restrictions on China’s access to advanced AI chips strained a fragile trade truce.
 
-google\_news · Reuters · Nov 17, 11:48
+rss · Bloomberg Markets · Nov 18, 02:25
 
-> **「Background」** Foxconn, the world&\#x27;s largest contract electronics manufacturer, said it plans to buy Sony Semiconductor Solutions&\#x27; automotive camera module business for 7.24 billion yen \($45.48 million\). The purchase price could still change because overseas production equipment and inventory remain under discussion, and the deal is expected to close by end-April if approvals are obtained.
+> **「Background」** The remarks follow a fragile US-China trade pause reached in Busan last October after tariff escalation, while Washington has tightened technology export controls and moved toward a 7.5% tariff on Chinese goods ahead of the summit.
 
-> **「Impact」** If completed, the proposed acquisition would give Foxconn Sony’s automotive camera-module technology, automaker customer relationships and direct service experience, while allowing Sony to concentrate resources elsewhere.
+> **「Impact」** The new US limits on advanced AI chips and chip-making equipment could squeeze Chinese AI data-center operations in the near term while increasing incentives for domestic semiconductor and AI-computing supply chains, including Beijing subsidy support.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.channelnewsasia.com/business/foxconn-plans-acquire-sony-semiconductor-solutions-automotive-camera-module-business-6558961">Foxconn plans to acquire Sony Semiconductor Solutions&#x27; automotive camera module business - CNA</a></li>
-<li><a href="https://www.foxconn.com/en-us/press-center/events/csr-events/2158">Hon Hai Technology Group (Foxconn) Acquires Automotive Camera Module Business From Sony Semiconductor Solutions - Hon Hai Technology Group</a></li>
-<li><a href="https://finance.biggo.com/news/cfae722c-c7b3-41a9-ae32-80f50a2e388a">Hon Hai to Acquire Sony&#x27;s Automotive Camera Module Business for ¥7.24 Billion, Deal Expected to Close April 2027 — BigGo Finance</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-08-24/us-eyes-china-overcapacity-tariffs-of-7-5-before-xi-trump-talks">US Plans 7.5% Tariff on Chinese Goods Before Xi-Trump Summit - Bloomberg</a></li>
+<li><a href="https://cryptorank.io/news/feed/7150b-us-china-hold-constructive-trade-talks-ahead-of-trump-xi-summit">US, China hold ‘constructive’ trade talks ahead of Trump-Xi Summit</a></li>
+<li><a href="https://www.csis.org/analysis/choking-chinas-access-future-ai">Choking off China’s Access to the Future of AI</a></li>
+<li><a href="https://finance.yahoo.com/news/beijing-city-subsidise-domestic-ai-015835309.html">Beijing city to subsidise domestic AI chips, targets self-reliance by 2027</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Foxconn`, `#Sony Semiconductor Solutions`, `#automotive camera modules`, `#M&amp;A`, `#electronics supply chain`
+**Tags**: `#China-US trade`, `#AI chip restrictions`, `#domestic semiconductors`, `#geopolitical policy`, `#A-share themes`
 
 ---
 
 ## China Markets
 
 <a id="item-china-market-1"></a>
-### [PBOC Moves Main Policy Rate Anchor to Overnight Reverse Repo](https://opinion.caixin.com/2026-11-18/102506199.html) ⭐️ 9.0/10
+### [Tencent Q3 revenue rises 8% as AI spending weighs on cash flow](https://wallstreetcn.com/articles/3786186) ⭐️ 8.0/10
 
-Caixin reports that China&\#x27;s central bank has shifted its main policy-rate anchor from 7-day reverse repos to overnight reverse repos, starting Nov. 2, with the overnight operation rate set at 1.25%; the 7-day operation no longer has policy-rate status.
+Tencent reported Q3 revenue of RMB207.34bn, up 8% year on year but below the RMB210.53bn market estimate. Its capital expenditure \(capex\), or spending on long-term assets such as AI infrastructure, was RMB81.43bn, far above the RMB55.4bn consensus, and free cash flow was negative RMB69.1bn.
 
-rss · Caixin 财新 · Nov 18, 05:04
+rss · 华尔街见闻 · Nov 18, 08:53
 
-> **「Background」** Reverse repos are short-term central-bank loans against collateral, and the PBOC had already signaled that DR001, the interbank overnight repo rate, was effectively its target rate.
+> **「Background」** Management said the cash strain was linked to AI model development, product rollout and prepayments for computing power; excluding those prepayments, free cash flow would have been positive RMB16.9bn.
 
-> **「Market impact」** The overnight funding anchor gives banks a cheaper daily benchmark, which can lower corporate borrowing costs while liquidity remains abundant and make bonds more sensitive to day-to-day money-market conditions.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.biggo.com/news/265aebe7-ea00-42ca-bf26-7122b2e85e23">China&#x27;s Central Bank Officially Shifts Policy Rate Anchor to Overnight; Daily Operations Set at 1.25% from November 2 — BigGo Finance</a></li>
-<li><a href="https://cryptobriefing.com/chinese-lenders-price-bonds-overnight-rate-pboc">Chinese lenders price bonds off overnight funding rate as PBOC reforms reshape benchmarks</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#PBOC policy rate`, `#interest-rate marketization`, `#China liquidity`, `#A-share/HK equities`
+**Tags**: `#Tencent`, `#AI capex`, `#cloud services`, `#HK tech earnings`, `#computing power supply chain`
 
 ---
 
 <a id="item-china-market-2"></a>
-### [Nvidia results and higher GPU rental prices lift China AI chip stocks](https://www.yicai.com/news/103444836.html) ⭐️ 8.0/10
+### [New Easy Sheng says no order cuts as 1.6T optical modules ramp up](https://www.cls.cn/detail/2538098) ⭐️ 7.0/10
 
-Nvidia reported fiscal 2027 third-quarter revenue of US$115.8 billion, up 103% from a year earlier, and said some GPU rental prices have risen, including Hopper lease renewals priced at up to twice their prior level. China AI compute stocks, including Moore Threads and Cambricon, rose on the news.
+New Easy Sheng said in a company announcement that customer demand guidance remains clear, backlog is sufficient and there are no order cuts or demand downgrades, while its 1.6T optical modules have entered large-scale ramp-up.
 
-rss · 第一财经 · Nov 18, 04:22
+rss · 财联社电报\(RSSHub\) · Nov 18, 10:26
 
-> **「Background」** The rally followed Nvidia&\#x27;s earnings and rental-price comments, which pointed to strong demand for AI computing hardware, while Chinese chip companies reported fast third-quarter revenue growth.
+> **「Background」** New Easy Sheng is a Chinese optical-module maker whose 800G and 1.6T products serve AI data-center networks, while NPO and CPO are next-generation ways to connect optics to compute hardware to cut power and improve efficiency.
 
-**Tags**: `#A-share compute chips`, `#AI infrastructure`, `#Nvidia read-through`, `#GPU rental prices`, `#China semiconductors`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/2072618066479931554">NPO行业深度：行业现状、市场空间、产业链及相关公司深度梳理【慧博出品】 - 知乎</a></li>
+<li><a href="https://cn.investing.com/news/stock-market-news/article-3100766">CPO概念再爆发！长光华芯“两连板”，中际旭创市值破6000亿创新高，新易盛、源杰科技等多股跟涨 提供者 时代周报</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#A-share`, `#optical modules`, `#1.6T`, `#AI infrastructure`, `#company disclosure`
 
 ---
 
 <a id="item-china-market-3"></a>
-### [Hong Kong Starts Five-Year Paperless Share Market Transition](https://www.scmp.com/business/markets/article/3374744/hong-kong-begins-shift-towards-fully-digitalised-share-market-5-year-transition-plan) ⭐️ 7.0/10
+### [FDA rejects US approval of Akeso’s ivonescimab, requires new phase 3 trial](https://www.caixin.com/2026-11-18/102506310.html) ⭐️ 7.0/10
 
-Hong Kong began a five-year transition to a fully digitalised share market on Tuesday, with Beijing Sinotau International Pharmaceutical Technology set to be the first IPO without physical share certificates and three existing listed companies, including HKEX, forming the first transition batch.
+The FDA issued a complete response letter denying US approval of Akeso’s bispecific cancer drug ivonescimab for the submitted indication and said a new pivotal multicenter phase 3 study is needed before resubmission. Caixin reported that the agency had raised trial-design concerns as early as 2023 and also flagged toxicity risks.
 
-rss · SCMP Business · Nov 17, 23:00
+rss · Caixin 财新 · Nov 18, 10:33
 
-> **「Background」** Hong Kong’s shift builds on earlier market-infrastructure changes: HKEX’s FINI platform digitalised IPO settlement, while regulators’ paperless listing rules remove physical share certificates and give existing listed companies a transition period to move to electronic records.
+> **「Background」** Ivonescimab is a cancer drug that targets PD-1 immune checkpoints and VEGF blood-vessel growth signals, developed by Akeso and approved in China for lung cancer. Its U.S. review was based on Summit Therapeutics’ HARMONi trial, which the FDA said had a heavy China patient base.
 
-> **「Impact」** The transition affects future Hong Kong IPOs and existing listed companies’ shareholders by replacing physical share certificates with digital ownership records over five years.
+> **「Impact」** The decision delays Akeso and Summit Therapeutics’ US launch and requires them to spend time and resources reopening a phase 3 trial.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.scmp.com/business/markets/article/3374744/hong-kong-begins-shift-towards-fully-digitalised-share-market-5-year-transition-plan">Hong Kong begins shift towards fully digitalised share market in 5-year transition plan | South China Morning Post</a></li>
-<li><a href="https://www.morganlewis.com/pubs/2025/01/hkex-issues-conclusions-on-proposed-expansion-of-paperless-listing-regime">HKEX Issues Conclusions on Proposed Expansion of Paperless Listing Regime</a></li>
-<li><a href="https://finance.yahoo.com/news/hong-kong-bourse-operator-hkex-093000781.html">Hong Kong bourse operator HKEX to launch digital IPO platform FINI on November 22, eyes cutting settlement times from 5 to 2 days</a></li>
+<li><a href="https://www.fiercepharma.com/pharma/fdas-complete-response-letter-summit-ivonescimab-cites-china-heavy-data-beyond-survival-miss">FDA slams China-heavy data in Summit’s ivonescimab CRL</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Hong Kong equities`, `#market infrastructure`, `#IPO rules`, `#digital securities`, `#regulatory transition`
+**Tags**: `#Hong Kong biotech`, `#FDA regulatory action`, `#Akeso`, `#oncology drug approval`, `#cross-border market entry`
 
 ---
 
 <a id="item-china-market-4"></a>
-### [Broker Says Tighter U.S. Export Controls Could Boost China&\#x27;s Domestic Compute](https://www.insightintochina.com/publish/touyan_50053) ⭐️ 7.0/10
+### [BIS Tightens AI Export Controls on Advanced-Node ICs](https://www.insightintochina.com/publish/touyan_50044) ⭐️ 7.0/10
 
-The U.S. Bureau of Industry and Security expanded export controls to cover remote compute access, transshipment through five countries, and foundry/OSAT services. A broker argues this will accelerate China&\#x27;s domestic AI compute supply chain and is bullish on semiconductor and server companies, forecasting a 2027 volume inflection for large AI server clusters, or supernodes.
+The U.S. Bureau of Industry and Security tightened AI export controls by adding an independent license requirement for certain advanced-node ICs and closing a loophole that let Chinese and Macau entities use third-country foundries. The change further restricts access to overseas advanced-node foundry capacity and reinforces China&\#x27;s semiconductor self-sufficiency theme.
 
-insightintochina · InsightIntoChina · Nov 18, 03:01
+insightintochina · InsightIntoChina · Nov 18, 02:01
 
-> **「Background」** The U.S. Bureau of Industry and Security has tightened export controls on advanced AI chips by expanding licensing rules to cover outsourced semiconductor assembly and test \(OSAT\) services and foreign-made chips tied to U.S. design or equipment, limiting China’s ability to obtain high-end compute through overseas suppliers.
+> **「Background」** BIS has required export licenses for certain advanced computing items when the buyer or its ultimate parent is headquartered in China, Macau, or other U.S. arms-embargoed Country Group D:5 jurisdictions, even if the transaction is routed through a third country; a May 31, 2026 guidance reaffirmed this rule, which was first introduced in November 2023.
+
+> **「Impact」** By closing third-country foundry workarounds and adding advanced-node licensing, the BIS update raises access costs for Chinese AI and semiconductor users, while increasing reliance on mature-node capacity, legacy equipment, and domestic suppliers.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.clearytradewatch.com/2025/04/bis-further-restricts-exports-of-artificial-intelligence-and-advanced-chips-to-china">BIS Further Restricts Exports of Artificial Intelligence and Advanced Chips to China | Cleary Foreign Investment and International Trade Watch</a></li>
-<li><a href="https://www.investing.com/news/stock-market-news/semi-stocks-fall-as-us-ramps-up-export-controls-of-highend-chips-to-china-432SI-2908262">Semi Stocks Fall as U.S. Ramps Up Export Controls of High-end Chips to China</a></li>
-<li><a href="https://ofacblockedfundslawyers.com/us-china-chip-export-controls">US Chip Export Controls on China: 2026 Guide</a></li>
+<li><a href="https://www.finnegan.com/en/insights/articles/updates-on-export-controls-impacting-ai-and-advanced-computing.html">Updates on Export Controls Impacting AI &amp; Advanced Computing | Articles | Finnegan | IP+ Law Firm</a></li>
+<li><a href="https://www.bis.gov/media/documents/bis-guidance-may-31-2026.pdf">BIS Guidance — May 31, 2026 (PDF)</a></li>
+<li><a href="https://china-gateway360.com/chinas-semiconductor-self-sufficiency-progress-review-what">China’s Semiconductor Self-Sufficiency Progress Review: What It Means for Foreign Suppliers in 2026 | China Gateway 360</a></li>
+<li><a href="https://www.mapshock.com/briefings/china-semiconductor-self-sufficiency-smic-progress-asml">China Semiconductor Self-Sufficiency: SMIC Progress, ASML Restrictions, and Maturity Node Strategy | Mapshock</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#domestic AI compute`, `#export controls`, `#semiconductor supply chain`, `#server companies`, `#broker call`
+**Tags**: `#BIS export controls`, `#semiconductor self-sufficiency`, `#advanced-node foundries`, `#AI supply chain`, `#China policy`
 
 ---
 
 <a id="item-china-market-5"></a>
-### [JD Q3 profit rises as food-delivery losses narrow](https://wallstreetcn.com/articles/3786158) ⭐️ 6.0/10
+### [China energy regulator coordinates basin hydro-wind-solar development](https://www.cls.cn/detail/2538097) ⭐️ 6.0/10
 
-JD reported third-quarter 2026 revenue of RMB309.59bn, up 3.5% year on year, and adjusted net profit of RMB8.33bn, up 43.7%, mainly because new-business operating losses narrowed to RMB9.64bn from RMB15.74bn. The company said food-delivery losses fell more than 50% year on year and 7% quarter on quarter, but did not disclose separate delivery order, revenue or unit-loss data needed to verify whether subsidized users will sustain retail growth.
+China&\#x27;s National Energy Administration issued guidance to strengthen nationwide coordination of integrated hydropower, wind, and solar development in river basins, with provincial authorities responsible locally and the agency guiding cases involving major rivers, cross-provincial ultra-high-voltage transmission, or new pumped-storage projects serving specific power sources.
 
-rss · 华尔街见闻 · Nov 18, 02:44
+rss · 财联社电报\(RSSHub\) · Nov 18, 10:22
 
-> **「Background」** JD’s new-business segment—covering food delivery, Jingxi and overseas retail—helped drive the Q3 2026 profit recovery, with its operating loss narrowing to 9.64bn yuan from 15.74bn yuan a year earlier; the company said food-delivery losses fell more than 50% year over year.
-
-> **「Impact」** After JD completed its CECONOMY acquisition, EU conditions require it to give rival European retailers warehouse, logistics and technology services on terms no worse than Ceconomy&\#x27;s, limiting potential cross-subsidy advantages.
+> **「Background」** The policy builds on China&\#x27;s push to combine river hydropower with nearby wind and solar, using water plants&\#x27; flexible output to smooth variable renewables and using long-distance high-voltage lines and pumped-storage plants to deliver and store clean power.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.ithome.com/1/028/436.htm">京东 2026 财年前三季度归母净利润 187.34 亿元 - IT之家</a></li>
-<li><a href="https://companies.caixin.com/2026-11-17/102506002.html">京东集团三季度营收增长3.5% 京东外卖、海外等新业务收入“砍半”_公司频道_财新网</a></li>
-<li><a href="https://wallstreetcn.com/articles/3786154">京东港股盘中跌超8%，摩根士丹利维持低配评级 - 华尔街见闻</a></li>
-<li><a href="https://www.voachinese.com/a/8223359.html">京东拿下德国电商Ceconomy，若违反欧盟十年监管将挨罚</a></li>
+<li><a href="https://www.nea.gov.cn/2023-06/02/c_1310724323.htm">水风光一体化开发探新路---国家能源局</a></li>
+<li><a href="https://www.nea.gov.cn/20251112/03dc9ef6112a45be9712aa2e7dc17597/c.html">国家能源局有关负责同志就《关于促进新能源集成融合发展的指导意见》答记者问---国家能源局</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#京东财报`, `#外卖减亏`, `#京东零售`, `#AI应用`, `#CECONOMY收购`
+**Tags**: `#China energy policy`, `#A-share thematic catalyst`, `#renewables`, `#grid equipment`, `#pumped storage`
 
 ---
 
 <a id="item-china-market-6"></a>
-### [Morgan Stanley Forecasts Chinese Overseas Holdings Could Reach US$10 Trillion by 2035](https://www.scmp.com/business/banking-finance/article/3374811/chinese-investors-overseas-holdings-double-2035-morgan-stanley) ⭐️ 6.0/10
+### [China Energy Regulator Explores Green Hydrogen Coupling](https://www.cls.cn/detail/2538092) ⭐️ 6.0/10
 
-Morgan Stanley forecasts that Chinese households’ overseas financial investments could more than double to US$10 trillion by 2035, as demand for diversification remains strong despite recent regulatory crackdowns.
+China&\#x27;s National Energy Administration issued guidance exploring integrated hydropower, wind and solar development with green hydrogen, ammonia and methanol, but the policy is exploratory and sets no concrete targets or financing.
 
-rss · SCMP Business · Nov 18, 01:00
+rss · 财联社电报\(RSSHub\) · Nov 18, 10:18
 
-> **「Background」** Morgan Stanley’s projection rests on a broader shift among Chinese households toward overseas financial investments—assets held outside mainland China—which SCMP notes has been reinforced by overseas markets delivering higher returns than China’s equity market in recent months.
+> **「Background」** The guidance says basin-level hydropower, wind and solar projects could be paired with fuels made using renewable power—green hydrogen, ammonia and methanol—especially in southwest plateau regions and northwest industrial zones.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.scmp.com/asia">Breaking China, Asia, HK News, Opinions and Insights | South China Morning Post</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#cross-border-capital`, `#overseas-investments`, `#hong-kong-listings`, `#morgan-stanley`, `#household-wealth`
+**Tags**: `#China energy policy`, `#green hydrogen/ammonia/methanol`, `#water-wind-solar integration`, `#A-share sector theme`, `#low-carbon transition`
 
 ---
 
 <a id="item-china-market-7"></a>
-### [Lai Sun proposes Shanghai REIT spin-off to repay US$315m loan](https://www.scmp.com/business/article/3374790/lai-sun-spin-part-hong-kong-plaza-shanghai-repay-us315m-loan) ⭐️ 6.0/10
+### [Galaxy plans humanoid-robot K-pop group; Mega Legend takes stake](https://wallstreetcn.com/articles/3786192) ⭐️ 6.0/10
 
-Hong Kong-listed Lai Sun Development, Lai Sun Garment and Lai Fung Holdings have proposed turning part of Shanghai’s Hong Kong Plaza into a real estate investment trust \(REIT\), a fund that owns and earns income from property, to raise proceeds for a loan of about HK$2.47 billion \(US$315 million\) due in March.
+Korean entertainment-tech company Galaxy Corporation said it plans to launch a physical humanoid-robot K-pop girl group in January 2027, with hardware supplied by Unitree; HK-listed Mega Legend subscribed for no more than 7% of Galaxy&\#x27;s issued share capital through an industry fund in November 2025.
 
-rss · SCMP Business · Nov 17, 14:20
+rss · 华尔街见闻 · Nov 18, 09:22
 
-> **「Background」** The asset involved is Shanghai Hong Kong Plaza, a wholly owned Lai Fung Holdings investment property in Huangpu district that includes offices, serviced apartments and a shopping mall.
+> **「Background」** The model is Chinese-built hardware plus Korean content, and stage performances are used because they require precise choreography and multi-robot coordination rather than general AI that can handle unpredictable everyday tasks.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://laisun.com/lai-fung-holdings/core-business/lfh-property-investment/hong-kong-plaza">Hong Kong Plaza - Property Investment | Lai Fung Holdings</a></li>
+> **「Impact」** Mega Legend&\#x27;s stake and a Nov. 16 strategic cooperation memorandum link it to Galaxy&\#x27;s robot-park, tour and companion-robot plans, while Unitree&\#x27;s stage exposure is mainly hardware sales and rentals, with commercial rentals reported to have fallen to 3,000-5,000 yuan per day from 15,000 yuan at peak.
 
-</ul>
-</details>
-
-**Tags**: `#Hong Kong equities`, `#real estate`, `#REIT spin-off`, `#debt repayment`, `#Lai Sun`
+**Tags**: `#具身智能`, `#机器人`, `#港股公司`, `#AI应用`, `#文娱商业化`
 
 ---
 
 <a id="item-china-market-8"></a>
-### [China Export Growth and AI-Related Products](https://economy.caixin.com/2026-11-18/102506193.html) ⭐️ 6.0/10
+### [US export rule targets AI compute leakage to China](https://www.chinatalk.media/p/bis-finally-takes-a-stand) ⭐️ 6.0/10
 
-Caixin reported that China&\#x27;s exports rose 22.7% in the first ten months of 2026 in dollar terms, and researchers at a Renmin University forum estimated that AI-related integrated circuits and computer parts contributed 40% of that export growth. They warned that 2027 export growth may slow if U.S. AI investment cools.
+A 132-page US export-control rule published Monday adds licensing requirements for AI chips destined for Singapore, Malaysia, Thailand, Indonesia, and Brazil and caps AI compute rented by Chinese firms. ChinaTalk estimated that the cloud loophole being restricted supplies about two-fifths of China’s AI compute.
 
-rss · Caixin 财新 · Nov 18, 04:02
+rss · ChinaTalk · Nov 17, 11:03
 
-> **「Background」** China’s export growth in 2026 has been supported by a global AI boom that sharply increased demand for computing hardware, including integrated circuits \(semiconductor chips\) and computer parts.
-
-> **「Impact」** If U.S. AI investment slows, China&\#x27;s 2027 export growth could moderate, particularly for AI-related integrated circuits and computer components, which researchers estimate contributed 40% of export gains in the first ten months of 2026.
+> **「Background」** The U.S. Commerce Department’s Bureau of Industry and Security issued a new export-control rule aimed at closing remote-access and third-country routes that had let Chinese firms use advanced AI chips without directly importing them. ChinaTalk estimates the cloud loophole supplied about two-fifths of China’s AI compute, while earlier reporting said overseas data centers in Southeast Asia had become a key workaround for U.S. restrictions.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.scmp.com/tech/article/3360503/global-ai-boom-sees-chinas-chip-exports-nearly-double-first-half-year">Global AI boom sees China’s chip exports nearly double in first half of year | South China Morning Post</a></li>
-<li><a href="https://think.ing.com/articles/ai-in-2027-20-questions-for-the-global-economy">AI in 2027: 20 questions for the global economy | ING THINK</a></li>
+<li><a href="https://x.com/wallstengine/status/2122320354467312066">Wall St Engine on X: &quot;US TIGHTENS AI CHIP EXPORT CONTROLS TO CLOSE REMOTE-ACCESS LOOPHOLE The Commerce Department&#x27;s BIS has issued a new rule aimed at preventing restricted entities from accessing advanced American AI chips and servers remotely through data centers in third countries. Singapore,… / X</a></li>
+<li><a href="https://www.chinatalk.media/p/bis-finally-takes-a-stand">BIS (Finally) Takes a Stand</a></li>
+<li><a href="https://www.cnbc.com/2026/08/19/china-ai-nvidia-chips-us-export-controls.html">China AI firms tap Nvidia power overseas as U.S. weighs crackdown</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#China exports`, `#AI theme`, `#semiconductors`, `#computing power`, `#macro research`
+**Tags**: `#AI compute`, `#export controls`, `#semiconductors`, `#Nvidia`, `#China tech policy`
 
 ---
 
 <a id="item-china-market-9"></a>
-### [US export rule targets AI compute access for China](https://www.chinatalk.media/p/bis-finally-takes-a-stand) ⭐️ 6.0/10
+### [South Korea challenges EU hybrid-vehicle safeguard probe](https://www.yicai.com/news/103445315.html) ⭐️ 6.0/10
 
-The US Commerce Department&\#x27;s Bureau of Industry and Security issued a 132-page export-control rule adding licensing requirements for AI chips destined for Singapore, Malaysia, Thailand, Indonesia and Brazil and limiting cloud compute rented to Chinese firms, a channel ChinaTalk estimates supplies about two-fifths of China&\#x27;s AI compute.
+At the WTO goods-trade council meeting on Nov 16–17, South Korea questioned whether the EU’s safeguard investigation into hybrid-vehicle imports is fair, transparent and WTO-consistent. The EU cited a 49% rise in EU hybrid passenger-car imports from 2023 to mid-2026, while China has reached a consensus with the EU on hybrid-vehicle trade.
 
-rss · ChinaTalk · Nov 17, 11:03
+rss · 第一财经 · Nov 18, 09:11
 
-> **「Background」** BIS is the U.S. Commerce Department agency that administers export controls, and the new rule targets channels that let Chinese firms obtain advanced AI computing power indirectly through third-country data centers or chip shipments.
+> **「Background」** The EU launched a safeguard investigation—an emergency trade measure triggered by import surges that threaten domestic industry—into certain new hybrid passenger cars from all WTO members on 30 October 2026, citing imports rising from 958,000 units in 2023 to 1.424 million by mid-2026.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.chinatalk.media/p/bis-finally-takes-a-stand">BIS (Finally) Takes a Stand</a></li>
-<li><a href="https://x.com/wallstengine/status/2122320354467312066">Wall St Engine on X: &quot;US TIGHTENS AI CHIP EXPORT CONTROLS TO CLOSE REMOTE-ACCESS LOOPHOLE The Commerce Department&#x27;s BIS has issued a new rule aimed at preventing restricted entities from accessing advanced American AI chips and servers remotely through data centers in third countries. Singapore,… / X</a></li>
+<li><a href="https://finance.biggo.com/news/c99aa7ad-5379-4eb2-bc36-ccae926e5332">EU Opens Safeguard Probe Into Hybrid Vehicles—Why FTA Partners Like UK, Japan and South Korea Are More Anxious Than China — BigGo Finance</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#export controls`, `#AI compute`, `#China semiconductors`, `#US-China policy`, `#computing power`
+**Tags**: `#EU trade policy`, `#hybrid vehicles`, `#China-EU relations`, `#auto exports`, `#WTO`
 
 ---
 
 <a id="item-china-market-10"></a>
-### [TCL Zhonghuan to lift Zhonghuan Leading stake to 98.52%](https://news.google.com/rss/articles/CBMidkFVX3lxTE8wU19odUt5dGtkcDkwRUZXM0h2SEhOWTI5SkQ1WC1NMFQzTXhPdVhnQUdVZlotNFZ5M0NpcUZ5RmhMTF93MjkyMGJNb2JUUjdPUjY4MGdFdjhfT3NYVFlYV3pVa3ZQM0V2UE5zbVF0enBrM2RlQlE?oc=5) ⭐️ 6.0/10
+### [China targets lower enterprise logistics costs](https://www.yicai.com/news/103445311.html) ⭐️ 6.0/10
 
-TCL Zhonghuan plans to increase its stake in subsidiary Zhonghuan Leading to 98.52%, as its semiconductor silicon wafer unit reported a Q3 profit.
+China&\#x27;s State Council body coordinating enterprise burden-reduction policy outlined 2027 priorities and a target to lower total social logistics costs to about 13.5% of GDP by 2027. A 2026 survey reported 1.91 trillion yuan of first-half tax, fee and rebate cuts under technology and manufacturing support policies, but said the share of enterprises reporting heavy raw-material cost burden rose 5 percentage points from a year earlier.
 
-google\_news · BigGo Finance · Nov 17, 11:35
+rss · 第一财经 · Nov 18, 08:54
 
-> **「Background」** Zhonghuan Leading is the subsidiary through which TCL Zhonghuan runs its semiconductor-materials business, and the proposed deal is a share issuance to buy out minority shareholders, raising TCL Zhonghuan’s ownership from 32.72% to 98.52%.
+> **「Background」** The State Council’s inter-ministerial burden-reduction body is a cross-department mechanism that coordinates policies to lower firms’ tax, fee, financing, logistics and administrative costs, and it holds annual meetings to set priorities.
+
+> **「Impact」** The survey suggests enterprises, especially SMEs and manufacturers, face mixed cost pressures: tax, fee and financing relief is partly offset by higher raw-material costs from oil, shipping disruptions and AI/computing demand.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://finance.biggo.com/news/6ec1b0a2-d86e-47b3-b229-d70fe975688a">TCL Zhonghuan to lift stake in Zhonghuan Leading to 98.52%, as semiconductor silicon wafer unit turns profitable in Q3 — BigGo Finance</a></li>
-<li><a href="https://dealroom.co/news/172754-tcl-zhonghuan-to-buy-65-8-of-chip-wafer-unit-lifting-stake-to-98-52">TCL Zhonghuan to buy 65.8% of chip-wafer unit, lifting stake to 98.52% | Dealroom News</a></li>
+<li><a href="https://baike.baidu.com/item/%E5%9B%BD%E5%8A%A1%E9%99%A2%E5%87%8F%E8%BD%BB%E4%BC%81%E4%B8%9A%E8%B4%9F%E6%8B%85%E9%83%A8%E9%99%85%E8%81%94%E5%B8%AD%E4%BC%9A%E8%AE%AE/62866370">国务院减轻企业负担部际联席会议</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#TCL Zhonghuan`, `#semiconductor silicon wafers`, `#subsidiary stake`, `#A-share`, `#earnings`
+**Tags**: `#China enterprise burden policy`, `#tax and fee reductions`, `#SME financing`, `#AI and computing supply chain`, `#logistics costs`
 
 ---
 
@@ -430,315 +416,336 @@ google\_news · BigGo Finance · Nov 17, 11:35
 ### AI Hardware &amp; Compute
 
 <a id="item-ai-hardware-1"></a>
-#### [Nvidia, SPIL Announce Deal to Triple CoWoS Packaging Capacity by 2029](https://www.digitimes.com/news/a20261118PD239/nvidia-spil-packaging-capacity.html) ⭐️ 9.0/10
+#### [US Plan to Restrict Chinese Optical Module Imports Lifts Coherent, Lumentum](https://news.google.com/rss/articles/CBMi4AFBVV95cUxPeUE5UU9Fd0xpNzhPR1A1cjd4U3JYaVBoU0YzQkYyZW45RE9UWHQtbzJuX2hSV3NFVEtjems1RlpYdk9KRGRKYzhYWnlmYVlCa1hwRzNCUFplakpBQWxEbjV4eGk0b05TRF9fSDEtbUZWc3pNV0NlMXJPQ3hhdGx5aTBfbDFqdmFKaFBrZW43cElwQkRrVWg4T0ZBY203NjJEc2ptVlZTX1l4OFZLNUphYTRVdG42Y0JtQVVFZWE1WHBrWGI4Vm9VY0Q4aXE0RHUyVFZ6Q1RWbmJmQ0RoZTZ0RA?oc=5) ⭐️ 8.0/10
 
-Nvidia and Siliconware Precision Industries \(SPIL\), an ASE Technology Holding subsidiary, announced a multibillion-dollar, multi-year agreement to expand chip-on-wafer-on-substrate \(CoWoS\) advanced packaging capacity in Taiwan. The reported plan is to triple that capacity by 2029, but it is an announced expansion rather than a currently shipped capability. The stated goal is to support growing demand for AI infrastructure.
+TradingKey reported that U.S. plans to restrict imports of Chinese optical modules lifted Coherent shares about 10% and Lumentum shares about 8% in pre-market trading. The move reflects expectations of supply-chain and competitive shifts in AI datacenter interconnects, but the source did not confirm the policy details or implementation scope. The item therefore signals a market reaction to a reported restriction rather than a verified regulatory change.
 
-rss · DigiTimes · Nov 18, 05:34
+google\_news · TradingKey · Nov 17, 13:31
 
-> **「Background」** CoWoS is an advanced packaging technology that connects multiple chips, including high-bandwidth memory and accelerators, through an interposer on a substrate, making it a critical step for high-performance AI hardware. This SPIL agreement follows Nvidia’s October supply-chain commitments, which included broader substrate, testing, and optical-engine expansions, and is described as a separate multiyear packaging-capacity deal.
+> **「Background」** Optical transceivers convert electrical signals to light for high-speed fiber links inside AI data centers, and Chinese vendors such as Innolight have held a large share of that market. Reuters reports that the Trump administration and the FCC are considering restricting imports of Chinese data-center devices, citing supply-chain and security concerns, while U.S. suppliers such as Coherent and Lumentum would be positioned to benefit. However, the same reporting notes that U.S. vendors may lack the scale to fully replace Chinese module makers.
 
-> **「Impact」** If executed as announced, the deal would give Nvidia more dedicated access to CoWoS packaging in Taiwan, potentially easing a key bottleneck for AI accelerator production while increasing SPIL’s role in the advanced-packaging supply chain.
+> **「Impact」** For AI datacenter operators, the reported US plan to restrict Chinese optical transceivers could force a supply-chain shift away from vendors that account for roughly two-thirds of global units, raising data-center bill-of-materials costs and risking delays to next-generation 800G/1.6T cluster turn-up because Western suppliers lack near-term scale to replace Chinese volume. Buyers should expect longer qualification and procurement timelines for non-Chinese transceiver allocations.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.unite.ai/nvidia-secures-more-substrate-and-packaging-capacity-for-ai-platforms">NVIDIA Secures More Substrate and Packaging Capacity for AI Platforms – Unite.AI</a></li>
-<li><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | NVIDIA Newsroom</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/article/optical-related-stocks-surge-on-import-restrictions-of-chinese-data-center-equipment-150444937.html">Lumentum, Corning, and other optical-related stocks jump on Chinese import restrictions</a></li>
+<li><a href="https://www.capitalbrief.com/briefing/us-weights-import-ban-for-chinese-component-used-in-ai-datacentres-cc2ef05c-c436-4fd1-aa72-8f6f3a42f40a">US weights import ban for Chinese component used in AI datacentres — Capital Brief</a></li>
+<li><a href="https://www.reuters.com/world/trump-administration-drafting-ban-chinese-data-center-devices-sources-say-2026-08-04">EXCLUSIVE: Trump administration drafting ban on Chinese data center devices, sources say | Reuters</a></li>
+<li><a href="https://counterpointresearch.com/en/insights/fcc-china-ban-ai-component">Innolight, Coherent, Lumentum: Who Wins and Loses in the Proposed FCC Ban on Chinese Transceivers?</a></li>
+<li><a href="https://www.reuters.com/world/trump-administration-drafting-ban-chinese-data-center-devices-sources-say-2026-08-04">EXCLUSIVE: Trump administration drafting ban on Chinese data center devices, sources say | Reuters</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#CoWoS`, `#advanced packaging`, `#AI supply chain`, `#ASE/SPIL`
+**Tags**: `#Optical modules`, `#US-China trade restrictions`, `#AI datacenter interconnect`, `#China A-share optics`, `#Coherent/Lumentum`
 
 ---
 
 <a id="item-ai-hardware-2"></a>
-#### [SEC Probes Nvidia as Ex-CEO Huang Agrees to Testify](https://www.digitimes.com/news/a20261118VL208/nvidia-jensen-huang-investigation-security-ceo.html) ⭐️ 8.0/10
+#### [US Advances Curbs on Chinese Optical Transceivers for Data Centers](https://news.google.com/rss/articles/CBMi0wFBVV95cUxQSWM2VkFiMExTSEhEeE9zZ3BsYmZrdlp3SmtaWG95S3kzYlRfNFJTRXJ3NlBiRjZ1ZTdjZ2NJY2pnWTl6ZlRUbmVZSWVOV3Y3eVByWUMtTXYzdkl0aXZhUGF3M0w4MGZaTUJvVDVSam9rRXBqTUd0UV9vV1JvVGgzUVlOZFB5RHdwajhNUFhKV0x6d2RkeUE4d3RrdXRVLTJNRzU2MnRJSnpreW9WTUNmVnZGZlZxYXU4eHJteHNrd0VYUFJaU1ZrR28tM2R2NnI1ZjVF?oc=5) ⭐️ 8.0/10
 
-The U.S. Securities and Exchange Commission has opened a civil investigation into Nvidia, according to reports by The Wall Street Journal. The probe follows the abrupt resignation of co-founder and CEO Jensen Huang, who reportedly admitted to an affair with an alleged Chinese spy. Huang has also agreed to testify before Congress amid the company’s reported leadership and national-security concerns.
+Reuters reports that the U.S. is moving ahead with restrictions on Chinese optical transceivers used in data centers, despite lobbying from large technology companies. The reported curbs target a key component in high-speed data-center interconnects, but the source does not specify the exact regulatory mechanism, effective date, or product categories. If implemented as described, the action would affect data-center networking supply chains and Chinese optical-module vendors, though the available details remain limited.
 
-rss · DigiTimes · Nov 18, 04:27
+google\_news · MLQ.ai · Nov 17, 14:06
 
-> **「Earlier leadership and espionage crisis」** The SEC&\#x27;s civil probe follows an abrupt leadership and national-security crisis at Nvidia: CEO Jensen Huang resigned on November 12 after reports of an affair with a suspected Chinese spy, and the board had said it would investigate allegations that a Chinese espionage operation targeted him.
+> **「Background」** Optical transceivers are data-center modules that convert electrical signals to light for high-speed fiber links, and Reuters first reported in August that the FCC was considering barring imports of new models of Chinese-made devices. The latest report describes that policy effort moving ahead despite industry lobbying, rather than an entirely new restriction.
+
+> **「Impact on data-center networking supply chains」** The proposed FCC restrictions would target new-model Chinese optical transceivers rather than existing installations, pushing data-center buyers to qualify non-Chinese suppliers for future builds. Because Chinese vendors dominate the market and U.S. alternatives are described as capacity constrained, hyperscale operators and equipment buyers could face higher costs, longer deployment timelines, and supply bottlenecks until domestic or allied capacity scales. Teams planning AI or hyperscale data-center builds should review transceiver roadmaps and supplier qualification for new racks and interconnects before any rule is finalized.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.wsj.com/business/sec-is-probing-nvidia-amid-departure-of-ceo-jensen-huang-ee7643f8">Exclusive | SEC Is Probing Nvidia Amid Departure of CEO Jensen Huang - WSJ</a></li>
-<li><a href="https://www.nbcnews.com/tech/tech-news/jensen-huang-resigns-nvidia-policy-issues-spying-scandal-cfr-rcna609616">Jensen Huang Resigns From Nvidia: Policy Issues Central to the Alleged Spying Scandal</a></li>
+<li><a href="https://mlq.ai/news/us-moves-ahead-with-curbs-on-chinese-optical-transceivers-for-data-centers-despite-big-tech-lobbying-reuters-reports">US moves ahead with curbs on Chinese optical transceivers for data centers despite Big Tech lobbying, Reuters reports | MLQ.ai</a></li>
+<li><a href="https://finance.yahoo.com/technology/ai/articles/microsoft-pushes-trump-halt-chinese-120408623.html">Microsoft pushes Trump to halt Chinese data center component ban: Reuters</a></li>
+<li><a href="https://www.linkedin.com/posts/markdhirsch_datacenter-opticalnetworking-exportcontrols-activity-7528592929637175297-5aIN">#datacenter #opticalnetworking #exportcontrols #supplychain #ai #infrastructure #hirschreport #deepfactchecked | Mark Hirsch</a></li>
+<li><a href="https://www.fierce-network.com/cloud/can-us-curb-chinese-transceivers-without-slowing-ai-data-centers">Can the US curb Chinese transceivers without slowing AI data centers?</a></li>
+<li><a href="https://mallory.ai/stories/019fcd1f-723e-7e8c-9138-76f9d0a0d269">US Weighs Ban on Chinese Optical Transceivers in Data Centers | Mallory</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#SEC investigation`, `#AI chips`, `#leadership change`, `#regulation`
+**Tags**: `#export controls`, `#optical transceivers`, `#data center networking`, `#China supply chain`, `#AI hardware`
 
 ---
 
 <a id="item-ai-hardware-3"></a>
-#### [Banks Pause $480M Loan for ByteDance-Linked GPU Financing](https://www.bloomberg.com/news/articles/2026-11-17/banks-pause-480-million-chip-loan-tied-to-china-s-bytedance) ⭐️ 8.0/10
+#### [Reported Nvidia Investment in Kinsus to Expand ABF Capacity](https://news.google.com/rss/articles/CBMidkFVX3lxTE5WaEFReGk0S3czZVZzOURfSG9kcGNadHdvZjlOX2FVUU1NcVZHZXZfQVlxeDVwWS0wOUVyZlRVRnZOZDFUZFBwWElzNmVFLWdhWnhWdzVULU5uZm9yV0JHMWRCaXZLOTR5c1c3YUdTd3NKRV9EN0E?oc=5) ⭐️ 8.0/10
 
-Following new U.S. AI chip export rules, five banks paused work on a $480 million loan intended to fund advanced NVIDIA GPU purchases for a ByteDance-related data center in Malaysia. The borrower is Singapore cloud provider Aolani Cloud, with DBS Group acting as lead arranger. Aolani said it is assessing the new rules with regulators and financing partners to ensure compliance, while bankers said the financing is unlikely to progress until that assessment is complete.
+A report says Nvidia is investing more than $1 billion in Kinsus, with ABF substrate capacity in Taoyuan dedicated to Nvidia set to expand 3.5-fold. The report describes an investment and planned capacity expansion, not a confirmed completed production change. The headline provides no details on timing, contractual terms, or which Nvidia products will use the additional capacity.
 
-telegram · zaihuapd · Nov 18, 05:11
+google\_news · BigGo Finance · Nov 18, 01:25
 
-> **「Background」** U.S. AI chip export controls restrict access to advanced GPUs for China-linked users and create compliance uncertainty for financial institutions. That regulatory backdrop is what caused lenders to pause a $480 million loan intended for ByteDance-related GPU purchases in Malaysia.
+> **「Background」** ABF substrates are high-end packaging substrates used in advanced AI accelerators, and Kinsus has been seen as a potential third supplier to Nvidia after IBIDEN and Unimicron. The commitment is part of Nvidia&\#x27;s broader supply-chain agreements with Kinsus, Samsung Electro-Mechanics, Amkor, SPIL, Foxconn and TSMC to expand substrate and advanced packaging capacity for current and next-generation accelerated computing platforms.
 
-> **「Impact」** The pause shows that U.S. AI chip export controls can directly stall financing for data-center GPU expansion, delaying ByteDance-linked capacity projects and raising compliance risk for banks arranging NVIDIA-related purchases.
+> **「Impact」** The planned more-than-3.5x expansion of Nvidia-dedicated ABF substrate capacity at Kinsus could ease a key advanced-packaging constraint for AI accelerators and support scale-up of Nvidia’s current and next-generation computing platforms. It also positions Kinsus as a potential third major substrate supplier alongside IBIDEN and Unimicron, increasing competition in the Nvidia packaging supply chain, though the effect is prospective because the reports describe an agreement and capacity expansion plan rather than immediate shipped capacity.
 
-**Tags**: `#US export controls`, `#AI chip financing`, `#ByteDance`, `#NVIDIA GPUs`, `#data center capacity`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://finance.biggo.com/news/d8c5309d-c6bf-4820-b7a5-6b3bc20d6243">Nvidia Bets $1 Billion on Kinsus, to Expand Taoyuan ABF Substrate Capacity More Than 3.5-Fold — BigGo Finance</a></li>
+<li><a href="https://www.morningstar.com/news/globe-newswire/9879927/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | Morningstar</a></li>
+<li><a href="https://english.cw.com.tw/article/article.action?id=5082">Nvidia Turns to Samsung to Shake Up the AI Substrate Market. Unimicron and Kinsus Face a New Threat｜Industry｜2026-10-26｜web only</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | NVIDIA Newsroom</a></li>
+<li><a href="https://tspasemiconductor.substack.com/p/2026-impact-kinsus-technology-the">2026 IMPACT | Kinsus Technology: The AI Chip Substrate Revolution — From Advanced Packaging Scaling and ABF Material Innovation to Next-Generation Glass Core Manufacturing Challenges</a></li>
+<li><a href="https://english.cw.com.tw/article/article.action?id=5082">Nvidia Turns to Samsung to Shake Up the AI Substrate Market. Unimicron and Kinsus Face a New Threat｜Industry｜2026-10-26｜web only</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Nvidia`, `#Kinsus`, `#ABF substrates`, `#capacity expansion`, `#AI supply chain`
 
 ---
 
 <a id="item-ai-hardware-4"></a>
-#### [Nvidia Reportedly Invests Over US$1B in Kinsus for AI Substrates](https://news.google.com/rss/articles/CBMimAFBVV95cUxOM0p1Vlo4U3JHSnZFOWdpM3dxRHZNUnFYQnRNSmVaUkRKMDJGYjRRSDZ6Z0phRGI2dEVWdkNwUDJ3SDJrandsRDN4ZGtycGRIMmM5M3hkbGd2bGJ5M2RWODJaYUJhOE53LXBrRDltcURNMDdGOURkT1BJMDhQTk1JSTFaUHZrREFrMWZ4d0pXeHBZb1lZN2UybA?oc=5) ⭐️ 8.0/10
+#### [Taiwan Hai Long offshore wind project connects 1 GW to grid for TSMC](https://www.digitimes.com/news/a20261118PD227/taiwan-offshore-wind-capacity-tsmc-2027.html) ⭐️ 7.0/10
 
-Reports say Nvidia plans to invest more than US$1B in Kinsus to secure AI substrate production capacity. The reported plan includes expanding ABF substrate capacity at Kinsus&\#x27;s Taoyuan site by more than 3.5-fold. The source does not provide a timeline, shipped capacity, or details on which Nvidia AI products would use the output.
+Taiwan&\#x27;s Hai Long Offshore Wind Project has completed construction and connected all 73 turbines to the power grid, with installed capacity exceeding 1 GW. The project is expected to enter full commercial operation in 2027 and will supply all of its green electricity to TSMC. The source presents completion and grid connection as achieved, while full commercial operation and dedicated TSMC supply are future conditions.
 
-google\_news · digitimes · Nov 18, 03:55
+rss · DigiTimes · Nov 18, 09:07
 
-> **「Background」** ABF substrates are advanced packaging carriers used in AI accelerators, and Kinsus is a key Taiwanese supplier of them. Earlier reporting described Nvidia planning a NT$20 billion \(about US$620 million\) investment in Kinsus to secure substrate supply, so the newly reported commitment of more than US$1 billion points to a larger move toward the same packaging bottleneck.
+> **「Project background」** Hai Long is a 1,022 MW offshore wind development off Changhua County formed by Northland Power, Mitsui &amp; Co. and Gentari, and its output was contracted to TSMC through a long-term corporate power purchase agreement. The project had earlier secured a $2.4 billion financing package and had full operations expected in 2027, later than its original 2026 target.
 
-> **「Impact」** The reported investment ties Nvidia more directly to Kinsus&\#x27;s ABF substrate expansion, which is relevant to AI accelerator packaging supply, but it does not establish a confirmed change in product availability, pricing, or performance.
+> **「Impact」** Once fully commercial, the project gives TSMC a dedicated renewable electricity source in Taiwan, addressing green-power sourcing and supply-chain energy constraints, though the source does not establish a direct increase in AI compute capacity.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://thebuildout.ai/intel/425ca974-89df-4158-9f41-1359d6663e4e">Nvidia reportedly plans NT$20 billion investment in ABF substrate supplier Kinsus Interconnect Technology | The Buildout</a></li>
+<li><a href="https://www.linkedin.com/posts/the-green-recruitment-company_taiwans-hai-long-secures-24b-financing-activity-7496053467476652032-8Vd-">Taiwan&#x27;s Hai Long Wind Project Secures $2.4B in Financing | The Green Recruitment Company posted on the topic | LinkedIn</a></li>
+<li><a href="https://www.datacenterdynamics.com/en/news/tsmc-signs-30-year-ppa-for-294mw-of-power-from-hai-long-offshore-wind-farm-in-taiwan">TSMC signs 30-year PPA for 294MW of power from Hai Long offshore wind farm in Taiwan - DCD</a></li>
+<li><a href="https://hailongoffshorewind.com/en/FirstPowerCeremony">Hai Long Offshore Wind-Latest News-Taiwan’s Largest Offshore Wind Project Reaches Key Milestone – Hai Long Delivers First Power</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#AI substrates`, `#supply-chain capex`, `#Kinsus`, `#advanced packaging`
+**Tags**: `#offshore wind`, `#TSMC`, `#power supply`, `#semiconductor supply chain`, `#Taiwan energy`
 
 ---
 
 <a id="item-ai-hardware-5"></a>
-#### [Apple Reportedly Nears Four- to Five-Year Samsung DRAM Deal](https://www.digitimes.com/news/a20261118VL213/apple-dram-samsung-price-2027.html) ⭐️ 7.0/10
+#### [Nvidia expands Foxconn role in next-gen GPU and networking platforms](https://www.digitimes.com/news/a20261118PD249/foxconn-nvidia-gpu-manufacturing-shipments.html) ⭐️ 7.0/10
 
-Apple is reportedly close to a four- to five-year DRAM supply agreement with Samsung Electronics, with deliveries expected to begin in the first half of 2027. The proposed terms would set minimum supply commitments while linking prices to market rates rather than fixing them for the contract period. The report says the talks are unfinished and do not disclose volumes or total financial terms, but the deal would address rising memory prices and tighter chip supply.
+Nvidia announced on November 17 an expanded cooperation with Foxconn, TSMC, Kinsus, Samsung Electro-Mechanics, Amkor, and Siliconware to support AI infrastructure build-out. The collaboration covers package substrates, advanced packaging, wafer manufacturing, and system manufacturing, with Foxconn deepening its role in next-generation GPU and networking platforms across production networks in Asia, North America, and Europe. The announcement describes a supply-chain plan rather than a shipped product or disclosed capacity figures.
 
-rss · DigiTimes · Nov 18, 05:41
+rss · DigiTimes · Nov 18, 08:58
 
-> **「Background」** DRAM is the volatile memory used in iPhones and other consumer devices, and rising memory costs have recently become a pressure point for major technology companies. Apple has reportedly been the only large tech company without a long-term DRAM supply contract with Samsung, so a multi-year minimum-volume agreement would mark a shift in its usual memory procurement approach.
+> **「Background」** Next-generation AI systems depend on a coordinated supply chain spanning wafer production, package substrates, advanced packaging, and final system manufacturing. Nvidia&\#x27;s expanded cooperation with Foxconn and other suppliers reflects that requirement as it scales GPU and networking platforms across Asia, North America, and Europe.
 
-> **「Impact」** For Apple, a finalized deal would provide a more predictable DRAM allocation for iPhones and other devices, though the market-linked pricing structure means it may not lock in lower component costs if memory prices rise.
+> **「Impact」** For organizations planning AI infrastructure, the announcement suggests Nvidia is aligning a wider manufacturing base for next-generation GPU and networking platforms, but procurement decisions cannot yet rely on disclosed capacity, pricing, or volume commitments.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/technology/articles/samsung-apple-reportedly-near-multi-114855409.html">Samsung and Apple Reportedly Near Multi-Year DRAM Supply Agreement</a></li>
-<li><a href="https://www.cnbc.com/2026/05/01/samsung-bemoans-memory-chip-crunch-thats-good-news-for-these-stocks.html">Samsung bemoans memory chip crunch. That&#x27;s good news for these stocks</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#DRAM supply`, `#Apple procurement`, `#Samsung memory`, `#memory pricing`, `#supply chain`
+**Tags**: `#Nvidia supply chain`, `#Foxconn manufacturing`, `#advanced packaging`, `#AI infrastructure capacity`, `#GPU and networking platforms`
 
 ---
 
 ### AI Applications
 
 <a id="item-ai-app-1"></a>
-#### [OpenAI Sora Shutdown Raises Kuaishou Kling IPO Bet](https://technode.com/2026/11/17/kuaishou-kling-sora-hong-kong-ipo/) ⭐️ 8.0/10
+#### [Isomorphic Labs Raises $5 Billion to Advance AI Drug Pipeline](https://the-decoder.com/isomorphic-labs-raises-5-billion-in-its-second-mega-round-within-six-months/) ⭐️ 8.0/10
 
-OpenAI announced it is shutting down Sora, while Kuaishou is positioning Kling as a commercial video-generation business ahead of a reported Hong Kong IPO that Bloomberg said could raise at least US$1 billion. Kling 3.0, launched in February 2026, added more control over multi-shot scenes and character continuity, and its API lets companies embed Kling&\#x27;s video generation into their own products. Kuaishou reported that Kling revenue exceeded RMB850 million in Q2 2026, more than triple the prior year, after bringing in more than US$20 million in December 2025. Bloomberg, citing Sensor Tower, reported that Kling&\#x27;s global mobile weekly active users rose about 4% after Sora&\#x27;s shutdown, and Reuters said a separate financing round reached nearly US$3 billion by late October.
+Isomorphic Labs, Alphabet&\#x27;s AI drug-discovery company led by Demis Hassabis, raised $5 billion, its second mega-round within six months after a $2.1 billion round. The company plans to use the capital to advance its drug pipeline toward clinical trials. It has no approved drugs yet, so the funding supports development rather than an existing commercial product.
 
-rss · TechNode · Nov 17, 07:09
+rss · The Decoder · Nov 17, 14:57
 
-> **「Background」** Kling first drew attention in 2024 as a Chinese rival to OpenAI’s Sora, when it was already available to users while Sora remained limited. By 2026, Kling had developed beyond that comparison: its 3.0 model added more control over characters and shots, and Kuaishou moved the business into a separate subsidiary for outside investment.
+> **「Background」** Isomorphic Labs is an Alphabet-owned AI drug-discovery company spun out of Google DeepMind and led by Demis Hassabis. Before this round, it had closed a $2.1 billion Series B in May 2026, and Bloomberg reported in November that it was seeking about $5 billion at a roughly $50 billion valuation to support its first clinical-trial push.
 
-> **「Impact」** Developers and media teams losing access to Sora now have a documented alternative in Kling, whose API and shot-continuity controls are aimed at repeat production use rather than one-off clips; however, the reported 4% mobile user bump and continued competition from Google and ByteDance mean teams should test output consistency and integration workflows before moving production pipelines.
+> **「Impact」** The funding increases Isomorphic Labs&\#x27; runway to push AI-designed drug candidates into human trials, but the absence of approved drugs means Alphabet must still prove that the pipeline can produce clinically and commercially viable therapies.
 
-**Tags**: `#Kuaishou`, `#Kling`, `#OpenAI Sora`, `#AI video generation`, `#China AI applications`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.linkedin.com/news/story/alphabets-ai-drug-startup-isomorphic-labs-raises-5b-7793636">Alphabet&#x27;s AI drug startup Isomorphic Labs raises $5B | LinkedIn</a></li>
+<li><a href="https://techfundingnews.com/isomorphic-labs-5b-raise-50b-valuation-first-clinical-trial">Report: Isomorphic Labs in talks to raise $5B at $50B valuation — TFN</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-04/isomorphic-labs-in-talks-for-about-5-billion-in-funding">Isomorphic Labs in Talks for About $5 Billion in Funding - Bloomberg</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#AI drug discovery`, `#capital markets`, `#Alphabet`, `#enterprise AI`, `#funding`
 
 ---
 
 <a id="item-ai-app-2"></a>
-#### [Nvidia and AMD back Genesis in reported Series A, valuation above 23 billion](https://www.qbitai.com/2026/11/510821.html) ⭐️ 7.0/10
+#### [OpenAI Releases GPT-6.2 Astra and Sol With Lower API Pricing](https://openai.com/index/introducing-gpt-6-2-astra-sol/) ⭐️ 8.0/10
 
-Genesis is reported to have completed a Series A funding round backed by Nvidia and AMD, with a valuation above 23 billion and the currency unspecified in the provided source. The supplied text only describes Genesis as a full-stack embodied AI player and does not give the round size, investor terms, or confirmation from Nvidia or AMD. The headline frames this as the first joint bet by Nvidia and AMD, but the available evidence is limited to the report&\#x27;s claim.
+OpenAI released GPT-6.2 Astra and GPT-6.2 Sol, positioning Astra for the hardest professional projects and Sol for everyday efficiency, with both available in ChatGPT Work and Codex. Astra API pricing is $8 per million input tokens, $0.40 per million cached input tokens, and $40 per million output tokens, a 20% reduction from GPT-6 Astra; Sol retains the pricing of GPT-6.1 Sol. These are OpenAI’s published release and pricing claims, not independently measured benchmark results.
 
-rss · 量子位 · Nov 18, 04:28
+telegram · zaihuapd · Nov 17, 17:55
 
-> **「Background」** Genesis AI began as a 2022 robotics simulation research collaboration at Carnegie Mellon University before launching as a company in March 2025 and raising $105 million in July 2025. The new financing is a $500 million Series A at a $3.5 billion post-money valuation, with NVIDIA and AMD Ventures listed among participants.
+> **「Background」** OpenAI’s GPT-6.2 Astra and Sol update an existing API model lineup that previously included GPT-6 Astra and GPT-6.1 Sol. The source uses those earlier models as pricing baselines, showing that Astra’s new price is compared with GPT-6 Astra while Sol follows GPT-6.1 Sol’s price.
 
-> **「Funding and chip-vendor support」** Genesis AI’s reported Series A is a $500 million round at a $3.5 billion post-money valuation, giving the company capital to scale training, testing, and deployment of general-purpose robots. NVIDIA and AMD Ventures are listed as participants, which suggests chip vendors are backing embodied-AI infrastructure, though the release does not specify the scope of their involvement or confirm the “first joint bet” claim.
+> **「Impact」** For developers and organizations, the lower Astra API price reduces the cost of using OpenAI’s Astra model for complex professional workloads, while Sol’s unchanged pricing provides a stable option for routine efficiency tasks.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.prnewswire.com/news-releases/genesis-ai-raises-500m-series-a-at-3-5b-valuation-to-master-human-level-dexterity-in-general-purpose-robots-and-deploy-at-scale-302941249.html">Genesis AI Raises $500M Series A at $3.5B Valuation to Master Human-Level Dexterity in General-Purpose Robots and Deploy at Scale</a></li>
-<li><a href="https://news.crunchbase.com/venture/robot-factory-workers-genesis-ai-fundraise">Genesis AI Raises $500M At $3.5B Valuation To Bring Its Robots To Factories And Warehouses</a></li>
-<li><a href="https://www.prnewswire.com/news-releases/genesis-ai-raises-500m-series-a-at-3-5b-valuation-to-master-human-level-dexterity-in-general-purpose-robots-and-deploy-at-scale-302941249.html">Genesis AI Raises $500M Series A at $3.5B Valuation to Master Human-Level Dexterity in General-Purpose Robots and Deploy at Scale</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#具身智能`, `#融资`, `#英伟达`, `#AMD`, `#中国AI应用`
+**Tags**: `#OpenAI`, `#API pricing`, `#enterprise AI`, `#model launch`, `#developer tools`
 
 ---
 
 <a id="item-ai-app-3"></a>
-#### [Alibaba Cloud Claims Hong Kong IaaS Lead and AI Adoption](https://www.leiphone.com/category/industrynews/qyieFYqM3EQhE1Hu.html) ⭐️ 7.0/10
+#### [Pony AI Q3 Revenue Beat Estimates as Robotaxi Growth Slows](https://www.bloomberg.com/news/articles/2026-11-18/pony-ai-s-sales-beat-estimates-as-robotaxi-business-expands) ⭐️ 7.0/10
 
-At its annual Hong Kong summit, Alibaba Cloud said it has held the No. 1 position in Hong Kong IaaS market share for six consecutive years and that more than 95% of its local enterprise customers have activated AI services. The company highlighted newly launched Hong Kong enterprise AI capabilities—AgentCore, AI-BAS, and Zero Data Retention \(ZDR\)—alongside the already available Qwen4-Max model, Qwen Office, and WanJing YiKe. It cited customer deployments such as Prudential’s AI underwriter, a Hong Kong government Qwen-based assistant, MyTV SUPER’s use of Qoder, and an AiBO English platform using Qwen, and announced partnerships with Hong Kong Baptist University, Mei Ah Entertainment, and a plan to train 30,000 local youths over two to three years.
+Bloomberg reports that Pony AI’s third-quarter revenue exceeded estimates as its high-margin robotaxi business continued to expand. The report says robotaxi growth has slowed relative to previous quarters, even as the segment remains a key part of the company’s expansion. The provided source does not include specific revenue figures, fleet size, or availability details.
 
-rss · 雷峰网 · Nov 17, 09:24
+rss · Bloomberg Technology · Nov 18, 09:39
 
-> **「Background」** Alibaba Cloud has an established Hong Kong cloud business, and earlier company materials reported that it had ranked first in the territory’s IaaS market share for three consecutive years. A Gartner IaaS report cited by Alibaba Cloud also placed Alibaba as Asia-Pacific’s largest IaaS provider by revenue in 2025 and noted its leading position in mainland China and Hong Kong. The current announcement therefore presents a claimed six-year Hong Kong IaaS lead, building on those earlier vendor-reported market-position claims.
+> **「Background」** Robotaxi services are autonomous ride-hailing vehicles that carry passengers without a human driver, making them a direct way for self-driving companies to generate revenue. Pony AI’s robotaxi segment is therefore central to assessing whether its autonomous-driving technology can scale into commercially meaningful earnings.
 
-> **「Impact」** This gives Hong Kong enterprises named local examples for AI-agent adoption, especially in finance, government, media, and education, but the market-share, adoption, and accuracy figures are vendor-reported and no pricing or contract terms are disclosed. Organizations should independently verify availability, scope, compliance claims, and performance benchmarks before relying on them for procurement.
+> **「Impact」** For investors and autonomous-mobility partners, the revenue beat suggests Pony AI’s robotaxi monetization is progressing, while the slower growth rate indicates that the expansion may be moving into a less rapid phase. This combination could influence expectations for future revenue growth and unit economics in the robotaxi market.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.alibabacloud.com/blog/alibaba-cloud-ranks-first-in-iaas-market-share-in-hong-kong-for-three-consecutive-years_601078">Alibaba Cloud Ranks First in IaaS Market Share in Hong Kong for Three Consecutive Years - Alibaba Cloud Community</a></li>
-<li><a href="https://www.alibabacloud.com/en/about/gartner-iaas-2025?_p_lc=1">Alibaba Cloud Ranked First in the Asia-Pacific IaaS Market and Ranked Fourth Globally</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Alibaba Cloud`, `#Hong Kong AI`, `#Enterprise AI adoption`, `#Cloud IaaS market share`, `#AI agents`
+**Tags**: `#Robotaxi`, `#China AI`, `#Autonomous Driving`, `#Earnings`, `#AI Monetization`
 
 ---
 
 <a id="item-ai-app-4"></a>
-#### [Model ML Raises $250M for AI Deal-Context Agents](https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work/) ⭐️ 7.0/10
+#### [Tencent AI Spending Squeezes Q3 Profit as Revenue Misses Estimates](https://www.bloomberg.com/news/articles/2026-11-18/tencent-s-sales-miss-estimates-in-setback-for-founder-s-ai-push) ⭐️ 7.0/10
 
-Model ML raised $250M to build AI agents for investment banking and consulting workflows. The startup says its agents understand the full context of ongoing deals and can automatically update financial models and presentations when new developments affect the analysis. The source does not provide evidence of shipped customer scale, revenue, or independently verified performance.
+Tencent’s third-quarter capital spending rose more than sixfold to above US$12 billion as it invested in AI computing power, weighing on profit and free cash flow. Adjusted net income fell 6% year on year to 66.5 billion yuan \(US$10 billion\), matching analyst consensus, while revenue rose 8% to 207.3 billion yuan but fell short of expectations. The results intensify pressure on Tencent to reorganize its business and demonstrate how its AI spending will be monetized.
 
-rss · TechCrunch AI · Nov 17, 19:32
+rss · Bloomberg Technology · Nov 18, 08:36
 
-> **「Background」** Model ML’s Series B follows a $75 million Series A announced about a year earlier, and it competes with startups such as Hebbia and Rogo that also automate repetitive investment-banking and consulting tasks. The company’s agents integrate with systems like Excel and PowerPoint to update financial models and presentations as deal information changes.
+> **「Background」** Tencent’s third-quarter results for the period ended September 30 showed adjusted net income falling 6% year on year to 66.5 billion yuan while revenue grew 8%, as the company sharply increased capital spending for AI computing power. The earnings report therefore connects Tencent’s effort to catch up in China’s competitive AI infrastructure race with near-term pressure on profit and free cash flow.
 
-> **「Impact」** If the agents work as described, they could reduce manual maintenance of financial models and pitch materials for bankers and consultants. Buyers should still verify accuracy, auditability, security, and integration with existing deal workflows before relying on automated updates in high-stakes financial work.
+> **「Impact」** For investors and organizations watching China’s AI platform race, Tencent’s earnings squeeze means its AI push now depends more on converting infrastructure spending into revenue, raising scrutiny of its AI products and potential business restructuring.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work">Model ML raises $250M to automate investment banking grunt work</a></li>
-<li><a href="https://finance.biggo.com/news/0eab7536-3f15-443e-b311-67be1d9afea8">AI agent startup Model ML raises $250M at $1.5B valuation, led by General Atlantic and QED — BigGo Finance</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#AI agents`, `#funding`, `#investment banking`, `#enterprise workflow`, `#financial services`
+**Tags**: `#Tencent`, `#AI commercialization`, `#China AI`, `#profitability`, `#earnings`
 
 ---
 
 <a id="item-ai-app-5"></a>
-#### [OpenAI GPT-6 Healthcare Agents Automate Prior Authorizations](https://the-decoder.com/ai-agents-are-starting-to-fill-out-medical-forms-and-file-insurance-requests-in-place-of-human-staff/) ⭐️ 7.0/10
+#### [Model ML Raises $250M for Investment Banking AI Agents](https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work/) ⭐️ 7.0/10
 
-OpenAI is positioning GPT-6 Astra and GPT-6 Luna computer-use agents to automate administrative tasks in U.S. healthcare for clinics and insurers by operating existing software and insurance portals as a human would. The report says Luna can process prior authorizations at about 8.5 cents per task, and CVS Health and Cigna Healthcare are already deploying the technology. The source presents this as OpenAI’s commercial positioning and early enterprise use, not as independently verified performance at scale.
+Model ML raised $250M to build AI agents that automate financial-model and presentation updates in investment banking and consulting workflows. The startup says its agents can understand the full context of deals and automatically update outputs when new developments affect the analysis. The source does not specify shipped availability, customers, model versions, or independently measured results.
 
-rss · The Decoder · Nov 17, 16:55
+rss · TechCrunch AI · Nov 17, 19:32
 
-> **「Background」** Computer-use agents are AI systems that can operate existing software interfaces by clicking, typing, and navigating screens, rather than only answering questions. In U.S. healthcare, prior authorization is a common administrative step where clinics request insurer approval before a treatment, drug, or service is covered.
+> **「Background」** Model ML is a London-based startup founded three years ago that emerged from stealth about 18 months ago and raised a $75 million Series A roughly a year before this round.
 
-> **「Impact」** For healthcare organizations, the disclosed per-task price and named enterprise deployments make computer-use agents a concrete procurement option for administrative form-filling, but buyers still need to verify compatibility with existing portals, accuracy, and oversight for insurance decisions.
+> **「Impact」** For investment bankers and consultants, the round signals continued investor interest in vertical AI tools aimed at high-stakes document and model maintenance. Adoption will likely depend on auditability, data governance, and integration with existing spreadsheet and deal workflows.
 
-**Tags**: `#AI agents`, `#healthcare automation`, `#OpenAI`, `#enterprise adoption`, `#unit economics`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work">Model ML raises $250M to automate investment banking grunt work</a></li>
+<li><a href="https://techfundingnews.com/londons-model-ml-raises-250m-from-general-atlantic-and-qed-to-put-ai-agents-inside-banks">London’s Model ML raises $250M from General Atlantic and QED to put AI agents inside banks — TFN</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#AI agents`, `#startup funding`, `#investment banking`, `#enterprise workflow`, `#vertical software`
 
 ---
 
 ### Technology News
 
 <a id="item-tech-news-1"></a>
-#### [Nvidia Interim CEO Ends Hopper Chip Shipments to China](https://techcrunch.com/2026/11/17/nvidia-is-abandoning-china-after-jensen-huangs-ouster/) ⭐️ 9.0/10
+#### [Nvidia interim CEO says it will stop selling chips to China](https://techcrunch.com/2026/11/17/nvidia-is-abandoning-china-after-jensen-huangs-ouster/) ⭐️ 9.0/10
 
-Nvidia&\#x27;s interim CEO and CFO Colette Kress said the company will no longer ship licensed Hopper data-center chips to China, despite an earlier US-government blessing to sell a version of that product there. Nvidia reported $2.4 billion of licensed Hopper data-center revenue from China in the latest quarter and said its guidance does not include further such sales. The statement follows Jensen Huang&\#x27;s departure and marks a pullback from the limited Hopper exports previously permitted under US controls.
+Nvidia&\#x27;s interim CEO reportedly said the company will stop selling chips to China, a move the TechCrunch article frames as following Jensen Huang&\#x27;s ouster. The available source does not specify whether the halt is immediate, which products or customers are affected, or the reasons for the decision. It also does not quantify the revenue or supply-chain consequences of ending chip sales to China.
 
 rss · TechCrunch AI · Nov 17, 23:37
 
-> **「Background」** The reported shift follows a period in which Nvidia’s China sales were constrained by U.S. export licensing and national-security reviews: approved H200-class exports had generated little or no revenue, and a December policy change allowed shipments only with a 25% U.S. revenue cut. Jensen Huang resigned as CEO on November 11, and CFO Colette Kress became interim CEO, placing the China decision under new management.
+> **「Background」** The report is framed around a leadership transition: Jensen Huang’s reported ouster and an interim CEO’s statement that Nvidia will stop selling chips to China. That context matters because the announcement is attributed to current management rather than an independently confirmed product, policy, or shipping change.
 
-> **「Impact」** Nvidia&\#x27;s halt to China-bound Hopper sales, stated by interim CEO Colette Kress, removes a limited permitted supply path for Chinese data-center buyers even after US licenses allowed some H200 shipments. The shift has immediate financial exposure: Nvidia reported $2.4 billion in China Hopper revenue in the quarter, while guidance excludes related China compute revenue, and prior restrictions on H200 and H20 products produced $400 million and $4.5 billion inventory-related charges. Customers and cloud providers must now treat US export approval as insufficient without Chinese customs clearance, tariff and volume conditions, and may need to rely more on domestic alternatives or delay deployments.
+> **「Commercial and supply-chain impact」** If Nvidia follows through, Chinese AI customers and cloud providers would lose a direct route to new Nvidia accelerators, pushing them toward stockpiled H20-class chips, resale channels, or domestic alternatives. The financial effect may already be partly visible: the H20 export ban had previously cost Nvidia about $15 billion in lost sales and a $5.5 billion inventory writeoff, while legal China data-center revenue had fallen to less than 1% over two quarters.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.outdoorliving101.com/science/jensen-huang-resigns-from-nvidia-what-colette-kress-inherits-and-why-china%E2%80%99s-ai-chip-access-matters">Jensen Huang Resigns From NVIDIA: What Colette Kress Inherits and Why China’s AI Chip Access Matters</a></li>
-<li><a href="https://finance.yahoo.com/markets/stocks/articles/nvidia-ceo-jensen-huang-just-121500679.html">Nvidia CEO Jensen Huang Just Delivered Fantastic News to Shareholders</a></li>
-<li><a href="https://www.cnbc.com/2026/03/17/nvidia-ceo-jensen-huang-says-chipmaker-has-received-orders-from-china.html">Nvidia CEO Jensen Huang says chipmaker has received orders from China</a></li>
-<li><a href="https://www.kucoin.com/blog/nvidia-china-revenue-exposure-us-chip-export-bills">Nvidia Faces New Scrutiny Over China Revenue Exposure as US Chip Export Bills Gain Momentum</a></li>
-<li><a href="https://www.spheron.network/blog/gpu-export-controls-2026-cloud-pricing">GPU Export Controls 2026: What It Means for Cloud Pricing | Spheron</a></li>
-<li><a href="https://oplexa.com/blogs/us-china-chip-war-2026-semiconductor">US China Chip War 2026: Export Impact on Semiconductors</a></li>
+<li><a href="https://finance.yahoo.com/news/nvidia-ceo-china-chip-ban-deeply-painful-as-15-billion-in-sales-have-been-lost-as-a-result-162124142.html">Nvidia CEO: China chip ban &#x27;deeply painful&#x27; as $15 billion in sales have been lost as a result</a></li>
+<li><a href="https://www.youtube.com/watch?v=SEHNuZKCzSk">Traders Digest Jensen Huang&#x27;s Exit from Nvidia</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#China AI market`, `#semiconductor supply`, `#executive change`, `#AI compute`
+**Tags**: `#Nvidia`, `#China AI`, `#Compute supply chain`, `#Strategic reversal`, `#Semiconductor market`
 
 ---
 
 <a id="item-tech-news-2"></a>
-#### [OpenAI Launches GPT-6.2 Astra and Sol With Lower API Prices](https://openai.com/index/introducing-gpt-6-2-astra-sol/) ⭐️ 8.0/10
+#### [Cloudflare frames Quad9 France DNS withdrawal as governance warning](https://blog.cloudflare.com/quad9-withdrawal-from-france/) ⭐️ 8.0/10
 
-OpenAI introduced GPT-6.2 Astra and GPT-6.2 Sol, available in the API as gpt-6.2-astra and gpt-6.2-sol. Astra is priced at $8 per million input tokens and $40 per million output tokens, 20% below GPT-6 Astra and the same as Claude Fable 5.2, while its cached input price drops from $1 to $0.40 per million; Sol remains at $2/$10 per million, half the price of GPT-5.6 Sol. Independent Artificial Analysis Intelligence Index results place Astra second behind Claude Fable 5.2, and OpenAI says Astra is the first released model to reach the High threshold for AI self-improvement on its own scale, a condition it classifies as a risk.
+Cloudflare&\#x27;s blog post, published Nov. 17, 2026, discusses Quad9&\#x27;s withdrawal from France, a change affecting users and operators that rely on Quad9&\#x27;s public DNS resolution there. Cloudflare frames the withdrawal as a possible early warning that DNS services are being pulled into jurisdictional blocking and governance pressures. The supplied item gives no technical details about the legal basis, affected endpoints, protocol changes, or exact availability conditions.
 
-hackernews · jasondavies · Nov 17, 17:46 · [Discussion](https://news.ycombinator.com/item?id=50535230)
+hackernews · subset · Nov 17, 22:13 · [Discussion](https://news.ycombinator.com/item?id=50538994)
 
-> **「Background」** OpenAI’s release continues an existing two-track API model line: Astra for harder, premium workloads and Sol for lower-cost everyday tasks. The source compares GPT-6.2 Astra and GPT-6.2 Sol to earlier GPT-6 Astra and GPT-6.1 Sol releases, which provide the pricing and capability baseline for the new versions.
+> **「Background」** Quad9 is a nonprofit DNS resolver that provides free cyberprotection without requiring user registration. A French court ordered it to block domains associated with pirate sports broadcasts, and Quad9 said it cannot reliably restrict DNS responses to France without either applying French law globally or facing fines for imperfect geolocation. It therefore announced that it would stop serving French users on November 24, 2026.
 
-> **「Impact」** Developers using long-running agentic workloads can lower API costs immediately through the 20% input/output price cut and 60% cached-input discount, but they should still benchmark Astra and Sol on their own tasks because user tests report mixed quality, including faster but sometimes early-stopping answers and office/slideshow examples that some users judged weaker than prior or rival models.
+> **「Community discussion」** A commenter identifying as Quad9&\#x27;s CTO reported broad support at IETF 127 and concern about DNS governance outcomes. Another commenter criticized Cloudflare for not committing to withdraw from affected countries if the appeal fails.
 
-> **「Community Discussion」** Commenters split between cost and capability: one reported large cost and speed gains with similar accuracy in a data-analytics exam, while others pointed to PacBench results where Astra and Sol trailed cheaper rivals and criticized OpenAI’s office/slideshow examples as unusually weak.
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.eff.org/deeplinks/2026/10/french-courts-site-blocking-orders-drive-quad9-out-france">French Court’s Site-Blocking Orders Drive Quad9 Out Of France | Electronic Frontier Foundation</a></li>
+<li><a href="https://forums.puri.sm/t/quad9-dns-resolver-says-adieu-la-france-and-exits/31481">Quad9 DNS resolver says &quot;Adieu La France!&quot; and exits - Privacy &amp; Security - Purism community</a></li>
+<li><a href="https://quad9.net/news/blog">Blog | Quad9</a></li>
 
-**Tags**: `#OpenAI model launch`, `#inference cost`, `#AI competitive benchmarks`, `#China AI competition`, `#commercialization`
+</ul>
+</details>
+
+**Tags**: `#DNS infrastructure`, `#Internet governance`, `#Cloudflare`, `#Quad9`, `#Regulatory risk`
 
 ---
 
 <a id="item-tech-news-3"></a>
-#### [AMD Closes $8.2B Stock Acquisition as Fei-Fei Li Team Joins](https://www.qbitai.com/2026/11/510695.html) ⭐️ 8.0/10
+#### [Nvidia Reaffirms Open-Source AI and Hugging Face Acquisition Plans](https://techcrunch.com/2026/11/17/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit/) ⭐️ 8.0/10
 
-A report says AMD has closed an $8.2 billion stock acquisition and that Fei-Fei Li’s team has officially joined AMD. The source describes the deal as completing in 46 days, but does not name the acquired entity, the team’s internal placement, or any product commitments. The headline presents the closure as a rapid acquisition, while the available evidence confirms only the reported transaction value and team joining.
+Nvidia’s interim CEO said the company’s open-source AI strategy remains intact after Jensen Huang’s sudden departure. The company also reaffirmed its announced plans to acquire Hugging Face. The source does not provide deal size, timing, regulatory status, or confirmation that the acquisition has closed.
 
-rss · 量子位 · Nov 17, 14:15
+rss · TechCrunch AI · Nov 17, 23:04
 
-> **「Background」** World Labs, founded in 2024, develops AI models that simulate 3D environments to train robots for virtual and real-world tasks. AMD had previously announced the all-stock acquisition as expected to close by the end of 2026, with Fei-Fei Li joining as executive vice president and chief scientist.
+> **「Prior Nvidia-Hugging Face deal and open-source context」** Nvidia agreed in September to acquire Hugging Face, the open-source AI model hub used by more than 118 million developers and 200,000 companies, in a $12.9 billion deal that would be its second-largest acquisition. The transaction was expected to close in the first half of 2027, though it faces regulatory scrutiny over whether Nvidia would control a major AI model-distribution channel. Jensen Huang had been a central public advocate for Nvidia’s open-source AI bets, so his departure raised questions about whether those commitments would continue.
 
-> **「Impact」** For AMD, the completed transaction formally brings Li’s team into its AI compute organization, giving the company a concrete talent addition tied to the acquisition. The source does not indicate immediate changes to AMD products, hardware availability, APIs, or customer-facing roadmaps.
+> **「Impact」** If the Hugging Face acquisition proceeds, developers and organizations using its models, datasets, and community infrastructure should monitor changes to governance, availability, and Nvidia’s open-source commitments.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://finance.yahoo.com/technology/article/amd-just-spent-82-billion-to-enlist-the-godmother-of-ai-230634166.html">AMD just spent $8.2 billion to enlist the &#x27;Godmother of AI&#x27;</a></li>
-<li><a href="https://finance.yahoo.com/technology/article/amd-finalizes-82-billion-world-labs-acquisition-adds-godmother-of-ai-as-evp-and-chief-scientist-171451986.html">AMD finalizes $8.2 billion World Labs acquisition, adds &#x27;godmother of AI&#x27; as EVP and chief scientist</a></li>
+<li><a href="https://newsfilter.io/articles/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit-707324cf13cc5237aca8ec8b3482f2b2">Nvidia says its open-source AI strategy remains intact after Jensen Huang’s exit</a></li>
+<li><a href="https://finance.yahoo.com/technology/ai/articles/nvidia-says-open-source-ai-230435010.html">Nvidia says its open source AI strategy remains intact after Jensen Huang’s exit</a></li>
+<li><a href="https://dealroom.co/news/173133-nvidia-s-12-9b-hugging-face-deal-in-doubt-as-huang-exit-hits-open-ai">Nvidia&#x27;s $12.9B Hugging Face deal in doubt as Huang exit hits open AI | Dealroom News</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#AMD`, `#AI M&amp;A`, `#compute`, `#AI talent`, `#industry structure`
+**Tags**: `#Nvidia`, `#Hugging Face`, `#AI leadership`, `#open-source AI`, `#M&amp;A`
 
 ---
 
 <a id="item-tech-news-4"></a>
-#### [Nvidia Guides Record Revenue After Huang Exit; Board Won’t Reinstate Him](https://techcrunch.com/2026/11/17/nvidia-promises-that-revenue-will-keep-soaring-for-now/) ⭐️ 8.0/10
+#### [Amazon and Google to Own Nearly 30% of Anthropic After IPO](https://techcrunch.com/2026/11/17/amazon-and-google-will-together-own-nearly-30-of-anthropic-after-its-ipo/) ⭐️ 8.0/10
 
-In its first earnings update after founder and CEO Jensen Huang resigned, Nvidia reported fiscal third-quarter 2027 revenue of $115.84 billion and guided fourth-quarter revenue to about $130 billion, above LSEG consensus expectations. Interim CEO Colette Kress and board chair Harvey Jones said the board does not intend to reinstate Huang, while the company raised its fiscal 2028 growth forecast to 75% from 70% even with China excluded from its data-center compute outlook. The guidance includes an extra week in fiscal Q4, which Melius Research estimated accounts for $9 billion to $10 billion of the sequential increase.
+Amazon and Google are reported to own nearly 30% of Anthropic after its IPO. Amazon would hold just under 15%, with an option to increase its stake much higher, while Google would hold nearly 14%. The report does not detail governance rights, purchase terms, or how the stakes will be disclosed in the IPO prospectus.
 
-rss · TechCrunch AI · Nov 18, 00:16
+rss · TechCrunch AI · Nov 17, 22:29
 
-> **「Background」** This is Nvidia’s first earnings update after founder and CEO Jensen Huang resigned amid an ongoing investigation, and board chair Harvey Jones said the board does not intend to restore him as CEO. That leadership change frames the revenue guidance because analysts had been waiting to see whether Nvidia’s AI-chip demand and supply commitments could continue without Huang’s direct management.
+> **「Background」** Anthropic had been preparing an initial public offering as early as 2026, with Amazon and Google already among its major backers. The reported post-IPO ownership stakes reflect earlier investment structures, including convertible notes and private placements, rather than a simple open-market purchase.
 
-> **「Impact」** For AI infrastructure buyers and investors, the results indicate that near-term accelerator demand and supply commitments remain strong, with Nvidia’s supply commitments rising to $390 billion from $279 billion and the Vera Rubin platform already contributing $20 billion. However, new U.S. export licensing requirements for advanced chips to Singapore, Malaysia, Indonesia, Thailand, and Brazil could slow some neocloud build-outs, while the unresolved CEO succession and ongoing investigation keep uncertainty elevated.
-
-**Tags**: `#Nvidia`, `#AI chips`, `#executive change`, `#revenue guidance`, `#AI compute supply chain`
-
----
-
-<a id="item-tech-news-5"></a>
-#### [Nvidia Reaffirms Open-Source AI and Hugging Face Acquisition After Huang Exit](https://techcrunch.com/2026/11/17/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit/) ⭐️ 8.0/10
-
-Nvidia’s interim CEO said the company’s open-source AI strategy remains intact after Jensen Huang’s sudden departure. The company also reaffirmed its plan to acquire Hugging Face, though the source describes this as a planned acquisition rather than a completed deal. Details about the leadership transition, acquisition terms, or timeline were not provided.
-
-rss · TechCrunch AI · Nov 17, 23:04
-
-> **「Background」** Nvidia agreed in September 2026 to acquire Hugging Face, an open-source AI model platform, for $12.93 billion, with the deal expected to close in the first half of 2027 pending regulatory approval. Jensen Huang had publicly pledged that Hugging Face would remain an open platform and that Nvidia compute would not be required to build on or deploy through it, so his departure raised questions about whether that commitment would continue.
-
-> **「Impact」** For developers and organizations relying on Nvidia’s open-source AI direction, the statement suggests continuity in strategy despite a leadership change, while the pending Hugging Face acquisition remains uncertain until completed.
+> **「Impact」** For public-market investors and Anthropic customers, the ownership profile means two major cloud and AI compute providers will have substantial equity exposure to Anthropic, creating potential related-party considerations around model access, compute supply, and boardroom influence. Investors should watch the IPO prospectus for voting rights, board representation, and related-party transaction terms.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://techcrunch.com/2026/11/17/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit">Nvidia says its open-source AI strategy remains intact after Jensen Huang&#x27;s exit | TechCrunch</a></li>
-<li><a href="https://www.tftc.io/nvidia-acquires-hugging-face-12-billion-open-platform">Nvidia Buys Hugging Face for $12.93B · TFTC</a></li>
-<li><a href="https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face">NVIDIA to Acquire Hugging Face | NVIDIA Blog</a></li>
+<li><a href="https://techcrunch.com/2026/11/17/amazon-and-google-will-together-own-nearly-30-of-anthropic-after-its-ipo">Amazon and Google will together own nearly 30% of Anthropic after its IPO</a></li>
+<li><a href="https://finance.yahoo.com/news/anthropic-plans-ipo-early-2026-004854547.html?fr=sycsrp_catchall">Anthropic plans an IPO as early as 2026, FT reports</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#AI M&amp;A`, `#open-source AI`, `#executive leadership`, `#Hugging Face`
+**Tags**: `#AI industry`, `#capital markets`, `#hyperscalers`, `#Anthropic`, `#ownership`
+
+---
+
+<a id="item-tech-news-5"></a>
+#### [SEC Investigates Nvidia After Jensen Huang Exit and Spy Affair Report](https://techcrunch.com/2026/11/17/sec-reportedly-investigating-nvidia-amid-huang-exit/) ⭐️ 8.0/10
+
+TechCrunch reports, citing The Wall Street Journal, that the SEC is opening a probe into Nvidia following CEO Jensen Huang’s departure. Huang reportedly admitted to an affair with an alleged Chinese spy. The investigation remains reported rather than confirmed, and the source does not provide details about its scope or Nvidia’s response.
+
+rss · TechCrunch AI · Nov 17, 21:48
+
+> **「Background」** The SEC is reportedly probing Nvidia amid Jensen Huang’s departure, which followed reports that he had an affair with a woman alleged to be a Chinese spy. Nvidia’s board also launched an investigation into whether Huang became a spy target, while Huang reportedly told President Trump he did not know the woman was a spy.
+
+> **「Impact」** For Nvidia investors and organizations relying on its GPUs, the reported SEC investigation and Jensen Huang’s exit create concrete governance and market-confidence risk, as shares have fallen sharply and the board faces pressure over leadership and disclosure. Monitor SEC filings, succession announcements, and any export-control or security disclosures before making long-term platform commitments.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.wsj.com/tech/ai/a-timeline-of-nvidia-ceo-jensen-huangs-suspected-spy-drama-05cbebf3?eafs_enabled=false">A Timeline of Nvidia CEO Jensen Huang’s Suspected Spy Drama - WSJ</a></li>
+<li><a href="https://www.cnbc.com/video/2026/04/13/odds-of-nvidia-buying-dell-are-low-says-deepwaters-gene-munster.html">Odds of Nvidia buying Dell are low, says Deepwater&#x27;s Gene Munster</a></li>
+<li><a href="https://www.facebook.com/cnn/videos/nvidias-board-of-directors-faces-a-very-tough-choice-about-whether-to-remove-its/1475213587888907">Nvidia’s board of directors faces a “very tough choice” about whether to remove its CEO, Jensen Huang, says former chairman of the Securities and Exchange Commission, Gary Gensler. Read more: https://cnn.it/4zdx9Mc | CNN | Facebook</a></li>
+<li><a href="https://www.facebook.com/aljazeera/videos/nvidia-ceo-jensen-huang-has-resigned-amid-reports-of-a-second-affair-with-a-comp/1689108979404199">30K views · 517 reactions | Nvidia CEO Jensen Huang has resigned amid reports of a second affair with a company executive. The announcement came after a board meeting. 
+
+Nvidia’s shares have fallen sharply since Huang admitted an affair with a suspected Chinese spy. | Al Jazeera English</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Nvidia`, `#SEC investigation`, `#CEO departure`, `#China risk`, `#AI governance`
 
 ---

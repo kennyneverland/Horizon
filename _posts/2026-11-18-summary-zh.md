@@ -5,459 +5,448 @@ date: 2026-11-18
 lang: zh
 ---
 
-> 从 433 条内容中筛选出 33 条重要资讯。
+> 从 429 条内容中筛选出 33 条重要资讯。
 
 ---
 
-**财经新闻**
-1. [英伟达 CEO 辞职与美国对华芯片限制收紧](#item-finance-news-1) ⭐️ 8.0/10
-2. [美国官员称多起科技与金融系统中断非网络攻击](#item-finance-news-2) ⭐️ 7.5/10
-3. [特朗普、习近平与普京将在深圳 APEC 期间会晤](#item-finance-news-3) ⭐️ 7.0/10
-4. [习近平在 APEC 呼吁消除贸易投资壁垒](#item-finance-news-4) ⭐️ 7.0/10
-5. [伊朗称袭击科威特美军设施，海湾紧张升级](#item-finance-news-5) ⭐️ 7.0/10
-6. [欧盟初步认定 Temu 违反《数字服务法》](#item-finance-news-6) ⭐️ 7.0/10
-7. [中汽协受工信部委托核查 17 家车企 60 天账期](#item-finance-news-7) ⭐️ 7.0/10
-8. [富士康拟收购索尼汽车摄像头模组业务](#item-finance-news-8) ⭐️ 7.0/10
+**财经要闻**
+1. [一周多起系统中断被排除网络攻击](#item-finance-news-1) ⭐️ 8.5/10
+2. [英伟达财报超预期，指引排除中国数据中心收入](#item-finance-news-2) ⭐️ 8.0/10
+3. [Anthropic IPO 或定价高于 70 至 78 美元区间](#item-finance-news-3) ⭐️ 8.0/10
+4. [工信部委托中汽协评估 17 家车企供应商账期](#item-finance-news-4) ⭐️ 8.0/10
+5. [美中俄领导人深圳 APEC 峰会聚焦贸易与科技](#item-finance-news-5) ⭐️ 7.0/10
+6. [巴斯夫拟收购赢创整合德国化工行业](#item-finance-news-6) ⭐️ 7.0/10
+7. [Anthropic 接近为可能创纪录 IPO 定价](#item-finance-news-7) ⭐️ 7.0/10
+8. [习特朗普会谈前警告贸易壁垒](#item-finance-news-8) ⭐️ 7.0/10
 
 **中国股市**
-1. [央行政策利率换锚至隔夜逆回购](#item-china-market-1) ⭐️ 9.0/10
-2. [英伟达业绩与 GPU 租赁涨价带动国产算力股走强](#item-china-market-2) ⭐️ 8.0/10
-3. [香港启动五年无纸化股份市场转型](#item-china-market-3) ⭐️ 7.0/10
-4. [券商称美国 BIS 新规利好中国本土算力链](#item-china-market-4) ⭐️ 7.0/10
-5. [京东三季度利润回升，新业务减亏为主因](#item-china-market-5) ⭐️ 6.0/10
-6. [摩根士丹利：中国家庭海外金融资产到 2035 年或达 10 万亿美元](#item-china-market-6) ⭐️ 6.0/10
-7. [丽新系拟分拆上海香港广场部分资产偿还贷款](#item-china-market-7) ⭐️ 6.0/10
-8. [研究者预计中国出口增速回落](#item-china-market-8) ⭐️ 6.0/10
-9. [美国 BIS 公布 AI 芯片出口管制新规](#item-china-market-9) ⭐️ 6.0/10
-10. [TCL 中环拟增持中环领先至 98.52%](#item-china-market-10) ⭐️ 6.0/10
+1. [腾讯 Q3 营收增 8%，AI 投入推高资本开支与现金支出](#item-china-market-1) ⭐️ 8.0/10
+2. [新易盛称 1.6T 光模块进入大规模放量阶段](#item-china-market-2) ⭐️ 7.0/10
+3. [FDA 拒批依沃西单抗在美上市并要求重开三期研究](#item-china-market-3) ⭐️ 7.0/10
+4. [美国 BIS 收紧 AI 出口管制](#item-china-market-4) ⭐️ 7.0/10
+5. [国家能源局加强流域水风光一体化统筹](#item-china-market-5) ⭐️ 6.0/10
+6. [国家能源局发文探索水风光与绿氢氨醇协同](#item-china-market-6) ⭐️ 6.0/10
+7. [Galaxy 拟推人形机器人女团，巨星传奇认购其不超过 7%股本](#item-china-market-7) ⭐️ 6.0/10
+8. [美国 BIS 发布 AI 算力出口管制新规](#item-china-market-8) ⭐️ 6.0/10
+9. [韩国在世贸组织质疑欧盟混动汽车保障措施调查](#item-china-market-9) ⭐️ 6.0/10
+10. [国务院部署 2027 年企业减负重点](#item-china-market-10) ⭐️ 6.0/10
 
 **AI 硬件与算力**
-1. [Nvidia 与 SPIL 宣布扩大 CoWoS 先进封装产能](#item-ai-hardware-1) ⭐️ 9.0/10
-2. [SEC 调查 Nvidia 前 CEO 黄仁勋辞职并同意国会作证](#item-ai-hardware-2) ⭐️ 8.0/10
-3. [美国芯片新规致字节关联 4.8 亿美元 GPU 贷款暂停](#item-ai-hardware-3) ⭐️ 8.0/10
-4. [Nvidia 据报投资逾 10 亿美元扩充 Kinsus AI 基板产能](#item-ai-hardware-4) ⭐️ 8.0/10
-5. [苹果据报接近与三星签四五年 DRAM 供货协议](#item-ai-hardware-5) ⭐️ 7.0/10
+1. [美国拟限制中国光模块进口，Coherent Lumentum 盘前上涨](#item-ai-hardware-1) ⭐️ 8.0/10
+2. [美国拟限制中国数据中心光模块](#item-ai-hardware-2) ⭐️ 8.0/10
+3. [英伟达向欣兴投资逾 10 亿美元并扩 ABF 载板产能](#item-ai-hardware-3) ⭐️ 8.0/10
+4. [台湾海龙离岸风电完成并网，2027 年向台积电供电](#item-ai-hardware-4) ⭐️ 7.0/10
+5. [英伟达扩大与富士康等供应链合作](#item-ai-hardware-5) ⭐️ 7.0/10
 
 **AI 应用与智能体**
-1. [OpenAI 关停 Sora，快手加码 Kling 并推进港股 IPO](#item-ai-app-1) ⭐️ 8.0/10
-2. [英伟达 AMD 首次联手投资 Genesis A 轮估值超 230 亿](#item-ai-app-2) ⭐️ 7.0/10
-3. [阿里云称连续六年居港 IaaS 第一并推企业 AI](#item-ai-app-3) ⭐️ 7.0/10
-4. [Model ML 融资 2.5 亿美元开发投行 AI agent](#item-ai-app-4) ⭐️ 7.0/10
-5. [OpenAI 用 AI agents 自动化医疗表单与保险请求](#item-ai-app-5) ⭐️ 7.0/10
+1. [Isomorphic Labs 融资 50 亿美元推进药物研发](#item-ai-app-1) ⭐️ 8.0/10
+2. [OpenAI 发布 GPT-6.2 Astra 与 Sol 双模型](#item-ai-app-2) ⭐️ 8.0/10
+3. [Pony AI 三季度营收超预期，Robotaxi 增速放缓](#item-ai-app-3) ⭐️ 7.0/10
+4. [腾讯 AI 支出激增挤压利润，收入不及预期](#item-ai-app-4) ⭐️ 7.0/10
+5. [Model ML 融资 2.5 亿美元自动化投行工作流](#item-ai-app-5) ⭐️ 7.0/10
 
 **其他科技行业动态**
-1. [英伟达停止向中国出货特许 Hopper 芯片](#item-tech-news-1) ⭐️ 9.0/10
-2. [OpenAI 发布 GPT‑6.2 Astra 与 Sol：降价与风险](#item-tech-news-2) ⭐️ 8.0/10
-3. [82 亿美元股票收购完成，李飞飞团队加入 AMD](#item-tech-news-3) ⭐️ 8.0/10
-4. [英伟达公布超预期营收并上调增长指引](#item-tech-news-4) ⭐️ 8.0/10
-5. [英伟达称开源 AI 与收购 Hugging Face 计划不变](#item-tech-news-5) ⭐️ 8.0/10
+1. [英伟达临时 CEO 称停止对华销售芯片](#item-tech-news-1) ⭐️ 9.0/10
+2. [Quad9 撤出法国：DNS 管辖压力引发担忧](#item-tech-news-2) ⭐️ 8.0/10
+3. [英伟达称黄仁勋离职后开源战略不变](#item-tech-news-3) ⭐️ 8.0/10
+4. [Anthropic IPO 后亚马逊谷歌合计持股近 30%](#item-tech-news-4) ⭐️ 8.0/10
+5. [SEC 据报调查英伟达 黄仁勋离职与间谍指控](#item-tech-news-5) ⭐️ 8.0/10
 
 ---
 
-## 财经新闻
+## 财经要闻
 
 <a id="item-finance-news-1"></a>
-### [英伟达 CEO 辞职与美国对华芯片限制收紧](https://www.cnbc.com/2026/11/17/us-tech-firms-china-ties-political-pressure.html) ⭐️ 8.0/10
+### [一周多起系统中断被排除网络攻击](https://www.cnbc.com/2026/11/17/apple-microsoft-faa-jpmorgan-outages.html) ⭐️ 8.5/10
 
-英伟达 CEO 黄仁勋上周辞职，据报道其辞职与一名被美国情报机构怀疑为中国间谍的女性有关。特朗普政府周一收紧对中国企业远程访问美国先进芯片的限制，以防其通过海外数据中心规避出口管制。
+美国国家情报总监 Jay Clayton 表示，过去一周苹果、微软、摩根大通、美国联邦航空管理局和美国国家安全局连续发生系统中断，不是网络攻击，也不是国家协调行动；微软邮件故障曾影响数百万用户。
 
-rss · CNBC Finance · 11月17日 08:52
+rss · CNBC Top News · 11月17日 22:03
 
-> **「背景」** 该报道的背景是，英伟达 CEO 黄仁勋上周辞职、首席财务官 Colette Kress 临时接任，同时美国与九个经济体在 11 月 15 日签署《旧金山宣言》，将敏感技术和“超级智能”（前沿 AI）供应链安全列为共同维护事项。
+> **「背景」** 各机构将故障归因于例行维护、软件缺陷和系统升级，例如美国联邦航空管理局指向一次路由器升级，摩根大通称是本地部署硬件中的软件缺陷。
 
-> **「影响」** 苹果等美国科技企业和相关投资者面临更直接的供应链与合规风险：iPhone 大量仍在中国制造、大中华区约占苹果销售 15%，而美国收紧芯片限制并可能引发中国反制，会推高供应转移、市场准入和关键材料中断的成本。
+> **「影响」** 议员 Mark Warner 提出推动 AI 安全法案，Hakeem Jeffries 要求国会简报；这些是政策诉求，而非已实施监管。
 
-> **「A股题材」** 积极影响：AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（管制促国产替代）
->
-> 负面影响：英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（对华限制损需求），苹果概念 → 田中精机（300461）、福莱新材（605488）、丝路视觉（300556）（供应链风险上升）（题材为规则匹配、方向为模型推测，非投资建议）
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.state.gov/releases/office-of-the-spokesman/2026/11/the-san-francisco-declaration-on-the-secure-foundations-of-enduring-prosperity">The San Francisco Declaration on the Secure Foundations of Enduring Prosperity - United States Department of State</a></li>
-<li><a href="https://www.cnn.com/2026/11/17/business/jensen-huang-nvidia-ceo-statement">Jensen Huang says he would be ‘honored’ to be reinstated as Nvidia CEO in new statement | CNN Business</a></li>
-<li><a href="https://cryptorank.io/news/feed/f6be4-apple-hardware-strategy-ternus-ceo">Apple Hardware Strategy: John Ternus CEO Era Unleashes Bold AI Devices | AI News AI | CryptoRank.io</a></li>
-
-</ul>
-</details>
-
-**标签**: `#U.S.-China tech relations`, `#semiconductor export controls`, `#AI supply chain`, `#Nvidia leadership`, `#Apple China exposure`
+**标签**: `#Technology outages`, `#Cybersecurity`, `#Cloud and software infrastructure`, `#Regulatory scrutiny`, `#Financial services operations`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [美国官员称多起科技与金融系统中断非网络攻击](https://www.cnbc.com/2026/11/17/apple-microsoft-faa-jpmorgan-outages.html) ⭐️ 7.5/10
+### [英伟达财报超预期，指引排除中国数据中心收入](https://www.cnbc.com/2026/11/18/nvidia-stock-earnings.html) ⭐️ 8.0/10
 
-美国国家情报总监 Jay Clayton 表示，近期微软、苹果、美国联邦航空管理局（FAA）和摩根大通等系统广泛中断并非网络攻击，也不是国家协调行动。事件在连续四个工作日影响银行交易、航班和内部通信，并促使议员要求国会听取说明并推动 AI 安全立法。
+英伟达第三财季营收为 1,158.4 亿美元，高于 LSEG 调查的分析师预期 1,091.0 亿美元；第四财季指引为 1,300 亿美元，也高于 1,251 亿美元共识，股价盘前上涨近 4%。美国商务部新规限制中国远程访问海外数据中心先进芯片，英伟达称展望不假设中国数据中心收入。
 
-rss · CNBC Top News · 11月17日 22:03
+rss · CNBC Top News · 11月18日 10:00
 
-> **「背景」** 微软、摩根大通和 FAA 分别把故障归因于隐藏软件缺陷、公司自有硬件系统的软件缺陷和路由器升级，但 FAA 仍在调查根因。
+> **「背景」** 此前 CEO 黄仁勋上周辞职，他在财报前表示愿意回归，但董事会主席称无意恢复其 CEO 职务。
 
-> **「A股题材」** 积极影响：网络安全 → 高凌信息（688175）、中国电信（601728）、永信至诚（688244）（安全治理需求提升）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：英伟达概念 → 工业富联（601138）、浪潮信息（000977）、中电港（001287）、胜宏科技（300476）、英维克（002837）（业绩超预期），算力租赁 → 奥雅股份（300949）、青云科技（688316）、中国移动（600941）、广脉科技（920924）、大名城（600094）（业绩提振需求）（题材为规则匹配、方向为模型推测，非投资建议）
 
-**标签**: `#technology outages`, `#financial infrastructure`, `#AI policy`, `#cybersecurity`, `#US regulation`
+**标签**: `#Nvidia`, `#AI supply chain`, `#earnings`, `#China export controls`, `#A-share themes`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [特朗普、习近平与普京将在深圳 APEC 期间会晤](https://www.cnbc.com/2026/11/18/apec-trump-xi-putin-shenzhen.html) ⭐️ 7.0/10
+### [Anthropic IPO 或定价高于 70 至 78 美元区间](https://www.cnbc.com/2026/11/17/anthropic-ipo-price.html) ⭐️ 8.0/10
 
-特朗普、习近平与普京将在中国深圳 APEC 期间举行首次中、俄、美领导人会晤，预计重点落实中美贸易休战；CNBC 称该休战已延长两个月至 2027 年 1 月。美国正收紧对华 AI 出口限制漏洞，市场对突破的预期较低。
+据 CNBC 援引消息人士，Anthropic 计划将纳斯达克 IPO 定价高于当前 70 至 78 美元区间，并于 11 月 19 日开始交易，股票代码为 ANT。
 
-rss · CNBC Finance · 11月18日 06:04
+rss · CNBC Top News · 11月17日 14:34
 
-> **「背景」** APEC 即亚太经合组织；上届韩国 APEC 促成中美降低关税并恢复部分稀土流通，为本次会谈提供既有协议背景。
+> **「背景」** Anthropic 此前为纳斯达克首次公开募股（IPO）设定每股 70 至 78 美元的发行区间，并拟于 11 月 19 日以代码“ANT”开始交易。其招股书显示，截至 9 月 30 日的九个月收入为 332.4 亿美元、同比增长约 1200%，但净亏损 1040 亿美元，其中大部分来自可转换票据和衍生负债的会计估值变动。
 
-> **「A股题材」** 积极影响：贸易 → 中成股份（000151）、苏豪弘业（600128）、东方创业（600278）（休战延长关税缓和）
->
-> 负面影响：英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（对华芯片销售受限）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「市场影响」** 若最终定价高于 70 至 78 美元区间，Anthropic 上市会把投资者对 AI 高估值、巨额算力承诺和亏损的担忧集中到一只新股上，可能影响全球 AI 股票的风险偏好。
 
-**标签**: `#US-China relations`, `#AI chip regulation`, `#APEC summit`, `#domestic semiconductors`, `#global macro`
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html">Anthropic sets price range of $70 to $78 in upcoming IPO as AI lab marches toward Nasdaq</a></li>
+<li><a href="https://www.tradingkey.com/de/news/forex/261574708-fxstreet">South Korea: Unemployment Rate 3% (Januar) gegenüber 4% zuvor</a></li>
+<li><a href="https://global.morningstar.com/en-eu/stocks/anthropic-we-see-stock-undervalued-ipo-pricing-range">Anthropic: We See the Stock as Undervalued in the IPO Pricing Range</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/article/anthropic-ipo-to-test-wall-streets-faith-in-ai-as-skepticism-mounts-180007104.html">Anthropic IPO to test Wall Street&#x27;s faith in AI as skepticism mounts</a></li>
+
+</ul>
+</details>
+
+**标签**: `#AI IPO`, `#Anthropic`, `#AI industry economics`, `#A-share AI themes`, `#Nasdaq listing`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [习近平在 APEC 呼吁消除贸易投资壁垒](https://www.cnbc.com/2026/11/18/china-xi-trade-investment-barriers.html) ⭐️ 7.0/10
+### [工信部委托中汽协评估 17 家车企供应商账期](http://www.caam.org.cn/chn/5/cate_68/con_5237404.html) ⭐️ 8.0/10
 
-中国国家主席习近平在 APEC 开幕致辞中呼吁消除贸易和投资壁垒，并表示中国将降低关税、扩大市场准入，深化数字经济和人工智能区域合作。
+中国汽车工业协会 11 月 16 日称，受工信部委托，将对 17 家重点车企的供应商账款支付开展调研评估，核查中小企业账期是否不超过 60 天、非中小企业现金及银行承兑汇票支付比例是否不低于 80%。
 
-rss · CNBC Top News · 11月18日 03:30
+telegram · zaihuapd · 11月18日 01:15
 
-> **「背景」** 2025 年 APEC 期间，中美领导人会晤后达成一年期部分回滚贸易和技术管制安排；中国主办 2026 年深圳 APEC，特朗普和普京本周到场，而美国对先进 AI 芯片出口管制的协调争议仍在发酵。
-
-> **「A股题材」** 积极影响：贸易 → 中成股份（000151）、苏豪弘业（600128）、东方创业（600278）（降壁垒扩大准入），数字经济 → 北纬科技（002148）、凡拓数创（301313）、东方嘉盛（002889）（数字合作利好）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「背景」** 2025 年 6 月修订生效的《保障中小企业款项支付条例》要求大型企业向中小企业付款期限不超过 60 天，17 家车企随后作出公开承诺；2026 年 9 月工信部、市场监管总局联合发文，将账期规范从行业自律升级为行政约束，本次年度评估即为落地核验。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.scmp.com/topics/2026-xi-trump-summits">2026 Xi-Trump summits: Latest News and Updates | South China Morning Post</a></li>
-<li><a href="https://www.cnbc.com/2025/11/01/chinas-xi-pushes-for-global-ai-body-at-apec-in-counter-to-us.html">China&#x27;s Xi pushes for global AI body at APEC in counter to U.S.</a></li>
+<li><a href="https://m.sohu.com/a/1103100364_121218495?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334">都市车界|车企“60天账期”迎来核验 17家重点车企纳入年度评估_搜狐网</a></li>
+<li><a href="https://www.cls.cn/detail/2535815">60天账期从“承诺”变“铁律” 17家车企将迎常态化年度“大考”</a></li>
 
 </ul>
 </details>
 
-**标签**: `#China macro policy`, `#APEC`, `#AI theme`, `#trade barriers`, `#market access`
+**标签**: `#automotive supply chain`, `#payment terms`, `#SME liquidity`, `#A-share auto OEMs`, `#regulatory enforcement`
 
 ---
 
 <a id="item-finance-news-5"></a>
-### [伊朗称袭击科威特美军设施，海湾紧张升级](https://www.cnbc.com/2026/11/18/trump-iran-war-hormuz-oil-.html) ⭐️ 7.0/10
+### [美中俄领导人深圳 APEC 峰会聚焦贸易与科技](https://www.cnbc.com/2026/11/18/apec-trump-xi-putin-shenzhen.html) ⭐️ 7.0/10
 
-伊朗军方称袭击了科威特阿里·萨利姆空军基地内的美军无人机和导弹设施，海湾紧张升级。国际能源署称，全球石油供应自这场冲突爆发以来首次超过需求，并预计第四季度将重回供应过剩。
+特朗普、习近平和普京将出席深圳 APEC 峰会，美中国将重点讨论落实去年促成的贸易休战。该休战已延长两个月至 2027 年 1 月，包含降低关税和部分稀土流通；9 月双方还称将对 300 亿美元商品降关税，但未说明生效日期。
 
-rss · CNBC Top News · 11月18日 05:24
+rss · CNBC Finance · 11月18日 06:04
 
-> **「背景」** 这场涉及美国、以色列和伊朗的冲突已进入第九个月，霍尔木兹海峡能源运输持续受到干扰。
+> **「背景」** 去年韩国 APEC 峰会促成美中国一年期贸易休战；当前美国正收紧对华 AI 芯片限制漏洞，中国威胁反制。
 
-**标签**: `#oil`, `#energy markets`, `#geopolitics`, `#Strait of Hormuz`, `#macro`
+> **「A股题材」** 积极影响：贸易 → 苏豪弘业（600128）、物产环能（603071）、东方创业（600278）、苏豪汇鸿（600981）、中成股份（000151）（关税降低休战延长）（题材为规则匹配、方向为模型推测，非投资建议）
+
+**标签**: `#APEC summit`, `#US-China relations`, `#AI chips`, `#rare earths`, `#energy markets`
 
 ---
 
 <a id="item-finance-news-6"></a>
-### [欧盟初步认定 Temu 违反《数字服务法》](https://www.reuters.com/legal/litigation/eu-preliminarily-finds-temu-breaches-regulation-failing-tackle-illegal-good-2026-11-17/) ⭐️ 7.0/10
+### [巴斯夫拟收购赢创整合德国化工行业](https://www.bloomberg.com/news/articles/2026-11-18/basf-s-evonik-chase-poses-test-for-potential-merz-successor) ⭐️ 7.0/10
 
-欧盟委员会 11 月 17 日初步认定，Temu 未采取合理、适度且有效的措施防止平台销售非法商品，违反《数字服务法》相关义务。该认定尚未给出罚款金额或最终处罚决定。
+巴斯夫拟收购赢创，以整合疲软的德国化工行业，该交易被视为欧洲今年多起政治色彩浓厚的并购之一；报道未披露交易条款或财务数字。
 
-telegram · zaihuapd · 11月17日 14:11
+rss · Bloomberg Markets · 11月18日 09:14
 
-> **「背景」** 欧盟委员会此前已于 2026 年 5 月因风险评估不足对 Temu 罚款 2 亿欧元；本次初步认定针对其防止非法商品销售的具体措施，Temu 可书面回应，若最终确认最高可罚全球年营业额 6%。
+> **「背景」** BASF 此前对 Evonik 的收购尝试曾因报价被认为过低而受阻，据路透和 FT 报道，Evonik 拒绝了约 103 亿欧元（117 亿美元）或每股 22.15 欧元的出价。BASF 现在准备提高逾 110 亿欧元（121 亿美元）报价，并加入就业、投资与本土产能保证，以争取德国工业核心区和 Evonik 最大股东 RAG 基金会方面的政治支持。
 
-> **「潜在罚款与整改风险」** 若初步认定最终成立，Temu 可能面临最高相当于其全球年营收 6%的罚款、强制整改和更严格监管，从而增加在欧盟市场的合规成本。
-
-> **「A股题材」** 负面影响：跨境电商 → 北鼎股份（300824）、欧圣电气（301187）、绿联科技（301606）（欧盟合规风险上升），拼多多概念 → 德马科技（688360）、中邮科技（688648）、引力传媒（603598）（海外业务处罚风险）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 若交易推进，欧洲化工市场可能面临反垄断审查下的大规模资产剥离和重组，并影响巴斯夫、赢创的员工及重叠业务。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://digital-strategy.ec.europa.eu/en/news/commission-accepts-temus-corrective-measures-terminate-breach-digital-services-act">Commission accepts Temu&#x27;s corrective measures to terminate breach of the Digital Services Act | Shaping Europe’s digital future</a></li>
-<li><a href="https://finance.yahoo.com/news/temu-doesn-t-properly-assess-102400451.html">Temu doesn’t properly assess illegal products on its platform: EU Commission</a></li>
-<li><a href="https://www.dailysabah.com/business/economy/temu-could-be-hit-with-2nd-large-eu-fine-over-sale-of-illegal-items/amp">Temu could be hit with 2nd large EU fine over sale of illegal items | Daily Sabah</a></li>
-<li><a href="https://finance.yahoo.com/news/temu-doesn-t-properly-assess-102400451.html">Temu doesn’t properly assess illegal products on its platform: EU Commission</a></li>
-<li><a href="https://finance.yahoo.com/news/temu-risks-fines-6-revenue-094501562.html">Temu risks fines up to 6% of revenue as EC flags potential DSA breach</a></li>
-<li><a href="https://www.europeaninterest.eu/commission-flags-temu-for-violating-digital-services-act-over-illegal-product-sales">Commission flags Temu for violating Digital Services Act over illegal product sales</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-18/basf-s-evonik-chase-poses-test-for-potential-merz-successor">BASF’s Evonik Chase Poses Test for Potential Merz Successor - Bloomberg</a></li>
+<li><a href="https://sg.finance.yahoo.com/news/evonik-shares-rise-report-basf-154619675.html">Evonik shares rise on report BASF prepares renewed takeover offer</a></li>
+<li><a href="https://leadiq.com/c/basf/5a1d7e76240000240058aa06">BASF Company Overview, Contact Details &amp; Competitors | LeadIQ</a></li>
+<li><a href="https://prismaneconsulting.com/blog-details/basf-and-evonik-can-consolidation-solve-europes-chemical-asset-competitiveness-problem">BASF and Evonik in 2026: Chemical Consolidation &amp; European Competitiveness</a></li>
+<li><a href="https://www.linkedin.com/posts/sebastianpbell_%F0%9D%97%95%F0%9D%97%94%F0%9D%97%A6%F0%9D%97%99-%F0%9D%97%98%F0%9D%98%83%F0%9D%97%BC%F0%9D%97%BB%F0%9D%97%B6%F0%9D%97%B8-is-consolidation-activity-7510227403592626176-cp2F">🔴 𝗕𝗔𝗦𝗙 🤝 𝗘𝘃𝗼𝗻𝗶𝗸 🔴 Is consolidation the way forward for German Chemicals? BASF approaching Evonik could be more than just a M&amp;A story. It raises a much bigger question: 𝗖𝗮𝗻… | Sebastian Bell | 55 comments</a></li>
+<li><a href="https://chemanager-online.com/en/news/basf-and-evonik-in-merger-talks">BASF and Evonik in Merger Talks - Update • CHEManager is the market-leading medium for the management of the chemical and pharmaceutical industry</a></li>
 
 </ul>
 </details>
 
-**标签**: `#EU regulation`, `#Digital Services Act`, `#Temu`, `#e-commerce compliance`, `#platform risk`
+**标签**: `#German chemicals`, `#M&amp;A`, `#European policy`, `#BASF`, `#Evonik`
 
 ---
 
 <a id="item-finance-news-7"></a>
-### [中汽协受工信部委托核查 17 家车企 60 天账期](http://www.caam.org.cn/chn/5/cate_68/con_5237404.html) ⭐️ 7.0/10
+### [Anthropic 接近为可能创纪录 IPO 定价](https://www.bloomberg.com/news/articles/2026-11-18/anthropic-approaches-final-ipo-hurdle-after-tech-stocks-churn) ⭐️ 7.0/10
 
-中国汽车工业协会 11 月 16 日发布通知称，受工信部委托，将对一汽、上汽、比亚迪、理想、蔚来、小鹏、小米汽车、零跑等 17 家重点车企开展供应商账款支付调研评估，核查中小企业账期是否不超过 60 天，以及非中小企业现金和银行承兑汇票支付比例是否不低于 80%。
+据彭博报道，Anthropic PBC 接近为可能成为史上最大首次公开募股（IPO）的交易定价，但报道未披露具体发行价、估值或募资规模。
 
-telegram · zaihuapd · 11月18日 01:15
+rss · Bloomberg Markets · 11月18日 10:00
 
-> **「背景」** 此前 17 家车企已公开承诺供应商账期不超过 60 天，工信部、市场监管总局随后将相关要求升级为行政约束。
+> **「背景」** Anthropic 已更新上市申请文件（S-1）并启动路演，据报道其拟以每股 70 至 78 美元发行新股、最早于 11 月 19 日在纳斯达克以代码 ANT 开始交易。
+
+> **「A股题材」** 积极影响：数据中心 → 光环新网（300383）、润泽科技（300442）、美利云（000815）、科华数据（002335）、英维克（002837）（云伙伴认购，算力扩张预期），芯片概念（芯片伙伴认购，产业链支持）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="http://wap.seccw.com/wap.php/Index/detail/id/52495.html">工信部委托中汽协评估17家车企供应商账期，每家抽查不少于15家供应商</a></li>
-<li><a href="https://finance.cctv.com/2026/11/17/ARTIzyqNQ9jzUhoYKnsySgWZ261117.shtml">工信部将约谈问题账期车企，中汽协开展账期调研评估_财经频道_央视网(cctv.com)</a></li>
+<li><a href="https://polymarket.com/event/in-which-month-will-anthropic-ipo">Polymarket</a></li>
+<li><a href="https://finance.yahoo.com/markets/article/anthropic-seeks-14-trillion-valuation-in-ipo-130300928.html">Anthropic seeks $1.4 trillion valuation in highly anticipated IPO, reportedly aiming for Nov. 19 or Nov. 20 debut</a></li>
 
 </ul>
 </details>
 
-**标签**: `#automotive supply chain`, `#SME payment policy`, `#MIIT regulation`, `#A-share autos`, `#CAAM`
+**标签**: `#Anthropic IPO`, `#AI company financing`, `#technology IPO`, `#global tech markets`, `#AI supply chain`
 
 ---
 
 <a id="item-finance-news-8"></a>
-### [富士康拟收购索尼汽车摄像头模组业务](https://news.google.com/rss/articles/CBMivwFBVV95cUxNZGJaT3hzb2NaLWVpNEw5Z29uaXZUYkNEUTNxck1XdmpULWo3SVY0MEVZbEVHMFkyUzRlcDUtYW9OOXNaMFV6MUVzMFJ6SFJwcmdlSFNWTmxuVjJ1UEtic1dUS0tVZ3pQYkxKOW1lelZ2TkxMUWFkV1JZMXYxTmhUQUpRZ1RybmJYZ3l1ZUU5Y1RxRng1dXd0MzY1eE4xOGxRSE8yQnF6MUxhQjIxZGVGbk5NOUFiS1JlNk5QcFBnWQ?oc=5) ⭐️ 7.0/10
+### [习特朗普会谈前警告贸易壁垒](https://www.bloomberg.com/news/articles/2026-11-18/xi-warns-against-rampant-protectionism-ahead-of-trump-talks) ⭐️ 7.0/10
 
-据路透社报道，富士康计划收购索尼半导体解决方案的汽车摄像头模组业务，但交易金额和条款未披露。
+中国国家主席习近平在即将与特朗普会谈前警告反对经济壁垒，并呼吁亚太国家加强合作；美国针对中国获取先进 AI 芯片的新限制正给脆弱的贸易休战带来压力。
 
-google\_news · Reuters · 11月17日 11:48
+rss · Bloomberg Markets · 11月18日 02:25
 
-> **「背景」** 鸿海周二表示，计划以 72.4 亿日元（4548 万美元）收购索尼半导体解决方案的车载摄像头模组业务，并称因海外生产设备与库存仍在讨论，交易价格可能调整；该交易预计于 4 月底前完成交割，但仍需监管批准。
+> **「背景」** 中美去年 10 月在韩国釜山会谈后达成贸易休战，但美国对先进 AI 芯片等关键技术出口设限，并酝酿对中国商品加征 7.5%关税，使这一脆弱平衡在特朗普会晤前承压。
 
-> **「影响」** 该收购将把索尼汽车摄像头模组业务的技术、客户基础和直供车企经验并入鸿海，使其得以扩大在 ADAS 和智能出行供应链中的角色。
+> **「影响」** 美国限制先进 AI 芯片及相关设备出口，会短期内增加中国 AI 数据中心和芯片应用企业的供应压力，但也可能为国内芯片设计和替代供应链带来政策与市场空间。
 
-> **「A股题材」** 积极影响：智能驾驶 → 北纬科技（002148）、光洋股份（002708）、日盈电子（强化智驾感知供应链），汽车电子 → 日盈电子、兆丰股份（300695）、康冠科技（001308）（扩大车载电子供应），传感器 → 华东重机（002685）、德尔股份（300473）、安培龙（301413）（强化车载感知供应）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：半导体设备 → 屹唐股份（688729）、先锋精科（688605）、三佳科技（600520）、托伦斯（301583）、华海清科（688120）（出口管制利好国产替代）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.channelnewsasia.com/business/foxconn-plans-acquire-sony-semiconductor-solutions-automotive-camera-module-business-6558961">Foxconn plans to acquire Sony Semiconductor Solutions&#x27; automotive camera module business - CNA</a></li>
-<li><a href="https://www.foxconn.com/en-us/press-center/events/csr-events/2158">Hon Hai Technology Group (Foxconn) Acquires Automotive Camera Module Business From Sony Semiconductor Solutions - Hon Hai Technology Group</a></li>
-<li><a href="https://finance.biggo.com/news/cfae722c-c7b3-41a9-ae32-80f50a2e388a">Hon Hai to Acquire Sony&#x27;s Automotive Camera Module Business for ¥7.24 Billion, Deal Expected to Close April 2027 — BigGo Finance</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-08-24/us-eyes-china-overcapacity-tariffs-of-7-5-before-xi-trump-talks">US Plans 7.5% Tariff on Chinese Goods Before Xi-Trump Summit - Bloomberg</a></li>
+<li><a href="https://cryptorank.io/news/feed/7150b-us-china-hold-constructive-trade-talks-ahead-of-trump-xi-summit">US, China hold ‘constructive’ trade talks ahead of Trump-Xi Summit</a></li>
+<li><a href="https://www.csis.org/analysis/choking-chinas-access-future-ai">Choking off China’s Access to the Future of AI</a></li>
+<li><a href="https://finance.yahoo.com/news/beijing-city-subsidise-domestic-ai-015835309.html">Beijing city to subsidise domestic AI chips, targets self-reliance by 2027</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Foxconn`, `#Sony Semiconductor Solutions`, `#automotive camera modules`, `#M&amp;A`, `#electronics supply chain`
+**标签**: `#China-US trade`, `#AI chip restrictions`, `#domestic semiconductors`, `#geopolitical policy`, `#A-share themes`
 
 ---
 
 ## 中国股市
 
 <a id="item-china-market-1"></a>
-### [央行政策利率换锚至隔夜逆回购](https://opinion.caixin.com/2026-11-18/102506199.html) ⭐️ 9.0/10
+### [腾讯 Q3 营收增 8%，AI 投入推高资本开支与现金支出](https://wallstreetcn.com/articles/3786186) ⭐️ 8.0/10
 
-中国人民银行公告自 11 月 2 日起每日开展固定利率隔夜逆回购操作招标，当前操作利率为 1.25%，并将 7 天期逆回购调整为多重价位中标、退出政策利率属性。这标志着主要政策利率正式从 7 天期切换至隔夜。
+腾讯第三季度营收同比增长 8%至 2073.4 亿元，低于市场预估的 2105.3 亿元。公司当季资本开支达 814.3 亿元，高于市场预估的 554 亿元；受算力采购预付款等因素影响，自由现金流净流出 691 亿元，剔除该预付款后为净流入 169 亿元。
 
-rss · Caixin 财新 · 11月18日 05:04
+rss · 华尔街见闻 · 11月18日 08:53
 
-> **「背景」** 此前，央行主要政策利率以 7 天期逆回购为基准；2026 年 6 月已启动 1.25%的隔夜逆回购，低于 7 天期 1.4%，为后续换锚提供操作基础。10 月公告将每日固定利率隔夜逆回购明确为主要政策利率，7 天期则退出政策利率属性。
+> **「背景」** 资本开支是购置长期资产的支出，自由现金流是经营现金扣除资本开支等支出后的余额。管理层称，AI 模型研发和算力基础设施投入增加，若剔除 Hy、元宝、CodeBuddy、WorkBuddy 等新 AI 产品贡献，不按国际财务报告准则（Non-IFRS）计算的经营盈利同比增长 8%。
 
-> **「市场影响」** 对企业和债券投资者而言，央行把政策利率锚从 7 天逆回购转向 1.25%的隔夜逆回购后，融资和债券定价会更直接跟随每日流动性操作，可能降低短期融资成本，但也使债券价格对资金面波动更敏感。
+> **「A股题材」** 积极影响：算力概念 → 旋极信息（300324）、奥雅股份、天亿马、华胜天成、川投能源（算力投入超预期利好），数据中心 → 旋极信息（300324）、许继电气（000400）、平高电气、美的集团（000333）、中国移动（算力基建开支大增），液冷服务器 → 雪人集团（002639）、联赢激光、美的集团（000333）、三联锻造（001282）、闽发铝业（002578）（算力扩张带动液冷）（题材为规则匹配、方向为模型推测，非投资建议）
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://finance.biggo.com/news/265aebe7-ea00-42ca-bf26-7122b2e85e23">China&#x27;s Central Bank Officially Shifts Policy Rate Anchor to Overnight; Daily Operations Set at 1.25% from November 2 — BigGo Finance</a></li>
-<li><a href="https://cryptobriefing.com/chinese-lenders-price-bonds-overnight-rate-pboc">Chinese lenders price bonds off overnight funding rate as PBOC reforms reshape benchmarks</a></li>
-<li><a href="https://www.bloomberg.com/news/articles/2026-10-30/pboc-reveals-overnight-rate-at-1-25-before-policy-anchor-shift">China Lifts Secrecy on Key Rate, Sets It Below Old Benchmark - Bloomberg</a></li>
-<li><a href="https://cryptobriefing.com/chinese-lenders-price-bonds-overnight-rate-pboc">Chinese lenders price bonds off overnight funding rate as PBOC reforms reshape benchmarks</a></li>
-<li><a href="https://global.chinadaily.com.cn/a/202611/12/WS6af5107ce4b03ebf8519be97.html">Policy rate shift delivers clarity for mkt - Chinadaily.com.cn</a></li>
-<li><a href="https://eng.yidaiyilu.gov.cn/p/0M0V0R6F.html">Chinese central bank shifts policy rate anchor to overnight - BELT AND ROAD PORTAL</a></li>
-
-</ul>
-</details>
-
-**标签**: `#PBOC policy rate`, `#interest-rate marketization`, `#China liquidity`, `#A-share/HK equities`
+**标签**: `#Tencent`, `#AI capex`, `#cloud services`, `#HK tech earnings`, `#computing power supply chain`
 
 ---
 
 <a id="item-china-market-2"></a>
-### [英伟达业绩与 GPU 租赁涨价带动国产算力股走强](https://www.yicai.com/news/103444836.html) ⭐️ 8.0/10
+### [新易盛称 1.6T 光模块进入大规模放量阶段](https://www.cls.cn/detail/2538098) ⭐️ 7.0/10
 
-11 月 18 日，A 股和港股算力芯片股走强，主要因英伟达披露 2027 财年第三季度营收同比增长 103%至 1158 亿美元，并称 Hopper 多年期 GPU 租赁续约价格最高达到此前两倍、B300 租赁价格较推出时上涨超过 60%。
+新易盛公告称，客户对光模块的需求指引明确、在手订单充足，目前不存在需求预期下修或砍单；公司称 1.6T 光模块已进入大规模放量阶段，成都和泰国生产基地正在扩产。
 
-rss · 第一财经 · 11月18日 04:22
+rss · 财联社电报\(RSSHub\) · 11月18日 10:26
 
-> **「背景」** 国内主要算力芯片企业（为 AI 训练和推理提供芯片）2026 年前三季度营收高速增长，为板块上涨提供了基本面背景。
+> **「背景」** 新易盛所处的 AI 光模块行业正从 800G 向 1.6T 升级，1.6T 主要满足数据中心与 AI 算力集群内高速互联需求；其提到的 NPO/CPO 是更靠近芯片的光互连方案，竞争焦点已从单纯组装转向与客户共同定义规格、保障交付和上游光芯片/DSP 等核心器件协同。
 
-> **「A股题材」** 积极影响：算力概念（算力需求旺营收高增），AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（AI芯片需求旺营收增），国产芯片（国产芯片营收高增走强）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 对关注光模块及 AI 算力供应链的投资者而言，这一披露主要缓解需求下修担忧，但公司未给出具体产能或出货数字，不能据此判断业绩或股价必然变化。
 
-**标签**: `#A-share compute chips`, `#AI infrastructure`, `#Nvidia read-through`, `#GPU rental prices`, `#China semiconductors`
+> **「A股题材」** 积极影响：光通信模块 → 新易盛（300502）、中际旭创（300308）、光迅科技（002281）、联特科技（301205）、长光华芯（688048）（需求稳且升级放量）（题材为规则匹配、方向为模型推测，非投资建议）
+
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/2072618066479931554">NPO行业深度：行业现状、市场空间、产业链及相关公司深度梳理【慧博出品】 - 知乎</a></li>
+<li><a href="https://m.36kr.com/p/4062481128805513">Coherent：市值腰斩，光模块“全能王”被错杀了吗？-36氪</a></li>
+<li><a href="https://cn.investing.com/news/stock-market-news/article-3100766">CPO概念再爆发！长光华芯“两连板”，中际旭创市值破6000亿创新高，新易盛、源杰科技等多股跟涨 提供者 时代周报</a></li>
+
+</ul>
+</details>
+
+**标签**: `#A-share`, `#optical modules`, `#1.6T`, `#AI infrastructure`, `#company disclosure`
 
 ---
 
 <a id="item-china-market-3"></a>
-### [香港启动五年无纸化股份市场转型](https://www.scmp.com/business/markets/article/3374744/hong-kong-begins-shift-towards-fully-digitalised-share-market-5-year-transition-plan) ⭐️ 7.0/10
+### [FDA 拒批依沃西单抗在美上市并要求重开三期研究](https://www.caixin.com/2026-11-18/102506310.html) ⭐️ 7.0/10
 
-香港于周二启动为期五年的股份市场全面数字化过渡，北京 Sinotau International Pharmaceutical Technology 将成为首家不发行实体股票证书的首次公开募股（IPO），港交所等三家现有上市公司为首批转向新系统的企业。
+美国药监局（FDA）公布完整回应函，拒绝康方生物研发的 PD-1/VEGF 双靶点肿瘤药依沃西单抗（依达方）在美上市申请，并指出临床试验设计和毒性风险需进一步解决。该药若要就同一适应证再次申请美国上市，需重开一项三期多中心临床研究。
 
-rss · SCMP Business · 11月17日 23:00
+rss · Caixin 财新 · 11月18日 10:33
 
-> **「背景」** 根据香港证券及期货事务监察委员会的安排，新上市且依据中国内地、香港、百慕大或开曼群岛法律成立的公司将不再发行实体股票；港交所此前也提出扩展无纸化上市制度，并设置过渡期让现有上市公司逐步转为电子股票记录。
+> **「背景」** FDA 的“完整回应函”（CRL）表示现有申报资料不足以获批，通常要求补充数据或整改；本次针对康方生物研发、Summit Therapeutics 在美申报的 PD-1/VEGF 双抗依沃西单抗，核心争议是其关键试验 HARMONi 主要来自中国患者且未显示统计显著总生存获益。该药已在中国获批用于 EGFR 突变晚期非小细胞肺癌等适应证，但美国批准需重新开展多中心三期临床。
 
-> **「A股题材」** 积极影响：证券 → 华林证券（002945）、方正证券（601901）、中国银河（601881）（提升资本市场效率）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 对康方生物和 Summit Therapeutics 而言，重开三期多中心研究将推迟依达方进入美国市场，并增加后续临床投入。
+
+> **「A股题材」** 积极影响：医疗研发外包 → 博腾股份（300363）、康龙化成（300759）、药明康德（603259）、毕得医药（688073）、药康生物（688046）（新增临床投入）
+>
+> 负面影响：创新药 → 莱美药业（300006）、近岸蛋白、智飞生物（300122）、羚锐制药、济川药业（海外上市受阻），单抗概念 → 莱美药业（300006）、百克生物（688276）、康弘药业（002773）、国药一致（000028）、百济神州（688235）（双抗出海受阻）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.scmp.com/business/markets/article/3374744/hong-kong-begins-shift-towards-fully-digitalised-share-market-5-year-transition-plan">Hong Kong begins shift towards fully digitalised share market in 5-year transition plan | South China Morning Post</a></li>
-<li><a href="https://www.morganlewis.com/pubs/2025/01/hkex-issues-conclusions-on-proposed-expansion-of-paperless-listing-regime">HKEX Issues Conclusions on Proposed Expansion of Paperless Listing Regime</a></li>
+<li><a href="https://www.fiercepharma.com/pharma/fdas-complete-response-letter-summit-ivonescimab-cites-china-heavy-data-beyond-survival-miss">FDA slams China-heavy data in Summit’s ivonescimab CRL</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Hong Kong equities`, `#market infrastructure`, `#IPO rules`, `#digital securities`, `#regulatory transition`
+**标签**: `#Hong Kong biotech`, `#FDA regulatory action`, `#Akeso`, `#oncology drug approval`, `#cross-border market entry`
 
 ---
 
 <a id="item-china-market-4"></a>
-### [券商称美国 BIS 新规利好中国本土算力链](https://www.insightintochina.com/publish/touyan_50053) ⭐️ 7.0/10
+### [美国 BIS 收紧 AI 出口管制](https://www.insightintochina.com/publish/touyan_50044) ⭐️ 7.0/10
 
-美国 BIS 扩大出口管制，覆盖远程算力访问、经五国转运和晶圆代工/封测服务，使中国企业更难通过海外数据中心获得先进 AI 芯片。券商认为这会加快中国本土 AI 算力供应链，并预计“超节点”在 2027 年迎来放量拐点。
+美国商务部工业与安全局（BIS）更新 AI 出口管制，堵住中国及澳门实体通过第三国晶圆代工厂规避限制的漏洞，并对某些先进制程芯片新增独立许可要求。
 
-insightintochina · InsightIntoChina · 11月18日 03:01
+insightintochina · InsightIntoChina · 11月18日 02:01
 
-> **「背景」** 美国商务部工业与安全局（BIS，负责出口管制）扩大高端 AI 芯片限制，覆盖远程算力访问、经第三国转运以及芯片代工和封测服务，使中国公司更难借海外数据中心获取先进芯片。
+> **「背景」** 美国商务部工业与安全局（BIS）此前已对先进计算相关出口实施许可要求，并在 2026 年 5 月重申：即使实体位于第三国，只要其总部或最终母公司位于中国、澳门等受控地区，也可能需要申请许可。
 
-> **「A股题材」** 积极影响：集成电路制造 → 中芯国际（688981）、晶合集成（688249）、华虹宏力（688347）（管制倒逼国产替代加速）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 该限制可能促使中国晶圆厂加速转向成熟制程，推高成熟制程设备、二手工具和耗材需求，并迫使外资供应商通过合资维持对华业务。
+
+> **「A股题材」** 积极影响：半导体设备 → 拓荆科技（688072）、华海清科（688120）、盛美上海（688082）、屹唐股份（688729）、中科飞测（688361）（自主可控需求提升）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.clearytradewatch.com/2025/04/bis-further-restricts-exports-of-artificial-intelligence-and-advanced-chips-to-china">BIS Further Restricts Exports of Artificial Intelligence and Advanced Chips to China | Cleary Foreign Investment and International Trade Watch</a></li>
-<li><a href="https://www.investing.com/news/stock-market-news/semi-stocks-fall-as-us-ramps-up-export-controls-of-highend-chips-to-china-432SI-2908262">Semi Stocks Fall as U.S. Ramps Up Export Controls of High-end Chips to China</a></li>
+<li><a href="https://www.bis.gov/media/documents/bis-guidance-may-31-2026.pdf">BIS Guidance — May 31, 2026 (PDF)</a></li>
+<li><a href="https://china-gateway360.com/chinas-semiconductor-self-sufficiency-progress-review-what">China’s Semiconductor Self-Sufficiency Progress Review: What It Means for Foreign Suppliers in 2026 | China Gateway 360</a></li>
 
 </ul>
 </details>
 
-**标签**: `#domestic AI compute`, `#export controls`, `#semiconductor supply chain`, `#server companies`, `#broker call`
+**标签**: `#BIS export controls`, `#semiconductor self-sufficiency`, `#advanced-node foundries`, `#AI supply chain`, `#China policy`
 
 ---
 
 <a id="item-china-market-5"></a>
-### [京东三季度利润回升，新业务减亏为主因](https://wallstreetcn.com/articles/3786158) ⭐️ 6.0/10
+### [国家能源局加强流域水风光一体化统筹](https://www.cls.cn/detail/2538097) ⭐️ 6.0/10
 
-京东 2026 年第三季度营收 3095.93 亿元、同比增长 3.5%，归属净利润 65.03 亿元、同比增长约 23.3%。利润回升主要来自新业务经营亏损同比收窄 60.94 亿元。
+国家能源局印发指导意见，要求加强全国流域水风光一体化发展工作统筹。涉及主要河流、通过特高压直流通道跨省跨区消纳或规划新增服务特定电源抽水蓄能的事项，需在国家能源局指导下开展。
 
-rss · 华尔街见闻 · 11月18日 02:44
+rss · 财联社电报\(RSSHub\) · 11月18日 10:22
 
-> **「背景」** 在二季度因家电手机“国补”（国家消费补贴）造成高基数、收入同比下滑 2.9%后，京东三季度营收重回增长，利润修复更多来自外卖等新业务减亏。由于外卖此前以补贴吸引用户、且公司未单独披露订单、收入与单均亏损，外界仍需验证补贴退坡后的用户能否转化为核心零售增量。
+> **「背景」** “水风光一体化”指在同一流域统筹开发水电、风电和光伏，利用水电的调节能力平抑风光发电波动，并提高输电通道利用效率\[tool-1-1\]。此前国家能源局已推动主要流域水风光一体化规划和示范基地建设，随着新能源装机规模扩大，跨省特高压消纳和抽水蓄能等安排需要更高层级协调\[tool-1-2\]。
 
-> **「欧洲监管约束」** 京东完成对 CECONOMY 的控股收购后，其欧洲业务需遵守欧盟承诺，按市场条件交易，并向第三方零售商提供不劣于 Ceconomy 的仓储、物流和技术服务，以限制内部补贴优势。
+> **「影响」** 政策将流域水风光项目纳入国家统筹，使水电运营商、风光开发商和特高压、抽水蓄能设备企业面临更明确的跨省消纳与配套建设协调路径。
+
+> **「A股题材」** 积极影响：抽水蓄能 → 许继电气（000400）、龙建股份（600853）、广州发展（600098）、国电南瑞（600406）、申能股份（600642）（明确抽蓄协调路径利好）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://companies.caixin.com/2026-11-17/102506002.html">京东集团三季度营收增长3.5% 京东外卖、海外等新业务收入“砍半”_公司频道_财新网</a></li>
-<li><a href="https://www.voachinese.com/a/8223359.html">京东拿下德国电商Ceconomy，若违反欧盟十年监管将挨罚</a></li>
+<li><a href="https://www.nea.gov.cn/2023-06/02/c_1310724323.htm">水风光一体化开发探新路---国家能源局</a></li>
+<li><a href="https://www.nea.gov.cn/20251112/03dc9ef6112a45be9712aa2e7dc17597/c.html">国家能源局有关负责同志就《关于促进新能源集成融合发展的指导意见》答记者问---国家能源局</a></li>
+<li><a href="https://www.newslqy.com/news/316814">央媒看四川｜科学规划建设新型能源体系 - 龙泉驿</a></li>
+<li><a href="https://www.nea.gov.cn/2023-06/02/c_1310724323.htm">水风光一体化开发探新路---国家能源局</a></li>
 
 </ul>
 </details>
 
-**标签**: `#京东财报`, `#外卖减亏`, `#京东零售`, `#AI应用`, `#CECONOMY收购`
+**标签**: `#China energy policy`, `#A-share thematic catalyst`, `#renewables`, `#grid equipment`, `#pumped storage`
 
 ---
 
 <a id="item-china-market-6"></a>
-### [摩根士丹利：中国家庭海外金融资产到 2035 年或达 10 万亿美元](https://www.scmp.com/business/banking-finance/article/3374811/chinese-investors-overseas-holdings-double-2035-morgan-stanley) ⭐️ 6.0/10
+### [国家能源局发文探索水风光与绿氢氨醇协同](https://www.cls.cn/detail/2538092) ⭐️ 6.0/10
 
-摩根士丹利预测，中国家庭的海外金融资产到 2035 年可能增加一倍以上，达到 10 万亿美元。
+国家能源局印发《关于加快推动流域水风光一体化发展的指导意见》，提出探索“水风光+绿色氢氨醇”协同发展，重点在西南、西北等具备条件地区结合产业布局和水资源情况推进。
 
-rss · SCMP Business · 11月18日 01:00
+rss · 财联社电报\(RSSHub\) · 11月18日 10:18
 
-> **「背景」** 这项预测的背景是，中国家庭在监管趋严下仍寻求资产配置分散，而海外资产近期回报高于境内股市，因此跨境投资需求上升。
+> **「背景」** 这里的“水风光”指在流域内统筹水电、风电和光伏，“绿色氢氨醇”指用可再生能源电力制氢并进一步合成氨或甲醇，可用于化工、冶金等高耗能产业低碳转型。
 
-> **「影响」** 若该预测兑现，汇丰、渣打以及香港交易所的跨境财富管理、交易、清算和上市活动有望受益。
+> **「A股题材」** 积极影响：电力 → 华能水电（600025）、福能股份（600483）、川投能源（600674）、中国广核（003816）、宝新能源（000690）（绿电消纳预期改善）（题材为规则匹配、方向为模型推测，非投资建议）
 
-> **「A股题材」** 积极影响：银行 → 青岛银行（002948）、苏州银行（002966）、交通银行（601328）（跨境财富管理受益）（题材为规则匹配、方向为模型推测，非投资建议）
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.scmp.com/asia">Breaking China, Asia, HK News, Opinions and Insights | South China Morning Post</a></li>
-
-</ul>
-</details>
-
-**标签**: `#cross-border-capital`, `#overseas-investments`, `#hong-kong-listings`, `#morgan-stanley`, `#household-wealth`
+**标签**: `#China energy policy`, `#green hydrogen/ammonia/methanol`, `#water-wind-solar integration`, `#A-share sector theme`, `#low-carbon transition`
 
 ---
 
 <a id="item-china-market-7"></a>
-### [丽新系拟分拆上海香港广场部分资产偿还贷款](https://www.scmp.com/business/article/3374790/lai-sun-spin-part-hong-kong-plaza-shanghai-repay-us315m-loan) ⭐️ 6.0/10
+### [Galaxy 拟推人形机器人女团，巨星传奇认购其不超过 7%股本](https://wallstreetcn.com/articles/3786192) ⭐️ 6.0/10
 
-丽新发展、其母公司丽新制衣及附属丽丰控股提议，将上海香港广场的部分资产分拆为房地产投资信托基金（REIT），并寻求在沪上市以募集“可观所得”。公司称，这笔所得可用于偿还约 24.7 亿港元（3.15 亿美元）、3 月到期的贷款。
+韩国 Galaxy Corporation 公布计划称，将于明年 1 月推出实体人形机器人女团，硬件采购自宇树科技；港股巨星传奇称其产业基金已认购 Galaxy 不超过 7%已发行股本，成为战略股东。
 
-rss · SCMP Business · 11月17日 14:20
+rss · 华尔街见闻 · 11月18日 09:22
 
-> **「背景」** 上海香港广场是丽丰控股全资持有的旗舰投资物业，位于黄浦区淮海中路黄陂南路地铁站上方，包含办公楼、服务式公寓、商场和停车场，总楼面面积约 118.85 万平方英尺；房地产投资信托（REIT）是把物业资产打包上市、向投资者募集资金的工具。
+> **「背景」** 让 AI 通过机器人身体执行动作的具身智能，正借演唱会等封闭预编排场景展示，但 Galaxy 与宇树未披露采购规模、是否独家供应及合同期限。
 
-> **「A股题材」** 积极影响：REITs概念 → 顺丰控股（002352）、九州通（600998）、楚天高速（600035）（存量资产证券化利好），商业地产 → 中国国贸（600007）、新城控股（601155）、华侨城Ａ（000069）（盘活物业缓解资金压力），商业物业经营 → 汇通能源（600605）、富森美（002818）、华联股份（000882）（物业资产证券化利好）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 对巨星传奇而言，认购不超过 7%股本并签署战略合作备忘录，使其介入机器人演唱会、乐园和 AI 潮玩等商业化场景，但收入贡献与合资安排尚未披露。
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://laisun.com/lai-fung-holdings/core-business/lfh-property-investment/hong-kong-plaza">Hong Kong Plaza - Property Investment | Lai Fung Holdings</a></li>
-
-</ul>
-</details>
-
-**标签**: `#Hong Kong equities`, `#real estate`, `#REIT spin-off`, `#debt repayment`, `#Lai Sun`
+**标签**: `#具身智能`, `#机器人`, `#港股公司`, `#AI应用`, `#文娱商业化`
 
 ---
 
 <a id="item-china-market-8"></a>
-### [研究者预计中国出口增速回落](https://economy.caixin.com/2026-11-18/102506193.html) ⭐️ 6.0/10
+### [美国 BIS 发布 AI 算力出口管制新规](https://www.chinatalk.media/p/bis-finally-takes-a-stand) ⭐️ 6.0/10
 
-多位研究者在中国宏观经济论坛表示，2026 年前十个月中国以美元计出口增速达 22.7%，其中 AI 相关的集成电路、计算机及零部件合计贡献 40%的出口增量。他们预计 2027 年出口增速将出现一定回落，并提醒关注美国 AI 投资转冷对出口的影响。
+美国商务部工业与安全局发布 132 页出口管制新规，要求新加坡、马来西亚、泰国、印尼和巴西购买相关 AI 芯片需取得许可，并限制中国企业租用算力；据 ChinaTalk 估计，云租赁漏洞约占中国 AI 算力的五分之二。
 
-rss · Caixin 财新 · 11月18日 04:02
+rss · ChinaTalk · 11月17日 11:03
 
-> **「背景」** 2026 年中国集成电路等科技品出口大增，主要受全球 AI 算力需求带动；海关口径的集成电路出口并不等同于 AI 专用收入，部分出口目的地也未必代表最终消费。
+> **「背景」** 美国商务部产业与安全局（BIS，负责出口管制）的新规针对“算力泄漏”：此前中国实体可通过新加坡、马来西亚等第三国数据中心远程租用先进 AI 芯片，以绕开对华出口限制；据 ChinaTalk 估计，这类云端租赁供应了中国 AI 算力的约五分之二。
 
-> **「影响」** 研究者提示，若美国 AI 投资热潮转冷，依赖集成电路、计算机及零部件出口的中国半导体和算力供应链企业可能直接承压；这两类产品贡献了 2026 年约 40%的出口增量。
+> **「影响」** 新规通过第三国许可和云租赁限制，可能提高中国 AI 企业获取高端算力的合规成本与供应链不确定性。
 
-> **「A股题材」** 负面影响：AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（海外AI需求预期转弱），算力概念（算力出口链承压）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：国产芯片 → 燧原科技（688801）、北纬科技（002148）、奥普特（688686）、吉视传媒（601929）、好上好（001298）（国产替代加速）
+>
+> 负面影响：算力租赁 → 优刻得（688158）、青云科技（688316）、并行科技（920493）、鸿博股份（002229）、润泽科技（300442）（跨境算力租用受限），AI芯片 → 寒武纪（688256）、海光信息（688041）、摩尔线程（688795）、沐曦股份（688802）、景嘉微（300474）（高端芯片获取受限）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.scmp.com/tech/article/3360503/global-ai-boom-sees-chinas-chip-exports-nearly-double-first-half-year">Global AI boom sees China’s chip exports nearly double in first half of year | South China Morning Post</a></li>
-<li><a href="https://chinadata.live/insights/china-integrated-circuit-exports">China Integrated Circuit Exports 2026 | ChinaData</a></li>
-<li><a href="https://think.ing.com/articles/ai-in-2027-20-questions-for-the-global-economy">AI in 2027: 20 questions for the global economy | ING THINK</a></li>
+<li><a href="https://x.com/wallstengine/status/2122320354467312066">Wall St Engine on X: &quot;US TIGHTENS AI CHIP EXPORT CONTROLS TO CLOSE REMOTE-ACCESS LOOPHOLE The Commerce Department&#x27;s BIS has issued a new rule aimed at preventing restricted entities from accessing advanced American AI chips and servers remotely through data centers in third countries. Singapore,… / X</a></li>
+<li><a href="https://www.chinatalk.media/p/bis-finally-takes-a-stand">BIS (Finally) Takes a Stand</a></li>
+<li><a href="https://www.cnbc.com/2026/08/19/china-ai-nvidia-chips-us-export-controls.html">China AI firms tap Nvidia power overseas as U.S. weighs crackdown</a></li>
 
 </ul>
 </details>
 
-**标签**: `#China exports`, `#AI theme`, `#semiconductors`, `#computing power`, `#macro research`
+**标签**: `#AI compute`, `#export controls`, `#semiconductors`, `#Nvidia`, `#China tech policy`
 
 ---
 
 <a id="item-china-market-9"></a>
-### [美国 BIS 公布 AI 芯片出口管制新规](https://www.chinatalk.media/p/bis-finally-takes-a-stand) ⭐️ 6.0/10
+### [韩国在世贸组织质疑欧盟混动汽车保障措施调查](https://www.yicai.com/news/103445315.html) ⭐️ 6.0/10
 
-美国商务部工业与安全局（BIS）周一公布一份 132 页出口管制规则，要求向新加坡、马来西亚、泰国、印度尼西亚和巴西出口 AI 芯片须获许可，限制中国公司租用算力，并再次封堵台积电代工渠道。据 ChinaTalk 估计，被针对的云租赁渠道约占中国 AI 算力的五分之二。
+韩国在 11 月 16 日至 17 日的世贸组织货物贸易理事会会议上质疑欧盟因混动乘用车进口量激增而启动的保障措施调查是否公平、透明；欧盟称 2023 年至 2026 年年中其进口量由 95.8 万辆增至 142.4 万辆、涨幅 49%。报道称，中国已通过中欧贸易磋商在 2025 年基础上与欧方达成“向上安排”。
 
-rss · ChinaTalk · 11月17日 11:03
+rss · 第一财经 · 11月18日 09:11
 
-> **「背景」** 美国商务部工业与安全局（BIS）长期限制先进 AI 芯片流向中国，但此前存在通过新加坡、马来西亚等第三国数据中心远程租用算力的漏洞，使受限主体仍可间接获得美国芯片。
+> **「背景」** 欧盟于 10 月 30 日启动针对全球进口新型混合动力乘用车的保障措施调查，理由是 2023 年至 2026 年中进口量由 95.8 万辆增至 142.4 万辆、增长约 49%；保障措施是 WTO 规则下成员在进口激增造成严重损害或损害威胁时临时限制进口的工具。此前中国已通过中欧贸易磋商机制与欧方就混动汽车进口安排达成共识。
 
-> **「A股题材」** 积极影响：AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（管制倒逼国产替代）
->
-> 负面影响：算力概念（算力供给受限）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：汽车整车 → 中集车辆（301039）、动力新科（600841）、汉马科技（600375）、曙光股份（600303）（中欧共识降出口风险）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.chinatalk.media/p/bis-finally-takes-a-stand">BIS (Finally) Takes a Stand</a></li>
-<li><a href="https://x.com/wallstengine/status/2122320354467312066">Wall St Engine on X: &quot;US TIGHTENS AI CHIP EXPORT CONTROLS TO CLOSE REMOTE-ACCESS LOOPHOLE The Commerce Department&#x27;s BIS has issued a new rule aimed at preventing restricted entities from accessing advanced American AI chips and servers remotely through data centers in third countries. Singapore,… / X</a></li>
+<li><a href="https://finance.biggo.com/news/c99aa7ad-5379-4eb2-bc36-ccae926e5332">EU Opens Safeguard Probe Into Hybrid Vehicles—Why FTA Partners Like UK, Japan and South Korea Are More Anxious Than China — BigGo Finance</a></li>
+<li><a href="https://www.peacocktariffconsulting.com/eu-hybrid-probe">EU Hybrid Probe - Peacock Tariff Consulting</a></li>
+<li><a href="https://www.wto.org/english/news_e/news26_e/safe_eec_02nov26_536_e.htm">WTO | 2026 News items - EU launches safeguard investigation on certain new hybrid vehicles</a></li>
 
 </ul>
 </details>
 
-**标签**: `#export controls`, `#AI compute`, `#China semiconductors`, `#US-China policy`, `#computing power`
+**标签**: `#EU trade policy`, `#hybrid vehicles`, `#China-EU relations`, `#auto exports`, `#WTO`
 
 ---
 
 <a id="item-china-market-10"></a>
-### [TCL 中环拟增持中环领先至 98.52%](https://news.google.com/rss/articles/CBMidkFVX3lxTE8wU19odUt5dGtkcDkwRUZXM0h2SEhOWTI5SkQ1WC1NMFQzTXhPdVhnQUdVZlotNFZ5M0NpcUZ5RmhMTF93MjkyMGJNb2JUUjdPUjY4MGdFdjhfT3NYVFlYV3pVa3ZQM0V2UE5zbVF0enBrM2RlQlE?oc=5) ⭐️ 6.0/10
+### [国务院部署 2027 年企业减负重点](https://www.yicai.com/news/103445311.html) ⭐️ 6.0/10
 
-TCL 中环计划将所持中环领先股权提升至 98.52%；报道显示，其半导体硅片业务在第三季度实现盈利。
+国务院减轻企业负担部际联席会议部署 2027 年减负重点，提出力争到 2027 年把社会物流总费用与 GDP 比率降至 13.5%左右。2026 年企业负担调查显示，反映原材料成本负担重的企业占比较上年上升 5 个百分点，但总体负担感受重的占比下降 4 个百分点。
 
-google\_news · BigGo Finance · 11月17日 11:35
+rss · 第一财经 · 11月18日 08:54
 
-> **「背景」** TCL 中环的半导体硅片子公司中环领先是其半导体材料业务运营主体；公司拟通过发行股份收购少数股东权益，将持股比例从 32.72%提高至 98.52%，该交易构成重大资产重组和关联交易，但不改变上市公司控制权。
+> **「背景」** 国务院减轻企业负担部际联席会议由相关部门组成，此前已召开年度会议部署 2026 年重点任务；其办公室称 2027 年是实施“十五五”规划承上启下的重要一年。
 
-> **「A股题材」** 积极影响：半导体材料（硅片业务盈利改善）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：物流 → 中国外运（601598）、东航物流（601156）、中创物流（603967）、密尔克卫（603713）、永泰运（001228）（物流降本目标利好）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://finance.biggo.com/news/6ec1b0a2-d86e-47b3-b229-d70fe975688a">TCL Zhonghuan to lift stake in Zhonghuan Leading to 98.52%, as semiconductor silicon wafer unit turns profitable in Q3 — BigGo Finance</a></li>
-<li><a href="https://dealroom.co/news/172754-tcl-zhonghuan-to-buy-65-8-of-chip-wafer-unit-lifting-stake-to-98-52">TCL Zhonghuan to buy 65.8% of chip-wafer unit, lifting stake to 98.52% | Dealroom News</a></li>
+<li><a href="https://m.sohu.com/a/1103123652_120109837?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334">减轻企业负担有哪些部署？官方最新回应_搜狐网</a></li>
+<li><a href="https://baike.baidu.com/item/%E5%9B%BD%E5%8A%A1%E9%99%A2%E5%87%8F%E8%BD%BB%E4%BC%81%E4%B8%9A%E8%B4%9F%E6%8B%85%E9%83%A8%E9%99%85%E8%81%94%E5%B8%AD%E4%BC%9A%E8%AE%AE/62866370">国务院减轻企业负担部际联席会议</a></li>
 
 </ul>
 </details>
 
-**标签**: `#TCL Zhonghuan`, `#semiconductor silicon wafers`, `#subsidiary stake`, `#A-share`, `#earnings`
+**标签**: `#China enterprise burden policy`, `#tax and fee reductions`, `#SME financing`, `#AI and computing supply chain`, `#logistics costs`
 
 ---
 
@@ -466,351 +455,358 @@ google\_news · BigGo Finance · 11月17日 11:35
 ### AI 硬件与算力
 
 <a id="item-ai-hardware-1"></a>
-#### [Nvidia 与 SPIL 宣布扩大 CoWoS 先进封装产能](https://www.digitimes.com/news/a20261118PD239/nvidia-spil-packaging-capacity.html) ⭐️ 9.0/10
+#### [美国拟限制中国光模块进口，Coherent Lumentum 盘前上涨](https://news.google.com/rss/articles/CBMi4AFBVV95cUxPeUE5UU9Fd0xpNzhPR1A1cjd4U3JYaVBoU0YzQkYyZW45RE9UWHQtbzJuX2hSV3NFVEtjems1RlpYdk9KRGRKYzhYWnlmYVlCa1hwRzNCUFplakpBQWxEbjV4eGk0b05TRF9fSDEtbUZWc3pNV0NlMXJPQ3hhdGx5aTBfbDFqdmFKaFBrZW43cElwQkRrVWg4T0ZBY203NjJEc2ptVlZTX1l4OFZLNUphYTRVdG42Y0JtQVVFZWE1WHBrWGI4Vm9VY0Q4aXE0RHUyVFZ6Q1RWbmJmQ0RoZTZ0RA?oc=5) ⭐️ 8.0/10
 
-Nvidia 与硅品精密工业（SPIL，日月光集团子公司）宣布一项数十亿美元、多年期协议，计划到 2029 年大幅扩大台湾 CoWoS 先进封装产能；报道标题称其目标是将产能扩大至三倍。该协议目前属于宣布的扩产计划，而非已交付产能，主要面向全球 AI 基础设施对 CoWoS 封装需求的增长。
+据报道，美国计划限制中国光模块进口，消息推动 Coherent 盘前上涨 10%，Lumentum 上涨 8%。该报道尚未给出政策生效时间、适用范围或具体限制措施，因此股价反应反映的是市场预期而非已确认的供应变化。若限制落地，可能影响 AI 数据中心互连供应链中中国光模块供应商与美国光器件厂商之间的竞争格局。
 
-rss · DigiTimes · 11月18日 05:34
+google\_news · TradingKey · 11月17日 13:31
 
-> **「背景」** CoWoS 先进封装是 AI 加速器的关键制造环节，用于在中介层上整合芯片、内存与基板。此次 Nvidia 与 SPIL 的协议是在其 2026 年 10 月供应链承诺之后推进的，此前已包括到 2027 年中将 SPIL 光引擎产能扩大 15 倍以及更广泛的基板和测试产能扩张。新协议属于另一项多年期安排，重点是在台湾增加 Nvidia 专用先进封装产能。
+> **「背景」** 光收发器（常称光模块）是 AI 数据中心内部通过光纤实现高速数据传输的关键互连组件。据 Reuters 等报道，美国 FCC 正起草针对新型中国光收发器的进口限制，理由是担心设备可能被用于窃取数据或攻击美国数据中心；该计划出现在美国收紧先进芯片出口管制之后。美国云厂商担心禁令会推高成本，而 Coherent、Lumentum 等美国厂商被视为潜在受益者，但报道也指出其规模可能不足以完全替代中国供应商。
 
-> **「影响」** 若协议按期执行，Nvidia AI 加速器在 CoWoS 封装环节的可用产能将增加，并可能改变 AI 芯片封装产能分配格局。当前信息未说明具体厂址、设备投入或最终量产节点，因此相关客户仍应把供货改善视为条件性结果。
+> **「影响」** 若限制最终落地，依赖中国光模块或光收发器的数据中心运营商可能面临 800G/1.6T 集群部署延迟和更高物料成本，因为中国厂商供应全球约三分之二的光模块，而美国供应商短期内难以补足产能。该计划已遭到亚马逊、谷歌、Meta 等公司反对，采购方可能需要提前评估非中国供应商的可用性、认证周期和价格溢价。
 
-> **「A股题材」** 积极影响：先进封装 → 移远通信（603236）、华测检测（300012）、润欣科技（300493）（先进封装扩产利好），集成电路封测 → 伟测科技（688372）、颀中科技（688352）、甬矽电子（688362）（封测订单扩产利好），英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（封装产能保障利好）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 负面影响：光通信模块 → 中际旭创（300308）、新易盛（300502）、光迅科技（002281）、剑桥科技（603083）、联特科技（301205）（出口受限利空海外收入）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.unite.ai/nvidia-secures-more-substrate-and-packaging-capacity-for-ai-platforms">NVIDIA Secures More Substrate and Packaging Capacity for AI Platforms – Unite.AI</a></li>
-<li><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | NVIDIA Newsroom</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/article/optical-related-stocks-surge-on-import-restrictions-of-chinese-data-center-equipment-150444937.html">Lumentum, Corning, and other optical-related stocks jump on Chinese import restrictions</a></li>
+<li><a href="https://www.capitalbrief.com/briefing/us-weights-import-ban-for-chinese-component-used-in-ai-datacentres-cc2ef05c-c436-4fd1-aa72-8f6f3a42f40a">US weights import ban for Chinese component used in AI datacentres — Capital Brief</a></li>
+<li><a href="https://www.reuters.com/world/trump-administration-drafting-ban-chinese-data-center-devices-sources-say-2026-08-04">EXCLUSIVE: Trump administration drafting ban on Chinese data center devices, sources say | Reuters</a></li>
+<li><a href="https://counterpointresearch.com/en/insights/fcc-china-ban-ai-component">Innolight, Coherent, Lumentum: Who Wins and Loses in the Proposed FCC Ban on Chinese Transceivers?</a></li>
+<li><a href="https://finance.yahoo.com/markets/stocks/article/optical-related-stocks-surge-on-import-restrictions-of-chinese-data-center-equipment-150444937.html">Lumentum, Corning, and other optical-related stocks jump on Chinese import restrictions</a></li>
+<li><a href="https://www.reuters.com/world/trump-administration-drafting-ban-chinese-data-center-devices-sources-say-2026-08-04">EXCLUSIVE: Trump administration drafting ban on Chinese data center devices, sources say | Reuters</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Nvidia`, `#CoWoS`, `#advanced packaging`, `#AI supply chain`, `#ASE/SPIL`
+**标签**: `#Optical modules`, `#US-China trade restrictions`, `#AI datacenter interconnect`, `#China A-share optics`, `#Coherent/Lumentum`
 
 ---
 
 <a id="item-ai-hardware-2"></a>
-#### [SEC 调查 Nvidia 前 CEO 黄仁勋辞职并同意国会作证](https://www.digitimes.com/news/a20261118VL208/nvidia-jensen-huang-investigation-security-ceo.html) ⭐️ 8.0/10
+#### [美国拟限制中国数据中心光模块](https://news.google.com/rss/articles/CBMi0wFBVV95cUxQSWM2VkFiMExTSEhEeE9zZ3BsYmZrdlp3SmtaWG95S3kzYlRfNFJTRXJ3NlBiRjZ1ZTdjZ2NJY2pnWTl6ZlRUbmVZSWVOV3Y3eVByWUMtTXYzdkl0aXZhUGF3M0w4MGZaTUJvVDVSam9rRXBqTUd0UV9vV1JvVGgzUVlOZFB5RHdwajhNUFhKV0x6d2RkeUE4d3RrdXRVLTJNRzU2MnRJSnpreW9WTUNmVnZGZlZxYXU4eHJteHNrd0VYUFJaU1ZrR28tM2R2NnI1ZjVF?oc=5) ⭐️ 8.0/10
 
-据《华尔街日报》报道，美国证券交易委员会（SEC）已对 Nvidia 展开民事调查。该调查发生在联合创始人兼 CEO 黄仁勋突然辞职之后；报道还称黄仁勋承认与一名被指为中国间谍的人员有婚外情，使公司陷入领导层和国家安全争议。标题显示，黄仁勋已同意就相关事项向国会作证。
+据 Reuters 报道，美国正推进对中国数据中心光模块（optical transceivers）的限制，尽管大型科技公司曾游说。该报道未披露具体规则文本、生效日期、覆盖型号或豁免条件，因此尚不能确认限制已最终落地还是处于政策推进阶段。若限制涉及数据中心网络互连组件，可能迫使采购方重新评估供应商、成本与兼容性。
 
-rss · DigiTimes · 11月18日 04:27
+google\_news · MLQ.ai · 11月17日 14:06
 
-> **「背景」** Nvidia 此前因黄仁勋辞职而陷入治理与国家安全危机：董事会曾就针对他的中国间谍行动指控展开调查，并由 Colette Kress 出任临时 CEO。《华尔街日报》称，SEC 的民事调查可能涉及公司披露是否误导投资者，这使调查与黄仁勋离职后的后续影响直接相关。
+> **「背景」** 光模块（optical transceivers）是数据中心内将电信号转换为光信号、并通过光纤承载高速数据的组件，用于连接服务器、路由器和交换机。路透社在 8 月曾率先报道，美国联邦通信委员会（FCC）拟禁止进口新型号的中国光模块，理由是这些设备可能带来国家安全风险。
 
-> **「影响」** 对投资者和合作伙伴而言，SEC 调查、CEO 辞职和国会作证同时发生，意味着 Nvidia 需要向监管方和市场解释其治理稳定性、信息披露及国家安全相关风险。
+> **「影响」** 据报道，FCC 正在推进针对中国产数据中心光模块新型号的限制，若最终落地，采购方需要为新部署设备寻找非中国供应来源，而现有安装据称不在新规范围内。由于中国供应商约占全球光模块市场三分之二，替代供应商如 Coherent、Lumentum 和 Applied Optoelectronics 的产能仍受成本、供应链和扩产周期限制，短期内更可能出现采购成本上升、交期延长以及 AI 集群网络互联扩容放缓，尤其影响依赖中际旭创、新易盛等供应商的超大规模云服务商和网络设备厂商。
 
-> **「A股题材」** 负面影响：英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（龙头治理风险拖累预期）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 负面影响：光通信模块 → 豪威集团（603501）、胜科纳米、华丰科技、青山纸业（600103）、精研科技（300709）（出口受限利空），数据中心 → 中国移动、中国电信、共进股份、光环新网（300383）、润泽科技（300442）（组件受限扩容放缓），云计算 → 青云科技（688316）、海量数据（603138）、品高股份（688227）、汉朔科技（301275）、歌华有线（600037）（采购成本上升利空）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.wsj.com/business/sec-is-probing-nvidia-amid-departure-of-ceo-jensen-huang-ee7643f8">Exclusive | SEC Is Probing Nvidia Amid Departure of CEO Jensen Huang - WSJ</a></li>
-<li><a href="https://www.nbcnews.com/tech/tech-news/jensen-huang-resigns-nvidia-policy-issues-spying-scandal-cfr-rcna609616">Jensen Huang Resigns From Nvidia: Policy Issues Central to the Alleged Spying Scandal</a></li>
+<li><a href="https://mlq.ai/news/us-moves-ahead-with-curbs-on-chinese-optical-transceivers-for-data-centers-despite-big-tech-lobbying-reuters-reports">US moves ahead with curbs on Chinese optical transceivers for data centers despite Big Tech lobbying, Reuters reports | MLQ.ai</a></li>
+<li><a href="https://finance.yahoo.com/technology/ai/articles/microsoft-pushes-trump-halt-chinese-120408623.html">Microsoft pushes Trump to halt Chinese data center component ban: Reuters</a></li>
+<li><a href="https://www.linkedin.com/posts/markdhirsch_datacenter-opticalnetworking-exportcontrols-activity-7528592929637175297-5aIN">#datacenter #opticalnetworking #exportcontrols #supplychain #ai #infrastructure #hirschreport #deepfactchecked | Mark Hirsch</a></li>
+<li><a href="https://www.fierce-network.com/cloud/can-us-curb-chinese-transceivers-without-slowing-ai-data-centers">Can the US curb Chinese transceivers without slowing AI data centers?</a></li>
+<li><a href="https://mallory.ai/stories/019fcd1f-723e-7e8c-9138-76f9d0a0d269">US Weighs Ban on Chinese Optical Transceivers in Data Centers | Mallory</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Nvidia`, `#SEC investigation`, `#AI chips`, `#leadership change`, `#regulation`
+**标签**: `#export controls`, `#optical transceivers`, `#data center networking`, `#China supply chain`, `#AI hardware`
 
 ---
 
 <a id="item-ai-hardware-3"></a>
-#### [美国芯片新规致字节关联 4.8 亿美元 GPU 贷款暂停](https://www.bloomberg.com/news/articles/2026-11-17/banks-pause-480-million-chip-loan-tied-to-china-s-bytedance) ⭐️ 8.0/10
+#### [英伟达向欣兴投资逾 10 亿美元并扩 ABF 载板产能](https://news.google.com/rss/articles/CBMidkFVX3lxTE5WaEFReGk0S3czZVZzOURfSG9kcGNadHdvZjlOX2FVUU1NcVZHZXZfQVlxeDVwWS0wOUVyZlRVRnZOZDFUZFBwWElzNmVFLWdhWnhWdzVULU5uZm9yV0JHMWRCaXZLOTR5c1c3YUdTd3NKRV9EN0E?oc=5) ⭐️ 8.0/10
 
-美国最新 AI 芯片管制新规出台后，五家评估贷款的银行暂停推进一笔 4.8 亿美元融资，该融资原计划为字节跳动相关的马来西亚数据中心采购英伟达先进 GPU。借款方为新加坡云服务商 Aolani Cloud，星展集团担任牵头安排行；部分银行因担心违反新规，内部讨论退出或不参与。Aolani 称正与监管机构及融资伙伴评估新规并确保项目合规，但银行业者表示，在全面评估前这笔融资难有进展。
+据报道，英伟达将向欣兴电子投资逾 10 亿美元，用于扩大其桃园 ABF 载板产能，且该部分产能专门供应英伟达。报道标题称，专门产能将扩大 3.5 倍，这会直接影响 AI 加速器封装上游供应、供应商产能分配和相关组件经济结构。由于来源仅给出标题，投资结构、时间表、实际出货能力和英伟达产品兼容性尚未由材料说明。
 
-telegram · zaihuapd · 11月18日 05:11
+google\_news · BigGo Finance · 11月18日 01:25
 
-> **「背景」** 美国对先进 AI 芯片实施出口管制时，金融机构通常会审查贷款是否可能用于向受控主体或受控目的地转移受限硬件。此次暂停的融资原本用于为字节跳动关联的马来西亚数据中心采购英伟达先进 GPU，因此银行需要重新评估新规是否可能使交易构成规避管制。
+> **「背景：ABF 载板与 Kinsus 供应关系」** ABF 载板是高端 AI 加速器封装中的关键互连基板，其产能通常由少数供应商长期分配。Nvidia 此前已与多家封装与载板伙伴建立长期供应安排，而 Kinsus 在行业中曾被视为第二梯队；此次首次被公开点名并获直接现金支持，使其从潜在供应商转向承担 Nvidia 专用产能扩张。
 
-> **「影响」** 这笔融资停滞使马来西亚数据中心项目的英伟达 GPU 采购和交付时间面临不确定性，也迫使银行与借款方重新审查出口管制合规路径。对依赖先进 GPU 的海外算力项目而言，资金安排和监管评估门槛都可能提高。
+> **「封装供应影响」** NVIDIA 与 Kinsus 的协议将桃园专供 NVIDIA 的先进 ABF 基板产能扩大超过 3.5 倍，直接提高 AI 加速器封装上游的供应弹性，并降低对既有基板供应商的集中依赖。对芯片采购和封装规划而言，关键风险不再只是产能数量，而是 Kinsus 扩产后的良率、设备瓶颈以及与 NVIDIA 下一代加速计算平台的认证进度。相关组织应跟踪该专供产能的实际爬坡和供应商资格验证，因为它会影响未来 AI 服务器芯片的基板供应稳定性。
 
-> **「A股题材」** 积极影响：AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（管制促国产替代）
->
-> 负面影响：英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（英伟达采购受阻），算力概念（先进算力融资停滞）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：先进封装 → 移远通信（603236）、华测检测（300012）、利扬芯片（688135）、润欣科技（300493）、胜科纳米（688757）（高端封装供应改善），英伟达概念 → 胜宏科技（300476）、景旺电子（603228）、世运电路（603920）、宏昌电子（603002）、工业富联（601138）（英伟达供应瓶颈缓解）（题材为规则匹配、方向为模型推测，非投资建议）
 
-**标签**: `#US export controls`, `#AI chip financing`, `#ByteDance`, `#NVIDIA GPUs`, `#data center capacity`
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://finance.biggo.com/news/d8c5309d-c6bf-4820-b7a5-6b3bc20d6243">Nvidia Bets $1 Billion on Kinsus, to Expand Taoyuan ABF Substrate Capacity More Than 3.5-Fold — BigGo Finance</a></li>
+<li><a href="https://www.morningstar.com/news/globe-newswire/9879927/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | Morningstar</a></li>
+<li><a href="https://english.cw.com.tw/article/article.action?id=5082">Nvidia Turns to Samsung to Shake Up the AI Substrate Market. Unimicron and Kinsus Face a New Threat｜Industry｜2026-10-26｜web only</a></li>
+<li><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | NVIDIA Newsroom</a></li>
+<li><a href="https://tspasemiconductor.substack.com/p/2026-impact-kinsus-technology-the">2026 IMPACT | Kinsus Technology: The AI Chip Substrate Revolution — From Advanced Packaging Scaling and ABF Material Innovation to Next-Generation Glass Core Manufacturing Challenges</a></li>
+<li><a href="https://english.cw.com.tw/article/article.action?id=5082">Nvidia Turns to Samsung to Shake Up the AI Substrate Market. Unimicron and Kinsus Face a New Threat｜Industry｜2026-10-26｜web only</a></li>
+
+</ul>
+</details>
+
+**标签**: `#Nvidia`, `#Kinsus`, `#ABF substrates`, `#capacity expansion`, `#AI supply chain`
 
 ---
 
 <a id="item-ai-hardware-4"></a>
-#### [Nvidia 据报投资逾 10 亿美元扩充 Kinsus AI 基板产能](https://news.google.com/rss/articles/CBMimAFBVV95cUxOM0p1Vlo4U3JHSnZFOWdpM3dxRHZNUnFYQnRNSmVaUkRKMDJGYjRRSDZ6Z0phRGI2dEVWdkNwUDJ3SDJrandsRDN4ZGtycGRIMmM5M3hkbGd2bGJ5M2RWODJaYUJhOE53LXBrRDltcURNMDdGOURkT1BJMDhQTk1JSTFaUHZrREFrMWZ4d0pXeHBZb1lZN2UybA?oc=5) ⭐️ 8.0/10
+#### [台湾海龙离岸风电完成并网，2027 年向台积电供电](https://www.digitimes.com/news/a20261118PD227/taiwan-offshore-wind-capacity-tsmc-2027.html) ⭐️ 7.0/10
 
-Nvidia 被报道将向 Kinsus 投资超过 10 亿美元，用于扩充 AI 基板产能。Google News 另一标题称，这笔投资将把桃园 ABF 基板产能扩大超过 3.5 倍。现有材料未说明投资时间表、量产状态或合同条款，因此这更像是已报道的产能锁定计划，而非已交付的供应能力。
+台湾海龙离岸风电项目已完成建设，并将全部 73 台风机接入电网，总装机容量超过 1 GW。项目预计 2027 年进入全面商业运营，届时将把全部绿色电力供应台积电。并网完成是已实现进展，而全面商业运营和稳定供电仍取决于 2027 年的运营安排。
 
-google\_news · digitimes · 11月18日 03:55
+rss · DigiTimes · 11月18日 09:07
 
-> **「技术背景」** ABF 载板是高端 AI/HPC 芯片 FC-BGA 封装的关键材料，供应紧张会直接影响加速器产能。景硕科技是台湾主要 ABF 供应商之一，有资料称其全球 ABF 份额约居第六，并约占 GB200 相关 ABF 需求的 10%。此前报道显示，英伟达曾计划以约新台币 200 亿元入股景硕以锁定产能；当前报道则称投资规模超过 10 亿美元。
+> **「背景」** 海龙离岸风电项目由 Northland Power、三井物产和 Gentari 合资开发，包含海龙 2A、2B 和 3 三个场址，总容量约 1,022 MW。台积电自 2022 年起通过企业购电协议锁定该项目绿色电力，并在后续协议中成为该风电场全部产出的唯一购电方。
 
-> **「影响」** 若该报道属实，Nvidia 正在上游锁定关键 AI 基板/ABF 载板产能，可能降低未来 AI 加速器出货受基板供应限制的风险。对云服务商、服务器 OEM 和先进封装供应链而言，这意味着 Nvidia 可能优先获得基板供给，但具体价格、交付时间和对其他客户的影响尚未披露。
+> **「影响」** 对台积电而言，该项目提供了一个规模超过 1 GW 的专用绿色电力来源，有助于其供应链在 2027 年全面商运后满足可再生能源采购和电力约束需求；但当前并网并不等同于已实现全面商业供电。
 
-> **「A股题材」** 积极影响：先进封装 → 移远通信（603236）、华测检测（300012）、润欣科技（300493）（载板扩产利好封装），印制电路板（载板扩产利好电路板），半导体材料（关键材料扩产利好）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：绿色电力 → 龙江交通、亚玛顿（002623）、军信股份（301109）、华能水电、福能股份（大型风电并网利好绿电）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://thebuildout.ai/intel/425ca974-89df-4158-9f41-1359d6663e4e">Nvidia reportedly plans NT$20 billion investment in ABF substrate supplier Kinsus Interconnect Technology | The Buildout</a></li>
-<li><a href="https://leonardo-boquillon.com/ai-semiconductor-companies">AI semiconductor companies — directory of 492 firms</a></li>
+<li><a href="https://www.datacenterdynamics.com/en/news/tsmc-signs-30-year-ppa-for-294mw-of-power-from-hai-long-offshore-wind-farm-in-taiwan">TSMC signs 30-year PPA for 294MW of power from Hai Long offshore wind farm in Taiwan - DCD</a></li>
+<li><a href="https://hailongoffshorewind.com/en/FirstPowerCeremony">Hai Long Offshore Wind-Latest News-Taiwan’s Largest Offshore Wind Project Reaches Key Milestone – Hai Long Delivers First Power</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Nvidia`, `#AI substrates`, `#supply-chain capex`, `#Kinsus`, `#advanced packaging`
+**标签**: `#offshore wind`, `#TSMC`, `#power supply`, `#semiconductor supply chain`, `#Taiwan energy`
 
 ---
 
 <a id="item-ai-hardware-5"></a>
-#### [苹果据报接近与三星签四五年 DRAM 供货协议](https://www.digitimes.com/news/a20261118VL213/apple-dram-samsung-price-2027.html) ⭐️ 7.0/10
+#### [英伟达扩大与富士康等供应链合作](https://www.digitimes.com/news/a20261118PD249/foxconn-nvidia-gpu-manufacturing-shipments.html) ⭐️ 7.0/10
 
-据韩国媒体报道，苹果正接近与三星电子达成一份为期四至五年的 DRAM 长期供应协议，交付预计于 2027 年上半年启动。拟议条款包含最低供应量承诺，但价格不锁定，而是随市场行情调整。苹果与三星均未正式确认，报道也未披露具体供货数量或财务规模。
+英伟达于 11 月 17 日宣布扩大与富士康、台积电、Kinsus、三星电机、Amkor 和 Siliconware 等供应链伙伴的合作。合作范围涵盖封装基板、先进封装、晶圆制造和系统制造。富士康将加深在下一代 GPU 和网络平台中的角色，并通过横跨亚洲、北美和欧洲的生产网络扩大制造参与。该消息属于供应商合作公告，未说明具体出货时间、产能、价格或份额变化。
 
-rss · DigiTimes · 11月18日 05:41
+rss · DigiTimes · 11月18日 08:58
 
-> **「背景」** DRAM 是智能手机和电脑中用于临时存放运行数据的易失性内存，其价格会随供需周期波动。相关报道指出，苹果此前在主要科技公司中较少与三星签订长期 DRAM 供应协议；同时，内存芯片供应趋紧和成本上升正影响设备厂商的采购决策。
+> **「背景」** 英伟达的下一代 GPU 和网络平台依赖从晶圆制造、先进封装到系统组装的完整供应链。此次宣布扩大与多家供应商的合作，是在 AI 基础设施持续建设背景下，对关键制造环节和产能网络的一次补充。
 
-> **「影响」** 若协议落地，苹果将把关键内存供应从更依赖市场波动转向有最低量保障的长期安排，有助于降低 iPhone 等设备的 DRAM 断供风险；由于定价仍与市场价挂钩，内存涨价仍可能传导至苹果成本，消费者不一定获得价格优惠。
+> **「影响」** 对依赖英伟达 AI 硬件的组织和开发者而言，该公告显示英伟达正把下一代 GPU 和网络平台的制造与封装环节分配给多家伙伴，并让富士康在系统制造中承担更广泛角色。由于未披露产能、出货量、定价或份额数据，客户只能将其视为供应链布局信号，而非已验证的供应改善。
 
-> **「A股题材」** 积极影响：存储芯片 → 华新科技（301265）、汇通能源（600605）、海康威视（002415）（存储涨价利好芯片）
->
-> 负面影响：消费电子 → 绿联科技（301606）、传音控股（688036）、影石创新（688775）（成本上升压制需求）（题材为规则匹配、方向为模型推测，非投资建议）
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://finance.yahoo.com/technology/articles/samsung-apple-reportedly-near-multi-114855409.html">Samsung and Apple Reportedly Near Multi-Year DRAM Supply Agreement</a></li>
-<li><a href="https://www.cnbc.com/2026/05/01/samsung-bemoans-memory-chip-crunch-thats-good-news-for-these-stocks.html">Samsung bemoans memory chip crunch. That&#x27;s good news for these stocks</a></li>
-
-</ul>
-</details>
-
-**标签**: `#DRAM supply`, `#Apple procurement`, `#Samsung memory`, `#memory pricing`, `#supply chain`
+**标签**: `#Nvidia supply chain`, `#Foxconn manufacturing`, `#advanced packaging`, `#AI infrastructure capacity`, `#GPU and networking platforms`
 
 ---
 
 ### AI 应用与智能体
 
 <a id="item-ai-app-1"></a>
-#### [OpenAI 关停 Sora，快手加码 Kling 并推进港股 IPO](https://technode.com/2026/11/17/kuaishou-kling-sora-hong-kong-ipo/) ⭐️ 8.0/10
+#### [Isomorphic Labs 融资 50 亿美元推进药物研发](https://the-decoder.com/isomorphic-labs-raises-5-billion-in-its-second-mega-round-within-six-months/) ⭐️ 8.0/10
 
-OpenAI 已宣布关停 Sora，快手则把 AI 视频生成业务 Kling 推向独立子公司、外部融资和港股上市路径。Kling 3.0 于 2026 年 2 月上线，重点提供跨镜头控制和角色一致性，并通过 API 供第三方产品集成；快手称其 2025 年 12 月单月收入超过 2000 万美元，2026 年第二季度收入超过 8.5 亿元人民币。据 Bloomberg 报道，Kling 已挑选银行筹备港股 IPO，拟募资至少 10 亿美元；据 Reuters 报道，其融资轮在 10 月底前接近 30 亿美元，但这些资本运作细节仍属媒体报道，需以公司正式披露为准。
+Isomorphic Labs 宣布完成 50 亿美元融资，这是该公司六个月内继 21 亿美元后的第二轮大额融资。这家由 Demis Hassabis 领导、隶属 Alphabet 的 AI 药物发现公司表示，将把资金用于推动其药物管线进入临床试验。报道同时指出，该公司目前尚无获批药物。
 
-rss · TechNode · 11月17日 07:09
+rss · The Decoder · 11月17日 14:57
 
-> **「背景」** 2024 年夏季，快手推出可试用的视频生成模型 Kling，当时外界主要把它作为 OpenAI Sora 的中国竞争者来介绍。随后 Kling 通过跨镜头一致性、API 商业化、收入增长以及分拆融资，逐渐从依附 Sora 叙事的对比对象转向独立业务；因此，OpenAI 宣布关停 Sora 与快手推进 Kling 港股 IPO 构成了理解这一变化的关键背景。
+> **「背景」** Isomorphic Labs 是从 Alphabet 旗下 Google DeepMind 分拆出来的 AI 药物发现公司，由 Demis Hassabis 领导；其上一轮大额融资是 2026 年 5 月完成的 21 亿美元 Series B。Bloomberg 在 2026 年 11 月初报道称，该公司正洽谈约 50 亿美元融资、估值约 500 亿美元，但当时交易尚未完成且条款可能变化。
 
-> **「影响」** 对原本使用 Sora 的创作者和企业客户，迁移选择变得更现实：Kling 的跨镜头一致性和 API 集成能力更适合连续剪辑与产品内嵌；Bloomberg 援引 Sensor Tower 称 Sora 关停后 Kling 全球移动端周活跃用户仅环比上升约 4%，说明用户转移可能有限。文中没有说明 Sora 关停后的数据、项目或 API 迁移方案，用户不能假定可无缝切换。对投资者和开发者，Kling 被拆分到独立子公司并引入外部资金，意味着后续定价、合同主体、服务连续性和上市披露可能更独立于快手短视频业务。
+> **「影响」** 这笔资金可能加快 Isomorphic Labs 从计算药物发现走向临床试验，但投资者押注仍集中在尚未证明商业收入或获批产品的 Alphabet AI 制药管线上。
 
-**标签**: `#Kuaishou`, `#Kling`, `#OpenAI Sora`, `#AI video generation`, `#China AI applications`
+> **「A股题材」** 积极影响：AI制药（医疗） → 丽珠集团（000513）、迈瑞医疗（300760）、健康元（600380）、老百姓（603883）、诺禾致源（688315）（AI制药获大额融资）（题材为规则匹配、方向为模型推测，非投资建议）
+
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://techfundingnews.com/isomorphic-labs-5b-raise-50b-valuation-first-clinical-trial">Report: Isomorphic Labs in talks to raise $5B at $50B valuation — TFN</a></li>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-04/isomorphic-labs-in-talks-for-about-5-billion-in-funding">Isomorphic Labs in Talks for About $5 Billion in Funding - Bloomberg</a></li>
+
+</ul>
+</details>
+
+**标签**: `#AI drug discovery`, `#capital markets`, `#Alphabet`, `#enterprise AI`, `#funding`
 
 ---
 
 <a id="item-ai-app-2"></a>
-#### [英伟达 AMD 首次联手投资 Genesis A 轮估值超 230 亿](https://www.qbitai.com/2026/11/510821.html) ⭐️ 7.0/10
+#### [OpenAI 发布 GPT-6.2 Astra 与 Sol 双模型](https://openai.com/index/introducing-gpt-6-2-astra-sol/) ⭐️ 8.0/10
 
-据该报道，具身智能公司 Genesis 完成 A 轮融资，估值超过 230 亿，英伟达与 AMD 被描述为首次共同投资该公司。报道正文未披露融资金额、其他投资方、资金用途或 Genesis 的具体产品与平台信息，因此交易条款和技术影响仍需核实。
+OpenAI 发布 GPT-6.2 Astra 与 Sol 两款模型，Astra 面向最难的专业项目，Sol 强调日常工作效率。OpenAI 称这两款模型已在 ChatGPT Work 和 Codex 上线。API 定价方面，Astra 输入为每百万 token 8 美元、缓存输入为 0.4 美元、输出为 40 美元，较 GPT-6 Astra 降低 20%；Sol 沿用 GPT-6.1 Sol 的价格。
 
-rss · 量子位 · 11月18日 04:28
+telegram · zaihuapd · 11月17日 17:55
 
-> **「Genesis AI 的背景」** Genesis AI 起源于 Zhou Xian 2022 年在卡内基梅隆大学发起的机器人仿真研究项目，2025 年 3 月正式推出后扩展到通用机器人软硬件。该公司此前已在 2025 年 7 月披露 1.05 亿美元融资；本轮 Series A 为 5 亿美元，外部公告称投后估值为 35 亿美元，NVIDIA 与 AMD Ventures 均参与投资。
+> **「背景」** OpenAI 的 GPT 系列此前已有 GPT-6 Astra 与 GPT-6.1 Sol，并按不同使用场景提供 API 定价。本次 GPT-6.2 Astra 与 Sol 是这一模型线在 ChatGPT Work 和 Codex 中的更新。
 
-> **「影响」** Genesis AI 公告称，这笔 5 亿美元 A 轮融资将用于扩大物理 AI 可处理的任务范围，并推动旗舰机器人 Eno 的规模化部署；英伟达与 AMD Ventures 作为参与方，使该融资成为具身智能企业和开发者观察芯片厂商布局机器人应用的一个具体案例。
+> **「影响」** 对企业用户和开发者而言，Astra 较前代降低 20% 的 API 价格，可能直接减少高难度专业任务的调用成本，但需要按每百万 token 的输入、缓存输入和输出重新核算预算。Sol 沿用 GPT-6.1 Sol 价格，使日常效率场景的成本预期保持不变。
 
-> **「A股题材」** 积极影响：机器人 → 迈赫股份（301199）、三丰智能（300276）、派斯林（600215）（融资推动机器人部署），英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（英伟达参与机器人投资），AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（芯片厂商拓展机器人应用）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「A股题材」** 积极影响：ChatGPT概念 → 凡拓数创（301313）、亿嘉和（603666）、大胜达（603687）、小商品城（600415）、江南化工（002226）（模型更新与降价利好应用）（题材为规则匹配、方向为模型推测，非投资建议）
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.prnewswire.com/news-releases/genesis-ai-raises-500m-series-a-at-3-5b-valuation-to-master-human-level-dexterity-in-general-purpose-robots-and-deploy-at-scale-302941249.html">Genesis AI Raises $500M Series A at $3.5B Valuation to Master Human-Level Dexterity in General-Purpose Robots and Deploy at Scale</a></li>
-<li><a href="https://www.wsj.com/cio-journal/genesis-ai-a-robotics-startup-raises-500-million-35198457">Exclusive | Genesis AI, a Robotics Startup, Raises $500 Million - WSJ</a></li>
-<li><a href="https://news.crunchbase.com/venture/robot-factory-workers-genesis-ai-fundraise">Genesis AI Raises $500M At $3.5B Valuation To Bring Its Robots To Factories And Warehouses</a></li>
-<li><a href="https://www.prnewswire.com/news-releases/genesis-ai-raises-500m-series-a-at-3-5b-valuation-to-master-human-level-dexterity-in-general-purpose-robots-and-deploy-at-scale-302941249.html">Genesis AI Raises $500M Series A at $3.5B Valuation to Master Human-Level Dexterity in General-Purpose Robots and Deploy at Scale</a></li>
-
-</ul>
-</details>
-
-**标签**: `#具身智能`, `#融资`, `#英伟达`, `#AMD`, `#中国AI应用`
+**标签**: `#OpenAI`, `#API pricing`, `#enterprise AI`, `#model launch`, `#developer tools`
 
 ---
 
 <a id="item-ai-app-3"></a>
-#### [阿里云称连续六年居港 IaaS 第一并推企业 AI](https://www.leiphone.com/category/industrynews/qyieFYqM3EQhE1Hu.html) ⭐️ 7.0/10
+#### [Pony AI 三季度营收超预期，Robotaxi 增速放缓](https://www.bloomberg.com/news/articles/2026-11-18/pony-ai-s-sales-beat-estimates-as-robotaxi-business-expands) ⭐️ 7.0/10
 
-阿里云在 11 月 17 日香港年度峰会上称，其已连续六年位居香港 IaaS 市场份额第一，并称在港企业级客户的 AI 服务启用率超过 95%。该公司今年在港推出 AgentCore、AI-BAS 及 Zero Data Retention（ZDR）等企业级 AI 能力，覆盖 AI Agent 开发管理、安全测试与数据隐私，并介绍称 Qwen4-Max 模型已正式上线，以及千问办公、万镜一刻等产品。源内容还列出保诚保险“AI 核保师”（整体准确率超过 95%、上线不足三个月）、香港特区政府空间数据共享平台“智多纷”、myTV SUPER 引入 Qoder、捷场科学 AiBO 英语学习平台等案例，并称计划未来两至三年为 3 万名香港青年提供 AI 培训。
+彭博报道，Pony AI 第三季度营收超过市场预期，主要受其高毛利 Robotaxi 业务继续扩张推动。报道同时指出，该业务增速已较此前季度放缓。由于原文未披露具体收入、车队规模或城市覆盖数据，无法进一步判断其商业化进展和盈利质量。
 
-rss · 雷峰网 · 11月17日 09:24
+rss · Bloomberg Technology · 11月18日 09:39
 
-> **「背景」** 阿里云此前已公开强调其在香港 IaaS 市场的持续领先，早期资料曾称其连续三年位居香港 IaaS 份额第一。Gartner 2025 年报告也将阿里云列为亚太 IaaS 收入第一、全球第四，为本次“连续六年香港第一”的说法提供了更长期的市场基础。
+> **「背景」** Robotaxi 指自动驾驶出租车服务，是 Pony AI 收入增长中被点名的业务板块。由于该板块被描述为高毛利且持续扩张，季度收入是否超过预期可用于观察其商业化进展和增速变化。
 
-> **「影响」** 对香港企业用户而言，阿里云将 AI 落地从云基础设施扩展到 Agent 开发、安全测试和数据隐私管理，并提供金融、政务、传媒、教育等具体案例；但市场份额、启用率、产品可用性和案例效果主要来自厂商披露，客户在采用 Qwen4-Max、AgentCore、AI-BAS、ZDR 或行业应用时，仍需核验实际版本、部署条件、合规要求与成本。
+> **「影响」** 对关注自动驾驶商业化的人来说，Pony AI 的财报信号显示 Robotaxi 业务仍在增长，但扩张速度开始回落。后续需要重点观察其单位经济、车队规模、城市覆盖和运营效率，而非仅凭营收超预期判断长期盈利能力。
 
-> **「A股题材」** 积极影响：保险 → 中国太保（601601）、中国平安（601318）、中国人保（601319）（AI核保提升保险效率）（题材为规则匹配、方向为模型推测，非投资建议）
-
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://www.alibabacloud.com/blog/alibaba-cloud-ranks-first-in-iaas-market-share-in-hong-kong-for-three-consecutive-years_601078">Alibaba Cloud Ranks First in IaaS Market Share in Hong Kong for Three Consecutive Years - Alibaba Cloud Community</a></li>
-<li><a href="https://www.alibabacloud.com/en/about/gartner-iaas-2025?_p_lc=1">Alibaba Cloud Ranked First in the Asia-Pacific IaaS Market and Ranked Fourth Globally</a></li>
-<li><a href="https://www.alibabacloud.com/en/press-room/alibaba-maintains-leading-position-by-revenue?_p_lc=1">Alibaba Maintains Leading Position by Revenue as Asia Pacific&#x27;s Largest Cloud Provider with Growing Market Share - Alibaba Cloud</a></li>
-
-</ul>
-</details>
-
-**标签**: `#Alibaba Cloud`, `#Hong Kong AI`, `#Enterprise AI adoption`, `#Cloud IaaS market share`, `#AI agents`
+**标签**: `#Robotaxi`, `#China AI`, `#Autonomous Driving`, `#Earnings`, `#AI Monetization`
 
 ---
 
 <a id="item-ai-app-4"></a>
-#### [Model ML 融资 2.5 亿美元开发投行 AI agent](https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work/) ⭐️ 7.0/10
+#### [腾讯 AI 支出激增挤压利润，收入不及预期](https://www.bloomberg.com/news/articles/2026-11-18/tencent-s-sales-miss-estimates-in-setback-for-founder-s-ai-push) ⭐️ 7.0/10
 
-Model ML 宣布完成 2.5 亿美元融资，计划构建面向投资银行和咨询工作的 AI agent。公司称这些 agent 能理解交易上下文，并在新进展影响分析时自动更新财务模型和演示文稿。现有报道未说明产品是否已全面交付，也未披露收入或客户规模。
+腾讯在第三季度大幅加码 AI 基础设施投入，资本开支同比增长逾六倍至超过 120 亿美元，用于购买算力以追赶中国 AI 竞争。财报显示，截至 9 月 30 日的三个月调整后净利润同比下降 6% 至 665 亿元人民币（约合 100 亿美元），符合彭博调查的分析师预期；营收同比增长 8%，但收入表现不及市场预期。
 
-rss · TechCrunch AI · 11月17日 19:32
+rss · Bloomberg Technology · 11月18日 08:36
 
-> **「背景」** Model ML 属于为投行和咨询工作流构建 AI 代理的创业公司，此前约一年完成 7500 万美元 A 轮融资。该赛道已有 Hebbia 与 Rogo 等同类公司，其中后者曾在 4 月以 20 亿美元估值融资 1.6 亿美元。
+> **「背景」** 在中国 AI 竞争加剧的背景下，腾讯第三季度资本开支同比激增逾六倍、超过 120 亿美元，主要用于算力基础设施。同期，其调整后净利润同比下降 6%至 665 亿元人民币。
 
-> **「影响」** 如果产品可靠交付，投行和咨询团队可减少手工更新模型与演示文稿的时间；但金融工作流中的采用仍取决于对交易上下文、数据准确性和合规审计的可验证性。
+> **「影响」** 对投资者和腾讯业务团队而言，这意味着 AI 投入已不再只是长期战略叙事，而会直接反映在季度利润和自由现金流上。腾讯接下来需要在继续建设算力与尽快找到可收费 AI 产品或服务之间做出取舍，AI 商业化路径也将更受资本市场审视。
 
-<details><summary>参考链接</summary>
-<ul>
-<li><a href="https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work">Model ML raises $250M to automate investment banking grunt work</a></li>
-<li><a href="https://finance.biggo.com/news/0eab7536-3f15-443e-b311-67be1d9afea8">AI agent startup Model ML raises $250M at $1.5B valuation, led by General Atlantic and QED — BigGo Finance</a></li>
+> **「A股题材」** 积极影响：算力概念 → 浪潮信息（000977）、紫光股份（000938）、中兴通讯（000063）、中际旭创（300308）、新易盛（300502）（腾讯加码算力采购），数据中心 → 润泽科技（300442）、光环新网（300383）、美利云（000815）、科华数据（002335）、英维克（002837）（算力基建投入增加）（题材为规则匹配、方向为模型推测，非投资建议）
 
-</ul>
-</details>
-
-**标签**: `#AI agents`, `#funding`, `#investment banking`, `#enterprise workflow`, `#financial services`
+**标签**: `#Tencent`, `#AI commercialization`, `#China AI`, `#profitability`, `#earnings`
 
 ---
 
 <a id="item-ai-app-5"></a>
-#### [OpenAI 用 AI agents 自动化医疗表单与保险请求](https://the-decoder.com/ai-agents-are-starting-to-fill-out-medical-forms-and-file-insurance-requests-in-place-of-human-staff/) ⭐️ 7.0/10
+#### [Model ML 融资 2.5 亿美元自动化投行工作流](https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work/) ⭐️ 7.0/10
 
-OpenAI 计划让 GPT-6 Astra 和 GPT-6 Luna 通过 computer-use agents 自动化美国医疗行政任务，让 AI 像人类一样操作现有诊所软件和保险门户。据报道，Luna 处理 prior authorizations 的价格约为每单 8.5 美分，CVS Health 和 Cigna Healthcare 已在部署相关技术。
+Model ML 宣布完成 2.5 亿美元融资，计划构建 AI 智能体，用于自动化投资银行和咨询中的财务模型与演示文稿更新。该公司称，这些智能体能理解交易上下文，并在新的进展影响分析时自动更新相关模型和材料。目前这仍是厂商描述的产品方向，公开信息未说明能力是否已全面交付、适用哪些客户或如何处理金融数据准确性与合规要求。
 
-rss · The Decoder · 11月17日 16:55
+rss · TechCrunch AI · 11月17日 19:32
 
-> **「背景」** 计算机使用代理是指 AI 系统像人类一样操作现有软件界面，通过读取页面、点击按钮和填写表单完成任务。美国医疗流程中的“事前授权”通常是在治疗、检查或处方获得保险覆盖前，由医疗机构向保险公司提交并等待审批的行政步骤。
+> **「融资与产品背景」** Model ML 是一家总部位于伦敦的初创公司，约一年前完成 7500 万美元 A 轮融资，本轮为 2.5 亿美元 B 轮，估值达到 15 亿美元。该公司开发面向投行和咨询场景的 AI agents，可接入 Excel、PowerPoint 等系统，自动更新财务模型与演示材料。
 
-> **「影响」** 对医疗行政人员来说，填表和保险请求可能被 computer-use agents 替代；对 CVS Health、Cigna Healthcare 等采用方来说，约 8.5 美分/任务的定价提供了可量化的自动化成本基准。
+> **「影响」** 对投行和咨询分析师而言，如果这类智能体可靠运行，最直接的影响是减少手工维护模型与 PPT 的重复工作；但企业采用前仍需验证其在复杂交易上下文、数据一致性和审计要求下的实际表现。
 
-> **「A股题材」** 积极影响：保险 → 中国太保（601601）、中国平安（601318）、中国人保（601319）（保险行政自动化降本增效）（题材为规则匹配、方向为模型推测，非投资建议）
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://techcrunch.com/2026/11/17/model-ml-raises-250m-to-automate-investment-banking-grunt-work">Model ML raises $250M to automate investment banking grunt work</a></li>
+<li><a href="https://newsfilter.io/articles/model-ml-raises-250m-to-automate-investment-banking-grunt-work-d27e5e301f68589e8edf3d11fd13840e">Model ML raises $250M to automate investment banking grunt work</a></li>
 
-**标签**: `#AI agents`, `#healthcare automation`, `#OpenAI`, `#enterprise adoption`, `#unit economics`
+</ul>
+</details>
+
+**标签**: `#AI agents`, `#startup funding`, `#investment banking`, `#enterprise workflow`, `#vertical software`
 
 ---
 
 ### 其他科技行业动态
 
 <a id="item-tech-news-1"></a>
-#### [英伟达停止向中国出货特许 Hopper 芯片](https://techcrunch.com/2026/11/17/nvidia-is-abandoning-china-after-jensen-huangs-ouster/) ⭐️ 9.0/10
+#### [英伟达临时 CEO 称停止对华销售芯片](https://techcrunch.com/2026/11/17/nvidia-is-abandoning-china-after-jensen-huangs-ouster/) ⭐️ 9.0/10
 
-英伟达临时 CEO 科莱特·克雷斯在 11 月 17 日的 2027 财年第三季度财报会上表示，公司已不再向中国出货特许 Hopper 数据中心产品，后续业绩指引也未包含相关收入。该表态发生在黄仁勋离任后，与此前英伟达获得美国政府许可、有条件销售该版本形成明显转变。克雷斯称，第三季度英伟达向中国销售的特许 Hopper 产品收入为 24 亿美元，停止出货对中国 AI 算力供应和英伟达收入预期构成直接影响。
+据报道，在黄仁勋去职后，英伟达临时 CEO 表示公司将停止向中国销售芯片。目前该说法仅为管理层表态，未披露具体芯片型号、适用条件、时间表或财务影响。
 
 rss · TechCrunch AI · 11月17日 23:37
 
-> **「背景」** 2026 年 11 月 11 日，黄仁勋辞去英伟达 CEO 职务，首席财务官科莱特·克雷斯出任临时 CEO。此前美国对华芯片出口政策经历反复：英伟达曾被迫开发面向中国的低规格 H20，随后特朗普政府允许其向中国销售 H200 并抽取 25%销售额，但实际交付和收入长期受限。
+> **「背景」** 英伟达是全球主要 AI 芯片供应商，中国市场曾对其数据中心和整体营收具有重要战略意义。与此同时，美国对华先进芯片出口管制已长期影响英伟达在中国的销售能力。黄仁勋被罢免后，临时 CEO 上任使公司是否继续向中国市场供货成为关键政策与商业焦点。
 
-> **「对采购与算力供应的影响」** 对依赖英伟达 Hopper/H200 的中国云厂商和 AI 开发者而言，停止出货意味着高端数据中心算力供给进一步收缩；相关销售此前还受美国出口许可、预检和关税以及中国进口放行约束，并已导致库存与采购义务计提。对英伟达而言，中国数据中心收入被排除在后续指引之外，且客户可能转向国产加速器或其他可交付供应商，使中国市场份额与收入修复更加不确定。
+> **「影响」** 若英伟达临时首席执行官所称“不再向中国销售芯片”落地，中国 AI 开发者和数据中心将失去一个主流加速器供应来源，需要调整采购与合规安排。此前出口限制已造成约 150 亿美元销售损失和 55 亿美元库存减记；不过最近两个季度英伟达对华合法出货仅占数据中心收入不到 1%、约 10 亿美元，因此短期财务冲击可能有限，但长期市场准入和供应链不确定性会上升。
 
-> **「A股题材」** 积极影响：AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（国产替代加速）
+> **「A股题材」** 积极影响：AI芯片 → 旋极信息（300324）、瑞晨环保（301273）、瑞芯微（603893）、TCL科技（000100）、炬芯科技（688049）（断供催化国产AI芯片），国产芯片 → 北纬科技（002148）、奥普特（688686）、吉视传媒（601929）、好上好（001298）、汉钟精机（002158）（替代需求上升）
 >
-> 负面影响：英伟达概念 → 移远通信（603236）、泰凌微（688591）、阿尔特（300825）（对华出货中断）（题材为规则匹配、方向为模型推测，非投资建议）
+> 负面影响：英伟达概念 → 移远通信（603236）、青云科技（688316）、星华新材（301077）、神州数码（000034）、泰凌微（688591）（英伟达停售利空链）（题材为规则匹配、方向为模型推测，非投资建议）
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.outdoorliving101.com/science/jensen-huang-resigns-from-nvidia-what-colette-kress-inherits-and-why-china%E2%80%99s-ai-chip-access-matters">Jensen Huang Resigns From NVIDIA: What Colette Kress Inherits and Why China’s AI Chip Access Matters</a></li>
-<li><a href="https://www.cnbc.com/2026/03/17/nvidia-ceo-jensen-huang-says-chipmaker-has-received-orders-from-china.html">Nvidia CEO Jensen Huang says chipmaker has received orders from China</a></li>
-<li><a href="https://www.kucoin.com/blog/nvidia-china-revenue-exposure-us-chip-export-bills">Nvidia Faces New Scrutiny Over China Revenue Exposure as US Chip Export Bills Gain Momentum</a></li>
-<li><a href="https://www.spheron.network/blog/gpu-export-controls-2026-cloud-pricing">GPU Export Controls 2026: What It Means for Cloud Pricing | Spheron</a></li>
-<li><a href="https://oplexa.com/blogs/us-china-chip-war-2026-semiconductor">US China Chip War 2026: Export Impact on Semiconductors</a></li>
+<li><a href="https://finance.yahoo.com/news/nvidia-ceo-china-chip-ban-deeply-painful-as-15-billion-in-sales-have-been-lost-as-a-result-162124142.html">Nvidia CEO: China chip ban &#x27;deeply painful&#x27; as $15 billion in sales have been lost as a result</a></li>
+<li><a href="https://www.youtube.com/watch?v=SEHNuZKCzSk">Traders Digest Jensen Huang&#x27;s Exit from Nvidia</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Nvidia`, `#China AI market`, `#semiconductor supply`, `#executive change`, `#AI compute`
+**标签**: `#Nvidia`, `#China AI`, `#Compute supply chain`, `#Strategic reversal`, `#Semiconductor market`
 
 ---
 
 <a id="item-tech-news-2"></a>
-#### [OpenAI 发布 GPT‑6.2 Astra 与 Sol：降价与风险](https://openai.com/index/introducing-gpt-6-2-astra-sol/) ⭐️ 8.0/10
+#### [Quad9 撤出法国：DNS 管辖压力引发担忧](https://blog.cloudflare.com/quad9-withdrawal-from-france/) ⭐️ 8.0/10
 
-OpenAI 发布 GPT‑6.2 Astra 与 GPT‑6.2 Sol，API 中分别为 gpt‑6.2‑astra 和 gpt‑6.2‑sol；OpenAI 称前者面向最复杂项目，后者用于日常高效工作。Astra 输入/输出定价为 $8/$40 每百万 token，较上一代 Astra 下降约 20%，缓存价格降至 $0.40 每百万 token；Sol 保持 $2/$10 定价，较 GPT‑5.6 Sol 减半。据 The Decoder 报道，Artificial Analysis 智能指数将 Astra 排在 Claude Fable 5.2 之后，并称其达到 OpenAI 自我改进风险等级的 High 阈值。
+Cloudflare 博客称，Quad9 撤出法国，使依赖其 DNS 解析服务的法国用户面临可用性变化。该文章将这一事件描述为 DNS 基础设施被纳入司法辖区阻断和治理压力的早期警示。
 
-hackernews · jasondavies · 11月17日 17:46 · [社区讨论](https://news.ycombinator.com/item?id=50535230)
+hackernews · subset · 11月17日 22:13 · [社区讨论](https://news.ycombinator.com/item?id=50538994)
 
-> **「背景」** GPT-6.2 Astra 和 GPT-6.2 Sol 是 OpenAI 对既有 GPT-6 系列的更新：Astra 承接 GPT-6 Astra，Sol 承接 GPT-6.1 Sol 和 GPT-6 Sol。价格基线也说明了变化：GPT-6 Astra 此前为每百万输入 token 10 美元、每百万输出 token 50 美元，GPT-5.6 Sol 为每百万输入 token 4 美元、每百万输出 token 20 美元。
+> **「法国 DNS 屏蔽命令背景」** Quad9 是一家提供公共 DNS 解析的非营利服务，其退出法国源于法国法院就体育盗播侵权域名发出的 DNS 屏蔽命令；EFF 称该命令迫使 Quad9 在全球屏蔽或仅针对法国用户屏蔽，而后者无法可靠实现。Quad9 因此宣布自 2026 年 11 月 24 日起停止向法国用户提供其免费网络保护服务。
 
-> **「影响」** 对长上下文代理工作流，Astra 的缓存降价和更少的工具调用可能显著降低成本；有评论称其数据分析任务成本从约 $20 降至约 $4，且速度很快。但用户需验证其是否因过早结束、询问内部实现细节或办公文档示例质量不佳而影响实际交付。
+> **「影响」** 对依赖 Quad9 的法国用户和组织而言，需要检查 DNS 解析器配置并准备迁移到其他解析器；对 DNS 基础设施供应商而言，该事件提示需评估不同司法辖区的合规、阻断和服务可用性风险。
 
-> **「社区讨论」** chriddyp 强调 Astra/Sol 在数据分析考试中成本下降、速度很快，但准确率相似且有时会提前结束；Topfi 则批评幻灯片、工作簿和备忘录示例不如旧模型。thefourthchime 的 PacBench 结果显示 Astra 得 92 分、成本高于 Kimi K3.1 Pro 但耗时更短，Sol 得 87 分、成本低于 Muse Wonder。
+> **「社区讨论」** 自称 Quad9 CTO 的 johnhtodd 表示在 IETF 127 获得同行支持，并感到对 DNS 监管趋势的普遍担忧；driverdan 批评 Cloudflare 未承诺在上诉失败后采取具体行动，hypfer 则认为互联网基础设施“中立”的前提已不现实。
 
-> **「A股题材」** 积极影响：ChatGPT概念 → 凡拓数创（301313）、风语筑（603466）、亿嘉和（603666）（模型升级降本利好），AIGC概念 → 芒果超媒（300413）、奥雅股份（300949）、果麦文化（301052）（生成能力成本改善），AI智能体 → 奥雅股份、华是科技、漫步者（002351）（代理成本下降利好）（题材为规则匹配、方向为模型推测，非投资建议）
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://www.eff.org/deeplinks/2026/10/french-courts-site-blocking-orders-drive-quad9-out-france">French Court’s Site-Blocking Orders Drive Quad9 Out Of France | Electronic Frontier Foundation</a></li>
+<li><a href="https://quad9.net/news/blog">Blog | Quad9</a></li>
 
-**标签**: `#OpenAI model launch`, `#inference cost`, `#AI competitive benchmarks`, `#China AI competition`, `#commercialization`
+</ul>
+</details>
+
+**标签**: `#DNS infrastructure`, `#Internet governance`, `#Cloudflare`, `#Quad9`, `#Regulatory risk`
 
 ---
 
 <a id="item-tech-news-3"></a>
-#### [82 亿美元股票收购完成，李飞飞团队加入 AMD](https://www.qbitai.com/2026/11/510695.html) ⭐️ 8.0/10
+#### [英伟达称黄仁勋离职后开源战略不变](https://techcrunch.com/2026/11/17/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit/) ⭐️ 8.0/10
 
-据该报道，一项 82 亿美元的股票收购已完成，李飞飞团队正式加入 AMD。报道还称，这笔交易在 46 天内完成交割。
+英伟达临时 CEO 表示，在黄仁勋突然离职后，公司开源 AI 战略仍保持不变，并重申收购 Hugging Face 的计划。该报道未披露交易金额、完成时间、监管进展或交割条件，因此收购目前仍是公司层面的计划，而非已确认完成的事项。
 
-rss · 量子位 · 11月17日 14:15
+rss · TechCrunch AI · 11月17日 23:04
 
-> **「背景」** World Labs 由李飞飞于 2024 年创立，开发用于模拟 3D 环境、训练机器人在虚拟与真实世界中行动的 AI 模型。AMD 此前宣布以约 82 亿美元全股票方式收购该公司，并预计于 2026 年底前完成交割。
+> **「事件背景」** Nvidia 在 9 月同意以 129 亿美元收购 Hugging Face，这是其历史上第二大收购，预计 2027 年上半年完成并面临美国司法部审查。Hugging Face 是托管和测试开源 AI 模型的枢纽，服务超过 1.18 亿开发者和 20 万家公司；黄仁勋曾大力倡导开源 AI，因此其突然离职引发对 Nvidia 开源路线的疑问。
 
-> **「影响」** 该交易把李飞飞团队纳入 AMD，直接改变了 AMD 的 AI 人才布局；但报道未说明团队将参与哪些具体产品、算力路线或客户方案。
-
-> **「A股题材」** 积极影响：AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（巨头补强AI生态），算力概念（训练算力需求增），数字孪生（3D仿真获资本加持）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 对依赖 Hugging Face 模型、数据集和开源工具链的开发者与组织而言，后续交易条款和英伟达对开源承诺的具体约束最为关键；若收购推进，生态治理、模型分发和商业化路径可能受到影响。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://finance.yahoo.com/technology/article/amd-just-spent-82-billion-to-enlist-the-godmother-of-ai-230634166.html">AMD just spent $8.2 billion to enlist the &#x27;Godmother of AI&#x27;</a></li>
-<li><a href="https://finance.yahoo.com/technology/article/amd-finalizes-82-billion-world-labs-acquisition-adds-godmother-of-ai-as-evp-and-chief-scientist-171451986.html">AMD finalizes $8.2 billion World Labs acquisition, adds &#x27;godmother of AI&#x27; as EVP and chief scientist</a></li>
+<li><a href="https://newsfilter.io/articles/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit-707324cf13cc5237aca8ec8b3482f2b2">Nvidia says its open-source AI strategy remains intact after Jensen Huang’s exit</a></li>
+<li><a href="https://finance.yahoo.com/technology/ai/articles/nvidia-says-open-source-ai-230435010.html">Nvidia says its open source AI strategy remains intact after Jensen Huang’s exit</a></li>
+<li><a href="https://dealroom.co/news/173133-nvidia-s-12-9b-hugging-face-deal-in-doubt-as-huang-exit-hits-open-ai">Nvidia&#x27;s $12.9B Hugging Face deal in doubt as Huang exit hits open AI | Dealroom News</a></li>
 
 </ul>
 </details>
 
-**标签**: `#AMD`, `#AI M&amp;A`, `#compute`, `#AI talent`, `#industry structure`
+**标签**: `#Nvidia`, `#Hugging Face`, `#AI leadership`, `#open-source AI`, `#M&amp;A`
 
 ---
 
 <a id="item-tech-news-4"></a>
-#### [英伟达公布超预期营收并上调增长指引](https://techcrunch.com/2026/11/17/nvidia-promises-that-revenue-will-keep-soaring-for-now/) ⭐️ 8.0/10
+#### [Anthropic IPO 后亚马逊谷歌合计持股近 30%](https://techcrunch.com/2026/11/17/amazon-and-google-will-together-own-nearly-30-of-anthropic-after-its-ipo/) ⭐️ 8.0/10
 
-英伟达在黄仁勋辞职后公布 2027 财年第三季度营收 1158.4 亿美元，高于市场预期的 1091 亿美元，并给出第四财季 1300 亿美元收入指引。公司同时将 2028 财年增长预期从 70%上调至 75%，且该数据中心计算收入展望已排除中国。董事长哈维·琼斯在财报电话会上表示董事会不打算让黄仁勋复职，临时 CEO 科莱特·克雷斯介绍了业绩。
+据 TechCrunch 报道，Anthropic 完成 IPO 后，亚马逊和谷歌将合计持有其近 30% 的股份。亚马逊持股略低于 15%，并拥有可进一步增持的选项；谷歌持股接近 14%。报道未说明 IPO 时间、交易条款或治理安排。
 
-rss · TechCrunch AI · 11月18日 00:16
+rss · TechCrunch AI · 11月17日 22:29
 
-> **「领导层变动背景」** Nvidia 长期由黄仁勋担任 CEO，其财报被市场视为 AI 基础设施支出的风向标。此次财报发布前，黄仁勋已辞职，且董事会表示不会让他恢复 CEO 职务，因此收入指引能否延续成为关注重点。
+> **「背景」** Anthropic 的 IPO 并非突然宣布：此前报道显示，它曾聘请 Wilson Sonsini 筹备可能于 2026 年进行的上市；2026 年 6 月的报道则显示其已提交 IPO 申请，估值接近 1 万亿美元。Amazon 和 Google 作为既有投资方，其 IPO 后持股因此直接反映此前的融资与资本结构。
 
-> **「影响」** 对 AI 基础设施采购方和云服务商而言，英伟达将供应承诺从 2790 亿美元提高到 3900 亿美元，显示其仍预期高需求并维持大额供应安排；但新的美国出口许可要求覆盖新加坡、马来西亚、印尼、泰国和巴西，分析师认为这可能放慢部分 neocloud 建设。英伟达称直接指引影响有限，因为其展望已排除中国数据中心收入，且中国仅占本季约 2%销售，相关买家仍需关注许可合规和交付节奏。
-
-> **「A股题材」** 积极影响：算力概念（算力需求仍强劲），AI芯片 → 瑞晨环保（301273）、瑞芯微（603893）、炬芯科技（688049）（芯片景气度提升）（题材为规则匹配、方向为模型推测，非投资建议）
-
-**标签**: `#Nvidia`, `#AI chips`, `#executive change`, `#revenue guidance`, `#AI compute supply chain`
-
----
-
-<a id="item-tech-news-5"></a>
-#### [英伟达称开源 AI 与收购 Hugging Face 计划不变](https://techcrunch.com/2026/11/17/nvidia-says-its-open-source-ai-strategy-remains-intact-after-jensen-huangs-exit/) ⭐️ 8.0/10
-
-英伟达临时首席执行官表示，在黄仁勋突然离职后，公司的开源 AI 战略保持不变，并仍计划收购 Hugging Face。该表态属于公司确认的计划，而非已完成的收购或已交付的产品变化。对 AI 开发者而言，这意味着英伟达仍试图将 Hugging Face 纳入其开源生态布局。
-
-rss · TechCrunch AI · 11月17日 23:04
-
-> **「背景」** 2026 年 9 月，Nvidia 宣布以约 129.3 亿美元收购 Hugging Face，并承诺该平台将继续保持开放、不强制开发者使用 Nvidia 算力。Hugging Face 是面向开源 AI 模型的托管与协作平台，黄仁勋曾公开推动这一交易。
-
-> **「影响」** 这一表态表明英伟达在高层变动后仍打算推进对 Hugging Face 的收购；相关开发者需要关注交易是否最终完成，以及 Hugging Face 在英伟达体系内的开源定位是否保持一致。
-
-> **「A股题材」** 积极影响：AIGC概念 → 芒果超媒（300413）、奥雅股份（300949）、果麦文化（301052）（开源生态延续利好）（题材为规则匹配、方向为模型推测，非投资建议）
+> **「影响」** 这一股权结构可能影响市场对 Anthropic 独立性的判断，并促使客户在评估模型供应商时关注其与亚马逊、谷歌之间的算力、分发和竞争关系。
 
 <details><summary>参考链接</summary>
 <ul>
-<li><a href="https://www.tftc.io/nvidia-acquires-hugging-face-12-billion-open-platform">Nvidia Buys Hugging Face for $12.93B · TFTC</a></li>
-<li><a href="https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face">NVIDIA to Acquire Hugging Face | NVIDIA Blog</a></li>
+<li><a href="https://dentro.de/ai/news">AI News - November 2026: Key Events &amp; Releases - dentro.de/ai</a></li>
+<li><a href="https://finance.yahoo.com/news/anthropic-plans-ipo-early-2026-004854547.html?fr=sycsrp_catchall">Anthropic plans an IPO as early as 2026, FT reports</a></li>
 
 </ul>
 </details>
 
-**标签**: `#Nvidia`, `#AI M&amp;A`, `#open-source AI`, `#executive leadership`, `#Hugging Face`
+**标签**: `#AI industry`, `#capital markets`, `#hyperscalers`, `#Anthropic`, `#ownership`
+
+---
+
+<a id="item-tech-news-5"></a>
+#### [SEC 据报调查英伟达 黄仁勋离职与间谍指控](https://techcrunch.com/2026/11/17/sec-reportedly-investigating-nvidia-amid-huang-exit/) ⭐️ 8.0/10
+
+据 TechCrunch 转引《华尔街日报》报道，美国证券交易委员会（SEC）已对英伟达开启调查，背景是 CEO 黄仁勋离职并承认与一名被指为中国间谍的人有染。该报道目前仍属媒体披露，尚未说明调查的具体范围、指控证据或英伟达的回应。这一事件给英伟达的投资者、合规团队和 AI 算力客户带来新的治理与监管不确定性。
+
+rss · TechCrunch AI · 11月17日 21:48
+
+> **「背景」** 此前《华尔街日报》报道称，黄仁勋承认与一名被指为中国间谍的女子有染，英伟达董事会已就相关间谍目标指控展开调查；黄仁勋还向特朗普表示，自己事先不知道对方身份。随后英伟达董事会据报不打算让黄仁勋复任，并由 Colette Kress 出任临时 CEO，因此当前 SEC 调查发生在管理层突然变动和内部调查的背景下。
+
+> **「影响」** 对投资者和依赖英伟达算力的企业而言，这一事件带来的直接影响是治理与监管不确定性上升：CEO 离职已引发股价波动和董事会继任压力，而 SEC 调查可能使信息披露、国家安全及中国相关合规问题受到更严格审视。客户可能需要重新评估供应商稳定性，并关注英伟达在出口管制、证券诉讼和监管审查中的后续风险。
+
+> **「A股题材」** 负面影响：英伟达概念 → 工业富联（601138）、浪潮信息（000977）、神州数码（000034）、中电港（001287）、紫光股份（000938）（龙头治理监管风险）（题材为规则匹配、方向为模型推测，非投资建议）
+
+<details><summary>参考链接</summary>
+<ul>
+<li><a href="https://www.wsj.com/tech/ai/a-timeline-of-nvidia-ceo-jensen-huangs-suspected-spy-drama-05cbebf3?eafs_enabled=false">A Timeline of Nvidia CEO Jensen Huang’s Suspected Spy Drama - WSJ</a></li>
+<li><a href="https://www.cnbc.com/video/2026/04/13/odds-of-nvidia-buying-dell-are-low-says-deepwaters-gene-munster.html">Odds of Nvidia buying Dell are low, says Deepwater&#x27;s Gene Munster</a></li>
+<li><a href="https://cryptorank.io/news/feed/f900e-nvidia-and-ceo-jensen-huang-face-lawsuit">Nvidia and CEO Jensen Huang face a class action lawsuit over the 2017-2018 $1B hidden crypto revenue</a></li>
+<li><a href="https://www.facebook.com/cnn/videos/nvidias-board-of-directors-faces-a-very-tough-choice-about-whether-to-remove-its/1475213587888907">Nvidia’s board of directors faces a “very tough choice” about whether to remove its CEO, Jensen Huang, says former chairman of the Securities and Exchange Commission, Gary Gensler. Read more: https://cnn.it/4zdx9Mc | CNN | Facebook</a></li>
+<li><a href="https://www.facebook.com/aljazeera/videos/nvidia-ceo-jensen-huang-has-resigned-amid-reports-of-a-second-affair-with-a-comp/1689108979404199">30K views · 517 reactions | Nvidia CEO Jensen Huang has resigned amid reports of a second affair with a company executive. The announcement came after a board meeting. 
+
+Nvidia’s shares have fallen sharply since Huang admitted an affair with a suspected Chinese spy. | Al Jazeera English</a></li>
+
+</ul>
+</details>
+
+**标签**: `#Nvidia`, `#SEC investigation`, `#CEO departure`, `#China risk`, `#AI governance`
 
 ---
 
