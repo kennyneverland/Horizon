@@ -102,6 +102,12 @@ DIRECTION_LABELS = {
     NEUTRAL: "可能相关",
 }
 
+# 成员数超过这个数的题材，前几名是"近3月相对强度"排名，不是业务代表：芯片概念
+# 收录 290 只，2026-11-18 排第 3 的是北鼎股份（养生壶/烤箱），与芯片无关。宽口径
+# 题材只显示题材名和方向，不显示成员，避免把强度排名当成产业链名单。窄题材
+# （AI芯片 38 只、Kimi概念 16 只）照常显示。
+WIDE_THEME_MEMBER_LIMIT = 100
+
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
 _ITEMLIST_RE = re.compile(
     r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', re.S
@@ -553,17 +559,28 @@ def pick_members(members: Sequence[str], limit: int = MAX_MEMBERS) -> List[str]:
 def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
     """Render the reader-facing line for one item, or '' when nothing matched.
 
-    Themes are grouped by the direction the story was judged to have on their
-    constituents: positive, then negative, then neutral. A theme the direction
-    pass left without a verdict (its call failed, or the item never reached it)
-    is still shown, but in a group that claims no direction at all, so a miss is
-    never read as a neutral verdict.
+    Only the two directional verdicts are shown. "可能相关" carried no
+    information the headline did not already carry, and on 2026-11-18 it was 22
+    of 32 theme lines, which buried the verdicts that matter. A theme the
+    direction pass left without a verdict (its call failed) is still shown under
+    方向待定, so a miss is never read as a neutral verdict.
+
+    The two verdicts are separated by a blank line so they render as two quote
+    paragraphs instead of one run-on line.
+
+    Members are omitted for wide themes: their page order is a three-month
+    relative-strength ranking, so the top five are the strongest recent movers
+    rather than the names that define the theme. Narrow themes keep them.
     """
-    groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], NEUTRAL: [], "": []}
+    groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
     for theme in themes:
+        direction = theme.get("direction")
+        if direction == NEUTRAL:
+            continue
         members = theme.get("members") or []
+        total = theme.get("member_total") or 0
         label = str(theme["name"])
-        if members:
+        if members and total <= WIDE_THEME_MEMBER_LIMIT:
             # Full-width brackets keep the line out of the markdown escaper.
             shown = [m.replace("(", "（").replace(")", "）") for m in members]
             label = f"{label} → {'、'.join(shown)}"
@@ -572,18 +589,18 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
         reason = str(theme.get("direction_reason") or "").strip()
         if reason:
             label = f"{label}（{reason}）"
-        direction = theme.get("direction")
-        groups[direction if direction in DIRECTION_LABELS else ""].append(label)
+        groups[direction if direction in groups else ""].append(label)
 
     parts: List[str] = []
-    for direction in (POSITIVE, NEGATIVE, NEUTRAL):
+    for direction in (POSITIVE, NEGATIVE):
         if groups[direction]:
             parts.append(f"{DIRECTION_LABELS[direction]}：{'，'.join(groups[direction])}")
     if groups[""]:
         parts.append(f"方向待定：{'，'.join(groups[''])}")
     if not parts:
         return ""
-    return f"{'；'.join(parts)}（题材为规则匹配、方向为模型推测，非投资建议）"
+    parts[-1] = f"{parts[-1]}（题材为规则匹配、方向为模型推测，非投资建议）"
+    return "\n\n".join(parts)
 
 
 def matching_text(item: Any) -> str:
@@ -631,6 +648,7 @@ async def attach_themes(
         members = await fetcher.get(
             theme["slug"], theme.get("members_count"), theme.get("name")
         )
+        theme["member_total"] = len(members)
         theme["members"] = pick_members(members)
     item.metadata["ashare_themes"] = themes
 
