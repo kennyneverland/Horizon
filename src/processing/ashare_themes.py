@@ -65,8 +65,9 @@ MIN_SCORE = 0.5
 # otherwise a weak second hit just adds a wrong name list.
 RELATIVE_CUTOFF = 0.72
 MAX_THEMES_PER_ITEM = 3
-# Five names covers the leading row of a theme without turning the line into a list.
-MAX_MEMBERS = 5
+# Three names keeps a line readable now that it can carry three themes; the
+# reader asked for at most three themes x three names per story.
+MAX_MEMBERS = 3
 # Requests are cheap but lianban rate-limits aggressively, so the run is capped.
 # Fetches are serialised and cached per theme, so a repeated theme costs nothing.
 # The lookup runs once per item now, in the enrichment pass, and only the items
@@ -107,7 +108,7 @@ DIRECTION_LABELS = {
 
 # 题材池只取 lianban 列表页热度排名前 200 的题材。该列表每个交易日收盘后按
 # 市场热度重排，前 200 是当天真正在被交易的题材；成员仍取页面自带的"近3月
-# 相对强度"前 5。2026-11-18 实测：794 个题材里 rank<=200 的有 181 个。
+# 相对强度"前 3。2026-11-18 实测：794 个题材里 rank<=200 的有 181 个。
 # 前 200 一个都没命中时，先让模型在全量索引里选，再由词表匹配兜底。
 HOT_THEME_LIMIT = 200
 
@@ -702,7 +703,7 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
 
     A theme reaches this line from the heat list, from a model pick over the
     whole index, or from the lexical sweep; whichever pass chose it, the member
-    list is the page's own three-month strength ranking cut to the leading five.
+    list is the page's own three-month strength ranking cut to the leading three.
     """
     groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
     for theme in themes:
