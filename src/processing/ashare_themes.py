@@ -6,15 +6,11 @@ drags on. That link is not in the headline, and the analyser is told not to
 speculate about impact, so the theme has to come from a lookup rather than
 from the model.
 
-Two public datasets are joined here:
-
-* ``lianban.net`` publishes 750 theme pages, each with the full member list in
-  schema.org ``ItemList`` JSON-LD. It is the only source of *names* — the
-  digest never invents a ticker. Licence: CC BY 4.0, attribution required.
-* ``stockinsky.com`` publishes 635 concept pages with a one-paragraph
-  description of what each concept covers. Those descriptions are used only to
-  widen the vocabulary of a theme (so "AI 服务器" reaches 算力概念 even though
-  the theme name does not contain it), never to pick a ticker.
+Two public datasets are joined here: ``lianban.net`` publishes 750 theme
+pages with the member list in schema.org ``ItemList`` JSON-LD (the only source
+of *names* — the digest never invents a ticker; CC BY 4.0, attribution
+required), and ``stockinsky.com`` publishes 635 concept descriptions used only
+to widen a theme's vocabulary, never to pick a ticker.
 
 Theme matching is lexical, not model-driven: a title hits a theme when it
 contains one of that theme's terms. Terms come from three layers, in
@@ -27,13 +23,11 @@ When the heat list names nothing, the model picks from the whole index before
 the lexical sweep is tried, so a story outside today's traded sectors still
 gets a theme line.
 
-Members are fetched at render time, one request per matched theme, capped per
-run. lianban already sorts every theme page by three-month relative strength
-and recomputes it after each close, so the page order *is* the ranking: the
-first names are the strongest in the theme. No re-ranking happens here.
-
-A failed fetch drops the name list and keeps the theme label, so a blocked
-request degrades the line instead of the digest.
+Members are fetched later, one request per theme the line will show, capped
+per run. lianban sorts every theme page by three-month relative strength after
+each close, so the page order *is* the ranking. A failed fetch drops the name
+list and keeps the theme label, so a blocked request degrades the line instead
+of the digest.
 
 Everything here is a lookup, not a recommendation: the rendered line is marked
 as inferred and carries the source attribution.
@@ -47,6 +41,7 @@ import gzip
 import json
 import logging
 import re
+import time
 import unicodedata
 import urllib.request
 import zlib
@@ -80,9 +75,13 @@ MAX_THEME_FETCH = 90
 # empty theme: lianban throttles by serving a stub page, so one retry after a
 # short pause usually recovers it.
 FETCH_ATTEMPTS = 2
-FETCH_RETRY_WAIT = 1.5
-# Spacing two different themes apart keeps a burst from tripping the limiter.
-FETCH_SPACING = 0.4
+FETCH_RETRY_WAIT = 6.0
+# 0.4s tripped the limiter on 2026-11-18 once a story could carry three themes
+# and the run asked for ~38 pages; 1.0s still fits inside the run.
+FETCH_SPACING = 1.0
+# A 429 pauses every later fetch, not just this one: lianban counts requests
+# from the client address, so carrying on at the same rate only deepens it.
+RATE_LIMIT_COOLDOWN = 12.0
 # The theme lookup means something to every reader who follows the AI and
 # computing supply chain, so the AI profiles carry it too; tech-blog does not.
 # China-market items are the ones most likely to name a theme directly.
@@ -368,9 +367,8 @@ class ThemeIndex:
     def all_names(self) -> List[str]:
         """Every theme name in the index, deduplicated and sorted.
 
-        This is the candidate list handed to the model when the heat list names
-        nothing. It comes from the index rather than the listing page, so every
-        pick resolves to a page whose members the run can fetch.
+        The candidate list handed to the model when the heat list names
+        nothing; it comes from the index, so every pick has members to fetch.
         """
         names = {str(theme.get("name") or "").strip() for theme in self.themes.values()}
         names.discard("")
@@ -379,10 +377,9 @@ class ThemeIndex:
     def _nearest_slug(self, key: str) -> Optional[str]:
         """Resolve a near-miss name to an index theme, or None.
 
-        Preference order matters more than it looks: for 芯片 the index holds
-        both AI芯片 and 芯片概念, and the theme whose name *starts* with the
-        answer is the one the model meant. The last step covers the opposite
-        direction, where the model wrote a longer phrase than the theme name.
+        For 芯片 the index holds both AI芯片 and 芯片概念, and the name that
+        *starts* with the answer is the one the model meant; the last step
+        covers a model that wrote a longer phrase than the theme name.
         """
         folded = [(slug, _normalise(theme["name"])) for slug, theme in self.themes.items()]
         for predicate, order in (
@@ -459,6 +456,8 @@ class MemberFetcher:
     _shared_hot: Optional[set[str]] = None
     # The budget is reported once, not once per theme that ran into it.
     _shared_exhausted = False
+    # Monotonic time before which no fetch may start (set on a 429).
+    _shared_cooldown_until = 0.0
 
     def __init__(
         self,
@@ -577,13 +576,22 @@ class MemberFetcher:
                 return []
             MemberFetcher._shared_used += 1
             names: List[str] = []
+            throttled = False
             for attempt in range(1, FETCH_ATTEMPTS + 1):
                 await asyncio.sleep(
                     FETCH_SPACING if attempt == 1 else FETCH_RETRY_WAIT
                 )
+                pause = MemberFetcher._shared_cooldown_until - time.monotonic()
+                if pause > 0:
+                    await asyncio.sleep(pause)
                 try:
                     names = await asyncio.to_thread(self._fetch_sync, slug)
                 except Exception as exc:  # noqa: BLE001 - a blocked fetch must not fail the run
+                    if getattr(exc, "code", None) == 429:
+                        throttled = True
+                        MemberFetcher._shared_cooldown_until = (
+                            time.monotonic() + RATE_LIMIT_COOLDOWN
+                        )
                     logger.warning(
                         "Member fetch failed for %s (attempt %d/%d): %s",
                         slug,
@@ -601,7 +609,10 @@ class MemberFetcher:
                     slug,
                     expected if expected is not None else "?",
                 )
-            self._cache[slug] = names
+            # A throttled page is not cached: caching it would spread one 429
+            # over every later item that uses the same theme.
+            if names or not throttled:
+                self._cache[slug] = names
             return names
 
 
@@ -682,9 +693,8 @@ def _merge_ranked_with_codes(ranked: Sequence[str], listed: Sequence[str]) -> Li
 def pick_members(members: Sequence[str], limit: int = MAX_MEMBERS) -> List[str]:
     """Take the leading names in the order lianban already ranked them.
 
-    Every theme page is sorted by three-month relative strength and recomputed
-    after each close, so no re-ranking is applied here: the page order is the
-    ranking the reader asked for.
+    Every theme page is sorted by three-month relative strength after each
+    close, so the page order is the ranking the reader asked for.
     """
     return list(members[:limit])
 
@@ -692,18 +702,13 @@ def pick_members(members: Sequence[str], limit: int = MAX_MEMBERS) -> List[str]:
 def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
     """Render the reader-facing line for one item, or '' when nothing matched.
 
-    Only the two directional verdicts are shown. "可能相关" carried no
-    information the headline did not already carry, and on 2026-11-18 it was 22
-    of 32 theme lines, which buried the verdicts that matter. A theme the
-    direction pass left without a verdict (its call failed) is still shown under
-    方向待定, so a miss is never read as a neutral verdict.
+    Only the two directional verdicts are shown: "可能相关" carried nothing the
+    headline did not, and on 2026-11-18 it was 22 of 32 lines. A theme whose
+    direction call failed still shows under 方向待定, so a miss never reads as
+    a neutral verdict. The two verdicts sit in separate paragraphs.
 
-    The two verdicts are separated by a blank line so they render as two quote
-    paragraphs instead of one run-on line.
-
-    A theme reaches this line from the heat list, from a model pick over the
-    whole index, or from the lexical sweep; whichever pass chose it, the member
-    list is the page's own three-month strength ranking cut to the leading three.
+    A theme arrives from the heat list, a model pick or the lexical sweep;
+    either way its names are the page's strength ranking, cut to three.
     """
     groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
     for theme in themes:
@@ -795,10 +800,9 @@ async def attach_themes(
 ) -> None:
     """Match the item against the index and store the result on its metadata.
 
-    Runs once per item, from the enrichment pass. The analysis pass used to run
-    it as well, on the headline and summary alone, which spent the shared
-    request budget on candidates that were dropped before the digest was built
-    and left the published items at the end of the run without member lists.
+    Runs once per item, from the enrichment pass, and only decides which themes
+    the story touches: the member lists are fetched after the direction pass,
+    so a theme the line will not show costs no request.
     """
     if not index.available or item.metadata is None:
         return
@@ -838,11 +842,6 @@ async def attach_themes(
         # Which pass chose the theme: heat / model / lexical / full. Kept on the
         # record so a noisy fallback can be told apart from a hot match.
         theme["picked"] = source
-        members = await fetcher.get(
-            theme["slug"], theme.get("members_count"), theme.get("name")
-        )
-        theme["member_total"] = len(members)
-        theme["members"] = pick_members(members)
     item.metadata["ashare_themes"] = themes
 
 
