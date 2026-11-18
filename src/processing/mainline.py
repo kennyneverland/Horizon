@@ -123,6 +123,30 @@ def _read_json(path: Path) -> Dict[str, Any]:
     return doc if isinstance(doc, dict) else {}
 
 
+def format_state(state: Optional[Dict[str, Any]]) -> str:
+    """One compact line describing a line's trading shape.
+
+    Shared by the picker's candidate list and the direction judge, so the two
+    prompts cannot drift apart on what the fire mark or 今日归零 means. The
+    previous day's count rides along because a bare count cannot tell a line
+    that just accelerated (22 today, 5 yesterday) from one already rolling
+    over (22 today, 26 yesterday).
+    """
+    if not state:
+        return ""
+    today = int(state.get("today") or 0)
+    tag = f"主线{state.get('line', '-')} 涨停{today}"
+    if state.get("hot"):
+        tag += HOT_MARK
+    if today > 0:
+        tag += f" 前日{int(state.get('prev') or 0)}"
+    if int(state.get("streak") or 0) >= 3:
+        tag += f" 连{state['streak']}日"
+    if today == 0 and int(state.get("sum10") or 0) > 0:
+        tag += " 今日归零"
+    return tag
+
+
 class MainlineState:
     """The day's mainline matrix, joined to the theme catalogue.
 
@@ -185,25 +209,8 @@ class MainlineState:
         return best
 
     def label(self, name: Any) -> str:
-        """Compact prompt field: which line, how many limit-ups, and its shape.
-
-        The previous day's count rides along because a bare count cannot tell a
-        line that just accelerated (22 today, 5 yesterday) from one that is
-        already rolling over (22 today, 26 yesterday).
-        """
-        state = self.for_theme(name)
-        if not state:
-            return ""
-        tag = f"主线{state['line']} 涨停{state['today']}"
-        if state["hot"]:
-            tag += HOT_MARK
-        if state["today"] > 0:
-            tag += f" 前日{state['prev']}"
-        if state["streak"] >= 3:
-            tag += f" 连{state['streak']}日"
-        if state["today"] == 0 and state["sum10"] > 0:
-            tag += " 今日归零"
-        return tag
+        """Compact prompt field: which line, how many limit-ups, and its shape."""
+        return format_state(self.for_theme(name))
 
     def annotate(self, theme: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Attach the line state to a theme record, in place."""
