@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, TypeVar
 
@@ -41,6 +42,7 @@ from ..processing.ashare_themes import (
     matching_text,
     pick_members,
 )
+from ..processing.mainline import load_state as load_mainline_state
 from ..processing.profiles import LoadedProfile, ProfileBlock, ProfileRegistry
 from ..processing.tools import ToolRegistry, ToolResult
 
@@ -163,8 +165,11 @@ class ContentEnricher:
             ai_client, concurrency=self.concurrency
         )
         # Fallback for items the top-200 heat list does not name: one short
-        # call per such item, so the run does not fan out any wider.
-        self._theme_picker = ThemePicker(ai_client)
+        # call per such item, so the run does not fan out any wider. The daily
+        # mainline matrix rides along with it: which industry line each theme
+        # belongs to, and how many limit-ups that line had at the last close.
+        self._mainline = load_mainline_state()
+        self._theme_picker = ThemePicker(ai_client, mainline=self._mainline)
         # Themes whose tickers this run already rendered; see _attach_members.
         self._rendered_themes: set[str] = set()
         self._validate_profile_tools()
@@ -254,6 +259,8 @@ class ContentEnricher:
             task_id = progress.add_task("Enriching", total=len(items))
             outcomes = await gather_ai_tasks([process(item, task_id) for item in items])
 
+        self._log_theme_metrics(items)
+
         return EnrichmentBatchResult(
             succeeded_ids=[item_id for item_id, exc in outcomes if exc is None],
             failures={
@@ -261,6 +268,101 @@ class ContentEnricher:
                 for item_id, exc in outcomes
                 if exc is not None
             },
+        )
+
+    def _annotate_mainline(self, item: ContentItem) -> None:
+        """Attach each theme's industry line and its last-close limit-up count.
+
+        Kept here rather than in the index lookup: the line is a digest-time
+        annotation about the market, not a property of the theme catalogue.
+        """
+        if self._mainline is None or not self._mainline.available:
+            return
+        for theme in (item.metadata or {}).get("ashare_themes") or []:
+            self._mainline.annotate(theme)
+
+    def _log_decision(self, item: ContentItem) -> None:
+        """One line per item: which themes, which pass, which line, how many names.
+
+        The published digest shows the result but not how it was reached, and
+        the default log level is WARNING, so this line is the only record of
+        which pass chose a theme and whether the mainline annotation was there.
+        """
+        themes = (item.metadata or {}).get("ashare_themes") or []
+        if not themes:
+            return
+        parts = []
+        for theme in themes:
+            state = theme.get("mainline") or {}
+            parts.append(
+                f"{theme.get('name')}"
+                f"[{theme.get('picked') or '?'}"
+                f"/{theme.get('direction') or '?'}"
+                f"/主线{state.get('line', '-')}{state.get('today', '-')}"
+                f"/{len(theme.get('members') or [])}只]"
+            )
+        logger.warning(
+            "Theme decision %s | %s | %s",
+            item.id,
+            (item.title or "")[:40],
+            " ".join(parts),
+        )
+
+    def _log_theme_metrics(self, items: list[ContentItem]) -> None:
+        """One WARNING block with the run's countable theme statistics.
+
+        Each number points at a specific failure: a high model share means the
+        heat list and the keyword recall missed the day's wording, a repeated
+        ticker means the member list is not being re-ranked per story, a theme
+        without members means the lianban fetch ran out of budget, and a low
+        mainline-active share means the picks are drifting away from what the
+        market traded.
+        """
+        sources: Counter = Counter()
+        names: list[str] = []
+        tickers: list[str] = []
+        no_members = 0
+        neutral = 0
+        lines_total = 0
+        lines_active = 0
+        for item in items:
+            for theme in (item.metadata or {}).get("ashare_themes") or []:
+                sources[str(theme.get("picked") or "?")] += 1
+                name = str(theme.get("name") or "")
+                if name:
+                    names.append(name)
+                members = theme.get("members") or []
+                if not members:
+                    no_members += 1
+                tickers.extend(str(member).split("（")[0].strip() for member in members)
+                if theme.get("direction") == NEUTRAL:
+                    neutral += 1
+                state = theme.get("mainline")
+                if state:
+                    lines_total += 1
+                    if state.get("today"):
+                        lines_active += 1
+        if not names:
+            logger.warning("Theme metrics: no theme line this run")
+            return
+        repeated_theme = "、".join(
+            f"{name}x{count}" for name, count in Counter(names).most_common(3) if count > 1
+        ) or "none"
+        repeated_ticker = "、".join(
+            f"{name}x{count}" for name, count in Counter(tickers).most_common(3) if count > 1
+        ) or "none"
+        logger.warning(
+            "Theme metrics: %d theme lines over %d items, source %s, no-members %d, "
+            "neutral %d, mainline-active %d/%d, repeated themes %s, repeated tickers %s",
+            len(names),
+            len(items),
+            "、".join(f"{key}{value}" for key, value in sorted(sources.items())),
+            no_members,
+            neutral,
+            lines_active,
+            lines_total,
+            repeated_theme,
+            repeated_ticker,
         )
 
     def _apply_analysis_fallback(self, item: ContentItem) -> bool:
@@ -346,8 +448,10 @@ class ContentEnricher:
         await attach_themes(
             item, self._theme_index, MemberFetcher(), picker=self._theme_picker
         )
+        self._annotate_mainline(item)
         await self._direction_judge.judge(item)
         await self._attach_members(item)
+        self._log_decision(item)
 
     async def _attach_members(self, item: ContentItem) -> None:
         """Fetch member lists for the themes the digest will actually render.
