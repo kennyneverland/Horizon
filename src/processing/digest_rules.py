@@ -113,6 +113,29 @@ def _trim_for_dedup(orchestrator, candidates):
             f"      dedup pool trimmed {len(candidates)} → {len(kept)} items "
             f"(每组保留 限额+5 名)\n"
         )
+
+    # The reserved slot is checked after the balancer, but this trim runs before
+    # it. A priority source that cleared the threshold yet ranked below the
+    # group budget was dropped here and could never be reserved: on 2026-11-18
+    # Gawin Research fetched 6 items, china-market kept 16 above threshold, and
+    # none of them reached the digest. Keep its best item in the pool; it costs
+    # one extra row in the dedup pass.
+    kept_ids = {id(item) for item in kept}
+    for name in _PRIORITY_SOURCES:
+        best = None
+        for item in candidates:
+            if _source_name(item) != name or id(item) in kept_ids:
+                continue
+            if best is None or _score_of(item) > _score_of(best):
+                best = item
+        if best is None:
+            continue
+        kept.append(best)
+        kept_ids.add(id(best))
+        orchestrator.console.print(
+            f"      priority source {name}: kept in the dedup pool "
+            f"({_score_of(best):.1f}, outside the group budget)\n"
+        )
     return kept
 
 
@@ -217,6 +240,13 @@ def _ensure_priority_slots(orchestrator, pool, selected, log: bool = True):
             continue
         candidates = [item for item in pool if _source_name(item) == name]
         if not candidates:
+            # Silent skips made "never reserved" indistinguishable from "nothing
+            # to reserve"; say which one it is.
+            if log:
+                orchestrator.console.print(
+                    f"      priority source {name}: no candidate in the pool "
+                    f"(below threshold or dropped earlier)\n"
+                )
             continue
         best = max(candidates, key=_score_of)
         group_key = _group_key_for(orchestrator, best)
