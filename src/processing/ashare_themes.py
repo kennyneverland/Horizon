@@ -23,6 +23,10 @@ descending weight — a hand-maintained alias table (英伟达 / 黄仁勋 / NVD
 phrases. Without the alias layer a headline like "黄仁勋离职后持股减持约束"
 scores nothing, because it never says 英伟达.
 
+When the heat list names nothing, the model picks from the whole index before
+the lexical sweep is tried, so a story outside today's traded sectors still
+gets a theme line.
+
 Members are fetched at render time, one request per matched theme, capped per
 run. lianban already sorts every theme page by three-month relative strength
 and recomputes it after each close, so the page order *is* the ranking: the
@@ -67,11 +71,10 @@ MAX_MEMBERS = 5
 # Fetches are serialised and cached per theme, so a repeated theme costs nothing.
 # The lookup runs once per item now, in the enrichment pass, and only the items
 # that reach the digest get there: at most 35 items x 3 themes = 105 lookups,
-# and the repeated themes are served from the cache. 24 was sized for a budget
-# shared with the analysis pass, and it left the tail of the digest without
-# member lists once the analysis pass had spent it, so the cap is set to cover
-# the whole published set instead.
-MAX_THEME_FETCH = 60
+# and the repeated themes are served from the cache. The model fallback adds up
+# to three more themes per item the heat list missed, so the cap is set to 90
+# to cover the published set without leaving its tail without member lists.
+MAX_THEME_FETCH = 90
 # A page that answers without a member list is treated as a miss, not as an
 # empty theme: lianban throttles by serving a stub page, so one retry after a
 # short pause usually recovers it.
@@ -105,7 +108,7 @@ DIRECTION_LABELS = {
 # 题材池只取 lianban 列表页热度排名前 200 的题材。该列表每个交易日收盘后按
 # 市场热度重排，前 200 是当天真正在被交易的题材；成员仍取页面自带的"近3月
 # 相对强度"前 5。2026-11-18 实测：794 个题材里 rank<=200 的有 181 个。
-# 前 200 一个都没命中时，回退到全量索引再匹配一次，避免题材行整条消失。
+# 前 200 一个都没命中时，先让模型在全量索引里选，再由词表匹配兜底。
 HOT_THEME_LIMIT = 200
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
@@ -359,6 +362,85 @@ class ThemeIndex:
                     "members_count": theme.get("n"),
                 }
             )
+        return chosen
+
+    def all_names(self) -> List[str]:
+        """Every theme name in the index, deduplicated and sorted.
+
+        This is the candidate list handed to the model when the heat list names
+        nothing. It comes from the index rather than the listing page, so every
+        pick resolves to a page whose members the run can fetch.
+        """
+        names = {str(theme.get("name") or "").strip() for theme in self.themes.values()}
+        names.discard("")
+        return sorted(names)
+
+    def _nearest_slug(self, key: str) -> Optional[str]:
+        """Resolve a near-miss name to an index theme, or None.
+
+        Preference order matters more than it looks: for 芯片 the index holds
+        both AI芯片 and 芯片概念, and the theme whose name *starts* with the
+        answer is the one the model meant. The last step covers the opposite
+        direction, where the model wrote a longer phrase than the theme name.
+        """
+        folded = [(slug, _normalise(theme["name"])) for slug, theme in self.themes.items()]
+        for predicate, order in (
+            (lambda name: name.startswith(key), len),
+            (lambda name: key in name, len),
+            (lambda name: len(name) >= 3 and name in key, lambda name: -len(name)),
+        ):
+            hits = [(order(name), slug) for slug, name in folded if predicate(name)]
+            if hits:
+                return min(hits)[1]
+        return None
+
+    def match_names(
+        self,
+        names: Sequence[str],
+        top_n: int = MAX_THEMES_PER_ITEM,
+    ) -> List[Dict[str, Any]]:
+        """Resolve model-chosen theme names back to index rows.
+
+        The model is told to copy names verbatim; a near miss still resolves
+        through ``_nearest_slug`` instead of dropping the whole pick. A name
+        nothing matches is dropped, so a rendered line never carries a theme
+        without a member list behind it.
+        """
+        if not self.available:
+            return []
+        by_folded: Dict[str, str] = {
+            _normalise(theme["name"]): slug for slug, theme in self.themes.items()
+        }
+        chosen: List[Dict[str, Any]] = []
+        chosen_names: List[str] = []
+        seen_slugs: set[str] = set()
+
+        for raw in names:
+            key = _normalise(raw).strip()
+            if not key:
+                continue
+            slug = by_folded.get(key)
+            if slug is None:
+                slug = self._nearest_slug(key)
+            if slug is None or slug in seen_slugs:
+                continue
+            name = self.themes[slug]["name"]
+            # One story should not carry two name lists for the same theme.
+            if any(name in other or other in name for other in chosen_names):
+                continue
+            seen_slugs.add(slug)
+            chosen_names.append(name)
+            chosen.append(
+                {
+                    "slug": slug,
+                    "name": name,
+                    "score": 1.0,
+                    "term": str(raw),
+                    "members_count": self.themes[slug].get("n"),
+                }
+            )
+            if len(chosen) >= top_n:
+                break
         return chosen
 
 
@@ -618,8 +700,9 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
     The two verdicts are separated by a blank line so they render as two quote
     paragraphs instead of one run-on line.
 
-    Every theme shown here already passed the top-N heat filter, so its member
-    list is the page's own three-month strength ranking, cut to the leading five.
+    A theme reaches this line from the heat list, from a model pick over the
+    whole index, or from the lexical sweep; whichever pass chose it, the member
+    list is the page's own three-month strength ranking cut to the leading five.
     """
     groups: Dict[str, List[str]] = {POSITIVE: [], NEGATIVE: [], "": []}
     for theme in themes:
@@ -670,10 +753,44 @@ def matching_text(item: Any) -> str:
     return " ".join(part for part in parts if part)
 
 
+async def _model_themes(
+    text: str,
+    index: ThemeIndex,
+    picker: Optional[Any],
+) -> List[Dict[str, Any]]:
+    """Let the model pick themes when the heat list names none.
+
+    The heat list only covers what is traded today and the lexical pass only
+    fires on words the index lists; a story outside both used to render with no
+    theme line. The model reads the item and picks from the whole index, and
+    every pick resolves back to an index row with a real member list.
+    """
+    if picker is None:
+        return []
+    names = index.all_names()
+    if not names or not text.strip():
+        return []
+    try:
+        picked = await picker.pick(text, names)
+    except Exception as exc:  # noqa: BLE001 - a pick miss must not fail the item
+        logger.warning("Theme model picker failed: %s", exc)
+        return []
+    themes = index.match_names(picked)
+    if themes:
+        # WARNING so the line reaches the Actions log: this is the only record
+        # of which pass chose a theme once the item is rendered.
+        logger.warning(
+            "Theme model pick (no heat match): %s",
+            "、".join(str(theme["name"]) for theme in themes),
+        )
+    return themes
+
+
 async def attach_themes(
     item: Any,
     index: ThemeIndex,
     fetcher: MemberFetcher,
+    picker: Optional[Any] = None,
 ) -> None:
     """Match the item against the index and store the result on its metadata.
 
@@ -689,19 +806,37 @@ async def attach_themes(
         return
 
     text = matching_text(item)
-    themes = index.match(text, allowed=fetcher.hot_names())
-    hot_hit = bool(themes)
+    hot = fetcher.hot_names()
+    themes = index.match(text, allowed=hot)
+    if themes:
+        # ``hot is None`` means the listing page could not be read, so the heat
+        # filter was off and the match above already covered the whole index.
+        source = "full" if hot is None else "heat"
+    else:
+        source = ""
     if not themes:
-        # Nothing in the top-200 heat list names this story. Falling back to the
-        # full index keeps the line from disappearing entirely on a day when the
-        # story's sector is not being traded; the flag records which pass chose
-        # the theme, so a noisy fallback can be told apart from a hot match.
+        # Nothing in the top-200 heat list names this story. The model reads
+        # the item and picks from the whole index, which is the only pass that
+        # can reach a theme the text never names outright.
+        themes = await _model_themes(text, index, picker)
+        source = "model" if themes else ""
+    if not themes:
+        # Last resort, and the only pass left when the model is unavailable:
+        # the full-index lexical sweep keeps the line from vanishing entirely.
         themes = index.match(text)
+        source = "lexical" if themes else ""
     if not themes:
         return
 
     for theme in themes:
-        theme["hot"] = hot_hit
+        # ``hot`` means the theme is inside today's top-200 heat list, whichever
+        # pass reached it; a model pick of a hot theme is still a hot theme.
+        theme["hot"] = source == "heat" or (
+            hot is not None and _normalise(theme["name"]) in hot
+        )
+        # Which pass chose the theme: heat / model / lexical / full. Kept on the
+        # record so a noisy fallback can be told apart from a hot match.
+        theme["picked"] = source
         members = await fetcher.get(
             theme["slug"], theme.get("members_count"), theme.get("name")
         )
