@@ -148,6 +148,8 @@ class ContentEnricher:
         # Fallback for items the top-200 heat list does not name: one short
         # call per such item, so the run does not fan out any wider.
         self._theme_picker = ThemePicker(ai_client)
+        # Themes whose tickers this run already rendered; see _attach_members.
+        self._rendered_themes: set[str] = set()
         self._validate_profile_tools()
 
     def _validate_profile_tools(self) -> None:
@@ -339,12 +341,22 @@ class ContentEnricher:
         tripped the limiter and left five themes with no names at all. A theme
         whose verdict call failed still renders under 方向待定, so it is
         fetched here too.
+
+        Each theme's tickers are rendered once per run. The member list is the
+        page's three-month strength ranking, not a per-story pick, so repeating
+        it on every item put the same three names in nine of thirty-three lines
+        on 2026-11-18. Later items keep the theme and its reason only.
         """
         themes = (item.metadata or {}).get("ashare_themes") or []
         fetcher = MemberFetcher()
         for theme in themes:
             if theme.get("direction") == NEUTRAL or theme.get("members"):
                 continue
+            key = str(theme.get("slug") or theme.get("name") or "")
+            if key and key in self._rendered_themes:
+                continue
+            if key:
+                self._rendered_themes.add(key)
             members = await fetcher.get(
                 theme["slug"], theme.get("members_count"), theme.get("name")
             )
