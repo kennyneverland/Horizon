@@ -142,7 +142,12 @@ def main():
                 "[cyan]Sunday run: refreshing the lianban theme index instead of publishing[/cyan]"
             )
             theme_count = asyncio.run(refresh_theme_index(data_dir))
-            console.print(f"[green]Theme index holds {theme_count} themes[/green]")
+            if theme_count > 0:
+                console.print(f"[green]Theme index holds {theme_count} themes[/green]")
+            else:
+                console.print(
+                    "[yellow]Theme index not updated; the warning above says why[/yellow]"
+                )
             return
 
         if config.ai.provider == AIProvider.OPENAI_CHATGPT:
