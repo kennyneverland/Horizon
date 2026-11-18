@@ -33,7 +33,13 @@ from .prompting.enrichment import (
 )
 from .utils import gather_ai_tasks, parse_json_response
 from ..models import ArtifactSource, ContentArtifact, ContentBlock, ContentItem
-from ..processing.ashare_themes import MemberFetcher, ThemeIndex, attach_themes
+from ..processing.ashare_themes import (
+    NEUTRAL,
+    MemberFetcher,
+    ThemeIndex,
+    attach_themes,
+    pick_members,
+)
 from ..processing.profiles import LoadedProfile, ProfileBlock, ProfileRegistry
 from ..processing.tools import ToolRegistry, ToolResult
 
@@ -311,7 +317,8 @@ class ContentEnricher:
         most theme terms first appear in the background or impact block. The
         heat-list lookup itself is token-free; only an item the heat list misses
         costs one short pick call, and the direction verdict that follows is one
-        more call per item that ended up with themes.
+        more call per item that ended up with themes. Members are fetched last,
+        for the themes the line will actually show.
         """
         if self._theme_index is None:
             self._theme_index = ThemeIndex()
@@ -321,6 +328,28 @@ class ContentEnricher:
             item, self._theme_index, MemberFetcher(), picker=self._theme_picker
         )
         await self._direction_judge.judge(item)
+        await self._attach_members(item)
+
+    async def _attach_members(self, item: ContentItem) -> None:
+        """Fetch member lists for the themes the digest will actually render.
+
+        Runs after the direction pass: a theme judged neutral never reaches the
+        line, so fetching its members first spent roughly half of the lianban
+        budget on lists nobody saw. On 2026-11-18 that extra load is what
+        tripped the limiter and left five themes with no names at all. A theme
+        whose verdict call failed still renders under 方向待定, so it is
+        fetched here too.
+        """
+        themes = (item.metadata or {}).get("ashare_themes") or []
+        fetcher = MemberFetcher()
+        for theme in themes:
+            if theme.get("direction") == NEUTRAL or theme.get("members"):
+                continue
+            members = await fetcher.get(
+                theme["slug"], theme.get("members_count"), theme.get("name")
+            )
+            theme["member_total"] = len(members)
+            theme["members"] = pick_members(members)
 
     @staticmethod
     def _expand_request_source_refs(
