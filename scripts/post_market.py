@@ -895,7 +895,7 @@ def _parse_read(text: str) -> Dict[str, Any]:
     return {"headline": "", "sections": [{"h": "", "p": p} for p in paras], "dissent": ""}
 
 
-def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150.0) -> Dict[str, Any]:
+def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420.0) -> Dict[str, Any]:
     """Ask the model for the written read. A failure costs the page only that block."""
     key_env = conf.get("api_key_env") or "DASHSCOPE_API_KEY"
     api_key = os.environ.get(key_env, "").strip()
@@ -911,6 +911,9 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150
         ],
         "temperature": 0.4,
         "max_tokens": 3000,
+        # qwen3 默认开思考，一次能跑满五分钟；这份活要的是按模板填判断，
+        # 不需要思维链，关掉后通常三十秒内返回。
+        "enable_thinking": False,
         "response_format": {"type": "json_object"},
     }
     def _post(payload_body: Dict[str, Any]) -> Dict[str, Any]:
@@ -933,8 +936,9 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150
             # demands bare JSON, so dropping the constraint costs only insurance.
             if exc.code != 400:
                 raise
-            print("response_format rejected; retrying without it", file=sys.stderr)
+            print("response_format/enable_thinking rejected; retrying without them", file=sys.stderr)
             body.pop("response_format", None)
+            body.pop("enable_thinking", None)
             doc = _post(body)
     except (urllib.error.URLError, OSError, ValueError) as exc:
         print(f"written read failed: {exc}", file=sys.stderr)
@@ -948,24 +952,54 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150
 
 
 def push_webhook(url: str, title: str, desp: str, timeout: float = 30.0) -> bool:
-    """POST the Server酱-shaped body the daily digest already uses."""
-    body = json.dumps({"title": title, "desp": desp}, ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(
-        url, data=body, headers={"Content-Type": "application/json"}
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            raw = response.read().decode("utf-8", "replace")
-    except (urllib.error.URLError, OSError) as exc:
-        print(f"webhook failed: {exc}", file=sys.stderr)
-        return False
-    print(f"webhook response: {raw[:200]}")
-    try:
-        doc = json.loads(raw)
-    except ValueError:
-        return True
-    code = doc.get("code", doc.get("errno", 0))
-    return code in (0, "0", None)
+    """POST the card to whatever ``HORIZON_WEBHOOK_URL`` points at.
+
+    That variable is shared with the daily digest, and the digest's webhook
+    module speaks Feishu/Lark (``msg_type`` + ``content``). This function used to
+    send the Server酱 shape instead, which a Feishu bot answers with a bare 400
+    and no explanation. Both shapes are tried now, and the response body is
+    printed on failure so the next run says which endpoint refused what.
+    """
+    plain = f"{title}\n\n{desp}"
+    attempts = [
+        ("feishu-text", {"msg_type": "text", "content": {"text": plain}}),
+        ("serverchan", {"title": title, "desp": desp}),
+    ]
+    last = "no attempt"
+    for name, payload in attempts:
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        request = urllib.request.Request(
+            url, data=body, headers={"Content-Type": "application/json"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                raw = response.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as exc:
+            detail = ""
+            try:
+                detail = exc.read().decode("utf-8", "replace")[:300]
+            except Exception:  # noqa: BLE001 - the body is a bonus, not a requirement
+                pass
+            last = f"{name}: HTTP {exc.code} {detail}".strip()
+            print(f"webhook {last}", file=sys.stderr)
+            continue
+        except (urllib.error.URLError, OSError) as exc:
+            last = f"{name}: {exc}"
+            print(f"webhook {last}", file=sys.stderr)
+            continue
+        print(f"webhook {name} response: {raw[:300]}")
+        try:
+            doc = json.loads(raw)
+        except ValueError:
+            return True
+        # Feishu answers {"code":0,...}; Server酱 answers {"code":0,...} as well.
+        code = doc.get("code", doc.get("errno", 0))
+        if code in (0, "0", None):
+            return True
+        last = f"{name}: code={code} {raw[:200]}"
+        print(f"webhook {last}", file=sys.stderr)
+    print(f"webhook failed: {last}", file=sys.stderr)
+    return False
 
 
 def _load_ai_conf(path: Path) -> Dict[str, Any]:
