@@ -230,6 +230,109 @@ class MemberProfiles:
         return {member: self._cache[member] for member in targets if self._cache.get(member)}
 
 
+# Business segments, in the order a theme's value chain usually reads. The
+# re-rank pass uses these to keep five names from landing in one segment: five
+# chip designers move together and give the reader one bet, not five.
+SEGMENTS = (
+    ("设计", ("芯片设计", "IC设计", "集成电路设计", "设计服务", "IP授权", "EDA",
+              "GPU", "CPU", "SoC", "MCU", "存储芯片", "模拟芯片", "射频", "处理器")),
+    ("制造", ("晶圆", "代工", "半导体设备", "光刻", "刻蚀", "薄膜", "硅片",
+              "电子特气", "光刻胶", "抛光", "制造")),
+    ("封测", ("封装", "测试", "封测", "Chiplet", "先进封装")),
+    ("整机", ("服务器", "整机", "模组", "光模块", "交换机", "路由器", "终端设备")),
+    ("材料", ("材料", "化学品", "靶材", "基板", "覆铜板", "PCB", "印制电路", "铜箔")),
+    ("分销", ("分销", "代理", "贸易", "供应链", "批发")),
+    ("租赁", ("租赁", "IDC", "数据中心", "机柜", "运营")),
+    ("服务", ("软件", "系统集成", "解决方案", "运维", "云服务", "信息技术服务")),
+)
+# How many members the model sees. The page order is a three-month strength
+# ranking, so its tail is rarely picked: on 2026-11-19 the median pick sat at
+# position 31 of 120, which made most of the window dead weight.
+SHORTLIST_LIMIT = 25
+# One segment may supply at most this many of the five names.
+MAX_PER_SEGMENT = 2
+
+_RATIO_RE = re.compile(r"(\d+(?:\.\d+)?)%")
+
+
+def business_strength(profile: str) -> float:
+    """Largest revenue share in the profile, or a neutral 0.5 for prose ones.
+
+    A prose profile from the THS fallback names the business but carries no
+    share; treating it as zero would push those names to the back of the
+    shortlist for lack of a number rather than for lack of fit.
+    """
+    if not profile:
+        return 0.0
+    ratios = [float(value) for value in _RATIO_RE.findall(profile)]
+    if ratios:
+        return max(ratios) / 100.0
+    return 0.5
+
+
+def segment_of(profile: str) -> str:
+    """Which link of the value chain the business sits in, or ''."""
+    text = profile or ""
+    for segment, words in SEGMENTS:
+        if any(word in text for word in words):
+            return segment
+    return ""
+
+
+def rank_candidates(
+    members: List[str], profiles: Dict[str, str], limit: int = SHORTLIST_LIMIT
+) -> List[str]:
+    """Shortlist before the model: biggest business first, page order breaks ties.
+
+    Members whose main business is a large share of revenue are the ones a
+    theme story can actually move; names sitting in the theme for liquidity
+    stay in the tail. Nothing is dropped from the member list itself, only from
+    what this pass shows the model.
+    """
+    scored = []
+    for index, member in enumerate(members):
+        strength = business_strength(profiles.get(member, ""))
+        scored.append((-strength, index, member))
+    scored.sort()
+    return [member for _, _, member in scored[:limit]]
+
+
+def diversify(
+    picks: List[str],
+    profiles: Dict[str, str],
+    limit: int = 5,
+    max_per_segment: int = MAX_PER_SEGMENT,
+) -> List[str]:
+    """Cap how many picks share one value-chain segment.
+
+    Five names from one segment rise and fall together, which is one bet with
+    five tickers. The model's order is kept; a name over the cap is deferred
+    and only used to fill the line if nothing else is left.
+    """
+    if len(picks) <= 1:
+        return picks[:limit]
+    segments = [segment_of(profiles.get(pick, "")) for pick in picks]
+    known = {segment for segment in segments if segment}
+    if len(known) <= 1:
+        logger.warning("Rank diversity: single-segment, fallback")
+        return picks[:limit]
+    kept: List[str] = []
+    counts: Dict[str, int] = {}
+    deferred: List[str] = []
+    for pick, segment in zip(picks, segments):
+        if segment and counts.get(segment, 0) >= max_per_segment:
+            deferred.append(pick)
+            continue
+        kept.append(pick)
+        if segment:
+            counts[segment] = counts.get(segment, 0) + 1
+    for pick in deferred:
+        if len(kept) >= limit:
+            break
+        kept.append(pick)
+    return kept[:limit]
+
+
 def render_listing(members: List[str], profiles: Dict[str, str], limit: int) -> str:
     """The candidate list handed to the re-rank model, with business attached."""
     parts = []
