@@ -349,15 +349,15 @@ def _panel_html(payload: Dict[str, Any]) -> str:
         )
     breadth = panel.get("上涨/下跌")
     if breadth:
+        # 涨跌家数已经在上面那格里了，这里只补它带不动的两个比值。
         trin = re.search(r"TRIN\s*([0-9.]+)", breadth["sub"])
         red = re.search(r"红盘\s*([0-9]+%)", breadth["sub"])
-        note = " · ".join(
-            x for x in [f"红盘 {red.group(1)}" if red else "", f"TRIN {trin.group(1)}" if trin else ""] if x
-        )
-        rows.append(
-            "<div class='d'><span>上涨/下跌</span>"
-            f"<b>{_esc(breadth['value'])}</b><i>{_esc(note)}</i></div>"
-        )
+        bits = [x for x in [red.group(1) if red else "", trin.group(1) if trin else ""] if x]
+        if bits:
+            rows.append(
+                "<div class='d'><span>红盘 / TRIN</span>"
+                f"<b>{_esc(' / '.join(bits))}</b><i>红盘占比 / 涨跌成交额比</i></div>"
+            )
 
     html = ""
     if changes:
