@@ -55,18 +55,17 @@ from ..processing.tools import ToolRegistry, ToolResult
 
 logger = logging.getLogger(__name__)
 
-# The page ranks members by three-month relative strength, not by how well they
-# fit the story. Five is what a line can carry; the first item that names a
-# theme keeps the page order, and later items re-rank the same list against
-# their own story so the digest does not repeat one ticker set all day.
+# The page ranks members by three-month strength, not by fit. The first item
+# naming a theme keeps the page order; later items re-rank against their story.
 MEMBER_LIMIT = 5
-MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题材和该题材的成分股名单，选出与这条新闻关系最直接的 5 只股票。
+MEMBER_FLOOR = 3
+MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题材和该题材的成分股名单，选出与这条新闻关系最直接的 3–5 只股票。
 
 规则：
 - 只能从名单里逐字选择，不要新造名称。
 - 按"新闻事件→该股票主营是否直接受影响"排序，越直接越靠前。
 - 只做业务相关判断，不考虑股价涨跌、市值大小。
-- 名单里确实没有直接相关的，按名单顺序补足 5 只。
+- 宁少勿滥：相关的不够就少选，最少 3 只，不要凑数。
 - 部分股票后面用「｜」标注了主营构成（如「吉视传媒(601929)｜有线电视传输」）。优先据此判断业务相关性；未标注的按名称判断。
 - 先选主营构成与题材直接对应的（主营受益），再考虑主营无关但成交活跃的（流动性承载）；后者最多 2 只。
 
@@ -556,9 +555,9 @@ class ContentEnricher:
 
         The page order is a three-month strength ranking, so the same theme on a
         second story would otherwise print the same five tickers again. The
-        model sees the story and the theme's own list and keeps the names whose
-        business the event actually touches; anything it cannot place falls back
-        to the page order so the line is never short.
+        model sees the story and the theme's own list and keeps only the names
+        whose business the event touches; it may return fewer than five, and
+        page order only tops the line up to MEMBER_FLOOR.
         """
         if len(members) <= MEMBER_LIMIT:
             return list(members)
@@ -592,10 +591,15 @@ class ContentEnricher:
                     if name in member and member not in picked:
                         picked.append(member)
                         break
-        for member in pick_members(members, MEMBER_LIMIT):
+        # A floor, not a quota: three relevant names stand.
+        for member in pick_members(members, MEMBER_FLOOR):
+            if len(picked) >= MEMBER_FLOOR:
+                break
             if member not in picked:
                 picked.append(member)
-        final = diversify(picked[:MEMBER_LIMIT], profiles, MEMBER_LIMIT)
+        picks = picked[:MEMBER_LIMIT]
+        # Keep the model's length: the cap swaps, it never pads.
+        final = diversify(picks, profiles, len(picks))
         # Where the model's picks sit in lianban's own order. If they cluster in
         # the first thirty, the 120-name window is mostly dead weight and can be
         # tightened without losing anything.
