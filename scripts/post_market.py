@@ -951,54 +951,57 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
     return _parse_read(str(text or ""))
 
 
-def push_webhook(url: str, title: str, desp: str, timeout: float = 30.0) -> bool:
-    """POST the card to whatever ``HORIZON_WEBHOOK_URL`` points at.
+def _post_card(url: str, title: str, desp: str, timeout: float) -> "tuple[bool, str]":
+    """One POST attempt. Returns (delivered, detail) instead of raising."""
+    body = json.dumps({"title": title, "desp": desp}, ensure_ascii=False).encode("utf-8")
+    request = urllib.request.Request(
+        url, data=body, headers={"Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            raw = response.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode("utf-8", "replace")[:500]
+        except Exception:  # noqa: BLE001 - the body is a bonus, not a requirement
+            pass
+        return False, f"HTTP {exc.code} {detail}".strip()
+    except (urllib.error.URLError, OSError) as exc:
+        return False, str(exc)
+    print(f"webhook response: {raw[:300]}")
+    try:
+        doc = json.loads(raw)
+    except ValueError:
+        return True, ""
+    code = doc.get("code", doc.get("errno", 0))
+    if code in (0, "0", None):
+        return True, ""
+    return False, f"code={code} {raw[:200]}"
 
-    That variable is shared with the daily digest, and the digest's webhook
-    module speaks Feishu/Lark (``msg_type`` + ``content``). This function used to
-    send the Server酱 shape instead, which a Feishu bot answers with a bare 400
-    and no explanation. Both shapes are tried now, and the response body is
-    printed on failure so the next run says which endpoint refused what.
+
+def push_webhook(
+    url: str, title: str, desp: str, timeout: float = 30.0, fallback_title: str = ""
+) -> bool:
+    """POST the Server酱-shaped body the daily digest already uses.
+
+    ``HORIZON_WEBHOOK_URL`` is the same endpoint the daily digest posts to:
+    ``data/config.github.json`` renders it as ``{title, desp}`` under
+    ``platform: generic``. The digest's own title is short, so it never tests
+    the ceiling; this brief's is longer, and Server酱 answers an over-long title
+    with a bare 400. A second attempt with a shorter title costs one request and
+    turns that failure into a delivered card.
     """
-    plain = f"{title}\n\n{desp}"
-    attempts = [
-        ("feishu-text", {"msg_type": "text", "content": {"text": plain}}),
-        ("serverchan", {"title": title, "desp": desp}),
-    ]
-    last = "no attempt"
-    for name, payload in attempts:
-        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        request = urllib.request.Request(
-            url, data=body, headers={"Content-Type": "application/json"}
-        )
-        try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
-                raw = response.read().decode("utf-8", "replace")
-        except urllib.error.HTTPError as exc:
-            detail = ""
-            try:
-                detail = exc.read().decode("utf-8", "replace")[:300]
-            except Exception:  # noqa: BLE001 - the body is a bonus, not a requirement
-                pass
-            last = f"{name}: HTTP {exc.code} {detail}".strip()
-            print(f"webhook {last}", file=sys.stderr)
-            continue
-        except (urllib.error.URLError, OSError) as exc:
-            last = f"{name}: {exc}"
-            print(f"webhook {last}", file=sys.stderr)
-            continue
-        print(f"webhook {name} response: {raw[:300]}")
-        try:
-            doc = json.loads(raw)
-        except ValueError:
+    ok, detail = _post_card(url, title, desp, timeout)
+    if ok:
+        return True
+    print(f"webhook failed: {detail}", file=sys.stderr)
+    if fallback_title and fallback_title != title:
+        print(f"webhook retry with a shorter title: {fallback_title}", file=sys.stderr)
+        ok2, detail2 = _post_card(url, fallback_title, desp, timeout)
+        if ok2:
             return True
-        # Feishu answers {"code":0,...}; Server酱 answers {"code":0,...} as well.
-        code = doc.get("code", doc.get("errno", 0))
-        if code in (0, "0", None):
-            return True
-        last = f"{name}: code={code} {raw[:200]}"
-        print(f"webhook {last}", file=sys.stderr)
-    print(f"webhook failed: {last}", file=sys.stderr)
+        print(f"webhook failed again: {detail2}", file=sys.stderr)
     return False
 
 
@@ -1160,7 +1163,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         ]
         if part
     )
-    ok = push_webhook(hook, title, desp)
+    short_title = f"Kenny's Horizon {int(date[5:7])}月{int(date[8:10])}日晚报"
+    print(
+        f"push: title={len(title)} chars / {len(title.encode('utf-8'))} bytes, "
+        f"fallback={len(short_title.encode('utf-8'))} bytes, desp={len(desp)} chars"
+    )
+    ok = push_webhook(hook, title, desp, fallback_title=short_title)
     print(f"push: {'ok' if ok else 'failed'}")
     return 0 if ok else 1
 
