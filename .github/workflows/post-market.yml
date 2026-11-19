@@ -1,0 +1,52 @@
+name: Post Market Brief
+
+# The matrix job records the close; this one reads it. 13:10 UTC is 21:10
+# Asia/Shanghai — ten minutes after the matrix run, so the two never fetch the
+# same page at the same moment.
+on:
+  schedule:
+    - cron: '10 13 * * 1-5'
+  workflow_dispatch:
+
+# All three publishing jobs push the gh-pages branch, so they share one queue:
+# a second run waits instead of overwriting the first one's output.
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
+
+jobs:
+  brief:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The script is standard-library only, so there is no dependency install
+      # and no uv sync: the job is one fetch, one model call, one page.
+      - name: Build the brief
+        env:
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
+        run: python scripts/post_market.py --out-dir docs/post-market
+
+      - name: Set current date as environment variable
+        run: echo "DATE=$(TZ=Asia/Shanghai date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          keep_files: true
+          commit_message: "📊 Post-market brief: ${{ env.DATE }}"
+          publish_branch: gh-pages
+          enable_jekyll: true
