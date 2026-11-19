@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""The two things lianban only renders, and the one thing it publishes for agents.
+"""The blocks lianban only renders, and the one thing it publishes for agents.
 
-主线强度 and 主力资金动向 exist only in the DOM of today.html — there is no JSON
-for either — so they are read from a real browser. The day's review (KPI, themes,
-and lianban's own write-up) is on the public MCP endpoint, which is the site's
-stated machine route and needs no key.
+主线强度、主力资金动向、盘面较前值与外盘参考 exist only in the DOM of today.html —
+there is no JSON for any of them — so they are read from a real browser. The
+day's review (KPI, themes, and lianban's own write-up) is on the public MCP
+endpoint, which is the site's stated machine route and needs no key.
 
 Both halves are optional by construction: a browser that will not start, or an
 MCP call that fails, costs its own section and nothing else.
@@ -38,6 +38,25 @@ _STC_RE = re.compile(
 # #zjf: <div class="zc"><div class="zh">板块流入</div>
 #   <div class="zr"><b>融资融券</b><i class="up">+0.14%</i><em class="up">+44.34亿</em></div>...
 _ZC_RE = re.compile(r'<div class="zc">(.*?)</div></div>', re.S)
+# 外盘参考: <div class="ov-group"><span class="ov-label">亚太</span><div class="ov-items">
+#   <details class="ov-item"><summary class="ov-main"><span class="ov-name" title="恒生指数">
+#   <span aria-hidden="true">恒指</span>...</span><b class="ov-pct dn">-1.95%</b>
+_OV_GROUP_RE = re.compile(
+    r'<div class="ov-group"><span class="ov-label">(.*?)</span><div class="ov-items">(.*?)</div></div>',
+    re.S,
+)
+_OV_ITEM_RE = re.compile(
+    r'<span class="ov-name"[^>]*>.*?<span aria-hidden="true">(.*?)</span>.*?'
+    r'<b class="ov-pct (up|dn)">(.*?)</b>',
+    re.S,
+)
+# 盘面格子: <div class="c"><div class="l">涨停</div><div class="v mono">23</div>
+#   <div class="ly">较前值 -18</div></div>   （“上涨/下跌”那格多一个 kpi-ad 类）
+_PANEL_RE = re.compile(
+    r'<div class="c(?: [^"]*)?"><div class="l"[^>]*>(.*?)</div>'
+    r'<div class="v[^"]*"[^>]*>(.*?)</div>(?:<div class="ly"[^>]*>(.*?)</div>)?</div>',
+    re.S,
+)
 _ZH_RE = re.compile(r'<div class="zh">(.*?)</div>')
 _ZR_RE = re.compile(
     r'<div class="zr"><b>(.*?)</b><i class="[^"]*">(.*?)</i><em class="[^"]*">(.*?)</em></div>',
@@ -107,6 +126,40 @@ def parse_flows(page: str) -> Dict[str, List[Dict[str, str]]]:
     return out
 
 
+def parse_overseas(page: str) -> List[Dict[str, Any]]:
+    """``[{label, items: [{name, pct, up}]}]`` — 隔夜美股与亚太，按页面分组。"""
+    out = []
+    for label, body in _OV_GROUP_RE.findall(page):
+        items = [
+            {"name": _clean(n), "pct": _clean(p), "up": cls == "up"}
+            for n, cls, p in _OV_ITEM_RE.findall(body)
+        ]
+        if items:
+            out.append({"label": _clean(label), "items": items})
+    return out
+
+
+def parse_panel(page: str) -> List[Dict[str, str]]:
+    """``[{label, value, sub}]`` for the KPI strip, in page order.
+
+    The value is de-spaced ("3 板" -> "3板") because the page breaks the unit
+    into its own <small>, and a phone wants the number and its unit together.
+    """
+    out = []
+    for label, value, sub in _PANEL_RE.findall(page):
+        label = _clean(label)
+        if not label or label in {"速览"}:
+            continue
+        out.append(
+            {
+                "label": label,
+                "value": re.sub(r"\s+", "", _clean(value)),
+                "sub": _clean(sub),
+            }
+        )
+    return out
+
+
 def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
     """The browser half. Never raises: a failure is reported, not propagated."""
     try:
@@ -115,9 +168,16 @@ def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
         return {"error": f"{type(exc).__name__}: {exc}"}
     strength = parse_strength(page)
     flows = parse_flows(page)
+    panel = parse_panel(page)
+    overseas = parse_overseas(page)
     if not strength and not flows:
         return {"error": "rendered page had neither block"}
-    return {"strength": strength, "flows": flows}
+    return {
+        "strength": strength,
+        "flows": flows,
+        "panel": panel,
+        "overseas": overseas,
+    }
 
 
 def _rpc(payload: Dict[str, Any], session: Optional[str] = None, timeout: float = 40.0):
@@ -229,6 +289,18 @@ EXTRA_CSS = """
 .zr b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .zp{width:46px;text-align:right;font-size:11px;color:#98a2b3;font-variant-numeric:tabular-nums}
 .quote{border-left:3px solid #d9dee7;padding:2px 0 2px 14px;color:#4c5866;font-size:15px}
+.chg{font-size:12.5px;color:#8a94a6;margin:0 0 12px;line-height:1.9}
+.chg b{font-weight:600}
+.det{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
+.det .d span{display:block;font-size:12px;color:#8a94a6}
+.det .d b{display:block;font-size:15.5px;color:#2b3440;font-weight:600;font-variant-numeric:tabular-nums}
+.det .d i{display:block;font-style:normal;font-size:11.5px;color:#98a2b3}
+.ovg{display:flex;flex-direction:column;gap:10px}
+.ovr{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ovl{width:100%;font-size:12px;color:#8a94a6}
+.chip{display:inline-flex;align-items:baseline;gap:4px;padding:3px 8px;border:1px solid #e9ebec;border-radius:6px;font-size:12.5px}
+.chip i{font-style:normal;color:#4c5866}
+.chip b{font-weight:600;font-variant-numeric:tabular-nums}
 @media (max-width:360px){.zjg{grid-template-columns:1fr}}
 """
 
@@ -244,11 +316,62 @@ def _pct_class(raw: str) -> str:
     return "up" if text.startswith("+") else ("down" if text.startswith("-") else "")
 
 
+def _panel_html(payload: Dict[str, Any]) -> str:
+    """The strip above the fold: what moved versus yesterday, and the breadth
+    numbers the KPI grid has no room for."""
+    panel = {
+        x["label"].replace(" ", ""): x for x in ((payload.get("extra") or {}).get("panel") or [])
+    }
+    if not panel:
+        return ""
+
+    changes = []
+    for label in ("涨停", "跌停", "连板", "最高板", "封板率"):
+        row = panel.get(label)
+        if not row or not row["sub"].startswith("较前值"):
+            continue
+        delta = row["sub"].replace("较前值", "").strip()
+        changes.append(f"{label} <b class='{_pct_class(delta)}'>{_esc(delta)}</b>")
+    zb = panel.get("炸板")
+    if zb and zb["sub"]:
+        changes.append(f"炸板{_esc(zb['sub'])}")
+
+    rows = []
+    for label in ("昨涨停今表现", "情绪周期", "新高/新低63日", "两市成交", "融资余额11-18"):
+        row = panel.get(label)
+        if not row:
+            continue
+        rows.append(
+            "<div class='d'>"
+            f"<span>{_esc(label)}</span>"
+            f"<b class='{_pct_class(row['value'])}'>{_esc(row['value'])}</b>"
+            f"<i>{_esc(row['sub'])}</i></div>"
+        )
+    breadth = panel.get("上涨/下跌")
+    if breadth:
+        trin = re.search(r"TRIN\s*([0-9.]+)", breadth["sub"])
+        red = re.search(r"红盘\s*([0-9]+%)", breadth["sub"])
+        note = " · ".join(
+            x for x in [f"红盘 {red.group(1)}" if red else "", f"TRIN {trin.group(1)}" if trin else ""] if x
+        )
+        rows.append(
+            "<div class='d'><span>上涨/下跌</span>"
+            f"<b>{_esc(breadth['value'])}</b><i>{_esc(note)}</i></div>"
+        )
+
+    html = ""
+    if changes:
+        html += f"<p class='chg'>较前值：{' · '.join(changes)}</p>"
+    if rows:
+        html += f"<div class='det'>{''.join(rows)}</div>"
+    return html
+
+
 def _funds_html(payload: Dict[str, Any]) -> str:
     extra = payload.get("extra") or {}
     strength = extra.get("strength") or []
     flows = extra.get("flows") or {}
-    out = []
+    out = [_panel_html(payload)]
 
     if strength:
         chips = "".join(
@@ -295,6 +418,26 @@ def _review_html(payload: Dict[str, Any]) -> str:
         "<h2>连板网复盘</h2>"
         f"<div class='quote'>{_esc(first)}</div>"
         f"<p class='hint'>连板网原文摘录，非本页判断{' · ' + link if link else ''}</p>"
+        + _overseas_html(payload)
+    )
+
+
+def _overseas_html(payload: Dict[str, Any]) -> str:
+    """隔夜美股与亚太：不解释今天，只交代明天开盘前的外部底色。"""
+    groups = (payload.get("extra") or {}).get("overseas") or []
+    if not groups:
+        return ""
+    rows = []
+    for group in groups:
+        chips = "".join(
+            f"<span class='chip'><i>{_esc(x['name'])}</i>"
+            f"<b class='{'up' if x['up'] else 'down'}'>{_esc(x['pct'])}</b></span>"
+            for x in group["items"]
+        )
+        rows.append(f"<div class='ovr'><span class='ovl'>{_esc(group['label'])}</span>{chips}</div>")
+    return (
+        "<h2>外盘参考</h2><p class='hint'>隔夜美股与亚太收盘 · 报价时间见连板网明细</p>"
+        f"<div class='ovg'>{''.join(rows)}</div>"
     )
 
 
