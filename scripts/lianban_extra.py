@@ -73,6 +73,26 @@ _MK_DATA_RE = re.compile(
     r'<script type="application/json" class="mk-data">(.*?)</script>', re.S
 )
 _ZH_RE = re.compile(r'<div class="zh">(.*?)</div>')
+# 当日主线卡: <div class="zxc"><div class="r1"><b>光刻机（胶）</b>
+#   <span class="n mono zxn" data-m="zxm0" ...>涨停11家 ▾</span>
+#   <span class="ld" data-stk="603030" data-nm="全筑股份">龙头 全筑股份<i class="mono">3连板</i></span>
+#   </div><div class="rs">英伟达宣布…</div></div>
+_ZXC_RE = re.compile(
+    r'<div class="zxc"><div class="r1"><b>(.*?)</b>(.*?)</div><div class="rs">(.*?)</div>', re.S
+)
+# 逐只明细（点开「涨停11家 ▾」才显示的那块）:
+#   <div id="zxm0" style="display:none"><div class="zmnote">…</div>
+#   <div class="zmg"><i class="zmt">芯片 · 11家</i><div class="zms">
+#   <span class="wc" data-stk="603030" data-nm="全筑股份"><b>全筑股份</b>
+#   <em class="mono md">3连板</em><i class="wsub">光刻机</i></span>…</div></div></div>
+_ZXM_RE = re.compile(
+    r'<div id="(zxm\d+)"[^>]*>(.*?)(?=<div id="zxm|</div></div><div class="zmfoot"|$)', re.S
+)
+_ZMT_RE = re.compile(r'<i class="zmt">(.*?)</i>', re.S)
+_ZMS_RE = re.compile(r'<div class="zms">(.*)', re.S)
+_WC_RE = re.compile(
+    r'<span class="wc" data-stk="(\d{6})" data-nm="([^"]*)">(.*?)</span>', re.S
+)
 _ZR_RE = re.compile(
     r'<div class="zr"><b>(.*?)</b><i class="[^"]*">(.*?)</i><em class="[^"]*">(.*?)</em></div>',
     re.S,
@@ -225,6 +245,68 @@ def _pct_rank(values: List[float], x: float) -> Optional[float]:
     return round(sum(1 for v in vals if v <= x) / len(vals) * 100, 1)
 
 
+def parse_themes(page: str) -> List[Dict[str, Any]]:
+    """Each of the day's mainlines with the names that actually hit the limit.
+
+    The card row (``.zxc``) carries the theme, its limit-up count, the driver and
+    the leader. Some cards also link a hidden detail panel (``#zxmN``) that lists
+    every stock behind the count, with its board height and the site's own
+    sub-theme tag — that panel is the only place a theme and its stocks appear
+    together, so it is what lets the brief name a theme's names instead of
+    guessing them from a sector label.
+
+    A card without a panel is not an error: the site only expands themes whose
+    count is a merge of sub-themes. ``exact`` says which case this is, and the
+    caller keeps the difference visible rather than filling the gap.
+    """
+    panels: Dict[str, Dict[str, Any]] = {}
+    for pid, body in _ZXM_RE.findall(page):
+        head = _ZMT_RE.search(body)
+        label = _clean(head.group(1)) if head else ""
+        group = label.split("·")[0].strip() if label else ""
+        zms = _ZMS_RE.search(body)
+        members = []
+        if zms:
+            for code, name, inner in _WC_RE.findall(zms.group(1)):
+                board = re.search(r'<em class="[^"]*">(.*?)</em>', inner)
+                sub = re.search(r'<i class="wsub">(.*?)</i>', inner)
+                members.append(
+                    {
+                        "code": code,
+                        "name": _clean(name),
+                        "board": _clean(board.group(1)) if board else "",
+                        "sub": _clean(sub.group(1)) if sub else "",
+                    }
+                )
+        panels[pid] = {"group": group, "members": members}
+
+    out = []
+    for theme, mid, driver in _ZXC_RE.findall(page):
+        theme = _clean(theme)
+        if not theme:
+            continue
+        count = re.search(r"涨停(\d+)家", _clean(mid))
+        link = re.search(r'data-m="(zxm\d+)"', mid)
+        leader = re.search(r'data-stk="(\d{6})"\s+data-nm="([^"]+)"', mid)
+        badge = re.search(r'<i class="mono">(.*?)</i>', mid)
+        panel = panels.get(link.group(1)) if link else None
+        out.append(
+            {
+                "theme": theme,
+                "limit_up": int(count.group(1)) if count else None,
+                "driver": _clean(driver),
+                "leader": (
+                    {"code": leader.group(1), "name": _clean(leader.group(2))} if leader else None
+                ),
+                "leader_board": _clean(badge.group(1)) if badge else "",
+                "group": (panel or {}).get("group", ""),
+                "exact": bool(panel and panel["members"]),
+                "members": (panel or {}).get("members", []),
+            }
+        )
+    return out
+
+
 def market_breadth(timeout: float = 30.0) -> Dict[str, Any]:
     """Sixty sessions of breadth, so today's numbers arrive with a distribution.
 
@@ -324,6 +406,7 @@ def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
             "overseas": overseas,
             "indices": parse_indices(page),
             "forecast": parse_forecast(page),
+            "theme_members": parse_themes(page),
         }
     )
     return out
