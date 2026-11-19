@@ -390,7 +390,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
-<h2 class="page-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 题材个股</h2>
+<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 题材个股</h2>
 </header>
 <main>
 {lede_html}
@@ -410,4 +410,4 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
-</main></body></html>"""
+</main></body></html>
