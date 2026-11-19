@@ -1,14 +1,12 @@
 
 name: Mainline Matrix
 
-# The matrix records a fact about the close, so it only becomes complete once
-# the 15:00 session ends and lianban republishes the day's column. 08:10 UTC is
-# 16:10 Asia/Shanghai — late enough for that column, and roughly sixteen hours
-# ahead of the next 08:00 daily run, which would still be reading the previous
-# close.
+# the 15:00 session ends and lianban republishes the day's column. 13:00 UTC is
+# 21:00 Asia/Shanghai — late enough that the day's column is always there, and
+# still ahead of the next 08:00 daily run, which reads the previous close.
 on:
   schedule:
-    - cron: '10 8 * * 1-5'
+    - cron: '0 13 * * 1-5'
   workflow_dispatch:
 
 jobs:
