@@ -6,11 +6,13 @@ go today, and is that direction still alive tomorrow" — a question the matrix
 alone cannot answer, because a count says a line was bought and nothing about
 whether it was bought for the third day running.
 
-Three sources, all public and all read with the standard library:
+Sources, all public:
 
   mainline.html   the 10-day matrix, the session's 情绪, and each line's driver
   opendata/       the site's own KPI block (limit-ups, seal rate, breadth)
   filter.html     the three screening templates' top five, with 60-day gain
+  today.html      ｜主线强度 and 主力资金动向, which exist only as rendered DOM
+  MCP             lianban's own written review, published for agents
 
 The written read is the model's, not this script's: it is handed the numbers and
 lianban's own rotation rule (a line needs three consecutive days of leading to
@@ -38,6 +40,7 @@ from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
+from lianban_extra import EXTRA_CSS, collect_extra, mcp_review, render_sections  # noqa: E402
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -356,6 +359,7 @@ def render_html(payload: Dict[str, Any], summary: str, page_url: str) -> str:
     day = matrix.get("day") or {}
     lines = matrix.get("lines") or []
     picks = payload.get("filter") or {}
+    extra = render_sections(payload)
     date = kpi.get("date") or ""
 
     line_rows = []
@@ -456,7 +460,7 @@ def render_html(payload: Dict[str, Any], summary: str, page_url: str) -> str:
 <meta property="og:url" content="{_esc(page_url)}">
 <meta name="theme-color" content="#157878">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>{_PAGE_CSS}</style></head><body>
+<style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 晚报</h1>
 <h2 class="project-tagline">Kenny's Horizon 每日精选新闻速递</h2>
@@ -466,14 +470,16 @@ def render_html(payload: Dict[str, Any], summary: str, page_url: str) -> str:
 {summary_html}
 <h2>盘面</h2>
 <div class="stats">{stat_html}</div>
+{extra['funds']}
 <h2>主线矩阵</h2>
 <ul class="lines">{''.join(line_rows)}</ul>
 {drivers}
 {''.join(pick_blocks)}
+{extra['review']}
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
 <a href="https://lianban.net/filter.html">一键筛选</a>、
-<a href="https://lianban.net/days/{_esc(date)}.html">当日复盘</a>。
+<a href="https://lianban.net/today.html">当日复盘</a>。
 行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
@@ -509,13 +515,21 @@ def _load_ai_conf(path: Path) -> Dict[str, Any]:
     return doc.get("ai") or {}
 
 
-def collect() -> Dict[str, Any]:
-    """Fetch the three public sources and parse them into one payload.
+def collect(no_browser: bool = False) -> Dict[str, Any]:
+    """Fetch the public sources and parse them into one payload.
 
     Each source is allowed to fail on its own: a page that will not load costs
-    its section, not the whole brief.
+    its section, not the whole brief. The browser half is the only one that
+    needs a dependency, so it is also the only one that can be switched off.
     """
-    payload: Dict[str, Any] = {"matrix": {}, "kpi": {}, "filter": {}, "errors": []}
+    payload: Dict[str, Any] = {
+        "matrix": {},
+        "kpi": {},
+        "filter": {},
+        "extra": {},
+        "lianban": {},
+        "errors": [],
+    }
     try:
         payload["matrix"] = build_matrix(fetch(MAINLINE_URL))
     except Exception as exc:  # noqa: BLE001 - reported, then the page degrades
@@ -528,6 +542,11 @@ def collect() -> Dict[str, Any]:
         payload["filter"] = parse_filter(fetch(FILTER_URL, referer=MAINLINE_URL))
     except Exception as exc:  # noqa: BLE001
         payload["errors"].append(f"filter: {exc}")
+    if not no_browser:
+        try:
+            payload["extra"] = collect_extra()
+        except Exception as exc:  # noqa: BLE001
+            payload["errors"].append(f"browser: {exc}")
     return payload
 
 
@@ -543,12 +562,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--config", default="data/config.github.json")
     parser.add_argument("--date", help="override the date in the filename (debug)")
     parser.add_argument("--no-llm", action="store_true", help="skip the written read")
+    parser.add_argument("--no-browser", action="store_true", help="skip the rendered blocks")
+    parser.add_argument("--no-mcp", action="store_true", help="skip lianban's own review")
     parser.add_argument("--no-push", action="store_true", help="write the page, do not push")
     args = parser.parse_args(argv)
 
-    payload = collect()
-    for err in payload["errors"]:
-        print(f"source failed: {err}", file=sys.stderr)
+    payload = collect(no_browser=args.no_browser)
     matrix = payload["matrix"]
     kpi = payload["kpi"]
     date = args.date or kpi.get("date") or (matrix.get("dates") or [""])[0]
@@ -556,6 +575,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("no date from any source; aborting", file=sys.stderr)
         return 2
     payload["date"] = date
+
+    if not args.no_mcp:
+        try:
+            payload["lianban"] = mcp_review(date)
+        except Exception as exc:  # noqa: BLE001
+            payload["errors"].append(f"mcp: {exc}")
+    for err in payload["errors"]:
+        print(f"source failed: {err}", file=sys.stderr)
 
     summary = ""
     if not args.no_llm:
