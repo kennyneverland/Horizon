@@ -13,6 +13,7 @@ Sources, all public:
   filter.html     the three screening templates' top five, with 60-day gain
   today.html      ｜主线强度 and 主力资金动向, which exist only as rendered DOM
   market.html     60 sessions of breadth, embedded as JSON
+  lhb.html        龙虎榜 net-buy top fifteen, with reason and buy-side top seat
   MCP             lianban's own written review, published for agents
 
 The written read is the model's, not this script's: it is handed the numbers and
@@ -52,6 +53,7 @@ BASE = "https://lianban.net"
 MAINLINE_URL = f"{BASE}/mainline.html"
 FILTER_URL = f"{BASE}/filter.html"
 OPENDATA_URL = f"{BASE}/opendata/latest.json"
+LHB_URL = f"{BASE}/lhb.html"
 
 # Only these three panels are wanted; the page renders ten, each showing its
 # top five for free. The map is data-p -> label as the page spells it.
@@ -68,6 +70,11 @@ _STK_RE = re.compile(r'data-stk="(\d{6})"\s+data-nm="([^"]+)"')
 _BKT_RE = re.compile(r'<i class="bkt">([^<]+)</i>')
 _MLT_RE = re.compile(r'<i class="mlt">([^<]+)</i>')
 _PWHY_RE = re.compile(r'<div class="pwhy">(.*?)</div>', re.S)
+_LHB_ITEM_RE = re.compile(r'<div class="lr1">(.*?)</div></div>', re.S)
+_LHB_STK_RE = re.compile(r'data-stk="(\d{6})"\s+data-nm="([^"]+)"')
+_LHB_CHG_RE = re.compile(r'<span class="cg mono[^"]*">([^<]+)</span>')
+_LHB_NET_RE = re.compile(r'<span class="net mono[^"]*">([^<]+)</span>')
+_LHB_RS_RE = re.compile(r'<span class="rs">([^<]*)</span>')
 
 
 def _text(raw: str) -> str:
@@ -151,6 +158,43 @@ def parse_kpi(doc: Dict[str, Any]) -> Dict[str, Any]:
     return kpi
 
 
+def parse_lhb(page: str) -> Dict[str, Any]:
+    """龙虎榜：净买额前 15 只，带净额、上榜原因与买一席位。
+
+    The board answers a question the theme panels cannot: who was on the other
+    side of today's move. A name can be limit-up with a net *outflow* — the
+    buying seats were retail and the selling seat was a known 游资 — and that is
+    a different object from a limit-up with a net inflow. Only the top fifteen by
+    net amount are server-rendered; the full list loads on demand and is not
+    fetched here, because fifteen is already more than the brief can use.
+    """
+    head = re.search(r'<div class="shh">([^<]+)</div>', page)
+    items: List[Dict[str, Any]] = []
+    for block in _LHB_ITEM_RE.findall(page):
+        stk = _LHB_STK_RE.search(block)
+        if not stk:
+            continue
+        chg = _LHB_CHG_RE.search(block)
+        net = _LHB_NET_RE.search(block)
+        rs = _LHB_RS_RE.search(block)
+        reason = (rs.group(1) if rs else "").strip()
+        seat = ""
+        # The page glues the buy-side top seat onto the reason with a " · "
+        if " · " in reason:
+            reason, seat = reason.rsplit(" · ", 1)
+        items.append(
+            {
+                "name": stk.group(2),
+                "code": stk.group(1),
+                "chg": chg.group(1).strip() if chg else "",
+                "net": net.group(1).strip() if net else "",
+                "reason": reason.strip(),
+                "seat": seat.strip(),
+            }
+        )
+    return {"header": head.group(1).strip() if head else "", "items": items}
+
+
 # The site's own rotation rule, quoted rather than paraphrased: the model is
 # asked to apply lianban's standard, not this script's opinion of it.
 ROTATION_RULE = (
@@ -172,7 +216,7 @@ ROTATION_RULE = (
 # are three different bets, and a flat list makes the reader sort them himself.
 SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，不是数据播报。
 
-你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、外盘、连板网自己的次日推演与复盘正文。
+你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、龙虎榜、外盘、连板网自己的次日推演与复盘正文。
 
 读者明天要据此做判断。所以四段各回答一个问题：先给结论，再给依据。
 
@@ -188,6 +232,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
 - members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
+- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材，两者都空才表示归属未知——有一个就能归位。
 - candidates 按模板名分组：candidates[模板名] = {why, total, rows}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
 
 【四段，各回答一个问题】
@@ -201,12 +246,12 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 
 - 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材直接取这些票的 sector——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当 sector 与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
 - 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股从该题材的 members 里取。给 2 到 3 条题材，每条 2 到 3 只。
-- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围；个股从该题材 members 里取，也可以取「放量上攻」「主线强攻」里 sector 对得上的票。给 2 到 3 条题材，每条 2 到 3 只。
+- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。两个都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。
 
 三条纪律：
 1. 三类不重复。蓄势与另两类的边界是"还没涨 vs 已经在动"；主线与活跃的边界是"有连续性 vs 只有一天"。同一只票出现在两类里，等于这一块没做。
-2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数——组头会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
-3. 名字不许造。蓄势只能来自优选蓄势前 5；主线与活跃只能来自对应题材的 members，或两张面板的 rows。
+2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数或龙虎榜净额——组头和标签会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
+3. 名字不许造。蓄势只能来自优选蓄势前 5；主线只能来自对应题材的 members；活跃只能来自对应题材的 members、两张面板的 rows，或 lhb 里 theme／sector 对得上的票。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -242,10 +287,10 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
                "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
   ],
   "活跃": [
-   {{"theme": "题材名，必须与 theme_watch 里的一致",
+   {{"theme": "题材名，必须与 theme_watch 里的一致；龙虎榜兜底那条写 龙虎榜净买入",
     "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
-    "stocks": [{{"name": "个股名，来自该题材 members 或两张面板的 rows",
-               "tag": "连板高度 · 子题材；不超过 14 字",
+    "stocks": [{{"name": "个股名，来自该题材 members、两张面板的 rows，或 lhb 里 theme／sector 对得上的票",
+               "tag": "连板高度 · 子题材；来自龙虎榜的写 龙虎榜；不超过 14 字",
                "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
   ]
  }},
@@ -536,6 +581,36 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
     }
     third_party = _trim((payload.get("lianban") or {}).get("ai_review") or "")
 
+    # 龙虎榜的票大多不在三张面板前 5，所以归属要两个来源一起查：面板的 sector，
+    # 和当日题材明细的 members（海立股份、江化微这类只在 members 里）。两个都查不到
+    # 就留空——让模型知道"归属未知"，好过替它猜一个。
+    theme_watch = _theme_watch(payload)
+    theme_of: Dict[str, str] = {}
+    for t in theme_watch:
+        for m in t.get("members") or []:
+            theme_of.setdefault(
+                (m.get("name") or "").replace(" ", ""), t.get("theme") or ""
+            )
+    sector_of: Dict[str, str] = {}
+    for block in (payload.get("filter") or {}).values():
+        for row in block.get("rows") or []:
+            sector_of[row["name"].replace(" ", "")] = row.get("sector") or ""
+    lhb_raw = payload.get("lhb") or {}
+    lhb_rows = []
+    for x in (lhb_raw.get("items") or [])[:15]:
+        key = (x.get("name") or "").replace(" ", "")
+        lhb_rows.append(
+            {
+                "name": x.get("name"),
+                "sector": sector_of.get(key, ""),
+                "theme": theme_of.get(key, ""),
+                "chg": x.get("chg"),
+                "net": x.get("net"),
+                "reason": x.get("reason"),
+                "seat": x.get("seat"),
+            }
+        )
+
     return {
         "date": kpi.get("date"),
         "session": {
@@ -582,11 +657,12 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         "breadth_history": extra.get("breadth") or {},
         "industry_lines": lines,
         "today_themes": themes,
-        "theme_watch": _theme_watch(payload),
+        "theme_watch": theme_watch,
         "money_flow": flows,
         "candidates": screeners,
         "overseas": overseas,
         "next_day_base_rate": extra.get("forecast") or {},
+        "lhb": {"header": lhb_raw.get("header") or "", "items": lhb_rows},
         "third_party_review": third_party,
     }
 
@@ -801,6 +877,7 @@ def collect(no_browser: bool = False) -> Dict[str, Any]:
         "filter": {},
         "extra": {},
         "lianban": {},
+        "lhb": {},
         "errors": [],
     }
     try:
@@ -815,6 +892,10 @@ def collect(no_browser: bool = False) -> Dict[str, Any]:
         payload["filter"] = parse_filter(fetch(FILTER_URL, referer=MAINLINE_URL))
     except Exception as exc:  # noqa: BLE001
         payload["errors"].append(f"filter: {exc}")
+    try:
+        payload["lhb"] = parse_lhb(fetch(LHB_URL, referer=MAINLINE_URL))
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"lhb: {exc}")
     if not no_browser:
         try:
             payload["extra"] = collect_extra()
