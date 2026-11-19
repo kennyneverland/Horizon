@@ -53,7 +53,7 @@ _SEGMENT = re.compile(
 # The hop that turns a foreign event into an A-share order: capacity, supply,
 # price, customer. Without one the segment mention is only a shared noun.
 _BRIDGE = re.compile(
-    r"产能|供应|供货|订单|涨价|提价|断供|缺货|扩产|投产|建厂|兴建|"
+    r"产能|供应|供货|订单|涨价|提价|断供|缺货|受限|减产|扩产|投产|建厂|兴建|"
     r"导入|验证|外溢|转单"
 )
 
