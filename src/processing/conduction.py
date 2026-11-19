@@ -83,3 +83,16 @@ def conduction_filter(
         " ".join(text.split())[:40],
     )
     return []
+
+
+def direction_note(theme: dict[str, Any]) -> str:
+    """The parenthetical after a theme's name: its reason, plus the link marker.
+
+    A theme kept on a two-hop link says so where the reader already looks for
+    the reason, so the line does not stack a second bracket after the first.
+    """
+    reason = str(theme.get("direction_reason") or "").strip()
+    link = "环节映射" if theme.get("conduction") else ""
+    if reason and link:
+        return f"{reason}；{link}"
+    return reason or link
