@@ -43,6 +43,7 @@ from ..processing.ashare_themes import (
     pick_members,
 )
 from ..processing.mainline import load_state as load_mainline_state
+from ..processing.member_profile import MemberProfiles, render_listing
 from ..processing.profiles import LoadedProfile, ProfileBlock, ProfileRegistry
 from ..processing.tools import ToolRegistry, ToolResult
 
@@ -60,6 +61,7 @@ MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题�
 - 按"新闻事件→该股票主营是否直接受影响"排序，越直接越靠前。
 - 只做业务相关判断，不考虑股价涨跌、市值大小。
 - 名单里确实没有直接相关的，按名单顺序补足 5 只。
+- 部分股票后面用「｜」标注了主营构成（如「吉视传媒(601929)｜有线电视传输」）。优先据此判断业务相关性；未标注的按名称判断。
 
 输出格式：只输出 JSON。
 {"picks": ["股票名", "股票名"]}"""
@@ -169,6 +171,10 @@ class ContentEnricher:
         # mainline matrix rides along with it: which industry line each theme
         # belongs to, and how many limit-ups that line had at the last close.
         self._mainline = load_mainline_state()
+        # Main-business strings for the names the re-rank pass sees. A bare
+        # name cannot tell 景观设计 from 算力租赁, which is why the page order
+        # kept putting unrelated companies at the front of a theme.
+        self._member_profiles = MemberProfiles()
         self._theme_picker = ThemePicker(ai_client, mainline=self._mainline)
         # Themes whose tickers this run already rendered; see _attach_members.
         self._rendered_themes: set[str] = set()
@@ -502,7 +508,8 @@ class ContentEnricher:
         if len(members) <= MEMBER_LIMIT:
             return list(members)
         excerpt = " ".join(matching_text(item).split())[:800]
-        listing = "、".join(members[:120])
+        profiles = await self._member_profiles.annotate(members)
+        listing = render_listing(members, profiles, 120)
         try:
             response = await self.client.complete(
                 system=MEMBER_RANK_PROMPT,
@@ -529,10 +536,18 @@ class ContentEnricher:
         for member in pick_members(members, MEMBER_LIMIT):
             if member not in picked:
                 picked.append(member)
+        final = picked[:MEMBER_LIMIT]
+        # Where the model's picks sit in lianban's own order. If they cluster in
+        # the first thirty, the 120-name window is mostly dead weight and can be
+        # tightened without losing anything.
+        positions = [members.index(name) + 1 for name in final if name in members]
         logger.warning(
-            "Member re-rank %s: %s", theme_name, "、".join(picked[:MEMBER_LIMIT])
+            "Member re-rank %s: %s | 原序位置 %s",
+            theme_name,
+            "、".join(final),
+            positions,
         )
-        return picked[:MEMBER_LIMIT]
+        return final
 
     @staticmethod
     def _expand_request_source_refs(
