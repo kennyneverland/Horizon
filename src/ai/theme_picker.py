@@ -294,6 +294,12 @@ class ThemePicker:
         whether the market is paying for it this week.
         """
         lines = []
+        # The session's mood goes once, above the list. On every row it would
+        # read as a property of that theme, which it is not.
+        if self.mainline is not None:
+            market = self.mainline.market_line()
+            if market:
+                lines.append(f"今日情绪：{market}")
         for row in candidates:
             parts = [row["name"], f"成员{row['count']}"]
             if self.mainline is not None:
