@@ -1113,12 +1113,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
     headline = "、".join(f"{l['line']}{l['today']}" for l in top) or "无涨停线"
-    title = f"Horizon 盘后洞察 {date[5:]} {kpi.get('emotion_phase') or ''} {headline}".strip()
+    title = f"Kenny's Horizon {int(date[5:7])}月{int(date[8:10])}日 盘后洞察晚报"
     desp = "\n\n".join(
         part
         for part in [
             f"**{kpi.get('emotion_phase') or ''}** 涨停{kpi.get('limit_up')} 跌停{kpi.get('limit_down')}"
             f" 封板率{kpi.get('seal_rate_pct')}%"
+            + (f"｜主线 {headline}" if top else "")
             + (f"｜总龙头 {lead}" if lead else ""),
             _short_read(summary) if summary else "",
             f"[查看盘后总结 →]({page_url})",
