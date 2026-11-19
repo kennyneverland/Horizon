@@ -44,6 +44,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
 from lianban_extra import collect_extra, mcp_review  # noqa: E402
 from post_market_page import render_html  # noqa: E402
+from stock_concepts import _norm as _theme_key  # noqa: E402
+from stock_concepts import load_index as load_concept_index  # noqa: E402
+from stock_concepts import fetch_stock as concept_fetch  # noqa: E402
+from stock_concepts import load_theme_names, lookup as concept_lookup  # noqa: E402
+from stock_concepts import write_index as write_concept_index  # noqa: E402
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -195,6 +200,81 @@ def parse_lhb(page: str) -> Dict[str, Any]:
     return {"header": head.group(1).strip() if head else "", "items": items}
 
 
+def _payload_codes(payload: Dict[str, Any]) -> List[str]:
+    """Every ticker the brief can name, collected once.
+
+    The dragon-tiger board, the three screening panels and the theme watch pool
+    are the three places a name can arrive from. Anything not in this list is
+    never shown, so this is also the exact set worth looking up.
+    """
+    codes: List[str] = []
+
+    def add(code: Any) -> None:
+        text = str(code or "").strip()
+        if len(text) == 6 and text.isdigit() and text not in codes:
+            codes.append(text)
+
+    for item in (payload.get("lhb") or {}).get("items") or []:
+        add(item.get("code"))
+    for block in (payload.get("filter") or {}).values():
+        for row in block.get("rows") or []:
+            add(row.get("code"))
+    for card in (payload.get("extra") or {}).get("theme_members") or []:
+        for member in card.get("members") or []:
+            add(member.get("code"))
+    return codes
+
+
+def attach_concepts(
+    payload: Dict[str, Any], fetch_missing: bool = True, save: bool = False
+) -> Dict[str, Dict[str, Any]]:
+    """Ticker -> the themes it belongs to, read from the shipped index.
+
+    The board and the panels label a stock with one sector, and only for the
+    five names each panel shows for free; a dragon-tiger name outside those five
+    had no attribution at all. The index answers the same question for every
+    ticker it covers, and carries the company's own disclosure of the business
+    link, which a sector label never does.
+
+    This is a lookup, not a guess: a ticker neither the index nor the live fetch
+    can resolve comes back absent, and the caller renders it as unattributed
+    rather than borrowing a neighbour's theme.
+
+    The index is a cache, not the source of truth. A ticker it does not carry is
+    fetched from the same page the index was built from — the brief covers 30-40
+    names a day and the site tolerates one request every ~2.3s, so a cold day
+    costs about a minute and a warm one costs nothing. ``save`` writes the
+    fetched pages back so the next run starts warmer.
+    """
+    codes = _payload_codes(payload)
+    if not codes:
+        return {}
+    index = load_concept_index()
+    names = load_theme_names()
+    stocks = index.setdefault("stocks", {})
+    out: Dict[str, Dict[str, Any]] = {}
+    fetched = 0
+    for code in codes:
+        hit = concept_lookup(code, "", index, names)
+        if hit.get("source") == "missing" and fetch_missing:
+            name, concepts = concept_fetch(code)
+            if concepts:
+                stocks[code] = [name, concepts]
+                fetched += 1
+                hit = concept_lookup(code, "", index, names)
+        if hit.get("source") != "missing":
+            out[code] = hit
+    if fetched:
+        print(f"concepts: {fetched}/{len(codes)} fetched live, {len(stocks)} in index")
+        if save:
+            try:
+                write_concept_index(index)
+                print("concepts: index written back")
+            except Exception as exc:  # noqa: BLE001 - a read-only checkout must not fail the run
+                print(f"concepts: index not written ({exc})")
+    return out
+
+
 # The site's own rotation rule, quoted rather than paraphrased: the model is
 # asked to apply lianban's standard, not this script's opinion of it.
 ROTATION_RULE = (
@@ -232,8 +312,8 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
 - members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
-- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材，两者都空才表示归属未知——有一个就能归位。
-- candidates 按模板名分组：candidates[模板名] = {why, total, rows}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
+- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材。themes 是本地题材索引倒查出的归属——索引取自同花顺 F10 概念页，已与 lianban 题材库做归一化精确对齐，覆盖范围比面板宽得多，归位优先用它；concepts 是同花顺原始概念名，why 是公司自己披露的业务关联原文，可以用来交代它凭什么算这个题材，但只能引用原文意思，不要替公司补话。today_themes 是把 themes 按名称归一化对回当日题材口径的结果——只做去括号同名匹配，对上的可以直接归位；对不上不代表不属于，例如「光刻胶」对不上「光刻机（胶）」但它就是那条线，这种情况你自己判断。四者都空才表示归属未知。
+- candidates 按模板名分组：candidates[模板名] = {why, total, rows}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud／themes）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；themes 是同一套索引倒查出的题材名，sector 为空或只是一个宽泛标签（次新股、高股息、国企改革这类）时用它；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
 
 【四段，各回答一个问题】
 1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
@@ -244,14 +324,14 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 【明日关注，分三类】
 第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
 
-- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材直接取这些票的 sector——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当 sector 与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
+- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
 - 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股从该题材的 members 里取。给 2 到 3 条题材，每条 2 到 3 只。
-- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。两个都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。
+- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。
 
 三条纪律：
 1. 三类不重复。蓄势与另两类的边界是"还没涨 vs 已经在动"；主线与活跃的边界是"有连续性 vs 只有一天"。同一只票出现在两类里，等于这一块没做。
 2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数或龙虎榜净额——组头和标签会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
-3. 名字不许造。蓄势只能来自优选蓄势前 5；主线只能来自对应题材的 members；活跃只能来自对应题材的 members、两张面板的 rows，或 lhb 里 theme／sector 对得上的票。
+3. 名字不许造。蓄势只能来自优选蓄势前 5；主线只能来自对应题材的 members；活跃只能来自对应题材的 members、两张面板的 rows，或 lhb 里 theme／themes／sector 对得上的票。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -480,6 +560,8 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
     """
     kpi = payload.get("kpi") or {}
     matrix = payload.get("matrix") or {}
+    # 个股题材归属：本地索引（同花顺 F10 概念页）倒查，按代码对齐。
+    concepts = payload.get("concepts") or {}
     day = matrix.get("day") or {}
     panel = _panel_map(payload)
     extra = payload.get("extra") or {}
@@ -563,6 +645,8 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
             "rows": [
                 {
                     "name": r["name"],
+                    "code": r.get("code") or "",
+                    "themes": (concepts.get(r.get("code") or "") or {}).get("themes") or [],
                     "sector": r["sector"],
                     "mainline": r.get("mark") or "",
                     "gain60": r["gain60"],
@@ -595,15 +679,41 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
     for block in (payload.get("filter") or {}).values():
         for row in block.get("rows") or []:
             sector_of[row["name"].replace(" ", "")] = row.get("sector") or ""
+    # 当日题材名先摆好，好把索引倒查出的题材名对回当日口径。
+    today_names = [t.get("theme") or "" for t in theme_watch if t.get("theme")]
+    today_key = {_theme_key(n): n for n in today_names}
+
+    def _today_of(themes: List[str]) -> List[str]:
+        """索引题材名 -> 当日题材名，只做去括号后的同名匹配。
+
+        这只是名称归一化，不是业务同义：光刻胶与「光刻机（胶）」能对上，
+        但「家用电器」与「家电」对不上，那种情况留给模型自己判断。
+        """
+        out: List[str] = []
+        for name in themes:
+            hit = today_key.get(_theme_key(name))
+            if hit and hit not in out:
+                out.append(hit)
+        return out
+
     lhb_raw = payload.get("lhb") or {}
     lhb_rows = []
     for x in (lhb_raw.get("items") or [])[:15]:
         key = (x.get("name") or "").replace(" ", "")
+        hit = concepts.get(x.get("code") or "") or {}
         lhb_rows.append(
             {
                 "name": x.get("name"),
                 "sector": sector_of.get(key, ""),
                 "theme": theme_of.get(key, ""),
+                # 索引倒查的归属：themes 是 lianban 题材库里的标准名，
+                # concepts 是同花顺原始概念，why 是公司自己披露的业务关联。
+                "themes": hit.get("themes") or [],
+                "today_themes": _today_of(hit.get("themes") or []),
+                "concepts": [
+                    c.get("name") for c in (hit.get("concepts") or [])[:6] if c.get("name")
+                ],
+                "why": ((hit.get("concepts") or [{}])[0] or {}).get("why") or "",
                 "chg": x.get("chg"),
                 "net": x.get("net"),
                 "reason": x.get("reason"),
@@ -864,7 +974,7 @@ def _load_ai_conf(path: Path) -> Dict[str, Any]:
     return doc.get("ai") or {}
 
 
-def collect(no_browser: bool = False) -> Dict[str, Any]:
+def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts: bool = False) -> Dict[str, Any]:
     """Fetch the public sources and parse them into one payload.
 
     Each source is allowed to fail on its own: a page that will not load costs
@@ -878,6 +988,7 @@ def collect(no_browser: bool = False) -> Dict[str, Any]:
         "extra": {},
         "lianban": {},
         "lhb": {},
+        "concepts": {},
         "errors": [],
     }
     try:
@@ -901,6 +1012,14 @@ def collect(no_browser: bool = False) -> Dict[str, Any]:
             payload["extra"] = collect_extra()
         except Exception as exc:  # noqa: BLE001
             payload["errors"].append(f"browser: {exc}")
+    # 个股题材归属：先查本地索引，索引里没有的票现抓（限速 ~2.3s/只），
+    # 抓不到的留空，不借邻座的题材。
+    try:
+        payload["concepts"] = attach_concepts(
+            payload, fetch_missing=fetch_concepts, save=save_concepts
+        )
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"concepts: {exc}")
     return payload
 
 
@@ -925,9 +1044,23 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--no-mcp", action="store_true", help="skip lianban's own review")
     parser.add_argument("--no-push", action="store_true", help="write the page, do not push")
     parser.add_argument("--dump-model-input", action="store_true", help="print the model payload and exit")
+    parser.add_argument(
+        "--no-fetch-concepts",
+        action="store_true",
+        help="only use the shipped concept index; do not fetch missing tickers",
+    )
+    parser.add_argument(
+        "--save-concepts",
+        action="store_true",
+        help="write newly fetched tickers back into the concept index",
+    )
     args = parser.parse_args(argv)
 
-    payload = collect(no_browser=args.no_browser)
+    payload = collect(
+        no_browser=args.no_browser,
+        fetch_concepts=not args.no_fetch_concepts,
+        save_concepts=args.save_concepts,
+    )
     matrix = payload["matrix"]
     kpi = payload["kpi"]
     date = args.date or kpi.get("date") or (matrix.get("dates") or [""])[0]
