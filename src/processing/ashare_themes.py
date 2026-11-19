@@ -52,7 +52,7 @@ import zlib
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
-from .conduction import conduction_filter
+from .conduction import conduction_filter, direction_note
 
 logger = logging.getLogger(__name__)
 
@@ -729,7 +729,7 @@ def format_theme_line(themes: Sequence[Dict[str, Any]]) -> str:
             label = f"{label} → {'、'.join(shown)}"
         # The one-line reason is the only record of why a theme was read that
         # way: items are never serialised, so nothing else survives the run.
-        reason = str(theme.get("direction_reason") or "").strip()
+        reason = direction_note(theme)
         if reason:
             label = f"{label}（{reason}）"
         groups[direction if direction in groups else ""].append(label)
