@@ -12,6 +12,7 @@ Sources, all public:
   opendata/       the site's own KPI block (limit-ups, seal rate, breadth)
   filter.html     the three screening templates' top five, with 60-day gain
   today.html      ｜主线强度 and 主力资金动向, which exist only as rendered DOM
+  market.html     60 sessions of breadth, embedded as JSON
   MCP             lianban's own written review, published for agents
 
 The written read is the model's, not this script's: it is handed the numbers and
@@ -156,41 +157,46 @@ ROTATION_RULE = (
     "次日接力大概率是给别人抬轿。"
 )
 
-# The prompt is a judgement protocol, not a style guide. Everything in it exists
-# to close one of the four ways a model turns this page into a transcript:
-# it repeats the numbers (banned: a number may only appear as a comparison), it
-# turns sequence into cause (banned), it hedges instead of taking a position
-# (each section must open with a verdict), and it never commits to anything that
-# tomorrow's data could refute (two falsifiable checks are mandatory).
-SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，不是数据播报员。
+# The prompt is a judgement protocol, not a style guide. It exists to close the
+# four ways a model turns this page into a transcript: it repeats the numbers
+# (banned: a number may only appear as a comparison), it turns sequence into
+# cause (banned), it hedges instead of taking a position (every section opens
+# with a verdict), and it never commits to anything tomorrow's data could refute
+# (two falsifiable checks are mandatory).
+#
+# The six headings are the product's, not the model's: a reader deciding what to
+# do tomorrow wants the session read, the signals worth remembering, why the tape
+# moved, what happens next, and which theme and names to keep watching — in that
+# order. Letting the model choose its own headings produced six variations of
+# "today's mainline".
+SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，不是数据播报。
 
-你会收到一份结构化 JSON：当日情绪、市场宽度、与前一日的变化、昨日涨停股今日表现、产业线趋势、当日题材的驱动与龙头、主力资金流向、选股模板候选、外盘，以及连板网自己的复盘正文。
+你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、外盘、连板网自己的次日推演与复盘正文。
 
-读者已经能在页面上看到全部表格。所以你的任务不是把它们转述成句子，而是回答四个问题：今天是什么市、钱从哪来到哪去、最强那条线的成色如何、明天拿什么验证。定性、归因（只到"资金行为"这一层）、可证伪的观察点。
+读者明天要据此做判断。所以六段各回答一个问题：先给结论，再给依据。
 
-【口径，先读，读错就会得出反向结论】
-- limit_up 是当日涨停家数；industry_lines[].delta_1d 是与前一交易日的差，delta_3d 是与前三个交易日均值的差。差值已经算好，不要再自己减。
-- streak 是连续有涨停的天数。连板网口径：{rule}
-- share_of_all_limit_up_pct 是该线占当日全部涨停的比例，它说明集中度，不说明强度。
-- sector_strength_pct 是该板块当日涨跌幅。涨停家数多而板块整体下跌，说明是个股突围，不是板块行情。
-- relay 是昨日涨停股今天的平均涨幅、中位涨幅、翻红比例。它衡量的是接力还赚不赚钱，不是今天强不强。中位为负而均值微正，说明少数票撑住了平均，多数接力是亏的。
-- breadth 里的 zhaban_rate_pct（炸板率）越高，说明封板资金越不坚决；它与 seal_rate_pct 是同一件事的两面，不要当成两个独立证据。
-- third_party_review 是连板网自己的复盘，可能与你手里的数字冲突。
-- 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。
+【口径，先读，读错会得出反向结论】
+- indices 是六个分类指数当日涨跌。重点在它们的离散度：科创50 涨而创业板跌，说明资金在换方向，不是普跌。
+- breadth 是当日宽度；breadth_history.today 是同一批指标，pct_rank_60d 是它在近 60 个交易日里的分位（0-100，越高表示该指标在窗口内越高）。方向不同：up_ratio、turnover、above_ma20 越高越好；new_low_63 与 stage4（处于下跌阶段的个股占比）越高越差。
+- industry_lines[].delta_1d 是与前一交易日的差，delta_3d 是与前三个交易日均值的差。差值已经算好，不要再自己减。
+- share_of_all_limit_up_pct 是集中度，不是强度。sector_strength_pct 是板块当日涨跌幅：涨停家数多而板块在跌，是个股突围，不是板块行情。
+- relay 衡量接力还赚不赚钱，不衡量今天强不强。
+- next_day_base_rate 是连板网用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
+- 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。
+- 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 
-【四个必答判断】
-1. 今天是什么市。用 breadth 与 change_vs_prev 定性（冰点／退潮／分歧／修复／主升中的一种，并说明强度）。必须指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但全市场下跌家数远大于上涨、新低远多于新高。矛盾点是你这段最值钱的部分。
-2. 钱从哪来、到哪去。对比 industry_lines 里各线的 delta_1d：一条线大涨而另一条线大跌，是存量搬家；各线一起缩量下跌，是撤退；家数与成交同时放大才是增量。再用 relay 判断接力是否还赚钱。给出你的结论：今天属于哪一种。
-3. 最强那条线的成色。结合 streak、share、sector_strength_pct、driver、leader 判断它是"主线"还是"退潮里的抱团"。如果家数在涨而板块在跌、或龙头是低位补涨、或它只是全市场唯一还有涨停的地方，都要说清楚这意味着什么。
-4. 明天验证什么。给两个观察点，每个写成"如果……则……；否则……"。必须能从明天的同一份数据里读到（某条线的家数、连板高度、炸板率、是否还在榜），不要写"关注市场情绪"这种无法验证的话。
-
-【与连板网复盘对照】
-读完 third_party_review，明确说出你同意哪一点、不同意哪一点。不同意必须给出你手里哪个字段支撑；一致就写一致，并补上它没说的那一层。不许含糊成"基本认同"。
+【六段，各回答一个问题】
+1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
+2. 重点信号：给 2 到 3 个今天最值得记住的异常，每个都要带"相对于什么"（60 日分位、昨日值、或与其他指数/板块的背离）。这一段是替读者划重点，不要把所有指标都念一遍。
+3. 盘面变动归因：钱从哪来、到哪去。用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。
+4. 趋势展望：先给出连板网的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
+5. 重点关注题材：1 到 2 条。说清为什么是它（连续天数、集中度、驱动、板块强弱），以及明天什么信号能确认或证伪。
+6. 重点关注个股：从 candidates 的三个面板里选 2 到 3 只，写明它属于哪条题材、位置如何（60 日涨幅与距高点，意味着高位加速还是刚启动）。只描述特征，不做推荐。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
-- 禁止把先后关系写成因果关系。"英伟达宣布合作"与"芯片涨停"同时出现，不等于前者驱动了后者；只能写"同期出现的消息是……，但数据不能证明因果"。
-- 禁止买卖建议、目标价、仓位、点位。
+- 禁止把先后关系写成因果关系。"英伟达宣布合作"与"芯片涨停"同时出现，不等于前者驱动了后者。
+- 禁止买卖建议、目标价、仓位、点位、任何荐股语气。
 - 禁止"综上所述""值得关注""后市可期""静待方向选择"这类空话。
 - 禁止复述页面上已有的表格。
 
@@ -198,13 +204,14 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，不是数据播报员。
 只输出一个 JSON 对象，不要 markdown 代码块，不要任何解释文字：
 {{"headline": "一句话定性，不超过 18 字，必须是判断而不是描述",
  "sections": [
-  {{"h": "今天是什么市", "p": "80-120 字"}},
-  {{"h": "钱从哪来，到哪去", "p": "80-120 字"}},
-  {{"h": "最强那条线的成色", "p": "80-120 字"}},
-  {{"h": "明天验证什么", "p": "80-120 字"}}
+  {{"h": "盘面总结", "p": "70-110 字"}},
+  {{"h": "重点信号", "p": "70-110 字"}},
+  {{"h": "盘面变动归因", "p": "70-110 字"}},
+  {{"h": "趋势展望", "p": "70-110 字"}},
+  {{"h": "重点关注题材", "p": "70-110 字"}},
+  {{"h": "重点关注个股", "p": "70-110 字"}}
  ],
- "dissent": {{"agree": "同意连板网的哪一点", "disagree": "不同意哪一点，依据是什么"}}}}
-dissent 没有可说的就填空字符串，不要编。"""
+ "dissent": "与连板网复盘的分歧，一句话；没有分歧就填空字符串，不要编"}}"""
 
 
 def _panel_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -379,11 +386,14 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
             "median_pct": float(yl_median.group(1)) if yl_median else None,
             "red_ratio_pct": float(yl_red.group(1)) if yl_red else None,
         },
+        "indices": extra.get("indices") or [],
+        "breadth_history": extra.get("breadth") or {},
         "industry_lines": lines,
         "today_themes": themes,
         "money_flow": flows,
         "candidates": screeners,
         "overseas": overseas,
+        "next_day_base_rate": extra.get("forecast") or {},
         "third_party_review": third_party,
     }
 
@@ -413,17 +423,19 @@ def _parse_read(text: str) -> Dict[str, Any]:
                 for s in (doc.get("sections") or [])
                 if isinstance(s, dict) and str(s.get("p") or "").strip()
             ]
-            dissent = doc.get("dissent") or {}
+            dissent = doc.get("dissent")
+            if isinstance(dissent, dict):
+                # Older replies used {agree, disagree}; keep reading them.
+                text = str(dissent.get("disagree") or dissent.get("agree") or "").strip()
+            else:
+                text = str(dissent or "").strip()
             return {
                 "headline": str(doc.get("headline") or "").strip(),
                 "sections": sections,
-                "dissent": {
-                    "agree": str((dissent or {}).get("agree") or "").strip(),
-                    "disagree": str((dissent or {}).get("disagree") or "").strip(),
-                },
+                "dissent": text,
             }
     paras = [p.strip() for p in re.split(r"\n+", raw) if p.strip()]
-    return {"headline": "", "sections": [{"h": "", "p": p} for p in paras], "dissent": {}}
+    return {"headline": "", "sections": [{"h": "", "p": p} for p in paras], "dissent": ""}
 
 
 def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150.0) -> Dict[str, Any]:
@@ -661,7 +673,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         drivers = f"<h2>当日主线与驱动</h2><ul class='drv'>{items}</ul>"
 
     # The model returns verdicts, not prose blocks: a headline that states the
-    # call, four sections that each defend one, and an explicit dissent against
+    # call, six sections that each defend one, and an explicit dissent against
     # the site's own review. The headings come from the model's own answers, so
     # the page shows its reasoning structure rather than a wall of text.
     if isinstance(read, str):
@@ -676,15 +688,14 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             if sec.get("h"):
                 parts.append(f"<h3>{_esc(sec['h'])}</h3>")
             parts.append(f"<p>{_esc(sec['p'])}</p>")
-        dis = read.get("dissent") or {}
-        if dis.get("agree") or dis.get("disagree"):
-            bits = []
-            if dis.get("agree"):
-                bits.append(f"<p><span class='tag up'>认同</span>{_esc(dis['agree'])}</p>")
-            if dis.get("disagree"):
-                bits.append(f"<p><span class='tag down'>存疑</span>{_esc(dis['disagree'])}</p>")
-            parts.append("<h3>与连板网复盘对照</h3>" + "".join(bits))
-        summary_html = f"<h2>今日主线研判</h2><div class='read'>{''.join(parts)}</div>"
+        dis = read.get("dissent")
+        if isinstance(dis, dict):
+            text = str(dis.get("disagree") or dis.get("agree") or "").strip()
+        else:
+            text = str(dis or "").strip()
+        if text:
+            parts.append(f"<h3>与连板网复盘的分歧</h3><p>{_esc(text)}</p>")
+        summary_html = f"<h2>盘后洞察</h2><div class='read'>{''.join(parts)}</div>"
 
     top = [l for l in lines if l.get("today", 0) > 0]
     if top:
@@ -698,6 +709,10 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             f"{kpi.get('emotion_phase') or ''}；今天没有产业线录得涨停。"
         )
 
+    # The model's headline already states the call; printing the script's lede
+    # above it would say the same thing twice in the first screenful.
+    lede_html = "" if summary_html else f'<p class="lede">{_esc(lede)}</p>'
+
     mood = kpi.get("emotion_phase") or ""
     degree = day.get("degree")
     mood_text = f"{mood} {degree}°" if degree is not None else mood
@@ -705,20 +720,20 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Kenny's Horizon {_esc(date)} 晚报 | Kenny's Horizon 每日精选新闻速递</title>
+<title>Kenny's Horizon {_esc(date)} 盘后洞察晚报 | Kenny's Horizon</title>
 <meta name="description" content="{_esc(lede)}">
-<meta property="og:title" content="Horizon 晚报：{_esc(date)}">
+<meta property="og:title" content="Horizon 盘后洞察晚报：{_esc(date)}">
 <meta property="og:description" content="{_esc(lede)}">
 <meta property="og:url" content="{_esc(page_url)}">
 <meta name="theme-color" content="#157878">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
 <header class="page-header">
-<h1 class="project-name">Kenny's Horizon {_esc(date)} 晚报</h1>
-<h2 class="project-tagline">Kenny's Horizon 每日精选新闻速递</h2>
+<h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
+<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望</h2>
 </header>
 <main>
-<p class="lede">{_esc(lede)}</p>
+{lede_html}
 {summary_html}
 <h2>盘面</h2>
 <div class="stats">{stat_html}</div>
@@ -876,7 +891,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
     headline = "、".join(f"{l['line']}{l['today']}" for l in top) or "无涨停线"
-    title = f"Horizon 晚报 {date[5:]} {kpi.get('emotion_phase') or ''} {headline}".strip()
+    title = f"Horizon 盘后洞察 {date[5:]} {kpi.get('emotion_phase') or ''} {headline}".strip()
     desp = "\n\n".join(
         part
         for part in [
