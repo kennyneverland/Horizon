@@ -1,0 +1,239 @@
+"""Main-business profiles for theme members, used by the re-rank pass.
+
+lianban ranks a theme's members by three-month relative strength, so a theme's
+leading names can be companies whose business has nothing to do with the theme:
+景观设计 sitting in 算力租赁, 有线电视 in 国产芯片. A bare name gives the model
+nothing to judge that on, so the re-rank pass is handed each member's main
+business line.
+
+Source is Eastmoney's F10 business breakdown: the latest report period's
+revenue split by product. One GET per stock, cached for the run, and a failed
+lookup leaves the name unannotated rather than dropping it.
+"""
+
+import asyncio
+import gzip
+import json
+import logging
+import re
+import urllib.request
+from typing import Dict, List, Optional
+
+logger = logging.getLogger(__name__)
+
+PROFILE_URL = (
+    "https://emweb.securities.eastmoney.com/PC_HSF10/BusinessAnalysis/PageAjax?code={code}"
+)
+THS_URL = (
+    "https://basic.10jqka.com.cn/fuyao/f10_stock_index/concept/v1/"
+    "theme_key_points?subject={subject}"
+)
+# 同花顺市场号：沪市 17，深市 33。
+THS_MARKET = {"6": "17", "0": "33", "3": "33"}
+FETCH_TIMEOUT = 8.0
+FETCH_CONCURRENCY = 3
+# How many of a theme's members to annotate. Set to the full list the model
+# sees: a name alone cannot tell 景观设计 from 算力租赁, and a partially
+# annotated list would bias the pick toward whichever names carry a profile.
+ANNOTATE_LIMIT = 120
+# Only products above this revenue share are worth naming.
+MIN_RATIO = 0.10
+MAX_ITEMS = 3
+
+_CODE_RE = re.compile(r"(\d{6})")
+_MAIN_BIZ_RE = re.compile(
+    r"[^。；]{0,60}(?:主要从事|核心业务为|主营业务为|专注于)[^。；]{0,140}。"
+)
+# F10 lines that carry no business information; a company reporting only
+# "销售商品99.9%" tells the re-rank nothing, so the THS fallback is used.
+_USELESS = ("销售商品", "其他", "主营业务", "商品销售")
+
+
+def stock_code(member: str) -> Optional[str]:
+    """Pull the six-digit code out of a member string, or None."""
+    match = _CODE_RE.search(str(member or ""))
+    return match.group(1) if match else None
+
+
+def market_code(code: str) -> str:
+    """Eastmoney's market prefix: SH for 6xx, SZ for 0xx/3xx, BJ otherwise."""
+    if code.startswith("6"):
+        return "SH" + code
+    if code.startswith(("0", "3")):
+        return "SZ" + code
+    return "BJ" + code
+
+
+def parse_profile(payload: Dict[str, object]) -> str:
+    """Turn an F10 payload into '云计算66.8%、通信设备33.0%' or ''.
+
+    Product-level lines are preferred; some companies only report by industry,
+    which is coarser but still enough to tell 有线电视 from 光模块.
+    """
+    rows = payload.get("zygcfx") or []
+    if not isinstance(rows, list) or not rows:
+        return ""
+    dated = [row for row in rows if isinstance(row, dict) and row.get("REPORT_DATE")]
+    if not dated:
+        return ""
+    latest = max(str(row["REPORT_DATE"])[:10] for row in dated)
+    for op_type in ("1", "2"):
+        picked = [
+            row
+            for row in dated
+            if str(row.get("REPORT_DATE"))[:10] == latest
+            and str(row.get("MAINOP_TYPE")) == op_type
+        ]
+        if not picked:
+            continue
+        picked.sort(key=lambda row: -float(row.get("MBI_RATIO") or 0))
+        parts = []
+        for row in picked:
+            ratio = float(row.get("MBI_RATIO") or 0)
+            name = str(row.get("ITEM_NAME") or "").strip()
+            if not name or ratio < MIN_RATIO:
+                continue
+            parts.append(f"{name}{ratio * 100:.1f}%")
+            if len(parts) >= MAX_ITEMS:
+                break
+        if parts:
+            if len(parts) == 1 and any(word in parts[0] for word in _USELESS):
+                return ""
+            return "、".join(parts)
+    return ""
+
+
+def parse_ths(payload: Dict[str, object]) -> str:
+    """Pull the main-business sentence out of THS theme key points.
+
+    Used only when the F10 breakdown says nothing useful. The key points are
+    prose about what the company does, so a sentence anchored on 主要从事 /
+    主营业务为 is the closest thing to a business line.
+    """
+    items = payload.get("data") or []
+    if not isinstance(items, list):
+        return ""
+    text = " ".join(
+        str(item.get("content") or "") for item in items if isinstance(item, dict)
+    )
+    match = _MAIN_BIZ_RE.search(text)
+    if match:
+        return match.group(0).strip()[:120]
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        content = str(item.get("content") or "").strip()
+        if len(content) >= 20:
+            return content[:120]
+    return ""
+
+
+class MemberProfiles:
+    """Per-run cache of main-business strings, keyed by member string."""
+
+    def __init__(
+        self,
+        *,
+        timeout: float = FETCH_TIMEOUT,
+        concurrency: int = FETCH_CONCURRENCY,
+    ):
+        self.timeout = timeout
+        self.concurrency = max(concurrency, 1)
+        self._cache: Dict[str, str] = {}
+
+    def _fetch(self, code: str) -> str:
+        """F10 breakdown first, THS key points only when that says nothing."""
+        return self._fetch_f10(code) or self._fetch_ths(code)
+
+    def _fetch_f10(self, code: str) -> str:
+        request = urllib.request.Request(
+            PROFILE_URL.format(code=market_code(code)),
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
+                ),
+                "Accept": "application/json",
+            },
+        )
+        with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            body = response.read()
+            # The endpoint gzips some responses regardless of what was asked
+            # for, so the header is the only reliable signal.
+            if response.headers.get("Content-Encoding") == "gzip":
+                body = gzip.decompress(body)
+        payload = json.loads(body.decode("utf-8", "replace"))
+        # Under load it answers {"status": -1, "message": "股票代码不合法"} for
+        # codes that are perfectly valid; treat it as a transient failure so the
+        # caller retries instead of caching an empty profile.
+        if isinstance(payload, dict) and payload.get("status") == -1:
+            raise ValueError(str(payload.get("message") or "rejected"))
+        return parse_profile(payload)
+
+    def _fetch_ths(self, code: str) -> str:
+        """THS theme key points, for names the F10 breakdown does not describe."""
+        market = THS_MARKET.get(code[:1])
+        if not market:
+            return ""
+        request = urllib.request.Request(
+            THS_URL.format(subject=f"{market}-{code}"),
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
+                ),
+                "Referer": f"https://basic.10jqka.com.cn/{code}/concept.html",
+                "Accept": "application/json",
+            },
+        )
+        with urllib.request.urlopen(request, timeout=self.timeout) as response:
+            payload = json.loads(response.read().decode("utf-8", "replace"))
+        if isinstance(payload, dict) and payload.get("status_code") not in (0, None):
+            raise ValueError("theme key points rejected")
+        return parse_ths(payload)
+
+    async def annotate(self, members: List[str]) -> Dict[str, str]:
+        """Map member string -> '主营构成', for the ones that could be fetched."""
+        targets = [m for m in members[:ANNOTATE_LIMIT] if stock_code(m)]
+        missing = [m for m in targets if m not in self._cache]
+        semaphore = asyncio.Semaphore(self.concurrency)
+
+        async def run(member: str) -> None:
+            code = stock_code(member)
+            if not code:
+                return
+            async with semaphore:
+                profile = ""
+                # The endpoint intermittently answers with an empty body under
+                # load (three of twenty on a first pass, all of them fine on a
+                # retry), so a single attempt would silently thin the list.
+                for attempt in range(3):
+                    try:
+                        profile = await asyncio.to_thread(self._fetch, code)
+                        break
+                    except Exception as exc:  # noqa: BLE001 - name still works alone
+                        if attempt == 2:
+                            logger.warning("Profile fetch failed for %s: %s", code, exc)
+                        else:
+                            await asyncio.sleep(0.4 * (attempt + 1))
+                self._cache[member] = profile
+
+        if missing:
+            await asyncio.gather(*(run(member) for member in missing))
+            hits = sum(1 for member in missing if self._cache.get(member))
+            logger.warning(
+                "Member profiles: %d/%d fetched for %d requested",
+                hits,
+                len(missing),
+                len(targets),
+            )
+        return {member: self._cache[member] for member in targets if self._cache.get(member)}
+
+
+def render_listing(members: List[str], profiles: Dict[str, str], limit: int) -> str:
+    """The candidate list handed to the re-rank model, with business attached."""
+    parts = []
+    for member in members[:limit]:
+        profile = profiles.get(member)
+        parts.append(f"{member}｜{profile}" if profile else str(member))
+    return "；".join(parts)
