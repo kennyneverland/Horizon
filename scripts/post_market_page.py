@@ -286,6 +286,49 @@ def _focus_html(
     return "".join(blocks)
 
 
+def _lhb_html(payload: Dict[str, Any]) -> str:
+    """龙虎榜净买额前 15，每只票后面挂它倒查出来的题材。
+
+    The board is the one place a name appears with no theme attached: the site
+    explains why a stock was disclosed (a 7% move, a 20% turnover), never what it
+    trades as. The index answers that, so the table prints the theme beside the
+    number and the reader no longer has to look it up elsewhere.
+
+    A stock the index does not carry says so, rather than borrowing a
+    neighbour's theme.
+    """
+    items = (payload.get("lhb") or {}).get("items") or []
+    if not items:
+        return ""
+    concepts = payload.get("concepts") or {}
+    rows = []
+    for x in items[:15]:
+        hit = concepts.get(x.get("code") or "") or {}
+        themes = list(hit.get("themes") or [])
+        labels = [t for t in themes[:3]]
+        if not labels:
+            labels = [c.get("name") for c in (hit.get("concepts") or [])[:2] if c.get("name")]
+        label = " / ".join(labels) or "题材未收录"
+        sub = " · ".join(v for v in [x.get("code") or "", label] if v)
+        net = x.get("net") or ""
+        rows.append(
+            "<tr>"
+            f"<td class='nm'><b>{_esc(x.get('name'))}</b>"
+            f"<span class='sub'>{_esc(sub)}</span></td>"
+            f"<td class='num {_pct_class(x.get('chg'))}'>{_esc(x.get('chg'))}</td>"
+            f"<td class='num {'down' if '-' in net else ('up' if net else '')}'>{_esc(net)}</td>"
+            "</tr>"
+        )
+    return (
+        "<h2>龙虎榜 · 题材归属</h2>"
+        "<p class='hint'>净买额前 15；题材由本地题材索引倒查，"
+        "与当日题材同名即归位，未收录的票照实标出</p>"
+        "<table><colgroup><col><col style='width:66px'><col style='width:78px'></colgroup>"
+        "<thead><tr><th>个股 / 所属题材</th><th>涨跌</th><th>净额</th></tr></thead>"
+        "<tbody>" + "".join(rows) + "</tbody></table>"
+    )
+
+
 def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """个股 → 它出现在哪张筛选面板、位置多少。
 
@@ -294,11 +337,14 @@ def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     numbers rather than an estimate.
     """
     out: Dict[str, Dict[str, Any]] = {}
+    concepts = payload.get("concepts") or {}
     for label, block in (payload.get("filter") or {}).items():
         for row in block.get("rows") or []:
+            hit = concepts.get(row.get("code") or "") or {}
             out[row["name"].replace(" ", "")] = {
                 "panel": label,
                 "sector": row.get("sector") or "",
+                "themes": hit.get("themes") or [],
                 "gain60": row.get("gain60"),
                 "from_high": row.get("from_high60"),
             }
@@ -361,6 +407,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     day = matrix.get("day") or {}
     lines = matrix.get("lines") or []
     picks = payload.get("filter") or {}
+    concepts = payload.get("concepts") or {}
     extra = render_sections(payload)
     date = kpi.get("date") or ""
 
@@ -399,7 +446,15 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     for label, block in picks.items():
         body = []
         for r in block.get("rows", []):
-            sub = " · ".join(x for x in [r.get("code") or "", r.get("sector") or ""] if x)
+            # 面板的 sector 是连板网口径，索引的 themes 是同花顺口径；两个都印，
+            # 因为它们经常不是同一个名字（厨房小家电 / 家用电器），读者要的是覆盖面。
+            idx = (concepts.get(r.get("code") or "") or {}).get("themes") or []
+            idx_themes = [t for t in idx[:2] if t != (r.get("sector") or "")]
+            sub = " · ".join(
+                x
+                for x in [r.get("code") or "", r.get("sector") or "", "/".join(idx_themes)]
+                if x
+            )
             body.append(
                 "<tr>"
                 f"<td class='rk'>{_esc(r['rank'])}</td>"
@@ -519,6 +574,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <ul class="lines">{''.join(line_rows)}</ul>
 {drivers}
 {''.join(pick_blocks)}
+{_lhb_html(payload)}
 {extra['review']}
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
