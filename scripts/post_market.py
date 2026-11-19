@@ -41,7 +41,8 @@ from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
-from lianban_extra import EXTRA_CSS, collect_extra, mcp_review, render_sections  # noqa: E402
+from lianban_extra import collect_extra, mcp_review  # noqa: E402
+from post_market_page import render_html  # noqa: E402
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -184,14 +185,17 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - next_day_base_rate 是连板网用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
+- theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
+- members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。
+- gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
 
 【六段，各回答一个问题】
 1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
-2. 重点信号：给 2 到 3 个今天最值得记住的异常，每个都要带"相对于什么"（60 日分位、昨日值、或与其他指数/板块的背离）。这一段是替读者划重点，不要把所有指标都念一遍。
-3. 盘面变动归因：钱从哪来、到哪去。用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。
+2. 重点信号：给 3 个今天最值得记住的异常，每个都要带"相对于什么"（60 日分位、昨日值、或与其他指数/板块的背离）。能挂上已有历史基准的就挂——next_day_base_rate 的样本量与频率、pct_rank_60d 的分位；挂不上的只描述异常本身，不要替它编历史统计。这一段是替读者划重点，不要把所有指标都念一遍。
+3. 盘面变动归因：钱从哪来、到哪去。用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。一条线涨停变多、另一条线变少，只能说明钱的分布变了；除非板块资金流也指向同一方向，否则直说"这一步无法证实"，不要写成资金迁移。
 4. 趋势展望：先给出连板网的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
-5. 重点关注题材：1 到 2 条。说清为什么是它（连续天数、集中度、驱动、板块强弱），以及明天什么信号能确认或证伪。
-6. 重点关注个股：从 candidates 的三个面板里选 2 到 3 只，写明它属于哪条题材、位置如何（60 日涨幅与距高点，意味着高位加速还是刚启动）。只描述特征，不做推荐。
+5. 重点关注题材：给 3 到 4 条，不是 1 到 2 条。每条用一句话说清为什么是它（连续天数、集中度、驱动、板块强弱里挑最有说服力的两点），再给一个明天能从同一份数据里读到、能证伪它的信号。题材只能从 theme_watch 取，不要自己造，也不要把 theme_watch 里的每一条都写进来；theme_watch 不足 3 条时就给 2 条，不要凑数，也不要把 industry_lines 的产业线当成当日题材。
+6. 重点关注个股：这一段不写成大段文字，改由 watchlist 字段承载——每个重点题材配 2 到 4 只，全篇合计 6 到 12 只。每只写清它在题材里的角色（龙头／跟随／补涨）、连板高度，以及位置；有 gain60 与 from_high 的必须用上，没有的就写"无 60 日位置数据"，不要估。名字只能从该题材的 members 里取。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -199,6 +203,8 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - 禁止买卖建议、目标价、仓位、点位、任何荐股语气。
 - 禁止"综上所述""值得关注""后市可期""静待方向选择"这类空话。
 - 禁止复述页面上已有的表格。
+- 禁止编造样本量、命中率、历史概率与形态统计；除了 next_day_base_rate 与 pct_rank_60d，任何统计数字都不许出现在正文里。
+- 输入里没有的东西就写"数据未提供"，不要用推测补齐，也不要把"没有这个消息"写成"没有催化"。
 
 【输出格式】
 只输出一个 JSON 对象，不要 markdown 代码块，不要任何解释文字：
@@ -208,10 +214,18 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
   {{"h": "重点信号", "p": "70-110 字"}},
   {{"h": "盘面变动归因", "p": "70-110 字"}},
   {{"h": "趋势展望", "p": "70-110 字"}},
-  {{"h": "重点关注题材", "p": "70-110 字"}},
-  {{"h": "重点关注个股", "p": "70-110 字"}}
+  {{"h": "重点关注题材", "p": "90-130 字，点出 3 到 4 条题材"}}
  ],
- "dissent": "与连板网复盘的分歧，一句话；没有分歧就填空字符串，不要编"}}"""
+ "watchlist": [
+  {{"theme": "题材名，必须与第 5 段点名的一致",
+   "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
+   "stocks": [{{"name": "个股名，必须来自该题材 members",
+              "tag": "连板高度 · 子题材，如 3连板 · 光刻机；不超过 14 字",
+              "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
+ ],
+ "dissent": "与连板网复盘的分歧，一句话；没有分歧就填空字符串，不要编"}}
+
+watchlist 的硬性要求：条数与第 5 段题材数一致；每个题材 2 到 4 只（该题材 members 不足 2 只时给 1 只并在 note 里说明）；全篇合计 6 到 12 只；不要把所有 members 原样罗列，也不要在 members 之外造名字。"""
 
 
 def _panel_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -234,6 +248,148 @@ def _trim(text: str, limit: int = 1500) -> str:
     cut = text[:limit]
     stop = max(cut.rfind("。"), cut.rfind("\n"))
     return cut[: stop + 1] if stop > limit * 0.6 else cut
+
+
+# 当日题材名是矩阵口径（粗，如「光刻机（胶）」），逐只明细里的子题材是连板网自己的
+# 标签（细，如「光刻机」「光刻胶」）。两者字面不同，靠一张显式桥接表对上，不让模型猜。
+_THEME_SUBS = {
+    "光刻机（胶）": ("光刻机", "光刻胶", "光刻"),
+    "国产芯片": ("先进封装", "半导体", "芯片", "集成电路", "存储", "封测"),
+    "芯片": ("芯片", "半导体", "集成电路", "先进封装", "存储", "封测"),
+    "云计算数据中心": ("算力", "数据中心", "IDC", "云计算", "液冷", "服务器"),
+    "算力": ("算力", "数据中心", "IDC", "液冷", "服务器", "光模块", "CPO"),
+    "机器人": ("机器人", "机器视觉", "减速器", "丝杠", "人形机器人"),
+    "机器人概念": ("机器人", "机器视觉", "减速器", "丝杠", "人形机器人"),
+    "家电": ("家电", "家用电器", "小家电", "智能家居", "白色家电"),
+}
+
+
+def _theme_watch(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """每条当日题材配一份可点名的个股池。
+
+    The matrix gives a theme and a count; the site's detail panel gives the names
+    behind that count, with board height and sub-theme. Without the panel a theme
+    can only be described, never named — which is why the brief used to offer one
+    or two stocks in total. This joins the two and marks, per theme, whether the
+    list is the site's own detail (``detail_available``) or names pulled in by
+    sub-theme label, so the model can tell a roster from a neighbourhood.
+
+    ``gain60``/``from_high`` exist only for the fifteen names in the three free
+    screening panels; the rest carry position as ``null`` rather than a guess.
+    """
+    day = (payload.get("matrix") or {}).get("day") or {}
+    extra = payload.get("extra") or {}
+    detail = extra.get("theme_members") or []
+    cards = {x.get("theme"): x for x in detail if x.get("theme")}
+
+    # 全站逐只明细池：给没有直连面板的题材按子题材标签找相关票
+    pool: List[Dict[str, Any]] = []
+    for card in detail:
+        for m in card.get("members") or []:
+            pool.append(dict(m, from_theme=card.get("theme") or ""))
+
+    # 60 日位置只覆盖三张模板各前 5 只，其余留空
+    pos: Dict[str, Dict[str, Any]] = {}
+    for label, block in (payload.get("filter") or {}).items():
+        for row in block.get("rows") or []:
+            pos[row["name"].replace(" ", "")] = {
+                "panel": label,
+                "gain60": row.get("gain60"),
+                "from_high": row.get("from_high60"),
+                "sector": row.get("sector") or "",
+            }
+
+    out: List[Dict[str, Any]] = []
+    for line in day.get("lines") or []:
+        name = line.get("name") or ""
+        card = cards.get(name) or {}
+        subs = _THEME_SUBS.get(name, ())
+        members: List[Dict[str, Any]] = []
+        seen = set()
+
+        def add(item: Dict[str, Any], key: str) -> None:
+            if not key or key in seen:
+                return
+            seen.add(key)
+            hit = pos.get(key) or {}
+            item.setdefault("gain60", hit.get("gain60"))
+            item.setdefault("from_high", hit.get("from_high"))
+            item.setdefault("sector", hit.get("sector") or "")
+            members.append(item)
+
+        for m in card.get("members") or []:
+            add(
+                {
+                    "name": m.get("name"),
+                    "code": m.get("code"),
+                    "board": m.get("board") or "",
+                    "sub": m.get("sub") or "",
+                    "source": "limit_up",
+                },
+                (m.get("name") or "").replace(" ", ""),
+            )
+
+        if not card.get("exact"):
+            # 没有逐只明细：用子题材标签取相关涨停股，sub 保留给模型判断亲疏
+            for m in pool:
+                sub = m.get("sub") or ""
+                if subs and any(x in sub for x in subs):
+                    add(
+                        {
+                            "name": m.get("name"),
+                            "code": m.get("code"),
+                            "board": m.get("board") or "",
+                            "sub": sub,
+                            "source": "related",
+                            "from_theme": m.get("from_theme") or "",
+                        },
+                        (m.get("name") or "").replace(" ", ""),
+                    )
+            # 三张模板里板块标签能对上的（未必涨停），作为位置可查的补充
+            for key, hit in pos.items():
+                sector = hit.get("sector") or ""
+                if subs and any(x in sector or sector in x for x in subs if sector):
+                    add(
+                        {
+                            "name": key,
+                            "code": "",
+                            "board": "",
+                            "sub": sector,
+                            "source": "candidate",
+                        },
+                        key,
+                    )
+
+        leader = card.get("leader") or {}
+        if leader.get("name"):
+            key = leader["name"].replace(" ", "")
+            for m in members:
+                if (m.get("name") or "").replace(" ", "") == key and not m.get("board"):
+                    m["board"] = card.get("leader_board") or ""
+            add(
+                {
+                    "name": leader["name"],
+                    "code": leader.get("code") or "",
+                    "board": card.get("leader_board") or "",
+                    "sub": "",
+                    "source": "leader",
+                },
+                leader["name"].replace(" ", ""),
+            )
+
+        out.append(
+            {
+                "theme": name,
+                "limit_up": line.get("count"),
+                "driver": line.get("driver") or "",
+                "leader": " ".join(
+                    x for x in [leader.get("name") or "", card.get("leader_board") or ""] if x
+                ),
+                "detail_available": bool(card.get("exact")),
+                "members": members[:12],
+            }
+        )
+    return out
 
 
 def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -390,6 +546,7 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         "breadth_history": extra.get("breadth") or {},
         "industry_lines": lines,
         "today_themes": themes,
+        "theme_watch": _theme_watch(payload),
         "money_flow": flows,
         "candidates": screeners,
         "overseas": overseas,
@@ -429,9 +586,37 @@ def _parse_read(text: str) -> Dict[str, Any]:
                 text = str(dissent.get("disagree") or dissent.get("agree") or "").strip()
             else:
                 text = str(dissent or "").strip()
+            watch = []
+            for item in doc.get("watchlist") or []:
+                if not isinstance(item, dict):
+                    continue
+                theme = str(item.get("theme") or "").strip()
+                stocks = []
+                for st in item.get("stocks") or []:
+                    if isinstance(st, dict):
+                        name = str(st.get("name") or "").strip()
+                        if name:
+                            stocks.append(
+                                {
+                                    "name": name,
+                                    "tag": str(st.get("tag") or "").strip(),
+                                    "note": str(st.get("note") or "").strip(),
+                                }
+                            )
+                    elif isinstance(st, str) and st.strip():
+                        stocks.append({"name": st.strip(), "tag": "", "note": ""})
+                if theme and stocks:
+                    watch.append(
+                        {
+                            "theme": theme,
+                            "signal": str(item.get("signal") or "").strip(),
+                            "stocks": stocks,
+                        }
+                    )
             return {
                 "headline": str(doc.get("headline") or "").strip(),
                 "sections": sections,
+                "watchlist": watch,
                 "dissent": text,
             }
     paras = [p.strip() for p in re.split(r"\n+", raw) if p.strip()]
@@ -453,7 +638,7 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150
             {"role": "user", "content": json.dumps(build_model_input(payload), ensure_ascii=False)},
         ],
         "temperature": 0.4,
-        "max_tokens": 1600,
+        "max_tokens": 2600,
         "response_format": {"type": "json_object"},
     }
     def _post(payload_body: Dict[str, Any]) -> Dict[str, Any]:
@@ -488,269 +673,6 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150
         print("written read: unexpected response shape", file=sys.stderr)
         return {}
     return _parse_read(str(text or ""))
-
-
-def _esc(value: Any) -> str:
-    return _html.escape(str(value if value is not None else ""))
-
-
-def _pct_class(raw: str) -> str:
-    text = str(raw or "").strip()
-    if text.startswith("+"):
-        return "up"
-    if text.startswith("-"):
-        return "down"
-    return ""
-
-
-def _state_class(state: str) -> str:
-    return {
-        "扩散": "up",
-        "新上榜": "up",
-        "过热": "hot",
-        "收缩": "down",
-        "缺席": "mute",
-    }.get(state, "mute")
-
-
-_PAGE_CSS = """
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:#fff;color:#606c71;
-  font:17px/1.75 "Open Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
-.page-header{color:#fff;text-align:center;background-color:#159957;
-  background-image:linear-gradient(120deg,#155799,#159957);
-  padding:38px 20px 32px;padding-top:calc(38px + env(safe-area-inset-top))}
-.project-name{margin:0 0 8px;font-size:23px;font-weight:600;letter-spacing:.2px;line-height:1.3;word-break:keep-all}
-.page-header .project-tagline{margin:0;font-size:14px;font-weight:400;color:rgba(255,255,255,.85);letter-spacing:.3px}
-main{max-width:680px;margin:0 auto;padding:22px 18px calc(44px + env(safe-area-inset-bottom))}
-main h2{margin:32px 0 12px;font-size:19px;font-weight:600;color:#159957;line-height:1.4}
-main h2:first-child{margin-top:6px}
-p{margin:0 0 1em}
-.lede{margin:0 0 20px;color:#4c5866}
-a{color:#1e6bb8;text-decoration:none}
-.read{border-left:3px solid #159957;padding:2px 0 2px 14px}
-.read p:last-child{margin-bottom:0}
-.read .verdict{font-size:19px;line-height:1.5;font-weight:600;color:#22313f;margin:0 0 14px}
-.read h3{margin:16px 0 6px;font-size:15px;font-weight:600;color:#159957;letter-spacing:.2px}
-.read h3:first-of-type{margin-top:0}
-.read .tag{margin-right:6px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e9ebec;
-  border:1px solid #e9ebec;border-radius:8px;overflow:hidden}
-.stat{background:#fff;padding:12px 4px;text-align:center}
-.stat b{display:block;font-size:20px;font-weight:600;color:#2b3440;line-height:1.25}
-.stat span{font-size:11px;color:#8a94a6}
-.lines{list-style:none;margin:0;padding:0}
-.line{padding:13px 0;border-bottom:1px solid #eff0f1}
-.line:last-child{border-bottom:0}
-.line-h{display:flex;align-items:center;gap:8px}
-.line-h b{font-size:17px;color:#2b3440;font-weight:600}
-.line-n{margin-top:4px;font-size:13.5px;color:#8a94a6}
-.line-n b{color:#2b3440;font-weight:600}
-.tag{font-size:11px;line-height:1;padding:3px 7px;border-radius:9px;background:#f0f2f5;color:#8a94a6}
-.tag.up{background:#fdecec;color:#d14343}
-.tag.down{background:#eaf6ef;color:#2e9e5b}
-.tag.hot{background:#fdf3e3;color:#c87a12}
-.drv{list-style:none;margin:0;padding:0}
-.drv li{padding:11px 0;border-bottom:1px solid #eff0f1}
-.drv li:last-child{border-bottom:0}
-.drv b{color:#2b3440;font-weight:600}
-.drv .cnt{color:#d14343;font-weight:600;margin-left:6px}
-.drv .why{display:block;margin-top:3px;font-size:13.5px;color:#8a94a6}
-.drv .ld{display:inline-block;margin-top:5px;font-size:12px;color:#c87a12}
-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
-th{font-weight:600;color:#8a94a6;font-size:11.5px;text-align:right;padding:7px 6px;
-  border-bottom:1px solid #e9ebec;background:#fafbfc}
-th:nth-child(-n+2){text-align:left}
-td{padding:9px 6px;border-bottom:1px solid #eff0f1;vertical-align:top}
-td.rk{color:#b3bcc9;font-variant-numeric:tabular-nums}
-td.nm{overflow:hidden}
-td.nm b{display:block;color:#2b3440;font-weight:600;font-size:14.5px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-td.nm .sub{display:block;font-size:11px;color:#8a94a6;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis}
-.num{text-align:right;font-variant-numeric:tabular-nums}
-.up{color:#d14343}
-.down{color:#2e9e5b}
-.hot{color:#c87a12}
-.mute{color:#8a94a6}
-.hint{font-size:12px;color:#8a94a6;margin:0 0 8px}
-footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
-  font-size:12px;line-height:1.8;color:#98a2b3}
-footer a{color:#98a2b3;text-decoration:underline}
-@media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}}
-@media (prefers-color-scheme:dark){
-  body{background:#14171c;color:#c3cad6}
-  .stat{background:#14171c}.stat b,.line-h b,td.nm b,.drv b,.line-n b{color:#e6ebf2}
-  th{background:#1a1f26;color:#8a94a6}
-  .line,.drv li,td,footer,.stats{border-color:#252b33}
-}
-"""
-
-
-def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
-    """One self-contained page wearing the daily digest's clothes.
-
-    The morning page is a Jekyll Cayman document: a blue-to-green banner, green
-    section headings, one white column. The evening brief keeps that, and then
-    pays for it on a phone — the matrix is a list rather than a seven-column
-    table, because at 430pt a table either shrinks the type or scrolls sideways,
-    and both lose the comparison it exists to make.
-    """
-    kpi = payload.get("kpi") or {}
-    matrix = payload.get("matrix") or {}
-    day = matrix.get("day") or {}
-    lines = matrix.get("lines") or []
-    picks = payload.get("filter") or {}
-    extra = render_sections(payload)
-    date = kpi.get("date") or ""
-
-    line_rows = []
-    for l in lines:
-        # Two shapes matter after the close: lines that drew limit-ups today,
-        # and lines that had them yesterday and lost them. A line dark for two
-        # sessions is history, and the page is about tomorrow.
-        if l["today"] == 0 and l["prev"] == 0:
-            continue
-        line_rows.append(
-            "<li class='line'>"
-            f"<div class='line-h'><b>{_esc(l['line'])}</b>"
-            f"<span class='tag {_state_class(l['state'])}'>{_esc(l['state'])}</span></div>"
-            f"<div class='line-n'>今日 <b>{l['today']}</b> 家 · 昨日 {l['prev']} 家 · "
-            f"日Δ <span class='{_pct_class(str(l['delta1']))}'>{l['delta1']:+d}</span> · "
-            f"3日Δ <span class='{_pct_class(str(l['delta3']))}'>{l['delta3']:+d}</span> · "
-            f"连续 {l['streak']} 天</div></li>"
-        )
-
-    stats = [
-        (kpi.get("limit_up"), "涨停"),
-        (kpi.get("limit_down"), "跌停"),
-        (kpi.get("lianban"), "连板"),
-        (kpi.get("max_board"), "最高板"),
-        (f"{kpi.get('seal_rate_pct')}%", "封板率"),
-        (kpi.get("zhaban"), "炸板"),
-        (kpi.get("adv"), "上涨"),
-        (kpi.get("dec"), "下跌"),
-    ]
-    stat_html = "".join(
-        f"<div class='stat'><b>{_esc(v)}</b><span>{_esc(k)}</span></div>" for v, k in stats
-    )
-
-    pick_blocks = []
-    for label, block in picks.items():
-        body = []
-        for r in block.get("rows", []):
-            sub = " · ".join(x for x in [r.get("code") or "", r.get("sector") or ""] if x)
-            body.append(
-                "<tr>"
-                f"<td class='rk'>{_esc(r['rank'])}</td>"
-                f"<td class='nm'><b>{_esc(r['name'])}</b>"
-                f"<span class='sub'>{_esc(sub)}</span></td>"
-                f"<td class='num {_pct_class(r['gain60'])}'>{_esc(r['gain60'])}</td>"
-                f"<td class='num {_pct_class(r['from_high60'])}'>{_esc(r['from_high60'])}</td>"
-                "</tr>"
-            )
-        total = block.get("total")
-        hint = f"共 {total} 只，免费可见前 5" if total else "前 5 只"
-        why = block.get("why") or ""
-        pick_blocks.append(
-            f"<h2>{_esc(label)}</h2>"
-            f"<p class='hint'>{_esc(hint)}{('｜' + _esc(why)) if why else ''}</p>"
-            "<table><colgroup><col style='width:26px'><col>"
-            "<col style='width:74px'><col style='width:64px'></colgroup>"
-            "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距高点</th></tr></thead>"
-            "<tbody>" + "".join(body) + "</tbody></table>"
-        )
-
-    drivers = ""
-    if day.get("lines"):
-        items = "".join(
-            f"<li><b>{_esc(x['name'])}</b><span class='cnt'>{x['count']} 家</span>"
-            f"<span class='why'>{_esc(x['driver'])}</span>"
-            f"<span class='ld'>龙头 {_esc(x['leader'])}</span></li>"
-            for x in day["lines"]
-        )
-        drivers = f"<h2>当日主线与驱动</h2><ul class='drv'>{items}</ul>"
-
-    # The model returns verdicts, not prose blocks: a headline that states the
-    # call, six sections that each defend one, and an explicit dissent against
-    # the site's own review. The headings come from the model's own answers, so
-    # the page shows its reasoning structure rather than a wall of text.
-    if isinstance(read, str):
-        read = {"headline": "", "sections": [{"h": "", "p": p} for p in read.split("\n") if p.strip()]}
-    read = read or {}
-    summary_html = ""
-    if read.get("sections"):
-        parts = []
-        if read.get("headline"):
-            parts.append(f"<p class='verdict'>{_esc(read['headline'])}</p>")
-        for sec in read["sections"]:
-            if sec.get("h"):
-                parts.append(f"<h3>{_esc(sec['h'])}</h3>")
-            parts.append(f"<p>{_esc(sec['p'])}</p>")
-        dis = read.get("dissent")
-        if isinstance(dis, dict):
-            text = str(dis.get("disagree") or dis.get("agree") or "").strip()
-        else:
-            text = str(dis or "").strip()
-        if text:
-            parts.append(f"<h3>与连板网复盘的分歧</h3><p>{_esc(text)}</p>")
-        summary_html = f"<h2>盘后洞察</h2><div class='read'>{''.join(parts)}</div>"
-
-    top = [l for l in lines if l.get("today", 0) > 0]
-    if top:
-        lede = (
-            f"涨停 {kpi.get('limit_up')} 家、封板率 {kpi.get('seal_rate_pct')}%，"
-            f"{kpi.get('emotion_phase') or ''}；最强的是{top[0]['line']}，{top[0]['today']} 家涨停。"
-        )
-    else:
-        lede = (
-            f"涨停 {kpi.get('limit_up')} 家、封板率 {kpi.get('seal_rate_pct')}%，"
-            f"{kpi.get('emotion_phase') or ''}；今天没有产业线录得涨停。"
-        )
-
-    # The model's headline already states the call; printing the script's lede
-    # above it would say the same thing twice in the first screenful.
-    lede_html = "" if summary_html else f'<p class="lede">{_esc(lede)}</p>'
-
-    mood = kpi.get("emotion_phase") or ""
-    degree = day.get("degree")
-    mood_text = f"{mood} {degree}°" if degree is not None else mood
-
-    return f"""<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Kenny's Horizon {_esc(date)} 盘后洞察晚报 | Kenny's Horizon</title>
-<meta name="description" content="{_esc(lede)}">
-<meta property="og:title" content="Horizon 盘后洞察晚报：{_esc(date)}">
-<meta property="og:description" content="{_esc(lede)}">
-<meta property="og:url" content="{_esc(page_url)}">
-<meta name="theme-color" content="#157878">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
-<header class="page-header">
-<h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
-<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望</h2>
-</header>
-<main>
-{lede_html}
-{summary_html}
-<h2>盘面</h2>
-<div class="stats">{stat_html}</div>
-{extra['funds']}
-<h2>主线矩阵</h2>
-<ul class="lines">{''.join(line_rows)}</ul>
-{drivers}
-{''.join(pick_blocks)}
-{extra['review']}
-<footer>
-数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
-<a href="https://lianban.net/filter.html">一键筛选</a>、
-<a href="https://lianban.net/today.html">当日复盘</a>。
-行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
-本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
-</footer>
-</main></body></html>"""
 
 
 def push_webhook(url: str, title: str, desp: str, timeout: float = 30.0) -> bool:
