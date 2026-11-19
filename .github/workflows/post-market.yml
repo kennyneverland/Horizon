@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '10 11 * * 1-5'
   workflow_dispatch:
+    inputs:
+      date:
+        description: '回补日期 YYYY-MM-DD（留空＝今天；只在该日 lianban 仍为 final 时有效）'
+        required: false
+        default: ''
 
 # All three publishing jobs push the gh-pages branch, so they share one queue:
 # a second run waits instead of overwriting the first one's output.
@@ -41,36 +46,48 @@ jobs:
       # 19:10 is two hours past the stated finalisation, but "约" is not a
       # guarantee: a day the pipeline slips would otherwise publish yesterday's
       # numbers under today's name and push them to WeChat. opendata carries the
-      # site's own state, and only "final" on today's date counts as settled.
-      - name: Check lianban has settled today's close
+      # site's own state, and only "final" on the target date counts as settled.
+      #
+      # TARGET is what the page will be filed under: today by default, or the
+      # date passed to a manual dispatch so a missed evening can be backfilled.
+      - name: Check lianban has settled the target close
         id: fresh
         shell: bash
         run: |
           set -euo pipefail
           TODAY=$(TZ=Asia/Shanghai date +%F)
+          TARGET="${{ github.event.inputs.date }}"
+          TARGET="${TARGET:-$TODAY}"
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
           curl -sf -A 'Mozilla/5.0' https://lianban.net/opendata/latest.json -o latest.json
           STATE=$(python -c "import json;d=json.load(open('latest.json'));k=d.get('kpi') or {};print(k.get('date'),d.get('status'))")
-          echo "lianban date/status=$STATE today=$TODAY"
-          if [ "$STATE" = "$TODAY final" ]; then
+          echo "lianban date/status=$STATE target=$TARGET today=$TODAY"
+          if [ "$STATE" = "$TARGET final" ]; then
             echo "ok=true" >> "$GITHUB_OUTPUT"
           else
             echo "ok=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::lianban reports '$STATE', not '$TODAY final' — the brief is skipped"
+            echo "::warning::lianban reports '$STATE', not '$TARGET final' — the brief is skipped"
           fi
 
+      # continue-on-error: a failed WeChat push used to return 1 here, which
+      # skipped the deploy step below and left the page unpublished (run 4,
+      # 2026-11-19). The page is the deliverable; the push is a convenience.
       - name: Build the brief
         if: steps.fresh.outputs.ok == 'true'
+        continue-on-error: true
         env:
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
-        run: python scripts/post_market.py --out-dir docs/post-market
+        run: python scripts/post_market.py --out-dir docs/post-market --date "$TARGET"
 
-      - name: Set current date as environment variable
+      - name: Set the brief date
         if: steps.fresh.outputs.ok == 'true'
-        run: echo "DATE=$(TZ=Asia/Shanghai date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: echo "DATE=$TARGET" >> $GITHUB_ENV
 
+      # Only deploy when the page actually exists: if the build died before
+      # writing HTML, publishing an empty docs/ would be worse than a 404.
       - name: Deploy to GitHub Pages
-        if: steps.fresh.outputs.ok == 'true'
+        if: steps.fresh.outputs.ok == 'true' && hashFiles('docs/post-market/*.html') != ''
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
