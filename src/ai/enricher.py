@@ -384,10 +384,8 @@ class ContentEnricher:
     def _merge_theme_directions(self, items: list[ContentItem]) -> None:
         """One verdict per theme for the whole digest.
 
-        The same theme can read positive in one story and negative in another,
-        which leaves the reader holding two opposite instructions. A theme seen
-        both ways becomes neutral with a 多空交织 reason; a neutral reading next
-        to a directional one keeps the directional one.
+        A theme read both ways used to blank every line and vanish; the
+        first verdict now stands.
         """
         seen: dict[str, set[str]] = {}
         for item in items:
@@ -401,11 +399,16 @@ class ContentEnricher:
         conflicts = {name for name, directions in seen.items() if len(directions) > 1}
         if not conflicts:
             return
+        kept = set()
         for item in items:
             for theme in (item.metadata or {}).get("ashare_themes") or []:
-                if str(theme.get("name") or "") in conflicts:
+                name = str(theme.get("name") or "")
+                if name not in conflicts or theme.get("direction") == NEUTRAL:
+                    continue
+                theme["direction_reason"] = "多空交织，取首条"
+                if name in kept:
                     theme["direction"] = NEUTRAL
-                    theme["direction_reason"] = "多空交织"
+                kept.add(name)
         logger.warning("Direction conflict merged: %s", "、".join(sorted(conflicts)))
 
     def _suppress_negative_members(self, items: list[ContentItem]) -> None:
