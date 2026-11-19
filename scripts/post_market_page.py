@@ -410,4 +410,4 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
-</main></body></html>
+</main></body></html>"""
