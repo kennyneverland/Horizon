@@ -96,6 +96,7 @@ a{color:#1e6bb8;text-decoration:none}
 .tag.up{background:#fdecec;color:#d14343}
 .tag.down{background:#eaf6ef;color:#2e9e5b}
 .tag.hot{background:#fdf3e3;color:#c87a12}
+.tag.lhb{background:#eef1fd;color:#4257b2}
 .drv{list-style:none;margin:0;padding:0}
 .drv li{padding:11px 0;border-bottom:1px solid #eff0f1}
 .drv li:last-child{border-bottom:0}
@@ -184,6 +185,22 @@ def _watch_html(watch: List[Dict[str, Any]], meta: Dict[str, Dict[str, Any]]) ->
     return "<h3>重点关注个股</h3>" + "".join(groups)
 
 
+def _lhb_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
+    """龙虎榜个股 → 净额与当日涨跌，用来在活跃块里标注来源。
+
+    The model already knows the name; the page supplies the number, for the same
+    reason it supplies the 60-day position — a figure the model retypes is a
+    figure it can get wrong.
+    """
+    out: Dict[str, Dict[str, str]] = {}
+    for x in (payload.get("lhb") or {}).get("items") or []:
+        out[(x.get("name") or "").replace(" ", "")] = {
+            "net": x.get("net") or "",
+            "chg": x.get("chg") or "",
+        }
+    return out
+
+
 _FOCUS_ORDER = ("蓄势", "主线", "活跃")
 
 # Each bucket answers a different question, so each gets its own one-line frame
@@ -200,6 +217,7 @@ def _focus_html(
     focus: Dict[str, Any],
     meta: Dict[str, Dict[str, Any]],
     pos: Dict[str, Dict[str, Any]],
+    lhb: Dict[str, Dict[str, str]],
 ) -> str:
     """明日关注分三类，每类是一组「题材 → 该题材的重点个股」。
 
@@ -238,6 +256,16 @@ def _focus_html(
                 if st.get("note"):
                     bits.append(st["note"])
                 tag = f"<span class='tag'>{_esc(st['tag'])}</span>" if st.get("tag") else ""
+                # 活跃块里凡是能在龙虎榜上查到的，标出净额——"今天为什么动"
+                # 的最直接证据，比模型转述一句席位说明可靠
+                board = lhb.get(key) or {}
+                if bucket == "活跃" and board.get("net"):
+                    # 模型已经把来源写进 tag 时只补净额，否则连来源一起补——
+                    # 净额是这一行最有信息量的数字，不该因为措辞不同就丢掉
+                    if "龙虎榜" in (st.get("tag") or ""):
+                        tag += f"<span class='tag lhb'>{_esc(board['net'])}</span>"
+                    else:
+                        tag += f"<span class='tag lhb'>龙虎榜 {_esc(board['net'])}</span>"
                 note = f"<span class='wl-n'>{_esc(' · '.join(bits))}</span>" if bits else ""
                 rows.append(f"<li><span class='nm'>{_esc(st['name'])}</span>{tag}{note}</li>")
             if not rows:
@@ -426,7 +454,9 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         focus = read.get("focus") or {}
         if focus:
             parts.append(
-                _focus_html(focus, _theme_meta(payload), _filter_pos(payload))
+                _focus_html(
+                    focus, _theme_meta(payload), _filter_pos(payload), _lhb_map(payload)
+                )
             )
         elif watch:
             # Replies written before the three-bucket contract still render.
@@ -493,7 +523,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
 <a href="https://lianban.net/filter.html">一键筛选</a>、
-<a href="https://lianban.net/today.html">当日复盘</a>。
+<a href="https://lianban.net/today.html">当日复盘</a>、
+<a href="https://lianban.net/lhb.html">龙虎榜</a>。
 行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
