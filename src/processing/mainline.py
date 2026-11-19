@@ -42,6 +42,18 @@ _ROW_RE = re.compile(r"<tr[^>]*>(.*?)</tr>", re.S)
 _CELL_RE = re.compile(r"<t[dh][^>]*>(.*?)</t[dh]>", re.S)
 _TAG_RE = re.compile(r"<[^>]+>")
 _DATE_RE = re.compile(r"^(\d{2}-\d{2})")
+# The 每日主线 block is a <section>, not a table row: it carries the session's
+# 情绪 phase and 总龙头, which the matrix alone cannot express.
+_DAY_RE = re.compile(
+    r'<section[^>]*class="mlday"[^>]*data-d="(\d{4}-\d{2}-\d{2})"(.*?)</section>', re.S
+)
+_PHASE_RE = re.compile(r"<span>([^<]*?)\s*·\s*(\d+)\s*°</span>")
+_LEADER_RE = re.compile(r'class="zlt2"[^>]*>(.*?)</span>', re.S)
+_ZROW_RE = re.compile(r'<div class="z">(.*?)</div>', re.S)
+_ZNAME_RE = re.compile(r"<b>(.*?)</b>", re.S)
+_ZCOUNT_RE = re.compile(r'<span class="n[^"]*"[^>]*>(.*?)</span>', re.S)
+_ZDRIVE_RE = re.compile(r'<span class="r"[^>]*>(.*?)</span>', re.S)
+_ZLEAD_RE = re.compile(r'<span class="ld"[^>]*>(.*?)</span>', re.S)
 
 
 def _cell_text(raw: str) -> str:
@@ -112,7 +124,71 @@ def parse_mainline(page: str) -> Dict[str, Any]:
         "totals": totals,
         "lines": lines,
         "overheat": overheat,
+        "day": parse_day(page),
     }
+
+
+def parse_day(page: str) -> Optional[Dict[str, Any]]:
+    """The newest 每日主线 block: 情绪 phase, 总龙头, and each line's driver.
+
+    The matrix says how many limit-ups a line drew; this block says why the
+    page thinks they happened. The two are kept apart on purpose — the driver
+    is the site's attribution, not a fact this digest verified.
+
+    Older days sit behind a paywall, so at most one block is readable and a
+    missing block is not an error.
+    """
+    match = _DAY_RE.search(page)
+    if not match:
+        return None
+    date, body = match.group(1), match.group(2)
+
+    phase = None
+    degree = None
+    found = _PHASE_RE.search(body)
+    if found:
+        phase = _cell_text(found.group(1))
+        degree = int(found.group(2))
+
+    leader = None
+    badge = None
+    hit = _LEADER_RE.search(body)
+    if hit:
+        text = _cell_text(hit.group(1))
+        leader = re.sub(r"^总龙头\s*", "", text).split()[0] if text else None
+        mark = re.search(r"(\d+天\d+板)", text)
+        badge = mark.group(1) if mark else None
+
+    rows = []
+    for raw in _ZROW_RE.findall(body):
+        name_hit = _ZNAME_RE.search(raw)
+        name = _cell_text(name_hit.group(1)) if name_hit else ""
+        if not name:
+            continue
+        count_hit = _ZCOUNT_RE.search(raw)
+        drive_hit = _ZDRIVE_RE.search(raw)
+        lead_hit = _ZLEAD_RE.search(raw)
+        rows.append(
+            {
+                "name": name,
+                "count": _int_of(count_hit.group(1)) if count_hit else 0,
+                "driver": _cell_text(drive_hit.group(1)) if drive_hit else "",
+                "leader": _cell_text(lead_hit.group(1)) if lead_hit else "",
+            }
+        )
+    return {
+        "date": date[5:],  # MM-DD, the same shape the matrix columns use
+        "phase": phase,
+        "degree": degree,
+        "leader": leader,
+        "leader_badge": badge,
+        "lines": rows,
+    }
+
+
+def _int_of(raw: str) -> int:
+    digits = re.sub(r"[^0-9]", "", raw or "")
+    return int(digits) if digits else 0
 
 
 def _read_json(path: Path) -> Dict[str, Any]:
@@ -121,6 +197,26 @@ def _read_json(path: Path) -> Dict[str, Any]:
     except (FileNotFoundError, OSError, ValueError):
         return {}
     return doc if isinstance(doc, dict) else {}
+
+
+def _shape(today: int, prev: int, hot: bool) -> str:
+    """One word for a line's day-over-day shape.
+
+    The one-day move decides it: 22 -> 4 is a 收缩 even though the three-day
+    average it fell from was low. A first appearance is called out because
+    "前日0" alone reads like an absence rather than an arrival.
+    """
+    if hot:
+        return "过热"
+    if today == 0:
+        return "缺席"
+    if prev == 0:
+        return "新上榜"
+    if today > prev:
+        return "扩散"
+    if today < prev:
+        return "收缩"
+    return "持平"
 
 
 def format_state(state: Optional[Dict[str, Any]]) -> str:
@@ -139,7 +235,15 @@ def format_state(state: Optional[Dict[str, Any]]) -> str:
     if state.get("hot"):
         tag += HOT_MARK
     if today > 0:
-        tag += f" 前日{int(state.get('prev') or 0)}"
+        if state.get("state") == "新上榜":
+            tag += " 新上榜"
+        else:
+            tag += f" 前日{int(state.get('prev') or 0)}"
+        # The three-day move is the one figure the row cannot be derived from:
+        # today and 前日 are both on the line, the prior average is not.
+        delta3 = int(state.get("delta3") or 0)
+        if delta3:
+            tag += f" 3日{delta3:+d}"
     if int(state.get("streak") or 0) >= 3:
         tag += f" 连{state['streak']}日"
     if today == 0 and int(state.get("sum10") or 0) > 0:
@@ -171,6 +275,34 @@ class MainlineState:
         """True when a snapshot and at least one line were both read."""
         return bool(self.dates and self._snapshot.get("lines"))
 
+    @property
+    def market(self) -> Dict[str, Any]:
+        """The newest 每日主线 block: 情绪 phase, 总龙头, per-line drivers."""
+        return self._snapshot.get("day") or {}
+
+    def market_line(self) -> str:
+        """The session's 情绪 phase and 总龙头, as one prompt-ready line.
+
+        It belongs above the candidate list, not on each row: it describes the
+        whole session, and repeating it per theme would both inflate the prompt
+        and suggest it bears on that theme in particular.
+        """
+        day = self.market
+        if not day:
+            return ""
+        parts = []
+        if day.get("phase"):
+            degree = day.get("degree")
+            parts.append(
+                f"{day['phase']} · {degree}°" if degree is not None else str(day["phase"])
+            )
+        if day.get("leader"):
+            lead = f"总龙头 {day['leader']}"
+            if day.get("leader_badge"):
+                lead += f" {day['leader_badge']}"
+            parts.append(lead)
+        return " ｜".join(parts)
+
     def line_state(self, line: str) -> Optional[Dict[str, Any]]:
         """Trading state of one industry line, or None when the page lacks it."""
         counts = (self._snapshot.get("lines") or {}).get(line) or {}
@@ -184,14 +316,19 @@ class MainlineState:
                 streak += 1
             else:
                 break
+        prior = [int(counts.get(day) or 0) for day in self.dates[1:4]]
+        base3 = round(sum(prior) / len(prior)) if prior else 0
         hot = self.today in ((self._snapshot.get("overheat") or {}).get(line) or [])
         return {
             "line": line,
             "today": today,
             "prev": prev,
+            "base3": base3,
+            "delta3": today - base3,
             "sum10": sum(int(counts.get(day) or 0) for day in self.dates),
             "streak": streak,
             "hot": hot,
+            "state": _shape(today, prev, hot),
         }
 
     def for_theme(self, name: Any) -> Optional[Dict[str, Any]]:
@@ -263,13 +400,21 @@ def refresh(data_dir: Optional[Path] = None) -> Optional[Dict[str, Any]]:
     _STATE = MainlineState(snapshot, _read_json(MAP_PATH))
     today = snapshot["dates"][0]
     leading = sorted(
-        snapshot["lines"].items(), key=lambda item: -item[1].get(today, 0)
+        ((name, counts) for name, counts in snapshot["lines"].items() if name not in PSEUDO_LINES),
+        key=lambda item: -item[1].get(today, 0),
     )[:5]
+    day = snapshot.get("day") or {}
+    mood = (
+        f"{day.get('phase')} {day.get('degree')}°"
+        if day.get("phase") and day.get("degree") is not None
+        else "-"
+    )
     logger.warning(
-        "Mainline %s: %d lines, %s limit-ups total, leading %s",
+        "Mainline %s: %d lines, %s limit-ups total, %s, leading %s",
         snapshot["built"],
         len(snapshot["lines"]),
         snapshot["totals"].get(today, 0),
+        mood,
         "、".join(f"{name}{counts.get(today, 0)}" for name, counts in leading),
     )
     return snapshot
