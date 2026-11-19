@@ -1,0 +1,77 @@
+
+name: Mainline Matrix
+
+# The matrix records a fact about the close, so it only becomes complete once
+# the 15:00 session ends and lianban republishes the day's column. 08:10 UTC is
+# 16:10 Asia/Shanghai — late enough for that column, and roughly sixteen hours
+# ahead of the next 08:00 daily run, which would still be reading the previous
+# close.
+on:
+  schedule:
+    - cron: '10 8 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  matrix:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The script is standard-library only, so there is nothing to install.
+      # pipefail makes a failed fetch fail the step even though output goes
+      # through tee.
+      - name: Read the matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/mainline_matrix.py | tee mainline_matrix.txt
+          python scripts/mainline_matrix.py --json > mainline_matrix.json
+
+      # A schedule that fires before lianban republishes would silently record
+      # yesterday's column as today's. Surface that as a warning instead.
+      - name: Check freshness
+        shell: bash
+        run: |
+          LATEST=$(python -c "import json;print(json.load(open('mainline_matrix.json'))['dates'][0])")
+          TODAY=$(TZ=Asia/Shanghai date +%F)
+          echo "matrix latest=$LATEST today=$TODAY"
+          if [ "$LATEST" != "$TODAY" ]; then
+            echo "::warning::lianban still shows $LATEST, not $TODAY — the page may not be republished yet"
+          fi
+
+      - name: Write job summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## 主线矩阵'
+            echo ''
+            if [ -s mainline_matrix.txt ]; then
+              echo '```'
+              cat mainline_matrix.txt
+              echo '```'
+            else
+              echo '没有取到矩阵，详见上面的日志。'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mainline-matrix
+          path: |
+            mainline_matrix.txt
+            mainline_matrix.json
+          if-no-files-found: ignore
+          retention-days: 30
