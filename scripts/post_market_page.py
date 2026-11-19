@@ -193,6 +193,7 @@ def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         for row in block.get("rows") or []:
             out[row["name"].replace(" ", "")] = {
                 "panel": label,
+                "sector": row.get("sector") or "",
                 "gain60": row.get("gain60"),
                 "from_high": row.get("from_high60"),
             }
@@ -211,11 +212,15 @@ def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) 
     for item in items:
         key = (item.get("name") or "").replace(" ", "")
         hit = pos.get(key) or {}
+        # The panel knows every name's sector; the model only knows the ones it
+        # bothered to look up. So a missing or "未归类" theme falls back to the
+        # sector rather than printing a label that says nothing.
         theme = item.get("theme") or ""
+        if not theme or "未归类" in theme:
+            theme = hit.get("sector") or ""
         tags = ""
         if theme:
-            cls = "tag mute" if "未归类" in theme else "tag"
-            tags += f"<span class='{cls}'>{_esc(theme)}</span>"
+            tags += f"<span class='tag'>{_esc(theme)}</span>"
         if hit.get("panel") and hit["panel"] != "优选蓄势":
             tags += f"<span class='tag'>{_esc(hit['panel'])}</span>"
         bits = []
@@ -229,7 +234,7 @@ def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) 
         rows.append(f"<li><span class='nm'>{_esc(item.get('name'))}</span>{tags}{note}</li>")
     return (
         "<h3>明日候选（优选蓄势）</h3>"
-        "<div class='wl-g'>来自连板网「优选蓄势」：当日未涨停、结构就绪；位置由页面数据回填</div>"
+        "<div class='wl-g'>取自连板网「优选蓄势」：当日未涨停、结构就绪；标签是该票的题材归属，位置由页面数据回填</div>"
         f"<div class='tc'><ul class='wl-u'>{''.join(rows)}</ul></div>"
     )
 
@@ -385,7 +390,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
-<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 题材个股</h2>
+<h2 class="page-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 题材个股</h2>
 </header>
 <main>
 {lede_html}
