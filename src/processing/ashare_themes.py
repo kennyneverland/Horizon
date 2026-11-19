@@ -23,6 +23,10 @@ When the heat list names nothing, the model picks from the whole index before
 the lexical sweep is tried, so a story outside today's traded sectors still
 gets a theme line.
 
+A wording match is not yet a carrier: the conduction gate drops the themes of a
+story that cannot be traced to an A-share segment within two hops, so an
+overseas IPO that merely says 算力 no longer names five mainland tickers.
+
 Members are fetched later, one request per theme the line will show, capped
 per run. lianban sorts every theme page by three-month relative strength after
 each close, so the page order *is* the ranking. A failed fetch drops the name
@@ -47,6 +51,8 @@ import urllib.request
 import zlib
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
+
+from .conduction import conduction_filter
 
 logger = logging.getLogger(__name__)
 
@@ -802,7 +808,8 @@ async def attach_themes(
 
     Runs once per item, from the enrichment pass, and only decides which themes
     the story touches: the member lists are fetched after the direction pass,
-    so a theme the line will not show costs no request.
+    so a theme the line will not show costs no request. A wording match is not
+    a carrier, so the conduction gate runs before anything is stored.
     """
     if not index.available or item.metadata is None:
         return
@@ -830,6 +837,10 @@ async def attach_themes(
         # the full-index lexical sweep keeps the line from vanishing entirely.
         themes = index.match(text)
         source = "lexical" if themes else ""
+    if not themes:
+        return
+
+    themes = conduction_filter(themes, text, str(getattr(item, "id", "")))
     if not themes:
         return
 
