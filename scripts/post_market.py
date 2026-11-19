@@ -188,6 +188,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
 - members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
+- candidates 按模板名分组：candidates[模板名] = {why, total, rows}。rows 是当日入选的前 5 只（name／sector／gain60／from_high），total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
 
 【六段，各回答一个问题】
 1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
@@ -196,6 +197,10 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 4. 趋势展望：先给出连板网的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
 5. 重点关注题材：给 3 到 4 条，不是 1 到 2 条。每条用一句话说清为什么是它（连续天数、集中度、驱动、板块强弱里挑最有说服力的两点），再给一个明天能从同一份数据里读到、能证伪它的信号。题材只能从 theme_watch 取，不要自己造，也不要把 theme_watch 里的每一条都写进来；theme_watch 不足 3 条时就给 2 条，不要凑数，也不要把 industry_lines 的产业线当成当日题材。
 6. 重点关注个股：这一段不写成大段文字，改由 watchlist 字段承载——每个重点题材配 2 到 4 只，全篇合计 6 到 12 只。每只写清它在题材里的角色（龙头／跟随／补涨）、连板高度，以及位置；有 gain60 与 from_high 的必须用上，没有的就写"无 60 日位置数据"，不要估。名字只能从该题材的 members 里取。
+
+【明日候选，与第 6 段配套】
+watchlist 回答"今天的题材里盯哪几只"，还要回答"明天开盘看哪几只"。所以另给 tomorrow_candidates：3 到 5 只，优先从 candidates 的「优选蓄势」里取——那张模板本来就是为明日准备的，未涨停但结构就绪；不足 3 只时再用「主线强攻」里位置还不高、或「放量上攻」里首次放量的补。
+每只写 theme（能对上当日题材就写题材名，对不上就写"题材未归类"）和 note（一句：它是什么角色、明天为什么值得看）。note 里不要复述 gain60 与 from_high——页面会用筛选面板的数回填，你复述一遍只会多一个可能写错的数字。不要因为某只不在当日题材里就跳过它，优选蓄势的价值恰恰在于它还没涨。已经写进 watchlist 的个股不要再放进 tomorrow_candidates，两个块是互补的：watchlist 是今天已经在动的，tomorrow 是还没动的。至少 2 只来自「优选蓄势」，除非该面板为空。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -222,6 +227,11 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
    "stocks": [{{"name": "个股名，必须来自该题材 members",
               "tag": "连板高度 · 子题材，如 3连板 · 光刻机；不超过 14 字",
               "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
+ ],
+ "tomorrow_candidates": [
+  {{"name": "个股名，优先来自 candidates 的「优选蓄势」",
+   "theme": "所属当日题材；对不上写 题材未归类",
+   "note": "角色与明天为什么值得看；不要写 60 日涨幅或距高点，页面会回填；不超过 40 字"}}
  ],
  "dissent": "与连板网复盘的分歧，一句话；没有分歧就填空字符串，不要编"}}
 
@@ -482,16 +492,23 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         label: [{"name": r["name"], "amount": r["amount"], "pct": r["pct"]} for r in rows[:5]]
         for label, rows in (extra.get("flows") or {}).items()
     }
+    # The panel's own one-line rule and its total travel with the names: without
+    # them "优选蓄势" is just five tickers, and a model cannot know that this
+    # template is the one built for tomorrow rather than for today's strength.
     screeners = {
-        label: [
-            {
-                "name": r["name"],
-                "sector": r["sector"],
-                "gain60": r["gain60"],
-                "from_high": r["from_high60"],
-            }
-            for r in block.get("rows", [])[:5]
-        ]
+        label: {
+            "why": block.get("why") or "",
+            "total": block.get("total"),
+            "rows": [
+                {
+                    "name": r["name"],
+                    "sector": r["sector"],
+                    "gain60": r["gain60"],
+                    "from_high": r["from_high60"],
+                }
+                for r in block.get("rows", [])[:5]
+            ],
+        }
         for label, block in (payload.get("filter") or {}).items()
     }
     overseas = {
@@ -613,10 +630,24 @@ def _parse_read(text: str) -> Dict[str, Any]:
                             "stocks": stocks,
                         }
                     )
+            tomorrow = []
+            for item in doc.get("tomorrow_candidates") or []:
+                if not isinstance(item, dict):
+                    continue
+                name = str(item.get("name") or "").strip()
+                if name:
+                    tomorrow.append(
+                        {
+                            "name": name,
+                            "theme": str(item.get("theme") or "").strip(),
+                            "note": str(item.get("note") or "").strip(),
+                        }
+                    )
             return {
                 "headline": str(doc.get("headline") or "").strip(),
                 "sections": sections,
                 "watchlist": watch,
+                "tomorrow_candidates": tomorrow,
                 "dissent": text,
             }
     paras = [p.strip() for p in re.split(r"\n+", raw) if p.strip()]
@@ -638,7 +669,7 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 150
             {"role": "user", "content": json.dumps(build_model_input(payload), ensure_ascii=False)},
         ],
         "temperature": 0.4,
-        "max_tokens": 2600,
+        "max_tokens": 3000,
         "response_format": {"type": "json_object"},
     }
     def _post(payload_body: Dict[str, Any]) -> Dict[str, Any]:
