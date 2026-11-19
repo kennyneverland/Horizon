@@ -135,6 +135,10 @@ footer a{color:#98a2b3;text-decoration:underline}
 }
 """
 
+# lianban_extra 的 EXTRA_CSS 在 _PAGE_CSS 之后加载，会把题材强度条的绿色带回来，
+# 所以在两份样式之后补一条同特异性的覆盖，让它落到暖色上。
+_THEME_OVERRIDE = ".st-bar i{background:#c97a33}"
+
 
 def _theme_meta(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """题材 → 当日涨停家数与龙头，用脚本里的数给题材组做注脚。
@@ -559,7 +563,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <meta property="og:url" content="{_esc(page_url)}">
 <meta name="theme-color" content="#7a3b1e">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
+<style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
 <h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃</h2>
