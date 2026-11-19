@@ -6,6 +6,8 @@ Rules:
 - Group items ONLY if they report on the identical event (same product release, same incident, same announcement)
 - Items about the same product but different events are NOT duplicates ("Gemma 4 released" vs "Gemma 4 jailbroken")
 - One digest carries at most two items on a single event, and those two must read from different angles (for example the policy text itself vs the sector reaction, or the earnings release vs the supply-chain consequence)
+- An offering is one angle, not several: IPO pricing, amount raised and valuation describe the same transaction and belong in one group. Aftermarket trading (first-day move, grey-market quote) is a different angle and may stay as the second item
+- Two headlines that give different totals for the same transaction are the same angle, not two angles; group them
 - When one event has three or more items, leave the two most distinct angles out of every group and fold each remaining item into the group of the item it most resembles
 - Err on the side of keeping items separate when unsure"""
 
