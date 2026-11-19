@@ -5,390 +5,380 @@ date: 2026-11-19
 lang: en
 ---
 
-> From 421 items, 33 important content pieces were selected
+> From 409 items, 33 important content pieces were selected
 
 ---
 
 **Financial News**
-1. [Fed Minutes Signal More Rate Hikes and AI Inflation Risks](#item-finance-news-1) ⭐️ 9.0/10
-2. [Fed Governor Waller Suggests Possible Half-Point Rate Hike](#item-finance-news-2) ⭐️ 8.0/10
-3. [Nvidia interim CEO addresses staff after Huang exit](#item-finance-news-3) ⭐️ 8.0/10
-4. [Palo Alto Networks beats earnings, agrees to $4.5 billion Applied Compute deal](#item-finance-news-4) ⭐️ 8.0/10
-5. [Anthropic Nasdaq IPO expected to draw strong retail buying](#item-finance-news-5) ⭐️ 8.0/10
-6. [Reuters: Drone attacks nearly halve Russia&\#x27;s November oil refining](#item-finance-news-6) ⭐️ 8.0/10
-7. [APEC Summit in Shenzhen Centers on U.S.-China Trade Truce](#item-finance-news-7) ⭐️ 7.0/10
-8. [Anthropic IPO Gives SK Telecom $3 Billion Gain](#item-finance-news-8) ⭐️ 7.0/10
+1. [Fed October Minutes Signal More Rate Hikes and AI Inflation Risk](#item-finance-news-1) ⭐️ 9.0/10
+2. [Fed Governor Waller Backs Possible Half-Point Rate Hike](#item-finance-news-2) ⭐️ 8.0/10
+3. [Anthropic Shares Indicated Up to 24% Higher in Gray Market](#item-finance-news-3) ⭐️ 8.0/10
+4. [Nvidia interim CEO tells staff to move forward after Huang resignation](#item-finance-news-4) ⭐️ 8.0/10
+5. [Musk criticizes Nvidia Huang exit and regrets midterm spending](#item-finance-news-5) ⭐️ 8.0/10
+6. [Palo Alto Networks Acquires Applied Compute for $4.5 Billion](#item-finance-news-6) ⭐️ 8.0/10
+7. [Reuters says drone attacks nearly halved Russia&\#x27;s November oil refining](#item-finance-news-7) ⭐️ 8.0/10
+8. [Japan Tobacco Takes $8.9 Billion Russia Charge](#item-finance-news-8) ⭐️ 7.0/10
 
 **China Markets**
-1. [Tencent earnings call highlights WorkBuddy growth and Yuanbao underperformance](#item-china-market-1) ⭐️ 8.0/10
-2. [China stocks fall while semiconductor shares rally](#item-china-market-2) ⭐️ 7.0/10
-3. [Tencent says US chip curbs may slow AI training](#item-china-market-3) ⭐️ 7.0/10
-4. [Tencent Q3 Capital Spending Rises; Nvidia H200 China Sales Halt](#item-china-market-4) ⭐️ 7.0/10
-5. [Tencent Q3 profit misses as AI spending rises](#item-china-market-5) ⭐️ 7.0/10
-6. [Tencent capex and US export rules prompt broker bullishness on China AI chips](#item-china-market-6) ⭐️ 7.0/10
-7. [Bernstein: U.S. Remote AI Compute Rules Pressure China Labs, Aid Domestic Chips](#item-china-market-7) ⭐️ 7.0/10
-8. [China Announces APEC Support Measures at Shenzhen Leaders&\#x27; Meeting](#item-china-market-8) ⭐️ 6.0/10
-9. [ByteDance and Tencent Disclose AI Office Metrics](#item-china-market-9) ⭐️ 6.0/10
-10. [Capchem Signs Long-Term Electrolyte Supply Agreement With EVE Energy](#item-china-market-10) ⭐️ 6.0/10
+1. [China markets: chip manufacturers rally, Hong Kong tech slips on earnings](#item-china-market-1) ⭐️ 7.0/10
+2. [JPMorgan Reiterates Overweight on Z.AI With HK$1,200 Target](#item-china-market-2) ⭐️ 7.0/10
+3. [Zheshang Securities Bullish on Xiechuang Data After RMB 37.5B Compute Contract Update](#item-china-market-3) ⭐️ 7.0/10
+4. [DeepSeek Registration Adds Backer Platform; Reported ~105.5 Billion Yuan Round Unconfirmed](#item-china-market-4) ⭐️ 6.5/10
+5. [Chinese Banks Delay Bond Sales as Capital-Bond Yields Rise](#item-china-market-5) ⭐️ 6.0/10
+6. [China consumer stocks gain as AI shares slump](#item-china-market-6) ⭐️ 6.0/10
+7. [China adds blood-cancer drugs to 2026 medical-insurance catalog](#item-china-market-7) ⭐️ 6.0/10
+8. [First 18 active ETFs face pre-listing position test](#item-china-market-8) ⭐️ 6.0/10
+9. [Tencent Sales Miss Estimates in AI Push](#item-china-market-9) ⭐️ 6.0/10
+10. [Broker Says US Chip Curbs May Boost China Equipment Demand](#item-china-market-10) ⭐️ 6.0/10
 
 **AI Hardware &amp; Compute**
-1. [NVIDIA Locks Multiyear Capacity With Packaging and Substrate Partners](#item-ai-hardware-1) ⭐️ 8.0/10
-2. [TrendForce: China Cloud SSD Cuts Pull NAND Price Decline to Q2 2027](#item-ai-hardware-2) ⭐️ 8.0/10
-3. [Nvidia, SPIL Reportedly Sign Deal to Triple Packaging Capacity by 2029](#item-ai-hardware-3) ⭐️ 8.0/10
-4. [Nvidia Reportedly Tops $500 Billion in AI Supply Commitments](#item-ai-hardware-4) ⭐️ 8.0/10
-5. [Nvidia Reportedly Invests Over $1 Billion in Kinsus to Expand AI Capacity](#item-ai-hardware-5) ⭐️ 8.0/10
+1. [Nvidia Prepay for Taiwan AI Substrate and Packaging Capacity](#item-ai-hardware-1) ⭐️ 8.0/10
+2. [ASE Subsidiary Plans NT$248.9B Kaohsiung Testing Plant](#item-ai-hardware-2) ⭐️ 8.0/10
+3. [NVIDIA Expands AI Supply Chain Commitments With Packaging Partners](#item-ai-hardware-3) ⭐️ 8.0/10
+4. [HBM4 Price Forecast Seen Rising Up to 2.7-Fold Next Year](#item-ai-hardware-4) ⭐️ 8.0/10
+5. [Microsoft Reportedly First Intel EMIB Customer For Azure Silicon](#item-ai-hardware-5) ⭐️ 8.0/10
 
 **AI Applications**
-1. [Doubao Work Claims 8 Million DAU and 2 Billion RMB ARR](#item-ai-app-1) ⭐️ 7.0/10
-2. [Largest US School Districts Weigh Google Alternatives Over AI Search Opt-Out](#item-ai-app-2) ⭐️ 7.0/10
-3. [Google Ships Gemini 4 Neon at $3 Input, $15 Output](#item-ai-app-3) ⭐️ 7.0/10
-4. [Microsoft Announces In-House MAI Models for Enterprise AI Agents](#item-ai-app-4) ⭐️ 7.0/10
-5. [Kuaishou Launches Kling Image 4.0 With Native 8K Generation](#item-ai-app-5) ⭐️ 7.0/10
+1. [Microsoft Unveils Seven In-House MAI Models to Replace External AI](#item-ai-app-1) ⭐️ 8.0/10
+2. [Tencent Cuts Yuanbao Investment, Shifts Focus to Model Capability](#item-ai-app-2) ⭐️ 8.0/10
+3. [School districts consider leaving Google over AI-Search bundle](#item-ai-app-3) ⭐️ 7.0/10
+4. [Google Ships Gemini 4 Neon With 1M Context and Higher API Pricing](#item-ai-app-4) ⭐️ 7.0/10
+5. [Tencent claims Hunyuan Hy4 flash hit 50 trillion tokens on first day](#item-ai-app-5) ⭐️ 7.0/10
 
 **Technology News**
-1. [Anthropic Raises Record $107.3 Billion in IPO and Private Placement](#item-tech-news-1) ⭐️ 9.0/10
-2. [Anthropic Prices IPO at $83 a Share, Above Projected Range](#item-tech-news-2) ⭐️ 9.0/10
-3. [Microsoft CEO Explains 60,000 Employee Buyouts as AI-Driven Restructuring](#item-tech-news-3) ⭐️ 8.0/10
-4. [Nvidia Halts H200 AI Chip Shipments to China](#item-tech-news-4) ⭐️ 8.0/10
-5. [Nvidia Stops China H200 Sales; Intel Cuts IT Staff; Tencent AI Grows](#item-tech-news-5) ⭐️ 7.5/10
+1. [Anthropic Raises $107.3 Billion in Record AI IPO and Placement](#item-tech-news-1) ⭐️ 9.0/10
+2. [Anthropic IPO Priced Above Range at $83, Valuing It at $1.5 Trillion](#item-tech-news-2) ⭐️ 9.0/10
+3. [Nvidia Halts Licensed H200 AI Chip Shipments to China](#item-tech-news-3) ⭐️ 9.0/10
+4. [Microsoft CEO Backs Nvidia Interim CEO After Huang Exit](#item-tech-news-4) ⭐️ 8.0/10
+5. [Microsoft Ignite 2026 Announces Seven New AI Models](#item-tech-news-5) ⭐️ 7.0/10
 
 ---
 
 ## Financial News
 
 <a id="item-finance-news-1"></a>
-### [Fed Minutes Signal More Rate Hikes and AI Inflation Risks](https://www.cnbc.com/2026/11/18/fed-minutes-october-2026.html) ⭐️ 9.0/10
+### [Fed October Minutes Signal More Rate Hikes and AI Inflation Risk](https://www.cnbc.com/2026/11/18/fed-minutes-october-2026.html) ⭐️ 9.0/10
 
-Fed October 2026 minutes show officials expect further interest-rate increases, despite voting 10-2 to hold the benchmark short-term borrowing rate at 3.75%-4%, to return inflation to 2%. They also flagged AI-related demand as a material inflation risk.
+October 2026 Federal Reserve minutes show policymakers kept the benchmark rate at 3.75%-4% by a 10-2 vote. They said further hikes would likely be needed to return inflation to the 2% target and identified AI-related demand as a material inflation risk.
 
 rss · CNBC Finance · Nov 18, 19:41
 
-> **「Background」** The minutes followed a hold while some policymakers advocated a quarter-point hike, and October CPI later rose 0.4% for all items and 0.3% for core, which excludes food and energy, both 0.1 percentage point above expectations.
+> **「Background」** The FOMC sets the U.S. benchmark overnight borrowing rate, and October CPI rose 0.4% for all items and 0.3% for core, which excludes food and energy, both 0.1 percentage point above expectations.
 
-> **「Impact」** CME FedWatch futures already price a quarter-point December hike and likely two more in 2027, which would raise borrowing costs for households and businesses.
-
-**Tags**: `#Fed policy`, `#Interest rates`, `#Inflation`, `#AI economics`, `#Financial stability`
+**Tags**: `#Fed monetary policy`, `#inflation`, `#AI investment risk`, `#interest rates`, `#macro markets`
 
 ---
 
 <a id="item-finance-news-2"></a>
-### [Fed Governor Waller Suggests Possible Half-Point Rate Hike](https://www.cnbc.com/2026/11/18/federal-reserve-governor-christopher-waller.html) ⭐️ 8.0/10
+### [Fed Governor Waller Backs Possible Half-Point Rate Hike](https://www.cnbc.com/2026/11/18/federal-reserve-governor-christopher-waller.html) ⭐️ 8.0/10
 
-Federal Reserve Governor Christopher Waller said the central bank may need to raise its benchmark rate by half a percentage point at the Dec. 8-9 meeting to fight inflation, and should reverse three quarter-point cuts made in 2025.
+Federal Reserve Governor Christopher Waller said the central bank may need to raise its benchmark rate by half a percentage point at the Dec. 8-9 meeting to reverse three quarter-point cuts made in 2025 and address elevated inflation.
 
 rss · CNBC Finance · Nov 18, 15:13
 
-> **「Background」** The Fed&\#x27;s policy-setting committee approved its first rate increase in more than three years in September after three cuts in 2025, as inflation remained above its 2% target.
+> **「Background」** Waller’s call comes as inflation remains above the Fed’s 2% target, while market futures fully price only a quarter-point increase at the December meeting.
 
-**Tags**: `#Federal Reserve`, `#interest rates`, `#inflation`, `#monetary policy`, `#US markets`
+**Tags**: `#Federal Reserve`, `#interest rates`, `#inflation`, `#monetary policy`, `#global markets`
 
 ---
 
 <a id="item-finance-news-3"></a>
-### [Nvidia interim CEO addresses staff after Huang exit](https://www.cnbc.com/2026/11/18/nvidia-interim-ceo-kress-addresses-staff-after-jensen-huang-exit-.html) ⭐️ 8.0/10
+### [Anthropic Shares Indicated Up to 24% Higher in Gray Market](https://www.bloomberg.com/news/articles/2026-11-19/anthropic-shares-indicated-more-than-20-higher-on-gray-markets) ⭐️ 8.0/10
 
-Nvidia interim CEO Colette Kress told employees “let’s move forward” at the company’s first all-hands meeting since founder Jensen Huang resigned. Board chair Harvey Jones discussed the search for a successor as Nvidia shares were down 37% from their 52-week high.
+Anthropic PBC shares were indicated to open up to 24% higher in gray-market trading after its upsized $107.3 billion IPO and private placement broke SpaceX’s record, Bloomberg reported.
 
-rss · CNBC Top News · Nov 18, 23:45
+rss · Bloomberg Markets · Nov 19, 05:00
 
-> **「Background」** The meeting came after Huang’s resignation and after Jones said the board unanimously accepted it and does not intend to reinstate him.
+> **「Background」** Gray-market trading is a pre-listing derivatives or contracts market that signals where newly priced shares may open; Anthropic&\#x27;s indication followed an upsized $107.3 billion IPO and private placement, including a $26 billion round backed by Nvidia, Google, and AMD, that surpassed SpaceX&\#x27;s prior record.
 
-**Tags**: `#Nvidia`, `#AI supply chain`, `#corporate governance`, `#tech earnings`, `#leadership transition`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.bloomberg.com/news/articles/2026-11-19/anthropic-shares-indicated-more-than-20-higher-on-gray-markets">Anthropic Shares Indicated More Than 20% Higher on Gray Markets - Bloomberg</a></li>
+<li><a href="https://www.kucoin.com/news/flash/anthropic-shares-indicated-to-open-22-26-higher-in-gray-market">Anthropic Shares Indicated to Open 22%-26% Higher in Gray Market</a></li>
+<li><a href="https://thedarksideoftheboom.substack.com/p/anthropics-107-billion-ipo-wall-streets">Anthropic&#x27;s $107 Billion IPO: Wall Street&#x27;s Biggest Bet Comes With Its Suppliers Attached</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#AI`, `#IPO`, `#Anthropic`, `#Private Markets`, `#Technology Financing`
 
 ---
 
 <a id="item-finance-news-4"></a>
-### [Palo Alto Networks beats earnings, agrees to $4.5 billion Applied Compute deal](https://www.cnbc.com/2026/11/18/palo-alto-networks-panw-q1-2027-earnings-.html) ⭐️ 8.0/10
+### [Nvidia interim CEO tells staff to move forward after Huang resignation](https://www.cnbc.com/2026/11/18/nvidia-interim-ceo-kress-addresses-staff-after-jensen-huang-exit-.html) ⭐️ 8.0/10
 
-Palo Alto Networks reported adjusted earnings per share of $1.05 versus 97 cents expected and revenue of $3.44 billion versus $3.31 billion expected for fiscal Q1, and said it agreed to acquire AI startup Applied Compute in a $4.5 billion all-stock deal. The company raised fiscal 2027 adjusted EPS guidance to $4.26-$4.30 and revenue to $14.52-$14.57 billion, while shares jumped more than 7%.
+At Nvidia&\#x27;s first all-hands meeting since founder Jensen Huang resigned, interim CEO Colette Kress reportedly told employees &quot;let&\#x27;s move forward&quot; and said the yearly review when employees typically get pay raises and more stock would move up from March to December, according to attendees.
 
-rss · CNBC Top News · Nov 19, 00:07
+rss · CNBC Top News · Nov 18, 23:45
 
-> **「Background」** Palo Alto Networks’ $4.5 billion all-stock acquisition of Applied Compute, a startup that helps businesses customize and run open-weight AI models—AI systems whose underlying parameters can be downloaded and modified—is subject to regulatory clearance and expected to close in Palo Alto’s fiscal third quarter of 2027.
+> **「Background」** The meeting came as Nvidia&\#x27;s board searches for a new CEO after accepting Huang&\#x27;s resignation, while Nvidia shares are down 37% from their 52-week high.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.prnewswire.com/news-releases/palo-alto-networks-to-acquire-applied-compute-bringing-secure-open-weight-ai-to-the-enterprise-302944421.html">Palo Alto Networks to Acquire Applied Compute, Bringing Secure Open-Weight AI to the Enterprise</a></li>
-<li><a href="https://seekingalpha.com/news/4674401-palo-alto-networks-to-buy-ai-startup-applied-compute-for-45b">Palo Alto Networks to buy AI-startup Applied Compute for $4.5B | Seeking Alpha</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Cybersecurity`, `#AI`, `#Earnings`, `#M&amp;A`, `#Palo Alto Networks`
+**Tags**: `#Nvidia`, `#AI supply chain`, `#corporate governance`, `#semiconductors`, `#A-share thematic exposure`
 
 ---
 
 <a id="item-finance-news-5"></a>
-### [Anthropic Nasdaq IPO expected to draw strong retail buying](https://www.cnbc.com/2026/11/18/anthropic-ipo-retail-investors.html) ⭐️ 8.0/10
+### [Musk criticizes Nvidia Huang exit and regrets midterm spending](https://www.cnbc.com/2026/11/19/elon-musk-jensen-huang-midterms.html) ⭐️ 8.0/10
 
-Anthropic is expected to begin trading on Nasdaq under ticker ANT, aiming to raise as much as $64.4 billion at a roughly $1.4 trillion valuation. Vanda Research estimates about $250 million of retail net buying on the first trading day, double the size of SpaceX&\#x27;s IPO.
+Elon Musk said Jensen Huang is irreplaceable as Nvidia CEO and that he regrets spending at least $474 million on U.S. midterm races, according to CNBC. In the same interview, Anthropic priced its IPO at $83 per share, raising $81.3 billion, which the company said was the largest public offering on record.
 
-rss · CNBC Top News · Nov 18, 22:37
+rss · CNBC Top News · Nov 19, 02:49
 
-> **「Background」** Anthropic, a five-year-old AI lab, is set to list on Nasdaq under ticker ANT with 825 million shares at a proposed $70-$78 range, potentially raising up to $64.4 billion at a $1.405 trillion valuation, roughly five months after SpaceX&\#x27;s record IPO.
+> **「Background」** Huang resigned last week after reports about his personal relationships and expected congressional testimony on national-security and export-control issues, while Musk said SpaceX rents computing capacity to Anthropic under short-term agreements.
 
-> **「Impact」** Retail investors and online brokerages could see unusually heavy first-day trading, as Vanda Research estimates about $250 million of net retail buying—about twice SpaceX’s IPO—under a plan to allocate up to 20% of Anthropic shares to individual investors.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html">Anthropic sets price range of $70 to $78 in upcoming IPO as AI lab marches toward Nasdaq</a></li>
-<li><a href="https://ng.investing.com/ipo-calendar">IPO Calendar and News - Investing.com NG</a></li>
-<li><a href="https://www.investing.com/news/stock-market-news/anthropic-ipo-retail-demand-and-market-positioning-risks-ahead-of-debut-93CH-5019630">Anthropic IPO retail demand and market positioning risks ahead of debut By Investing.com</a></li>
-<li><a href="https://finance.yahoo.com/markets/article/anthropic-ipo-could-draw-record-retail-buyers-vanda-research-says-183807714.html">Anthropic IPO could draw record retail buyers, Vanda Research says</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#AI IPO`, `#Anthropic`, `#retail investor flows`, `#Nasdaq`, `#AI supply chain`
+**Tags**: `#AI industry economics`, `#Anthropic IPO`, `#Nvidia leadership`, `#Semiconductor supply chain`, `#Elon Musk`
 
 ---
 
 <a id="item-finance-news-6"></a>
-### [Reuters: Drone attacks nearly halve Russia&\#x27;s November oil refining](https://news.google.com/rss/articles/CBMivAFBVV95cUxQOWZxREZPaThlNEtsN1Z2V2s3bVpMbkpiOEYyV19nS2paZndRczh0SG5pcURzTmFSMzYyNDlPbDJFRTIwZTBScFpSLUVrMDNtWm9xMndPT1JHdk00WTFNVlZOdGE1LS1TdHJJX0hsMXI4eEV2cEhEVTkzWVp6ZkNxWVdMbl9lS2FqRnl3TWlEbnRDb1NqLU1iYmtvSkxDa19GWEJpckk1bEI3U09TcDdvQ1ViS25jRXZTZ1U5RA?oc=5) ⭐️ 8.0/10
+### [Palo Alto Networks Acquires Applied Compute for $4.5 Billion](https://www.cnbc.com/2026/11/18/palo-alto-networks-panw-q1-2027-earnings-.html) ⭐️ 8.0/10
 
-Reuters, citing sources, reported that drone attacks nearly halved Russia&\#x27;s November oil refining. The supplied headline does not specify the baseline refining volume or provide independent verification.
+Palo Alto Networks agreed to acquire AI startup Applied Compute for $4.5 billion in an all-stock deal. Shares jumped more than 7% after the company beat LSEG estimates for its fiscal first quarter, with adjusted earnings per share of $1.05 versus 97 cents expected and revenue of $3.44 billion versus $3.31 billion expected.
 
-google\_news · Reuters · Nov 18, 15:10
+rss · CNBC Top News · Nov 19, 00:07
 
-> **「Background」** The report compares November crude processing with Russia&\#x27;s estimated total primary refining capacity of about 930,000 tons per day and notes that Ukrainian strikes have disrupted or halted 15 of 35 major refineries, up from 9 in mid-November.
+> **「Background」** Palo Alto said the deal will help businesses secure customizable AI models, as fears of AI-powered cyberattacks have boosted cybersecurity demand.
 
-> **「Impact」** The reported drone damage has contributed to fuel shortages and export curbs on gasoline, jet fuel and diesel in Russia, and can tighten global diesel supply for importers and transport users.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://euromaidanpress.com/2026/11/10/reuters-ukrainian-drone-strikes-disrupt-30-of-russias-oil-refining-capacity">Reuters: Ukrainian drone strikes disrupt 30% of Russia&#x27;s oil refining capacity, deepening fuel crisis as Moscow keeps exporting diesel - Euromaidan Press</a></li>
-<li><a href="https://www.newsobserver.com/news/nation-world/world/article318137327.html">Exclusive-Drone attacks nearly halve Russia&#x27;s November oil refining, sources say | Raleigh News &amp; Observer</a></li>
-<li><a href="https://oilprice.com/Energy/Crude-Oil/As-Ukraine-Cripples-Russian-Refining-Global-Diesel-Markets-Pay-the-Price.html">As Ukraine Cripples Russian Refining, Global Diesel Markets Pay the Price | OilPrice.com</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Russia oil`, `#refining capacity`, `#energy supply`, `#commodity markets`, `#geopolitical risk`
+**Tags**: `#cybersecurity`, `#AI`, `#Palo Alto Networks`, `#earnings`, `#acquisitions`
 
 ---
 
 <a id="item-finance-news-7"></a>
-### [APEC Summit in Shenzhen Centers on U.S.-China Trade Truce](https://www.cnbc.com/2026/11/18/apec-trump-xi-putin-shenzhen.html) ⭐️ 7.0/10
+### [Reuters says drone attacks nearly halved Russia&\#x27;s November oil refining](https://news.google.com/rss/articles/CBMivAFBVV95cUxQOWZxREZPaThlNEtsN1Z2V2s3bVpMbkpiOEYyV19nS2paZndRczh0SG5pcURzTmFSMzYyNDlPbDJFRTIwZTBScFpSLUVrMDNtWm9xMndPT1JHdk00WTFNVlZOdGE1LS1TdHJJX0hsMXI4eEV2cEhEVTkzWVp6ZkNxWVdMbl9lS2FqRnl3TWlEbnRDb1NqLU1iYmtvSkxDa19GWEJpckk1bEI3U09TcDdvQ1ViS25jRXZTZ1U5RA?oc=5) ⭐️ 8.0/10
 
-U.S. President Donald Trump, Chinese President Xi Jinping and Russian President Vladimir Putin are meeting at the APEC summit in Shenzhen. U.S.-China talks are expected to focus on implementing a trade truce that was extended to January 2027.
+Reuters, citing sources, reported that drone attacks nearly halved Russia&\#x27;s oil refining activity in November.
 
-rss · CNBC Finance · Nov 18, 06:04
+google\_news · Reuters · Nov 18, 15:10
 
-> **「Background」** The truce followed last year&\#x27;s APEC summit in South Korea and included lower tariffs and some rare-earth flows.
+> **「Background」** Reuters said two industry sources estimated that Ukrainian drone attacks have cut Russia&\#x27;s combined crude processing by 45% since late October, as Kyiv intensified strikes on energy infrastructure.
 
-**Tags**: `#US-China trade`, `#APEC summit`, `#AI chips`, `#rare earths`, `#geopolitical risk`
-
----
-
-<a id="item-finance-news-8"></a>
-### [Anthropic IPO Gives SK Telecom $3 Billion Gain](https://www.bloomberg.com/news/articles/2026-11-19/anthropic-ipo-hands-sk-hynix-tycoon-s-firm-3-billion-windfall) ⭐️ 7.0/10
-
-Anthropic’s IPO reportedly delivered a $3 billion gain to SK Telecom from its early investment in the AI startup. The windfall benefits billionaire Chey Tae-won’s conglomerate empire.
-
-rss · Bloomberg Markets · Nov 19, 01:36
-
-> **「Background」** SK Telecom, South Korea’s largest mobile carrier, invested $100 million in Anthropic in August 2023, when the AI startup was valued at $5 billion, before its first public share sale.
-
-> **「Investor impact」** SK Telecom shares rose 12% on Tuesday as the IPO increased attention on the value of its early Anthropic stake, according to UBS.
+> **「Impact」** The reported disruption could tighten global diesel and gasoline markets by making Russian fuel exports intermittent, lifting refining margins.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.bloomberg.com/news/articles/2026-11-19/anthropic-ipo-hands-sk-hynix-tycoon-s-firm-3-billion-windfall">Anthropic IPO Hands SK Hynix Tycoon’s Firm $3 Billion Windfall</a></li>
-<li><a href="https://shattered.io/anthropic-ipo-korean-tech-firms-early-bets-sk-telecom-2-65b-2026">Anthropic IPO Korea: SK Telecom Stake Books $2.65B [2026]</a></li>
-<li><a href="https://www.investing.com/news/analyst-ratings/sk-telecom-stock-rises-12-on-anthropic-stake-valuation-93CH-4468023">SK Telecom stock rises 12% on Anthropic stake valuation</a></li>
+<li><a href="https://www.internazionale.it/ultime-notizie-reuters/2026/11/18/exclusive-drone-attacks-nearly-halve-russia-s-november-oil-refining-sources-say">Exclusive-Drone attacks nearly halve Russia’s November oil refining, sources say - Internazionale</a></li>
+<li><a href="https://www.kpler.com/blog/winter-2026-27-scenarios-for-the-russian-oil-industry">Russian oil outlook: winter 2026-27 diesel scenarios Winter 2026-27 scenarios for the Russian oil industry | Kpler - Oct 28, 2026</a></li>
+<li><a href="https://au.investing.com/analysis/crude-oil-refining-margins-soar-as-global-product-markets-tighten-200609914">Crude Oil: Refining Margins Soar as Global Product Markets Tighten | Investing.com AU</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Anthropic IPO`, `#AI investment`, `#SK Telecom`, `#South Korea conglomerates`, `#capital markets`
+**Tags**: `#Russia oil`, `#energy markets`, `#oil refining`, `#commodities`, `#geopolitical supply disruption`
+
+---
+
+<a id="item-finance-news-8"></a>
+### [Japan Tobacco Takes $8.9 Billion Russia Charge](https://www.bloomberg.com/news/articles/2026-11-19/japan-tobacco-taking-8-9-billion-charge-on-russia-seizure) ⭐️ 7.0/10
+
+Japan Tobacco will take a ¥1.4 trillion \($8.9 billion\) charge after losing control of its Russian subsidiaries, pushing the company to a full-year net loss and cutting its dividend forecast.
+
+rss · Bloomberg Business · Nov 19, 06:46
+
+> **「Background」** Before the charge, Russia placed Japan Tobacco’s local subsidiaries under temporary state administration, raising fears of a loss of up to about ¥1.3 trillion and a dividend cut because the company targets paying about 75% of profit as dividends.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://finance.biggo.com/news/bdd39cb2-d27f-4261-ba53-f9de2bf1b931">JT Shares Hit Limit Down for Second Straight Day on Risk of Up to ¥1.3 Trillion Loss Under Russian Management — BigGo Finance</a></li>
+<li><a href="https://asia.nikkei.com/business/markets/equities/japan-tobacco-shares-tumble-on-fears-of-8bn-russia-loss">Japan Tobacco shares tumble on fears of $8bn Russia loss - Nikkei Asia</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Japan Tobacco`, `#Russia asset seizure`, `#impairment charge`, `#dividend cut`, `#consumer staples`
 
 ---
 
 ## China Markets
 
 <a id="item-china-market-1"></a>
-### [Tencent earnings call highlights WorkBuddy growth and Yuanbao underperformance](https://wallstreetcn.com/articles/3786214) ⭐️ 8.0/10
+### [China markets: chip manufacturers rally, Hong Kong tech slips on earnings](https://wallstreetcn.com/articles/3786248) ⭐️ 7.0/10
 
-Tencent said in its Q3 2026 earnings call that WorkBuddy’s past-seven-day annualized revenue exceeded $500m, more than double Tencent Meeting’s, and that Q3 WorkBuddy revenue was more than five times Q2. It also said cloud revenue growth accelerated to 35% YoY from 21% in Q2 and acknowledged its standalone consumer AI assistant Yuanbao fell short of expectations and spending on it had been cut.
+On Nov 19, 2026, China’s A-share benchmarks fell modestly while the STAR 50 rose about 2%, led by Hua Hong Semiconductor and SMIC after Hua Hong announced a RMB300m-500m buyback plan and market reports said chip-manufacturing prices could rise 10% to more than 20% next year. Hong Kong’s Hang Seng Tech Index fell 2.33% to its lowest since Sept 17, 2024, with Tencent down more than 6% after its latest results showed RMB81.4bn of capital spending and Lenovo reporting a second-quarter net loss of US$640m versus a US$340.3m profit a year earlier.
 
-rss · 华尔街见闻 · Nov 19, 03:34
+rss · 华尔街见闻 · Nov 19, 08:34
 
-> **「Background」** WorkBuddy grew from Tencent&\#x27;s coding assistant CodeBuddy and was already reported in Tencent&\#x27;s first-quarter results as China&\#x27;s most popular efficiency AI agent by daily active users, with its latest &quot;largest&quot; claim based on daily large-language-model token consumption, the volume of text units processed by AI. The WeChat assistant Xiaowei began limited testing in June 2026, while Yuanbao is Tencent&\#x27;s separate consumer AI assistant that management said had not met expectations.
+> **「Background」** The STAR 50 tracks Shanghai-listed hard-tech companies, while the Hang Seng Tech Index is weighted toward internet firms such as Tencent and Alibaba. Some chip-design stocks also fell after a U.S. Bureau of Industry and Security rule update requiring approvals for 14nm and more advanced chip-manufacturing orders, though a related “Samsung strict review” rumor was reported inaccurate by Shanghai Securities News.
 
-> **「Impact」** For investors, Tencent&\#x27;s Q3 capital spending rose 257% YoY to RMB63.6b, pushing free cash flow to -RMB69.1b, though excluding advance payments for compute capacity it was +RMB16.9b.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://awtmt.com/articles/3786214">腾讯：WorkBuddy崛起为中国使用量最大AI应用，“小微”未来媲美Muse，元宝不及预期成功</a></li>
-<li><a href="https://m.sohu.com/a/1103456087_180220?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334">腾讯：WorkBuddy已是“中国使用量最高的AI产品”_搜狐网</a></li>
-<li><a href="https://wallstreetcn.com/articles/3776245">WorkBuddy爆了，微信AI也来了——腾讯AI找到“新船票”了吗？</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Tencent`, `#AI applications`, `#Cloud and GPU`, `#HK equities`, `#Earnings call`
+**Tags**: `#A股`, `#港股科技`, `#半导体`, `#光模块`, `#财报`
 
 ---
 
 <a id="item-china-market-2"></a>
-### [China stocks fall while semiconductor shares rally](https://wallstreetcn.com/articles/3786248) ⭐️ 7.0/10
+### [JPMorgan Reiterates Overweight on Z.AI With HK$1,200 Target](https://www.insightintochina.com/publish/touyan_50140) ⭐️ 7.0/10
 
-On Nov. 19, major A-share indexes and the Hang Seng Tech Index fell while the STAR 50 index rose 1%, as chip foundry and advanced chip-packaging shares rallied on Nvidia’s announced capacity expansion and industry reports of possible chip-fab price increases; Tencent fell nearly 7% after reporting a third-quarter free-cash-flow deficit of 69.1 billion yuan.
+JPMorgan reiterated an Overweight rating on Z.AI with a HK$1,200 target and 30% upside, saying the stock is oversold relative to its model roadmap and commercialization progress. Management guided to a roughly 3-trillion-parameter flagship model in Q4 and a US$3bn ARR target by year-end, and said it is largely unaffected by new US Bureau of Industry and Security remote-access rules because of its domestic compute footprint.
 
-rss · 华尔街见闻 · Nov 19, 04:07
+insightintochina · InsightIntoChina · Nov 19, 01:11
 
-> **「Background」** The semiconductor move was linked to Nvidia’s advanced chip-packaging expansion and reports that foundries and memory suppliers may raise prices, while Tencent’s decline followed earnings that showed strong AI and cloud growth but negative free cash flow and AI-computing capacity constraints.
+> **「Background」** Z.AI is a Hong Kong-listed AI company whose management update referenced annual recurring revenue \(ARR\) and U.S. export-control rules on remote access to computing resources.
 
-**Tags**: `#A-shares`, `#Hong Kong equities`, `#semiconductors`, `#AI computing power`, `#Tencent earnings`
+> **「Impact」** For Hong Kong-listed AI investors, the new US remote-access rule raises compute-supply compliance risk, while Z.AI&\#x27;s management said its domestic footprint limits the impact.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.scmp.com/tech/article/3374639/us-tightens-ai-chip-export-curbs-close-chinas-overseas-data-centre-loophole">Breaking | US tightens AI chip export curbs to close China’s overseas data centre loophole</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#AI`, `#Hong Kong equities`, `#foreign analyst calls`, `#Z.AI`, `#compute policy`
 
 ---
 
 <a id="item-china-market-3"></a>
-### [Tencent says US chip curbs may slow AI training](https://www.scmp.com/tech/big-tech/article/3374902/tencent-profit-dips-sixfold-increase-ai-infrastructure-spending-sacrifices-margin) ⭐️ 7.0/10
+### [Zheshang Securities Bullish on Xiechuang Data After RMB 37.5B Compute Contract Update](https://www.insightintochina.com/publish/touyan_50131) ⭐️ 7.0/10
 
-Tencent said US chip curbs are “unfortunate” and may slow AI training in the short run. Its third-quarter adjusted net income fell 6% year on year to 66.5 billion yuan \(US$10 billion\), after AI infrastructure capital spending jumped more than sixfold to above US$12 billion.
+Xiechuang Data disclosed that its October compute cloud service agreement, valued at RMB 37.5 billion, will use domestically compliant servers and has placed supplier purchase orders with confirmed production and delivery schedules. Zheshang Securities said the contract and the company&\#x27;s experience with large-scale clusters are catalysts for a bullish view on Xiechuang Data and domestic compute.
 
-rss · SCMP Business · Nov 18, 09:49
+insightintochina · InsightIntoChina · Nov 19, 01:02
 
-> **「Background」** Tencent has previously linked US export controls on advanced AI chips from suppliers such as Nvidia to constrained capital spending and slower cloud growth, and said it plans to raise AI investment in 2026.
+> **「Background」** Xiechuang Data disclosed in October 2026 that its subsidiary Xiechuang Intelligent Computing signed a computing-power cloud service agreement with a customer for a total contract amount expected not to exceed RMB 37.49 billion, reflecting a shift from one-off hardware sales toward multi-year compute services.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.investing.com/news/stock-market-news/tencent-books-13-rise-in-quarterly-revenue-on-gaming-ai-demand-4567724">Tencent pledges higher AI investment in 2026 after chip curbs hit capex plans By Reuters</a></li>
-<li><a href="https://finance.yahoo.com/news/chinas-tencent-books-15-quarterly-084235512.html">China&#x27;s Tencent says chip shortage curbs cloud growth despite strong Q3 results</a></li>
+<li><a href="https://baike.baidu.com/en/item/Xiechuang%20Data%20Technology%20Co.%2C%20Ltd./44493">Xiechuang Data Technology Co., Ltd.（A Chinese ChiNext-listed IoT smart device manufacturer）_Baiduwiki</a></li>
+<li><a href="https://baike.baidu.com/en/item/Xiechuang%20Data%20Technology%20Co.,%20Ltd./44493">Xiechuang Data Technology Co., Ltd.</a></li>
+<li><a href="https://finance.biggo.com/news/cb88ed96-67d3-429a-83a5-a8d6b844e999">China&#x27;s PowerLeader Data subsidiary signs 37.49 billion yuan computing-power cloud contract, locking in AI demand for five years — BigGo Finance</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Tencent`, `#AI infrastructure`, `#computing power`, `#US chip curbs`, `#HK-listed tech`
+**Tags**: `#A-share`, `#domestic compute`, `#servers`, `#AI infrastructure`, `#broker note`
 
 ---
 
 <a id="item-china-market-4"></a>
-### [Tencent Q3 Capital Spending Rises; Nvidia H200 China Sales Halt](https://www.insightintochina.com/publish/touyan_50110) ⭐️ 7.0/10
+### [DeepSeek Registration Adds Backer Platform; Reported ~105.5 Billion Yuan Round Unconfirmed](https://www.yicai.com/news/103446689.html) ⭐️ 6.5/10
 
-Tencent reported Q3 capital spending of RMB 81.43 billion, up 527% year over year and 54% quarter over quarter. Nvidia’s interim CEO said the company will stop selling H200 chips to China.
+DeepSeek&\#x27;s corporate registration added a new investment platform whose 31 backers include Tencent, CATL and China Mobile, while unconfirmed media reports say its second round raised about 105.5 billion yuan at a post-money valuation of about 615.5 billion yuan.
 
-insightintochina · InsightIntoChina · Nov 18, 15:04
+rss · 第一财经\(镜像\) · Nov 19, 08:23
 
-> **「Background」** Nvidia&\#x27;s H200 is a high-end AI chip; Chinese customs reportedly blocked shipments and Beijing is pushing tech firms to use domestic chips, so the supply halt strengthens the case for local compute suppliers.
+> **「Background」** DeepSeek is a privately held Hangzhou AI startup founded in 2023, and the latest registry change adds Hangzhou Chengyan, a limited partnership \(LP\) used to pool corporate and fund investors. Its reported A-round financing in June 2026 was about 51 billion yuan, giving a baseline for the new backer list.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://finance.yahoo.com/news/nvidia-suppliers-halt-h200-output-013005391.html?.tsrc=fin-notif">Nvidia suppliers halt H200 output after China blocks chip shipments</a></li>
-<li><a href="https://finance.yahoo.com/news/nvidia-suppliers-halt-h200-output-014143078.html">Nvidia H200 chip parts suppliers halt output after China blocks shipments, FT reports</a></li>
+<li><a href="https://tavily.com/knowledge/company/LAfirX2dI9uN">DeepSeek AI</a></li>
+<li><a href="https://m.sohu.com/a/1103648265_121157270?scm=10001.325_13-325_13.0.0-0-0-0-0.5_1334">DeepSeek千亿融资完成工商变更_搜狐网</a></li>
+<li><a href="https://www.sohu.com/a/1050753563_120988533">深度求索完成注册资本变更_人工智能_持股_产业投资基金</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Tencent`, `#AI compute`, `#Nvidia H200`, `#China semiconductors`, `#Hong Kong equities`
+**Tags**: **【未证实】**, `#DeepSeek`, `#AI financing`, `#China IPO`, `#industrial capital`, `#A-share/HK listed companies`
 
 ---
 
 <a id="item-china-market-5"></a>
-### [Tencent Q3 profit misses as AI spending rises](https://www.insightintochina.com/publish/touyan_50096) ⭐️ 7.0/10
+### [Chinese Banks Delay Bond Sales as Capital-Bond Yields Rise](https://wallstreetcn.com/articles/3786268) ⭐️ 6.0/10
 
-Tencent&\#x27;s Q3 2026 revenue rose 7.5% year over year to RMB207.3bn, but Non-IFRS operating profit fell 6.2% year over year and missed Bloomberg consensus by 6.6% as AI spending lifted capital expenditure to RMB81.4bn, above expectations.
+Since Oct 30, seven Chinese banks have postponed or canceled about RMB80 billion of bond issuance, up to RMB90 billion including over-issuance, as 3-year AAA- bank tier-2 and perpetual bond yields rose 14–15 basis points from Oct 20.
 
-insightintochina · InsightIntoChina · Nov 18, 13:28
+rss · 华尔街见闻 · Nov 19, 07:22
 
-> **「Background」** Non-IFRS operating profit is a company-reported profit measure that excludes certain accounting items; Tencent said it rose 8% year over year when new AI products were excluded.
+> **「Background」** Rising secondary-market yields mean new bank bonds typically need more attractive pricing, so banks with sufficient capital buffers can wait for a better issuance window.
 
-**Tags**: `#Tencent`, `#HK equities`, `#AI`, `#Cloud`, `#Earnings`
+> **「Impact」** For banks that must roll debt or fund new loans, the higher yields reduce the time they can wait for cheaper issuance.
+
+**Tags**: `#银行资本补充`, `#债券发行`, `#二级市场收益率`, `#A股银行板块`, `#财政注资`
 
 ---
 
 <a id="item-china-market-6"></a>
-### [Tencent capex and US export rules prompt broker bullishness on China AI chips](https://www.insightintochina.com/publish/touyan_50099) ⭐️ 7.0/10
+### [China consumer stocks gain as AI shares slump](https://www.scmp.com/business/china-business/article/3374970/haven-assets-chinas-battered-consumer-stocks-back-demand-amid-ai-slump) ⭐️ 6.0/10
 
-Tencent&\#x27;s third-quarter 2026 capital expenditure was RMB 81.433 billion, up 527% year-on-year and above the RMB 55.4 billion market estimate. Tianfeng says this spending, plus a US BIS interim final rule effective Nov. 16 that extends export controls to overseas data centers serving Chinese D:5 companies, supports demand for China&\#x27;s domestic AI chip supply chain, especially the Ascend ecosystem.
+China investors are rotating into beaten-down consumer stocks as AI-related shares fall; a mainland CSI consumer index has risen nearly 5% this month, after a 2.9% gain in October, while regulators denied rumours of administrative interference in mutual-fund investments.
 
-insightintochina · InsightIntoChina · Nov 18, 13:27
+rss · SCMP Business · Nov 19, 00:06
 
-> **「Background」** The US Bureau of Industry and Security \(BIS\) issued an interim final rule on November 16, 2026, requiring export licences for overseas data centers that provide advanced AI computing to companies linked to China and other restricted destinations, a category BIS treats under its Country Group D:5 export-control list.
+> **「Background」** The Star 50 index tracks mainland-listed AI and chip companies, which have been hit by a steep sell-off in recent months.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.ashurstperkinscoie.com/en/insights/bis-issues-interim-final-rule-restricting-remote-access-to-advanced-us-ai-chips">BIS issues Interim Final Rule restricting remote access to advanced US AI chips</a></li>
+<li><a href="https://www.technology.org/2026/10/27/china-ai-stock-bubble-star-50-falls-40-percent-480-billion">China&#x27;s AI Bubble Bursts as STAR 50 Drops 40%</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Tencent capex`, `#domestic AI chips`, `#US export controls`, `#Ascend supply chain`, `#A-share AI themes`
+**Tags**: `#A-share market`, `#AI sector`, `#consumer stocks`, `#China equities`, `#regulatory rumors`
 
 ---
 
 <a id="item-china-market-7"></a>
-### [Bernstein: U.S. Remote AI Compute Rules Pressure China Labs, Aid Domestic Chips](https://www.insightintochina.com/publish/touyan_50079) ⭐️ 7.0/10
+### [China adds blood-cancer drugs to 2026 medical-insurance catalog](https://www.yicai.com/news/103446787.html) ⭐️ 6.0/10
 
-Bernstein said a new U.S. BIS interim final rule extends export controls to remote access to AI compute, introducing a 12 million TPP threshold and a &quot;Linked Data Center&quot; concept.
+China&\#x27;s 2026 national medical-insurance drug catalog added 107 new drugs, including blood-cancer therapies, and renewed Ascentage&\#x27;s third-generation CML drug Nailike. Yicai reported JW Therapeutics&\#x27; CAR-T drug price fell to 288,600 yuan per dose from 1.29 million yuan, leaving reported out-of-pocket cost after reimbursement below 100,000 yuan.
 
-insightintochina · InsightIntoChina · Nov 18, 10:48
+rss · 第一财经\(镜像\) · Nov 19, 08:56
 
-> **「Background」** The U.S. Commerce Department’s Bureau of Industry and Security issued interim final rule RIN 0694-AK50, which extends export-control review to remote access to advanced AI compute by requiring approval for data centers that provide more than 12 million aggregate total processing performance \(TPP\), including through linked data centers, to companies tied to China, Macau, or other restricted destinations.
+> **「Background」** The 2026 adjustment is the ninth since China&\#x27;s National Healthcare Security Administration was established, building on the 2018 cancer-drug special negotiation that normalized insurance price talks.
 
-> **「Impact」** The broker sees near-term headwinds for Chinese hyperscalers and AI labs, while accelerating localization benefits for domestic AI chip, foundry, and equipment suppliers.
+> **「Impact」** The changes directly lower patient costs, including JW Therapeutics&\#x27; CAR-T out-of-pocket below 100,000 yuan per dose, and expand reimbursement coverage for Ascentage&\#x27;s blood-cancer drugs.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://www.bis.gov/media/documents/rin-0694-ak50.pdf">rin-0694-ak50.pdf - Bureau of Industry and Security</a></li>
-<li><a href="https://www.latintimes.com/bis-ai-chip-export-controls-five-countries-601426">America Closes the AI Cloud Loophole — and Brazil Must Now Ask Washington&#x27;s Permission to Buy Advanced Chips</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#U.S. export controls`, `#AI compute`, `#China AI labs`, `#domestic semiconductors`, `#Bernstein`
+**Tags**: `#China medical insurance`, `#innovative drugs`, `#HK-listed biotech`, `#blood tumors`, `#healthcare policy`
 
 ---
 
 <a id="item-china-market-8"></a>
-### [China Announces APEC Support Measures at Shenzhen Leaders&\#x27; Meeting](https://www.cls.cn/detail/2538707) ⭐️ 6.0/10
+### [First 18 active ETFs face pre-listing position test](https://www.yicai.com/news/103446592.html) ⭐️ 6.0/10
 
-Chinese President Xi Jinping chaired the 33rd APEC Economic Leaders&\#x27; Meeting in Shenzhen on 19 November 2026 and announced US$20 million for APEC practical cooperation, a Shenzhen research center, and cooperation institutions for digital technology, cross-border data flows, clean energy and small and medium-sized enterprises.
+China&\#x27;s first 18 active ETFs must raise their average equity position from about 56.7% to at least 80% before their Nov 23 listing, implying an estimated 84 billion yuan of additional equity buying.
 
-rss · 财联社电报\(镜像\) · Nov 19, 04:27
+rss · 第一财经\(镜像\) · Nov 19, 07:13
 
-> **「Background」** The meeting marked the end of APEC&\#x27;s China-year agenda, and the host handover named Vietnam as the 2027 chair.
+> **「Background」** Active ETFs are exchange-traded funds whose managers choose holdings rather than tracking an index; the first batch raised 36 billion yuan in total and already showed diverging net values.
 
-**Tags**: `#APEC policy`, `#AI and digital economy`, `#cross-border data`, `#Shenzhen`, `#macro policy`
+**Tags**: `#主动ETF`, `#A股资金流`, `#基金持仓`, `#AI算力`, `#市场流动性`
 
 ---
 
 <a id="item-china-market-9"></a>
-### [ByteDance and Tencent Disclose AI Office Metrics](https://www.yicai.com/news/103446257.html) ⭐️ 6.0/10
+### [Tencent Sales Miss Estimates in AI Push](https://news.google.com/rss/articles/CBMitAFBVV95cUxQZlRKLVZyN3R3RW4xYzhNVFM4Z1J0NmRXVGRIX0ZudDQ4Q0lhQm83R0trXzI2YnAyaTJRRXhVVmIza0dNdE4yMDVGbHJrRS1aZENtVERpVFpxRTFoTE90VUlkY0h1X3UwMU44TVFpYk5XMjZxTVg5RGZEeVlmVlo3V2djTVdkUl9jRFFFM2xJNl9ZdERoNE1od0dBR1ZWejd2VkpyU2ppVnVQVnliVGpRdUZhQWM?oc=5) ⭐️ 6.0/10
 
-ByteDance said Doubao Work reached 8 million daily active users and 2 billion yuan in annual recurring revenue from enterprise customers three months after launch. Tencent said WorkBuddy passed 10 million daily active users and claimed more than $500 million in annualized revenue based on seven-day revenue.
+Bloomberg reported that Tencent’s sales missed estimates, posing a setback to the company’s AI push. The supplied item did not include the specific revenue figures, comparison baseline, or reporting period.
 
-rss · 第一财经\(镜像\) · Nov 19, 03:24
+google\_news · Bloomberg.com · Nov 18, 13:40
 
-> **「Background」** The article notes that monthly or quarterly periods are the industry&\#x27;s usual basis for annualizing revenue, making Tencent&\#x27;s seven-day estimate less comparable.
+> **「Background」** Before the report, co-founder Pony Ma had asked half of Tencent’s 100,000 employees to use AI to find new growth, as the company competes with Alibaba and ByteDance. Tencent had also been spending heavily on AI data centres and chips, and its free cash flow—the cash left after operations and capital spending—was negative for a second straight quarter.
 
-**Tags**: `#AI应用`, `#腾讯控股`, `#港股`, `#AI办公`, `#大模型商业化`
-
----
-
-<a id="item-china-market-10"></a>
-### [Capchem Signs Long-Term Electrolyte Supply Agreement With EVE Energy](https://news.google.com/rss/articles/CBMi5gFBVV95cUxNSlFRWDBxSlptN2I2LXhiUEpwM3hlYm9vVlFDa3FTaFJXSGVoRjJaSE9TaUpGMGRDSEdyOVdhSUZ6VTdhS3VXaFBwYjhDeFZJcW5WazFWUnVXaGptWEp2dm1VZUVQUU1iUWgtTDJhR1NoVXZxajV4WEUwVWVBOUVBdmNXWGFJWXo2bmVxZDd0N0loYTdyUGk5OUVFX0RaWU0xNU9GTmVwNjBYZFZFOUM2X3M3em8xSEEtUUdzeEFuZmwxalEzR1lTUXZQOG0tcmlyUlVlVmxRbk5tdzNsOXR5RmFzWGczQQ?oc=5) ⭐️ 6.0/10
-
-Gasgoo reported that Capchem signed a long-term supply agreement with EVE Energy to provide 600,000 tonnes of battery electrolyte, but the report did not specify the contract value, duration, or financial impact.
-
-google\_news · Gasgoo · Nov 18, 10:13
-
-> **「Background」** Capchem is a Chinese electrolyte maker, and electrolyte is a battery material that helps charge move between electrodes. Its Nov. 13 agreement covers 2026-2030, with volumes allowed to vary by 10% and some later-year volumes described as indicative rather than mandatory commitments.
-
-> **「Impact」** For battery-materials investors, the five-year, 600,000-tonne deal gives Capchem longer visibility for capacity planning and market-share consolidation, while helping EVE Energy secure electrolyte supply, though actual shipments remain indicative and demand-dependent.
+> **「Investor impact」** Tencent shareholders and Chinese tech investors are now focused on whether AI spending can be offset by revenue, after larger-than-expected computing costs eroded profit growth and pushed free cash flow into the red.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://finance.biggo.com/news/a0923bf5-9f9d-4a70-b6be-3b859c1898f3">China&#x27;s Capchem Secures Five-Year, 600,000-Ton Electrolyte Supply Deal with EVE Energy, Locking In 2026-2030 Operations — BigGo Finance</a></li>
-<li><a href="https://news.chemnet.com/news-11811.html">Five-year intent order for 600,000 tons of electrolyte; Capchem ties up with EVE Energy. - ChemNet</a></li>
-<li><a href="https://www.energytrend.com/news/20261116-52527.html">EVE Energy and Three Other Companies Secure Energy Storage Orders and Partnerships - EnergyTrend</a></li>
-<li><a href="https://finance.biggo.com/news/a0923bf5-9f9d-4a70-b6be-3b859c1898f3">China&#x27;s Capchem Secures Five-Year, 600,000-Ton Electrolyte Supply Deal with EVE Energy, Locking In 2026-2030 Operations — BigGo Finance</a></li>
+<li><a href="https://digg.com/world-business/0ozbjjqg">Tencent’s sales grow 8%, but operating profit goes in reverse · Digg</a></li>
+<li><a href="https://theedgemalaysia.com/node/826320">Tencent’s sales miss estimates in setback for founder’s AI push</a></li>
+<li><a href="https://startupfortune.com/tencents-third-quarter-sales-miss-estimates-as-ai-spending-outruns-forecasts">Tencent&#x27;s third-quarter sales miss estimates as AI spending outruns forecasts - Startup Fortune</a></li>
+<li><a href="https://www.wsj.com/tech/ai/tencent-profit-flatlines-amid-surging-ai-investments-revenue-growth-slows-0c1cfc57">Tencent Capital Expenditure Jumps Sixfold to Fuel Artificial Intelligence Push - WSJ</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Capchem`, `#EVE Energy`, `#electrolyte`, `#battery materials`, `#A-share`
+**Tags**: `#Tencent`, `#AI`, `#earnings`, `#Hong Kong equities`, `#tech`
+
+---
+
+<a id="item-china-market-10"></a>
+### [Broker Says US Chip Curbs May Boost China Equipment Demand](https://www.insightintochina.com/publish/touyan_50151) ⭐️ 6.0/10
+
+An unnamed broker says a new US Commerce Department interim final rule tightening export controls on advanced computing chips and foundry services could accelerate China’s semiconductor-equipment localization. The rule includes restrictions on Chinese chip designers using overseas foundries and exports to additional countries, but the note gives no figures or named companies.
+
+insightintochina · InsightIntoChina · Nov 19, 01:36
+
+> **「Background」** The broker&\#x27;s view follows a November 2026 US Commerce Department interim final rule—a rule that takes effect on publication but can be revised later—tightening export controls on advanced computing chips and chip-making services, including limits on Chinese chip designers using overseas foundries and new license requirements for exports to five additional countries.
+
+> **「Impact」** China&\#x27;s semiconductor-equipment suppliers may gain revenue and share as export curbs push Chinese fabs to qualify domestic tools and materials.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.pillsburylaw.com/en/news-and-insights/commerce-restricts-remote-access-advanced-chips.html">Commerce Issues Interim Final Rule Restricting Remote Access to Advanced Chips</a></li>
+<li><a href="https://sanctionsnews.bakermckenzie.com/bis-restricts-remote-access-to-advanced-ai-chips-and-formally-rescinds-the-ai-diffusion-rule">BIS Restricts Remote Access to Advanced AI Chips and Formally Rescinds the AI Diffusion Rule - Global Sanctions and Export Controls Blog</a></li>
+<li><a href="https://www.csis.org/analysis/chinas-localization-drive-semiconductors-gains-impetus-allied-chip-export-controls">China’s Localization Drive in Semiconductors Gains Impetus from Allied Chip Export Controls</a></li>
+<li><a href="https://www.globalxetfs.com/articles/product-research/introducing-cchp-actively-managed-exposure-to-chinas-semiconductor-supply-chain">Introducing CCHP: Actively Managed Exposure to China&#x27;s Semiconductor Supply Chain | Global X ETFs</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#US export controls`, `#China semiconductor equipment`, `#domestic substitution`, `#broker view`, `#AI/computing chips`
 
 ---
 
@@ -397,331 +387,299 @@ google\_news · Gasgoo · Nov 18, 10:13
 ### AI Hardware &amp; Compute
 
 <a id="item-ai-hardware-1"></a>
-#### [NVIDIA Locks Multiyear Capacity With Packaging and Substrate Partners](https://www.semiconductor-digest.com/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout) ⭐️ 8.0/10
+#### [Nvidia Prepay for Taiwan AI Substrate and Packaging Capacity](https://www.digitimes.com/news/a20261119PD229/nvidia-capacity-substrate-osat-taiwan.html) ⭐️ 8.0/10
 
-NVIDIA announced expanded multiyear commitments with Amkor, Foxconn, Kinsus, Samsung Electro-Mechanics, SPIL and TSMC to increase substrate, advanced packaging, wafer and contract-manufacturing capacity for accelerated computing and AI infrastructure platforms. The plans include Kinsus expanding ABF package-substrate capacity dedicated to NVIDIA by more than 3.5x from its Taoyuan campus, with production expected to begin in the second half of 2027 and added capacity targeted for Q3 2028, and SPIL increasing contracted advanced packaging capacity dedicated to NVIDIA by mid-2029 under multibillion-dollar funding. NVIDIA also cited previously announced Amkor Arizona and South Korea packaging agreements totaling nearly $3 billion and first volume shipments of Vera Rubin NVL72 and Vera CPUs in Q3 using TSMC 5nm, 3nm and CoWoS packaging.
+Nvidia is reported to be issuing capacity prepayments to fund expansion of IC substrate, advanced packaging, and test capacity in Taiwan, locking in production capacity for the next three to five years. The move is aimed at securing supply for AI accelerators as custom ASIC projects from cloud providers and rival chipmakers increase competition for scarce manufacturing capacity. The report notes the strategy is proceeding despite ongoing uncertainty over Nvidia’s CEO succession.
 
-rss · Semiconductor Digest · Nov 18, 23:56
+rss · DigiTimes · Nov 19, 08:45
 
-> **「Background」** NVIDIA’s October 2026 supply-chain commitments with Amkor, IBIDEN, KYEC, Samsung Electro-Mechanics, SPIL, and Unimicron included an aggregate 2.5x substrate capacity increase over three years, expanded advanced packaging, and doubled semiconductor testing capacity from 2026 to 2027. The new announcement builds on that foundation by extending capacity commitments to substrates, advanced packaging, wafer manufacturing, and contract production. It also follows the third-quarter first volume shipment of NVIDIA Vera Rubin NVL72 and Vera CPUs, which use TSMC’s 5nm, 3nm, and CoWoS advanced packaging.
+> **「Why substrate and packaging capacity matters」** IC substrates are the packaging components that connect high-performance chips to circuit boards, while OSAT providers handle advanced packaging and final testing. Nvidia&\#x27;s prepayments target capacity across these stages because AI accelerator production depends on limited, high-demand manufacturing resources. The move is occurring as custom ASIC programs from cloud providers and rival chipmakers compete for the same Taiwan supply chain.
 
-> **「Impact」** For AI-infrastructure customers and suppliers, the agreements create dedicated capacity across substrates, packaging, testing and wafer manufacturing for current and next-generation NVIDIA platforms, but most new capacity is scheduled from late 2027 through 2029, so near-term availability will still depend on existing production lines and component supply.
+> **「Impact」** For Nvidia and its AI accelerator customers, the reported prepayments could ease substrate and packaging bottlenecks, but the source does not confirm guaranteed volume, pricing, or delivery timelines, so supply risk remains.
 
-**Tags**: `#NVIDIA`, `#supply chain`, `#advanced packaging`, `#AI infrastructure`, `#capacity expansion`
+**Tags**: `#Nvidia`, `#AI supply chain`, `#advanced packaging`, `#IC substrates`, `#capacity prepayments`
 
 ---
 
 <a id="item-ai-hardware-2"></a>
-#### [TrendForce: China Cloud SSD Cuts Pull NAND Price Decline to Q2 2027](https://www.trendforce.com/research/download/RP261116WI) ⭐️ 8.0/10
+#### [ASE Subsidiary Plans NT$248.9B Kaohsiung Testing Plant](https://www.digitimes.com/news/a20261119PD228/testing-taiwan-ase-plant-subsidiary.html) ⭐️ 8.0/10
 
-TrendForce&\#x27;s November report says Chinese cloud vendors are sharply cutting 2027 enterprise SSD orders, enough to offset incremental demand from North American cloud vendors tied to AI-agent growth. The firm also cites weak consumer demand and continued capacity additions, which it says accelerate NAND oversupply. TrendForce forecasts NAND contract prices will begin falling in Q2 2027, one quarter earlier than previously expected, with declines widening each quarter in the second half of 2027. The report presents this as a market forecast, not independently confirmed procurement action.
+Taiwan Fore Electronics, a subsidiary of ASE Technology Holding, plans to invest NT$248.9 billion \(US$7.54 billion\) in a new K52 advanced semiconductor testing plant in Kaohsiung&\#x27;s Renwu industrial park. Construction is expected to be completed in phases in 2028 and 2029. The company says the K and J sites together would generate about NT$117.3 billion in annual revenue and create 3,300 jobs, expanding the area&\#x27;s advanced testing cluster.
 
-telegram · zaihuapd · Nov 19, 03:00
+rss · DigiTimes · Nov 19, 08:20
 
-> **「Background」** NAND contract prices are negotiated supply agreements that often move after spot-market weakness. TrendForce had already reported NAND spot prices falling about 20% in two weeks amid weak consumer demand, YMTC competition, and GPU shortages dampening Chinese enterprise SSD demand. Its broader 2027 memory outlook also contrasts NAND turning lower from Q2 2027 with general DRAM prices staying firm through year-end.
+> **「Prior Renwu testing expansion」** ASE held a groundbreaking ceremony in April 2026 for a new facility in Kaohsiung&\#x27;s Renwu Industrial Park, describing it as a hi-tech semiconductor testing cluster developed with partners WinWay Technology and HTT. That earlier development establishes the local testing-cluster context for the newly reported K52 plant investment by ASE subsidiary Taiwan Fore Electronics.
 
-> **「Procurement and vendor effects」** If the forecast holds, storage buyers and cloud infrastructure teams may see an earlier pricing inflection in NAND contract prices, but current AI-driven tightness, long-term supply agreements, and limited new capacity through late 2027 mean near-term enterprise SSD relief is not assured. The revised outlook also pressures NAND-focused memory vendors, while suppliers with greater DRAM/HBM exposure are comparatively better positioned.
+> **「Impact」** For semiconductor and AI hardware supply chains, the investment points to planned additional advanced testing capacity in Taiwan, but customers and suppliers would see the effect only after the phased 2028 and 2029 completion.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://www.trendforce.com/news/2026/11/17/news-nand-spot-prices-reverse-course-sliding-20-in-2-weeks-amid-weak-consumer-demand-ymtc-competition">[News] NAND Spot Prices Reverse Course, Sliding 20% in 2 Weeks amid Weak Consumer Demand, YMTC Competition</a></li>
-<li><a href="https://finance.biggo.com/news/0382166f-bd40-47d3-9b43-f7ba6f7bd0f8">Memory Market Diverges: NAND Prices May Turn Lower in Q2 2027, General DRAM Rally to Last Through Year-End — BigGo Finance</a></li>
-<li><a href="https://finance.biggo.com/news/0382166f-bd40-47d3-9b43-f7ba6f7bd0f8">Memory Market Diverges: NAND Prices May Turn Lower in Q2 2027, General DRAM Rally to Last Through Year-End — BigGo Finance</a></li>
-<li><a href="https://finance.yahoo.com/sectors/technology/articles/dram-prices-predicted-jump-63-145240784.html">DRAM prices predicted to jump 63% in Q2, NAND up to 75% — follows 95% jumps in Q1, Trendforce says AI server demand keeps supply tight</a></li>
+<li><a href="https://www.aseglobal.com/press-room/ase-breaks-ground-on-new-renwu-plant-to-build-hi-tech-testing-cluster">ASE Breaks Ground on New Renwu Plant to Build Hi-tech Testing Cluster | ASE Holdings</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#NAND pricing`, `#enterprise SSD`, `#China cloud capex`, `#memory supply chain`, `#AI storage demand`
+**Tags**: `#ASE`, `#semiconductor testing`, `#capex`, `#AI hardware supply chain`, `#Taiwan`
 
 ---
 
 <a id="item-ai-hardware-3"></a>
-#### [Nvidia, SPIL Reportedly Sign Deal to Triple Packaging Capacity by 2029](https://news.google.com/rss/articles/CBMiiAFBVV95cUxOWVlUT2pZWWkwcW5RUk1oZWRDVVNmMEV2SXItckt0UlB0RGlJMDBRbE9YcFM4UnlidFlEUmkweUMtQlRUaGVrWWZwMExYNVBTTDhvSVVNb1ltTnkyeWYxM1F0Sjc5WTdSaEluZXFhUGFYVXFGX1hqbjl0cHRmT2RDdGlIRTdXODVB?oc=5) ⭐️ 8.0/10
+#### [NVIDIA Expands AI Supply Chain Commitments With Packaging Partners](https://www.semiconductor-digest.com/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout) ⭐️ 8.0/10
 
-Nvidia and SPIL are reported to have signed a multibillion-dollar agreement to triple advanced packaging capacity by 2029. The move targets the packaging stage of AI accelerator production, where capacity constraints can limit the ability to scale compute hardware. The source provides only the headline, so contract terms, the baseline capacity being tripled, and the specific Nvidia products affected are not specified.
+NVIDIA announced expanded manufacturing commitments with TSMC, Amkor, SPIL, Kinsus, Samsung Electro-Mechanics, and Foxconn to scale substrates, advanced packaging, wafer, and contract manufacturing for accelerated computing and AI infrastructure. Kinsus plans to expand dedicated ABF substrate capacity by more than 3.5x, with production expected in the second half of 2027 and additional capacity targeted for Q3 2028, while SPIL is set to increase dedicated advanced packaging capacity by mid-2029 under multibillion-dollar NVIDIA funding. Amkor’s Arizona and South Korea packaging expansions are tied to July and October 2026 agreements totaling nearly $3 billion, and the release notes that Vera Rubin NVL72 and Vera CPUs had their first volume shipments in Q3 using TSMC 5nm, 3nm, and CoWoS packaging. Most capacity additions are future-dated, so the announcement describes planned supply-chain expansion rather than immediate additional production.
 
-google\_news · digitimes · Nov 18, 05:34
+rss · Semiconductor Digest · Nov 18, 23:56
 
-> **「Background」** SPIL is a Siliconware Precision Industries subsidiary of ASE Technology Holding that provides chip-on-wafer-on-substrate \(CoWoS\) advanced packaging services. This agreement follows NVIDIA’s October supply-chain commitments, which included expanded advanced packaging with SPIL and Amkor and a planned 15x increase in SPIL’s optical-engine capacity by mid-2027.
+> **「Background」** NVIDIA’s expanded supply-chain commitments build on earlier announcements in 2026, including July and October agreements with Amkor totaling nearly $3 billion and an October package of substrate, packaging, and testing expansions with multiple partners. The latest step extends those efforts across substrates, advanced packaging, wafer production, and contract manufacturing for current and next-generation accelerated computing platforms.
 
-> **「Impact」** If the expansion is delivered, it could reduce a key bottleneck in Nvidia’s AI hardware supply chain by increasing available advanced-packaging capacity for future accelerator production. However, the reported 2029 timeframe means near-term supply conditions and product availability are not changed by the agreement as described.
+> **「Impact」** For organizations building AI data centers, the agreements give NVIDIA’s partners precommitted funding and multiyear demand signals, which should support longer-term availability of advanced packaging and substrate capacity for next-generation GPU and networking platforms. However, because the new capacity is scheduled from 2027 through 2029, customers planning near-term deployments should not assume immediate relief from supply constraints and should align procurement with NVIDIA’s announced platform timelines.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://nvidianews.nvidia.com/news/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout">NVIDIA Expands Commitments With Supply Chain Partners to Support AI Infrastructure Buildout | NVIDIA Newsroom</a></li>
-<li><a href="https://www.digitimes.com/news/a20261118PD239/nvidia-spil-packaging-capacity.html">Nvidia, SPIL sign multibillion-dollar deal to triple advanced packaging capacity by 2029</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#advanced packaging`, `#Nvidia`, `#SPIL`, `#AI supply chain`, `#capacity expansion`
+**Tags**: `#NVIDIA`, `#AI supply chain`, `#advanced packaging`, `#semiconductor manufacturing`, `#capacity expansion`
 
 ---
 
 <a id="item-ai-hardware-4"></a>
-#### [Nvidia Reportedly Tops $500 Billion in AI Supply Commitments](https://news.google.com/rss/articles/CBMidkFVX3lxTE5uam9PV1dsMVFXUFBNblFZYVg5U01NS0xPYzNGdkc0WEZqbGpobnExTVVhZFJOZUxHelBEa2h1ZUJaczV6Z2VRNm94QW1JbzNtZ2FtcUI0b1dSc2xTU1JBbWc2dFhsaHFtWlhVVGxZQ095aENKVFE?oc=5) ⭐️ 8.0/10
+#### [HBM4 Price Forecast Seen Rising Up to 2.7-Fold Next Year](https://news.google.com/rss/articles/CBMidEFVX3lxTE9pLWZxSnZqd0Q2eFJfcmhMY3dwY3pEN3liekJrOTE0R0YzaGdQRmhFMzJUVkJNWWd4SXpZUnZVMHFWMkVlWDhlSXVjQmtQV2JaWUpuLUI2T2I3VXBEZ1hvWU14Zmh1Z0h1UVFmV1lMNG1Vckkz?oc=5) ⭐️ 8.0/10
 
-Nvidia has reportedly surpassed $500 billion in supply commitments as it expands its AI manufacturing push, according to a BigGo Finance headline. The available source material provides only the headline, so the exact scope, counterparties, timing, and whether the figure represents announced orders, contracted purchases, or other obligations are not specified. The reported commitment is tied to Nvidia’s broader effort to widen AI manufacturing.
+Businesskorea reported that HBM4 prices are seen rising as much as 2.7-fold next year as DRAM supply tightens. The outlook is a forecast, not a confirmed contract or already-applied price increase. If realized, it would make HBM4 procurement materially more expensive for buyers of memory-dependent AI hardware.
 
-google\_news · BigGo Finance · Nov 18, 17:55
+google\_news · Businesskorea · Nov 19, 02:15
 
-> **「Background」** Nvidia previously announced a plan to produce AI servers worth up to $500 billion in the United States over four years with partners such as TSMC, Foxconn and Wistron, including Blackwell chip production in Arizona and supercomputer plants in Texas. That pledge was framed partly as a response to U.S. tariff pressure and calls for local manufacturing.
+> **「Background」** HBM4 is the sixth-generation high-bandwidth memory used alongside AI accelerators, succeeding HBM3E. The forecasted price rise is tied to memory makers shifting more DRAM wafer capacity toward HBM, which requires more complex manufacturing and consumes three to four times as many wafers as conventional DRAM for the same capacity.
 
-> **「Impact」** If Nvidia’s reported $500 billion supply commitment is executed through North American fabrication, system integration, and packaging partners, AI infrastructure buyers may face a trade-off: more resilient domestic supply in exchange for higher component costs, with related analysis citing a potential 25-40% wafer-cost premium for U.S.-based advanced-node production.
+> **「Impact」** If the forecast holds, organizations purchasing HBM4-equipped AI systems may need to absorb or pass on higher memory costs next year, affecting server procurement budgets and pricing.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://ca.finance.yahoo.com/news/nvidia-says-working-partners-ai-130907868.html">Nvidia to produce AI servers worth up to $500 billion in US over four years</a></li>
-<li><a href="https://finance.yahoo.com/news/nvidia-says-working-partners-ai-130907486.html">Nvidia to produce AI servers worth up to $500 billion in US over four years</a></li>
-<li><a href="https://manufacturing-today.com/news/nvidia-commits-500b-to-ai-chipmaking-in-north-america">Nvidia Commits $500B to AI Chipmaking in North America</a></li>
-<li><a href="https://siliconanalysts.com/analysis/topic/supply-chain">Supply Chain Analysis - Semiconductor Market Intelligence</a></li>
+<li><a href="https://www.businesskorea.co.kr/news/articleView.html?idxno=281671">HBM4 Prices Seen Rising Up to 2.7-Fold Next Year as DRAM Supply Tightens - Businesskorea</a></li>
+<li><a href="https://en.sedaily.com/business/2026/11/19/latest-hbm-prices-to-jump-up-to-27-fold-next-year">Latest HBM Prices to Jump Up to 2.7-Fold Next Year - Seoul Economic Daily</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#AI manufacturing`, `#supply chain`, `#capex`, `#semiconductors`
+**Tags**: `#HBM4`, `#DRAM supply`, `#memory pricing`, `#AI server cost`, `#China A-share themes`
 
 ---
 
 <a id="item-ai-hardware-5"></a>
-#### [Nvidia Reportedly Invests Over $1 Billion in Kinsus to Expand AI Capacity](https://news.google.com/rss/articles/CBMikAFBVV95cUxNTTZwRU1SSWh0M29hTFpHakFMZWV4ZGFOMWFHWjBieDRPV2dFOHhKSFVBNWFjZDFrTG9iTVhNWF9CZ2lPVHdKZ3VUNDdGajk3OVNBbklORXJfTU5zaGRnekxuWldyeF9hZlJJaDVfak5JanF6ZW1iT1VoWXl3MDFsWEQzRlJLOHFpSDd5THBKZUU?oc=5) ⭐️ 8.0/10
+#### [Microsoft Reportedly First Intel EMIB Customer For Azure Silicon](https://news.google.com/rss/articles/CBMikwFBVV95cUxNMFR2TEdnZ0VuOGY3MGxCaGptc1lDZkhXYll2RDY2dndOQ0pvckZjZkFhZnZuLTJrNUNlSXpKbHJtakZONlRUZWtUeFJwRXFfQzFrb0l2SDcyZU40alAyTDE2NFRWY0N5M05CdFU2dlJZTVlyZjV6b2JhODlCNVVwY2t1N2FBZl9UZi1TbXpTNVVyOU3SAZgBQVVfeXFMTTlXXzVoR21fUEVtemdsand6anhTOVU2cWJsdG1fWmc3Zy1QR1V2dWJHOUpmcjFNX2FOVU96YmdxRDZkYnV1c3h3VHljS0lhQWhiNzM2UnhDNm9WYlNPdHRRZmxjTGlOQnJUQzBncWtoY2FGODJIOUxUZHhVRzRHc1FVc2N5LWR4YmMyM016UzVvNlFsR1ZreW8?oc=5) ⭐️ 8.0/10
 
-Nvidia has reportedly invested more than $1 billion in Kinsus to expand AI-related manufacturing capacity. The report frames the move as an effort to increase capacity tied to AI production, but does not specify the exact facility, product line, or completion timeline. Because the supplied source is only a headline, the claim remains a reported investment rather than a verified shipped capability.
+Wccftech reports that Microsoft has become Intel&\#x27;s first announced EMIB customer for its Azure custom silicon. The report also says Microsoft has secured multi-year Xeon capacity that includes next-generation Diamond Rapids. The available source does not provide deal size, contract terms, or a shipping timeline.
 
-google\_news · Dataconomy · Nov 18, 11:01
+google\_news · Wccftech · Nov 18, 18:45
 
-> **「Background」** Kinsus Interconnect Technology is a Taiwan supplier of advanced ABF package substrates, the multilayer components that connect AI chips to circuit boards. The investment builds on a more than decade-long Nvidia-Kinsus partnership and fits Nvidia’s broader effort to secure substrate and packaging capacity through suppliers such as Samsung Electro-Mechanics, Amkor, and Foxconn.
+> **「Background」** Intel Foundry&\#x27;s EMIB \(Embedded Multi-die Interconnect Bridge\) is an advanced packaging technology that connects multiple silicon dies into a custom processor package. The reported agreement expands a long-standing Microsoft and Intel collaboration on Azure infrastructure by adding Intel Foundry packaging for Microsoft&\#x27;s first-party Azure silicon.
 
-> **「Impact」** For AI accelerator supply chains, the reported investment indicates Nvidia is seeking to expand capacity through a named manufacturing partner, Kinsus, making supplier capacity a more direct consideration in Nvidia’s AI production plans.
+> **「Impact」** For Microsoft, the announced agreement creates a named sourcing path for Intel EMIB advanced packaging on Azure first-party silicon and reserves multi-year Xeon capacity that includes next-generation Diamond Rapids, supporting planning for custom accelerator and server-CPU supply. For Intel Foundry, it provides the first publicly announced external EMIB customer. However, no terms, volumes, timing, or specific Azure chip names were disclosed, leaving procurement and compatibility details uncertain.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://cryptobriefing.com/nvidia-invests-over-1b-in-kinsus-to-boost-ai-substrate-capacity-by-2028">Nvidia invests over $1B in Kinsus to boost AI substrate capacity by 2028</a></li>
-<li><a href="https://infraday.com/2026/11/17/nvidia-kinsus-taiwan-ai-chip-substrates-packaging">NVIDIA commits more than $1 billion to Kinsus for AI chip substrates in Taiwan – Infraday | Infrastructure News, Projects &amp; Events</a></li>
-<li><a href="https://www.investing.com/news/stock-market-news/kinsus-stock-jumps-nearly-7-as-nvidia-commits-over-1-billion-to-taiwan-supplier-5034863">Kinsus stock jumps nearly 7% as Nvidia commits over $1 billion to Taiwan supplier</a></li>
+<li><a href="https://www.tradingview.com/news/prnewswire:6225b5fcf050b:0-microsoft-and-intel-deepen-collaboration-to-deliver-differentiated-azure-infrastructure">Microsoft and Intel Deepen Collaboration to Deliver Differentiated Azure Infrastructure — TradingView News</a></li>
+<li><a href="https://www.intel.com/content/www/us/en/newsroom/news/corporate/microsoft-azure-infrastructure-collaboration.html">Microsoft and Intel deepen collaboration to deliver differentiated...</a></li>
+<li><a href="https://x.com/PatrickMoorhead/status/2123132318168633537">Patrick Moorhead on X: &quot;$INTC Foundry has its first customer to officially announce EMIB, and it&#x27;s $MSFT. @Microsoft will us…&quot;</a></li>
+<li><a href="https://thedefiant.io/frontier/infrastructure/microsoft-plans-intel-emib-packaging-for-azure-chips">Microsoft Plans Intel EMIB Packaging for Azure Chips</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#Kinsus`, `#AI capacity`, `#packaging supply chain`, `#capital investment`
+**Tags**: `#advanced packaging`, `#Intel capacity`, `#Microsoft Azure`, `#server CPUs`, `#supply chain`
 
 ---
 
 ### AI Applications
 
 <a id="item-ai-app-1"></a>
-#### [Doubao Work Claims 8 Million DAU and 2 Billion RMB ARR](https://www.leiphone.com/category/industrynews/cC8dbvo5f5k5tgnE.html) ⭐️ 7.0/10
+#### [Microsoft Unveils Seven In-House MAI Models to Replace External AI](https://the-decoder.com/microsoft-is-replacing-outside-ai-models-in-its-own-products-with-cheaper-in-house-alternatives/) ⭐️ 8.0/10
 
-Doubao Work announced that three months after its Aug. 25 launch, its daily active users surpassed 8 million and enterprise customer annual recurring revenue exceeded 2 billion RMB. The company also said it launched a Workbench feature on Nov. 16 covering 21 professional scenarios, including finance, healthcare, education, and creative design, and recently added Kimi, GLM, and DeepSeek third-party models with quota-consumption multipliers.
-
-rss · 雷峰网 · Nov 18, 13:18
-
-> **「Background」** Doubao Work is the productivity-focused AI brand within Doubao, launched on August 25 to provide professional office capabilities. The new metrics therefore arrive about three months after launch, following its November 16 introduction of specialized workbenches and recent support for third-party model routing.
-
-> **「Impact」** For enterprise users, the added third-party models and displayed quota-consumption multipliers create a more direct way to choose between task capability and usage cost, while the reported scale and revenue remain vendor claims rather than independently verified results.
-
-**Tags**: `#China AI applications`, `#enterprise AI adoption`, `#AI agent platforms`, `#monetization metrics`, `#competitive dynamics`
-
----
-
-<a id="item-ai-app-2"></a>
-#### [Largest US School Districts Weigh Google Alternatives Over AI Search Opt-Out](https://www.theverge.com/ai-artificial-intelligence/1037151/school-districts-ditching-google) ⭐️ 7.0/10
-
-New York, Los Angeles, and Chicago school districts are considering alternatives to Google Search after The New York Times reported that Google will disable Search for schools that opt out of Gemini-powered AI features. Under the announced policy, starting next year schools will not be able to turn off Gemini features without also losing access to Search, according to Google education vice president Chris Phillips. The move has drawn harsh responses from elected officials, including New York City Mayor Zohran Mamdani and Senator Bernie Sanders, but the source does not quantify the districts’ final procurement decisions or market impact.
-
-rss · The Verge AI · Nov 18, 23:18
-
-> **「Context」** Google’s education products have increasingly integrated Gemini AI features into Search, and district-facing tools were described as initially disabled until schools choose which services to enable. That integration is the basis for the new rule tying Gemini opt-outs to loss of Search access.
-
-> **「Procurement and switching costs」** Districts that reject Google’s bundled Gemini features may have to replace the default search layer inside school-managed Chromebooks and Workspace accounts rather than remove Google from their stack, creating procurement, filtering, safe-search, and training work. New York City, Los Angeles, and Chicago officials are considering alternatives, but the practical cost depends on whether they can reconfigure existing Google-based environments without a full migration.
-
-<details><summary>References</summary>
-<ul>
-<li><a href="https://mezha.net/eng/news/mezha-b0db2b838bdae9692b1d38c4_new_york-_los">New York, Los Angeles and Chicago schools weigh alternatives to Google Search | Межа</a></li>
-<li><a href="https://www.seattletimes.com/business/u-s-school-districts-weigh-breaking-up-with-google-search-over-ai">U.S. school districts weigh breaking up with Google search over AI | The Seattle Times</a></li>
-<li><a href="https://shattered.io/school-districts-weigh-ditching-google-search-over-ai-nyc-la-chicago">Google Search in Schools: 3 Districts Weigh Exit</a></li>
-<li><a href="https://www.nytimes.com/2026/11/18/technology/google-gemini-ai-search-schools-nyc-la-chicago.html">NYC, LA and Chicago School Districts Weigh Breaking Up With Google Search Over A.I. - The New York Times</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#AI bundling`, `#education procurement`, `#Google`, `#enterprise adoption`, `#competitive dynamics`
-
----
-
-<a id="item-ai-app-3"></a>
-#### [Google Ships Gemini 4 Neon at $3 Input, $15 Output](https://the-decoder.com/google-ships-gemini-4-neon-its-fourth-new-gemini-model-in-a-month/) ⭐️ 7.0/10
-
-Google released Gemini 4 Neon, described as its fourth new Gemini model in a month, a multimodal frontier model for software development, knowledge work, and science with text, image, video, audio, and PDF support and a 1-million-token context window. It is priced at $3 per million input tokens and $15 per million output tokens, above previous Gemini 4 models, and is reported available to developers, enterprises, and Google AI Pro/Ultra subscribers. The source also reports Artificial Analysis coding-agent and Terminal-Bench scores and a 32% lower default high-tier single-task cost than Carbon, but does not independently verify those claims.
-
-rss · The Decoder · Nov 18, 21:03
-
-> **「Background」** Gemini 4 Neon is presented as Google’s fourth new Gemini model in a month, continuing a rapid release cadence for the Gemini 4 lineup. The launch is notable because Neon is priced above earlier Gemini 4 models, changing the cost baseline for developers and enterprises evaluating Google’s frontier APIs.
-
-> **「Impact」** For API users, Neon&\#x27;s list pricing is higher than earlier Gemini 4 models, so teams with large input/output volumes should compare its reported coding-agent performance and cost claims against existing Gemini 4 options before switching.
-
-**Tags**: `#Google Gemini`, `#model launch`, `#API pricing`, `#developer tools`, `#frontier models`
-
----
-
-<a id="item-ai-app-4"></a>
-#### [Microsoft Announces In-House MAI Models for Enterprise AI Agents](https://the-decoder.com/microsoft-is-replacing-outside-ai-models-in-its-own-products-with-cheaper-in-house-alternatives/) ⭐️ 7.0/10
-
-Microsoft said its MAI division unveiled seven new in-house models at Ignite for code, security, images, language, and routing, positioning them as cheaper replacements for outside AI models in Microsoft products and enterprise AI agents. Microsoft claims MAI Code 2 reaches 98 percent of GPT-6.1 Sol&\#x27;s performance at 40 percent of the cost, and the models are built for running AI agents around the clock in enterprises. The source is a secondary report and does not detail the rollout schedule, affected products, or independent verification of the performance and cost claims.
+Microsoft&\#x27;s MAI division introduced seven in-house AI models for code, security, images, language, and routing at Ignite, and is moving its own products away from outside models toward these alternatives. Microsoft claims MAI Code 2 reaches 98% of GPT-6.1 Sol&\#x27;s performance at 40% of the cost, and says the models are designed for continuous enterprise AI-agent workloads. The performance and cost figures are vendor claims, not independently verified results.
 
 rss · The Decoder · Nov 18, 18:47
 
-> **「Context」** Microsoft&\#x27;s Ignite 2026 announcement introduced seven MAI models for enterprise coding, security, images, language, and routing. Microsoft reported internal benchmark results for MAI Code 2 across GitHub Copilot-aligned tasks and said the models prioritize everyday work rather than harder long-horizon agentic or scientific problems.
+> **「Background」** Microsoft’s AI division unveiled seven MAI models at Ignite 2026, positioning them as in-house alternatives to external models such as OpenAI’s GPT-6.1 Sol and Anthropic’s Claude Opus 5.5. The reported benchmark comparisons come from Microsoft’s internal evaluation and are framed around everyday enterprise coding tasks, not harder science research or very long-horizon agentic work.
 
-> **「Impact」** For enterprises using Microsoft 365 Copilot, moving routine Office prompts to MAI could reduce dependence on external models and give Microsoft room to adjust subscription pricing. Because Microsoft’s near-parity and 40%-cost claims are vendor-stated, IT teams should benchmark MAI Code 2 in their own agent workloads before replacing outside models.
+> **「Impact」** For Microsoft product users and enterprise customers, the shift could lower AI inference costs and reduce reliance on third-party model providers, but adoption decisions will depend on independently measured quality, compatibility, and whether MAI models match external models across real workloads.
 
 <details><summary>References</summary>
 <ul>
 <li><a href="https://microsoft.ai/news/microsoft-ignite-2026">Seven new world class models at scalable price-performance | Microsoft AI</a></li>
 <li><a href="https://www.techzine.eu/news/devops/145878/microsoft-mai-code-2-generates-code-at-a-fraction-of-the-price">Microsoft MAI Code 2 generates code at a fraction of the price</a></li>
-<li><a href="https://enterprisedna.co/resources/news/microsoft-mai-replaces-openai-anthropic-office-apps-july-2026">Microsoft Shifts Excel and Outlook to Its Own AI Models — Enterprise DNA</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Microsoft`, `#AI pricing`, `#enterprise agents`, `#in-house models`, `#vendor strategy`
+**Tags**: `#Microsoft`, `#in-house AI models`, `#enterprise AI agents`, `#AI pricing`, `#competitive dynamics`
+
+---
+
+<a id="item-ai-app-2"></a>
+#### [Tencent Cuts Yuanbao Investment, Shifts Focus to Model Capability](https://news.qq.com/rain/a/20261119A04QD000) ⭐️ 8.0/10
+
+Tencent said Yuanbao missed expectations and that it has sharply reduced investment in the app, shifting priority to improving model capability. The company said Yuanbao is no longer targeting user scale alone and that progress is good. It also disclosed that WeChat’s AI assistant Xiao Wei remains in an expanding test pool, has reached 30 million daily active users, and is expected to cost less per quarter after full launch than Yuanbao’s quarterly cost earlier this year.
+
+telegram · zaihuapd · Nov 19, 05:00
+
+> **「Background」** Yuanbao is the Tencent AI assistant product whose spending was reduced, while Xiao Wei is the WeChat AI assistant still expanding its user test pool. That distinction matters because Xiao Wei’s reported daily active users reflect testing traction rather than a full public launch, and Tencent’s stated shift is from app-level spending toward model capability.
+
+> **「Impact」** For Tencent’s AI strategy, the change means Yuanbao will likely be judged less on user growth and more on model capability, while WeChat users may see Xiao Wei’s staged rollout tracked through test-pool expansion and lower projected quarterly costs.
+
+**Tags**: `#Tencent AI strategy`, `#China AI applications`, `#AI assistant adoption`, `#model capability investment`, `#AI inference cost`
+
+---
+
+<a id="item-ai-app-3"></a>
+#### [School districts consider leaving Google over AI-Search bundle](https://www.theverge.com/ai-artificial-intelligence/1037151/school-districts-ditching-google) ⭐️ 7.0/10
+
+New York, Los Angeles, and Chicago school districts are considering alternatives to Google after the company said schools will not be able to disable Gemini-powered AI features next year without also losing Google Search. Google vice president of education Chris Phillips said Search and AI are deeply integrated, and that schools turning off Google’s AI features will not have access to Search. The districts’ response is based on reporting from The New York Times and reflects a policy change affecting large public school systems rather than a confirmed migration away from Google.
+
+rss · The Verge AI · Nov 18, 23:18
+
+> **「Background」** Google’s education offerings previously gave districts the option to opt out of Gemini-powered AI features while still using Search. The announced change removes that option, tying Search access to acceptance of the AI features.
+
+> **「Why it matters」** For districts that want to restrict AI use for students, Google’s announced change makes Search availability and AI opt-out a single decision, increasing the chance that they will evaluate competing products or adjust their Google Workspace education deployments.
+
+**Tags**: `#Google`, `#AI education`, `#platform bundling`, `#school districts`, `#enterprise adoption`
+
+---
+
+<a id="item-ai-app-4"></a>
+#### [Google Ships Gemini 4 Neon With 1M Context and Higher API Pricing](https://the-decoder.com/google-ships-gemini-4-neon-its-fourth-new-gemini-model-in-a-month/) ⭐️ 7.0/10
+
+Google released Gemini 4 Neon, its fourth new Gemini model in a month, as a multimodal frontier model for software development, knowledge work, and science. It handles text, images, video, audio, and PDFs with a one-million-token context window and is available to developers, enterprises, and Google AI Pro/Ultra subscribers. API pricing is $3 per million input tokens, $0.15 for cached input, and $15 per million output tokens, above previous Gemini 4 models. The supplied Telegram summary also reports Artificial Analysis coding-agent and intelligence scores, Terminal-Bench 4.1 performance, and a 32% lower default high single-task cost versus Carbon, but these are source-reported benchmark claims rather than independently verified results here.
+
+rss · The Decoder · Nov 18, 21:03
+
+> **「Recent Gemini 4 releases」** Earlier Gemini 4 models such as Argon, Hydrogen, and Carbon had already established a tiered lineup, so Neon is presented as another rapid release rather than the family&\#x27;s first model.
+
+> **「Impact」** Teams building coding or research agents can now evaluate Neon through the Gemini API or eligible Google subscriptions, but they should compare task-specific quality and total cost because its pricing is higher than earlier Gemini 4 models and the reported benchmark advantages are not independently confirmed in this item.
+
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.linkedin.com/posts/edong186_okay-third-gemini-4-model-in-two-weeks-activity-7528950009250177024-V8ab">Okay, third Gemini 4 model in two weeks, and then the lineup makes total sense. 😅 Gemini 4 Neon is now generally available on Google Cloud, Google AI Studio, and Google Antigravity at $3 / $15 per… | Eric Dong</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Gemini`, `#API pricing`, `#model launches`, `#Google`, `#frontier models`
 
 ---
 
 <a id="item-ai-app-5"></a>
-#### [Kuaishou Launches Kling Image 4.0 With Native 8K Generation](https://technode.com/2026/11/18/kuaishou-launches-kling-image-4-0-with-native-8k-generation/) ⭐️ 7.0/10
+#### [Tencent claims Hunyuan Hy4 flash hit 50 trillion tokens on first day](https://technode.com/2026/11/19/tencent-says-hunyuan-hy4-flash-surpasses-50-trillion-tokens-in-first-day-usage/) ⭐️ 7.0/10
 
-Kuaishou launched Kling Image 4.0, adding native 8K image generation and the ability to produce up to 10 coordinated images from a single prompt. The model is also available through an API for developers and enterprise customers, combining visual understanding and image generation for work such as advertising, storyboards, and e-commerce design. Kuaishou says the model can render up to 2,000 characters in one image, supports seven languages and more than 70 preset commercial fonts, and can use reference uploads to guide typography, lighting, and color.
+Tencent says its lightweight Hunyuan Hy4 flash model processed more than 50 trillion tokens on its first day after a Nov. 16 launch, the highest first-day usage among Hunyuan models. The company reports the model ranked first on OpenRouter’s daily LLM leaderboard on Nov. 17 and recorded 10 times the first-day usage of Hy4 preview on WorkBuddy, completing over 50 million user tasks. Tencent describes Hy4 flash as a 224B-parameter, 12B-active hybrid-activation model with multimodal support, a 1M-token context window, about 200 tokens per second generation, and pricing of 0.5 yuan per million input tokens and 2 yuan per million output tokens.
 
-rss · TechNode · Nov 18, 06:43
+rss · TechNode · Nov 19, 07:24
 
-> **「Background」** Kling Image is Kuaishou’s generative-AI image product line, and the 4.0 release indicates a major update to an existing versioned model family. Coordinated multi-image output and API access are relevant in this context because commercial design workflows often require consistent visual branding and programmatic integration.
+> **「Background」** Hy4 preview had earlier demand spikes on WorkBuddy after its Nov. 4 debut, causing many users to hit usage limits before Tencent expanded inference capacity and free quotas. Hy4 flash is positioned as a lower-cost, high-speed variant for everyday office workflows, with Tencent citing internal WorkIndex results showing task costs far below Hy4 preview and Hy4.
 
-> **「Enterprise design workflow impact」** For organizations already using Kuaishou&\#x27;s Kling, the new API could reduce manual style-consistency work across advertising, storyboard, and e-commerce asset sets, given Kuaishou&\#x27;s reported base of more than 100 million users and over 50,000 enterprise customers; however, teams should test 8K output quality, multilingual typography, and actual API pricing before production integration.
+> **「Impact」** For Tencent WorkBuddy users and China-market developers evaluating AI office tools, the claimed 1/13 and 1/20 task-cost reductions could make high-frequency document, spreadsheet, presentation, audio/video, and visual-understanding tasks more affordable if the pricing and throughput hold under real workloads. The evidence is vendor-reported first-day usage and internal benchmarks, so buyers should test quality, concurrency, retention, and actual cost before assuming sustained value.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://newmarketpitch.com/blogs/news/generative-ai-kling-vs-runway">Is Kling ahead of Runway in AI video? – New Market Pitch</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#China AI applications`, `#Kuaishou Kling`, `#enterprise AI image generation`, `#AIGC`, `#multimodal models`
+**Tags**: `#Tencent AI`, `#Hunyuan models`, `#token usage`, `#WorkBuddy`, `#China AI applications`
 
 ---
 
 ### Technology News
 
 <a id="item-tech-news-1"></a>
-#### [Anthropic Raises Record $107.3 Billion in IPO and Private Placement](https://www.bloomberg.com/news/articles/2026-11-18/anthropic-is-said-to-price-ipo-at-83-per-share) ⭐️ 9.0/10
+#### [Anthropic Raises $107.3 Billion in Record AI IPO and Placement](https://www.bloomberg.com/news/articles/2026-11-18/anthropic-is-said-to-price-ipo-at-83-per-share) ⭐️ 9.0/10
 
-Bloomberg reports that Anthropic PBC and its seven co-founders raised a record $107.3 billion through an upsized IPO and private placement, making it the first frontier AI lab to tap public markets. The IPO was priced at $83 per share, above the expected $70-$78 range, with about 980 million shares sold for $81.3 billion, and the stock is expected to begin trading on Nasdaq under ticker ANT with a fully diluted market cap around $1.5 trillion. Anthropic’s latest prospectus reported $33.24 billion in nine-month revenue, up roughly 1,200% year over year, and a $104 billion net loss, alongside more than 90 pages of risk factors.
+Anthropic PBC and its seven co-founders raised a reported $107.3 billion through an upsized IPO and private placement, Bloomberg said. The offering made Anthropic the first frontier AI lab to tap public markets for developing thinking machines, with the IPO reported at $83 per share and a debut that surpassed SpaceX&\#x27;s record. The transaction gives the company a public-market funding channel for compute-intensive AI work, though the source material does not detail the final allocation of proceeds.
 
 rss · Bloomberg Technology · Nov 18, 21:09
 
-> **「Background」** Anthropic was founded in 2021 by researchers who left OpenAI and is best known for its Claude family of enterprise AI models. Its public offering follows SpaceX’s June IPO, which had previously held the record for capital raised.
+> **「Background」** Before Anthropic’s debut, SpaceX held the record for the largest initial public offering, raising $75 billion in its Nasdaq listing. That earlier record provided the benchmark that Anthropic’s $107.3 billion upsized offering surpassed, including the $81.3 billion base IPO excluding the private placement.
 
-> **「Impact」** The listing gives public-market investors direct exposure to Anthropic’s Claude business and creates a visible financing benchmark for frontier AI labs, while organizations that buy AI services from Anthropic, Amazon, Google, Microsoft, Nvidia or AMD now face a more transparent but still loss-making vendor with disclosed safety, regulatory and national-security risks.
+> **「Impact」** Anthropic&\#x27;s public debut gives public-market investors direct exposure to frontier AI lab economics, including the capital demands of large-scale model training and inference.
 
-**Tags**: `#Anthropic IPO`, `#AI capital markets`, `#frontier AI labs`, `#public offerings`, `#AI industry structure`
+<details><summary>References</summary>
+<ul>
+<li><a href="https://www.businesstimes.com.sg/companies-markets/telcos-media-tech/anthropic-ipo-raises-us107-3-billion-top-spacexs-record-debut">Anthropic IPO raises US$107.3 billion to top SpaceX&#x27;s record debut - The Business Times</a></li>
+<li><a href="https://www.businessinsider.com/10-largest-ipos-in-history-ranked-by-total-proceeds-2019-9">SpaceX IPO Breaks Record: Here Are 10 Public Offerings It Dwarfed - Business Insider</a></li>
+
+</ul>
+</details>
+
+**Tags**: `#Anthropic IPO`, `#AI capital markets`, `#frontier AI labs`, `#private placement`, `#compute investment`
 
 ---
 
 <a id="item-tech-news-2"></a>
-#### [Anthropic Prices IPO at $83 a Share, Above Projected Range](https://techcrunch.com/2026/11/18/anthropic-reportedly-prices-ipo-at-83-a-share-above-projected-range/) ⭐️ 9.0/10
+#### [Anthropic IPO Priced Above Range at $83, Valuing It at $1.5 Trillion](https://techcrunch.com/2026/11/18/anthropic-reportedly-prices-ipo-at-83-a-share-above-projected-range/) ⭐️ 9.0/10
 
-Anthropic reportedly priced its IPO at $83 per share, above its projected range. The offering values the AI company at $1.5 trillion on a fully diluted basis.
+Anthropic reportedly priced its IPO at $83 per share, above its updated $70-$78 expected range, and is expected to begin trading on Nasdaq under ticker ANT. The company and its co-founders upsized the offering to about 980 million shares, raising roughly $81.3 billion and bringing the fully diluted market capitalization to about $1.5 trillion.
 
 rss · TechCrunch AI · Nov 18, 22:11
 
-> **「Background」** Anthropic had marketed its IPO at $70 to $78 per share, following a May private funding round that valued the company at $965 billion. The reported $83 price therefore sits above that range and implies a $1.5 trillion fully diluted valuation, though below the $2 trillion target reportedly discussed earlier.
+> **「IPO pricing context」** Anthropic had previously set an expected IPO price range of $70 to $78 per share and planned to sell 825 million shares. The final $83 price and upsized 980 million-share offering therefore came in above the marketed range, making the listing larger and more expensive than initially projected.
 
-> **「Impact」** The IPO gives investors a public-market valuation benchmark for Anthropic, which can influence how AI companies are priced and scrutinized.
+> **「Impact」** The above-range pricing and upsized offering give public investors direct exposure to a major enterprise AI model vendor, while Amazon, Google, Microsoft, Nvidia and AMD’s stakes and IPO commitments tie Anthropic’s performance to large AI infrastructure buyers and sellers.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://techcrunch.com/2026/11/18/anthropic-reportedly-prices-ipo-at-83-a-share-above-projected-range">Anthropic reportedly prices IPO at $83 a share, above projected range | TechCrunch</a></li>
-<li><a href="https://finance.yahoo.com/markets/stocks/articles/anthropic-prices-ipo-83-per-222443646.html">Anthropic reportedly prices its IPO at $83 per share, valuing the AI giant at $1.5 trillion</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Anthropic`, `#AI IPO`, `#capital markets`, `#AI valuation`, `#industry competition`
+**Tags**: `#AI industry`, `#IPO`, `#Anthropic`, `#capital markets`, `#valuation`
 
 ---
 
 <a id="item-tech-news-3"></a>
-#### [Microsoft CEO Explains 60,000 Employee Buyouts as AI-Driven Restructuring](https://techcrunch.com/2026/11/18/microsoft-ceo-satya-nadella-explains-why-he-asked-60k-employees-to-quit/) ⭐️ 8.0/10
+#### [Nvidia Halts Licensed H200 AI Chip Shipments to China](https://www.theverge.com/tech/1036445/nvidia-h200-ai-chips-china-stop-selling) ⭐️ 9.0/10
 
-Microsoft CEO Satya Nadella said the company’s October buyout offer to 60,000 employees was driven by AI-related strategic changes rather than a conventional mass layoff. He framed the program as encouraging voluntary exits, and the article says the reason is “AI,” but does not detail which roles, products, or business units are affected.
+Nvidia has stopped shipping licensed Hopper/H200 data-center AI chips to China, reversing its earlier effort to sell these products there after U.S. approval. Interim CEO Colette Kress said on Nvidia’s fiscal third-quarter 2027 earnings call that guidance excludes licensed Hopper data-center products and that the company is no longer shipping them to China. Kress did not explain why the shipments stopped, so the change is presented as a company statement rather than a detailed policy or technical reason.
 
-rss · TechCrunch AI · Nov 19, 00:42
+rss · The Verge AI · Nov 18, 13:01
 
-> **「Background」** Microsoft’s buyout plan was a voluntary exit offer affecting about 60,000 employees across India, the US, the UK and Canada, described as its largest ever. It followed a quarter in which Microsoft reported a 32% net income increase and strong Azure growth, while staff circulated an open letter criticizing forced AI use and declining morale.
+> **「Background」** H200 is part of Nvidia’s Hopper architecture for AI data-center workloads. Nvidia had previously sought and received White House approval to export some licensed Hopper data-center products to China, making the halt a reversal of its prior export posture.
 
-> **「Impact」** For Microsoft employees, the buyout approach means affected staff are being asked to decide whether to leave voluntarily as part of an AI-driven workforce shift, rather than facing a standard layoff.
+> **「Impact」** For Nvidia, the halt removes licensed Hopper/H200 data-center sales from its guidance, reducing expected China revenue from those chips; for Chinese AI buyers, it cuts off a previously approved path to Nvidia H200-class compute.
 
-<details><summary>References</summary>
-<ul>
-<li><a href="https://timesofindia.indiatimes.com/topic/microsoft-ceo-satya-nadella">Microsoft Ceo Satya Nadella: Latest News, Videos and Photos of Microsoft Ceo Satya Nadella | Times of India</a></li>
-<li><a href="http://timesofindia.indiatimes.com/topic/Microsoft-CEO-Satya-Nadella">Microsoft Ceo Satya Nadella: Latest News, Videos and Photos of Microsoft Ceo Satya Nadella | Times of India</a></li>
-
-</ul>
-</details>
-
-**Tags**: `#Microsoft`, `#AI strategy`, `#workforce restructuring`, `#cost structure`, `#corporate governance`
+**Tags**: `#Nvidia`, `#China AI chips`, `#export controls`, `#domestic semiconductors`, `#AI compute supply chain`
 
 ---
 
 <a id="item-tech-news-4"></a>
-#### [Nvidia Halts H200 AI Chip Shipments to China](https://www.theverge.com/tech/1036445/nvidia-h200-ai-chips-china-stop-selling) ⭐️ 8.0/10
+#### [Microsoft CEO Backs Nvidia Interim CEO After Huang Exit](https://techcrunch.com/2026/11/18/microsoft-ceo-satya-nadella-remains-confident-in-nvidia-after-huangs-exit/) ⭐️ 8.0/10
 
-Nvidia has stopped shipping licensed Hopper data center AI chips, including H200 products, to China despite a prior White House export approval, interim CEO Colette Kress said on an earnings call. Kress said Nvidia&\#x27;s guidance does not include licensed Hopper data center products and that the company is no longer shipping them to China. The source does not explain the reason, scope, duration, or revenue impact of the halt.
+Microsoft CEO Satya Nadella publicly backed Nvidia&\#x27;s interim CEO Colette Kress after Jensen Huang&\#x27;s departure, saying Microsoft remains confident in the chipmaker and its partnership with Microsoft. The comments, reported by TechCrunch, followed the Nvidia board&\#x27;s decision and included regret over Huang&\#x27;s exit. Nadella&\#x27;s statement is a customer endorsement, not evidence of changed contracts, supply terms, or commercial commitments.
 
-rss · The Verge AI · Nov 18, 13:01
+rss · TechCrunch AI · Nov 18, 23:17
 
-> **「Background」** Nvidia’s H200 belongs to the Hopper data-center GPU family, which is designed to accelerate AI training and had previously received U.S. approval for sales to China. That licensed channel generated $2.4 billion in Hopper sales to China in Nvidia’s third quarter, about 2% of total revenue. Reporting has also said China largely resisted accepting H200 deliveries in favor of domestic chips, making the halt a reversal of both an export-access plan and a contested supply arrangement.
+> **「Background」** Nvidia’s leadership changed last week when Jensen Huang stepped down after 33 years as CEO and the company named CFO Colette Kress as interim CEO. The transition followed reports of personal controversies, including an alleged affair with a Megaspeed executive whom U.S. officials believe is a Chinese spy.
 
-> **「Impact」** The halt removes Nvidia&\#x27;s licensed Hopper data-center chips from near-term availability in China, forcing Chinese AI buyers to delay, substitute, or seek conditional access to compute. Reports that customs blocked H200 imports and suppliers paused related production also create uncertainty for Nvidia&\#x27;s China revenue outlook and its supply chain, while pushing Chinese firms and regulators toward domestic-chip alternatives or purchase rules.
+> **「Impact」** For organizations that rely on Microsoft&\#x27;s Nvidia-powered AI infrastructure, the public endorsement may reduce visible uncertainty about the partnership, but it does not confirm capacity, pricing, or contractual continuity.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://finance.yahoo.com/technology/ai/articles/nvidia-abandoning-china-jensen-huang-233748229.html">Nvidia is abandoning China after Jensen Huang’s ouster</a></li>
-<li><a href="https://www.cbsnews.com/news/nvidia-stops-shipping-hopper-chips-china">Nvidia says it will stop selling some AI data center chips to China - CBS News</a></li>
-<li><a href="https://finance.yahoo.com/news/exclusive-nvidia-aims-begin-h200-122128626.html">Exclusive-Nvidia aims to begin H200 chip shipments to China by mid-February, sources say</a></li>
-<li><a href="https://finance.yahoo.com/news/nvidia-h200-shipments-hit-china-175929567.html">Nvidia H200 Shipments Hit China Roadblock</a></li>
-<li><a href="https://finance.yahoo.com/news/nvidia-h200-shipments-hit-china-175929567.html?fr=sycsrp_catchall">Nvidia H200 Shipments Hit China Roadblock</a></li>
+<li><a href="https://techcrunch.com/2026/11/18/microsoft-ceo-satya-nadella-remains-confident-in-nvidia-after-huangs-exit">Microsoft CEO Satya Nadella remains confident in Nvidia after Huang’s exit | TechCrunch</a></li>
+<li><a href="https://techcrunch.com">TechCrunch | Startup and Technology News</a></li>
 
 </ul>
 </details>
 
-**Tags**: `#Nvidia`, `#AI chips`, `#China compute supply`, `#export controls`, `#domestic chips`
+**Tags**: `#Nvidia leadership`, `#AI compute supply chain`, `#Microsoft-Nvidia relationship`, `#semiconductor executive changes`, `#capital-market sentiment`
 
 ---
 
 <a id="item-tech-news-5"></a>
-#### [Nvidia Stops China H200 Sales; Intel Cuts IT Staff; Tencent AI Grows](https://www.leiphone.com/category/zaobao/wMg9SCFKwT7JSsGq.html) ⭐️ 7.5/10
+#### [Microsoft Ignite 2026 Announces Seven New AI Models](https://microsoft.ai/news/microsoft-ignite-2026/) ⭐️ 7.0/10
 
-Nvidia interim CEO Colette Kress said the company will stop selling H200 AI chips to China, ending the earlier limited-export arrangement that required US transshipment and a 25% tariff, while the US Commerce Department issued new rules restricting controlled customers from using advanced chips in overseas data centers remotely. Intel reportedly laid off employees in its global IT team without disclosing headcount, continuing a restructuring that reduced its workforce to 81,100 at end-September from 85,100 at end-2025. Tencent said its AI product WorkBuddy exceeded 10 million daily active users and 100 trillion daily token consumption, with AI demand lifting cloud revenue 35% year over year in its Q3 report. These are company statements or media reports; Intel&\#x27;s layoff scope and the operational effect of the Nvidia and US export changes were not independently detailed.
+Microsoft’s Ignite 2026 announcement describes seven new models positioned around scalable price-performance for developers and AI users. The supplied excerpt does not specify model names, pricing, availability, or independent benchmark results, so the release should be treated as a vendor announcement rather than a verified shipped capability. Community comments highlight MAI Code 2 and comparisons to Anthropic, OpenAI, and Chinese models, but those are user observations rather than established facts.
 
-rss · 雷峰网 · Nov 19, 00:59
+hackernews · gmays · Nov 18, 16:08 · [Discussion](https://news.ycombinator.com/item?id=50548021)
 
-> **「Background」** The H200 China plan existed only under a narrow U.S. export-control arrangement: SEC filings cited in the report said Washington approved limited sales from February 2026, with shipments routed through the United States and subject to a 25% tariff, while earlier reporting described the setup as a loophole in the U.S. ban on advanced-chip sales to China. That arrangement had already been fragile, because Chinese customs reportedly refused entry and Nvidia had not yet generated H200 China revenue by late February 2026. The new confirmation therefore ends a supply path that had already been reported as stalled.
+> **「Context」** Microsoft Ignite 2026 was the venue for Microsoft AI’s announcement of seven new MAI models spanning coding, cybersecurity, image editing, transcription, real-time audio, and decision tasks. The release builds on earlier MAI Cyber models already used in Microsoft’s MDASH scanning workflows, with Microsoft claiming lower output-token pricing and improved price-performance for existing customers.
 
-> **「Impact on China AI compute plans」** The stoppage removes the near-term H200 route for Chinese AI buyers, including reported customers such as ByteDance and Tencent, and pushes them toward domestic accelerators or other approved GPUs. Reported shipments had already been a small fraction of licensed allocations, with customs and order-suspension actions limiting deliveries, so organizations should not plan capacity around H200 availability. The new U.S. remote-access rule also requires compliance review for advanced chips used from overseas data centers.
+> **「Impact」** For enterprise buyers, Microsoft’s Ignite release strengthens a price-performance case for Copilot and Azure AI: Microsoft’s commissioned GigaOm comparison put everyday Copilot use at $30 per business user versus $81 for ChatGPT and $205 for Claude, while advanced agent use was $96 versus $149 and $299. Organizations should treat those figures as vendor-commissioned modeled estimates and verify which underlying models power productivity features, because Microsoft is also paying AWS to use Anthropic for some Office workloads.
+
+> **「Community discussion」** Some users reported positive testing of MAI Code 2 and compared it to Anthropic or OpenAI models, while others dismissed the Ignite keynote as opportunistic and argued Microsoft needs open-source models to win market share.
 
 <details><summary>References</summary>
 <ul>
-<li><a href="https://techcrunch.com/2026/11/17/nvidia-is-abandoning-china-after-jensen-huangs-ouster">Nvidia is abandoning China after Jensen Huang’s ouster</a></li>
-<li><a href="https://tradingkey.com/zh-hans/analysis/stocks/us-stock/261648805-">停止H200生产后，英伟达是否已失去对中国这一全球第二大AI市场的掌控？</a></li>
-<li><a href="https://www.spheron.network/blog/nvidia-h200-china-shipment-2026">NVIDIA H200 China Shipment 2026: What It Means for GPU Pricing | Spheron</a></li>
-<li><a href="https://cn.investing.com/news/stock-market-news/article-3172142">英伟达(NVDA.US)H200芯片对华出口突遭阻滞 供应链停摆下百万订单悬空 提供者 智通财经</a></li>
-<li><a href="https://finance.yahoo.com/news/china-asks-tech-firms-halt-155153074.html">China asks tech firms to halt orders for Nvidia&#x27;s H200 chips, Information reports</a></li>
+<li><a href="https://x.com/v_shakthi/status/2122907332002959691">Shakthi on X: &quot;Microsoft AI released seven new models at Ignite 2026 that deliver frontier performance at a fractio…&quot;</a></li>
+<li><a href="https://microsoft.ai/news/microsoft-ignite-2026">Seven new world class models at scalable price-performance | Microsoft AI</a></li>
+<li><a href="https://microsoft.ai/news/microsoft-ignite-2026-mai-keynote">Microsoft Ignite 2026: MAI keynote transcript | Microsoft AI</a></li>
+<li><a href="https://www.geekwire.com/2026/microsoft-jabs-at-openai-and-anthropic-touting-cheaper-customizable-ai-models-of-its-own">Microsoft jabs at OpenAI and Anthropic, touting cheaper, customizable AI models of its own – GeekWire</a></li>
+<li><a href="https://finance.yahoo.com/news/microsoft-add-anthropic-ai-models-134403972.html">Microsoft to add Anthropic AI models — as rift with OpenAI grows: report</a></li>
 
 </ul>
 </details>
 
-**Tags**: **【未证实】**, `#AI compute supply`, `#China AI industry`, `#semiconductor restructuring`, `#AI application commercialization`, `#tech news roundup`
+**Tags**: `#Microsoft AI`, `#AI model releases`, `#price-performance`, `#competitive dynamics`, `#developer adoption`
 
 ---
