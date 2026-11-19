@@ -15,6 +15,7 @@ MCP call that fails, costs its own section and nothing else.
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import re
 import sys
@@ -22,6 +23,7 @@ import urllib.request
 from typing import Any, Dict, List, Optional
 
 TODAY_URL = "https://lianban.net/today.html"
+MARKET_URL = "https://lianban.net/market.html"
 MCP_URL = "https://lianban.net/mcp"
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -56,6 +58,19 @@ _PANEL_RE = re.compile(
     r'<div class="c(?: [^"]*)?"><div class="l"[^>]*>(.*?)</div>'
     r'<div class="v[^"]*"[^>]*>(.*?)</div>(?:<div class="ly"[^>]*>(.*?)</div>)?</div>',
     re.S,
+)
+# 分类指数条: <div class="idxc"><div class="n">上证</div><div class="v dn mono">-0.28%</div></div>
+_IDXC_RE = re.compile(
+    r'<div class="idxc"><div class="n">(.*?)</div><div class="v (up|dn)[^"]*">(.*?)</div></div>',
+    re.S,
+)
+# 明日推演: 四个 .fst 格子 + 一段历史阶段分布
+_FST_RE = re.compile(r'<div class="fst"><b>(.*?)</b><span>(.*?)</span></div>', re.S)
+_FC_BASIS_RE = re.compile(r'<b>[^<]*明日推演</b><small>(.*?)</small>', re.S)
+_FC_DIST_RE = re.compile(r'<span class="hl"[^>]*>(.*?)</span>', re.S)
+# market.html 把 60 个交易日的宽度序列整段嵌在页面里，不需要浏览器
+_MK_DATA_RE = re.compile(
+    r'<script type="application/json" class="mk-data">(.*?)</script>', re.S
 )
 _ZH_RE = re.compile(r'<div class="zh">(.*?)</div>')
 _ZR_RE = re.compile(
@@ -160,24 +175,158 @@ def parse_panel(page: str) -> List[Dict[str, str]]:
     return out
 
 
+def parse_indices(page: str) -> List[Dict[str, Any]]:
+    """``[{name, pct, up}]`` — the six index chips in the header.
+
+    These are the only numbers on the site that say how the *indices* moved, and
+    the spread between them is the point: a day where 科创50 rises while 创业板
+    falls is a different market from one where everything falls together.
+    """
+    return [
+        {"name": _clean(name), "pct": _clean(pct), "up": cls == "up"}
+        for name, cls, pct in _IDXC_RE.findall(page)
+    ]
+
+
+def parse_forecast(page: str) -> Dict[str, Any]:
+    """The site's own next-day base rate: same phase, historically, what followed.
+
+    Kept as a separate block rather than folded into the numbers: it is a
+    frequency, not a prediction, and the model is asked to argue with it.
+    """
+    basis = _FC_BASIS_RE.search(page)
+    items = [
+        {"value": _clean(v), "label": _clean(l)} for v, l in _FST_RE.findall(page)
+    ]
+    dist = _FC_DIST_RE.search(page)
+    if not items and not basis:
+        return {}
+    out: Dict[str, Any] = {"basis": _clean(basis.group(1)) if basis else ""}
+    for item in items:
+        label = item["label"]
+        if "上涨占比" in label:
+            out["up_share_next_day"] = item["value"]
+        elif "均值" in label and "上证" in label:
+            out["mean_next_day"] = item["value"]
+        elif "最常见次日阶段" in label:
+            out["common_next_phase"] = item["value"]
+        elif "温差" in label:
+            out["mean_degree_change"] = item["value"]
+    if dist:
+        out["next_phase_distribution"] = _clean(dist.group(1))
+    return out
+
+
+def _pct_rank(values: List[float], x: float) -> Optional[float]:
+    """Where today sits inside the window, 0-100. Higher = higher value."""
+    vals = [v for v in values if isinstance(v, (int, float))]
+    if not vals or not isinstance(x, (int, float)):
+        return None
+    return round(sum(1 for v in vals if v <= x) / len(vals) * 100, 1)
+
+
+def market_breadth(timeout: float = 30.0) -> Dict[str, Any]:
+    """Sixty sessions of breadth, so today's numbers arrive with a distribution.
+
+    ``up_ratio`` alone is a fact; ``up_ratio`` at the 2nd percentile of sixty
+    sessions is a signal. That difference is the whole reason this block exists.
+    """
+    request = urllib.request.Request(
+        MARKET_URL, headers={"User-Agent": UA, "Accept-Encoding": "gzip"}
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        body = response.read()
+        if response.headers.get("Content-Encoding") == "gzip":
+            body = gzip.decompress(body)
+    page = body.decode("utf-8", "replace")
+    hit = _MK_DATA_RE.search(page)
+    if not hit:
+        raise ValueError("market.html carries no mk-data block")
+    rows = (json.loads(hit.group(1)) or {}).get("rows") or []
+    if not rows:
+        raise ValueError("mk-data block is empty")
+
+    today = rows[-1]
+    def series(key: str) -> List[float]:
+        return [r.get(key) for r in rows if isinstance(r.get(key), (int, float))]
+
+    amt = today.get("amt")
+    amt20 = today.get("amt_ma20")
+    recent = []
+    for row in rows[-5:]:
+        recent.append(
+            {
+                "date": str(row.get("date") or "")[5:],
+                "up_ratio_pct": row.get("up_ratio"),
+                "turnover_yi": row.get("amt"),
+                "above_ma20_pct": row.get("above_ma20"),
+                "new_low": row.get("nl"),
+            }
+        )
+    return {
+        "window_sessions": len(rows),
+        "today": {
+            "up_ratio_pct": today.get("up_ratio"),
+            "turnover_yi": amt,
+            "turnover_ma20_yi": amt20,
+            "turnover_vs_ma20_pct": round((amt / amt20 - 1) * 100, 1) if amt and amt20 else None,
+            "above_ma20_pct": today.get("above_ma20"),
+            "above_ma50_pct": today.get("above_ma50"),
+            "above_ma200_pct": today.get("above_ma200"),
+            "new_high_63": today.get("nh"),
+            "new_low_63": today.get("nl"),
+            "new_high_250": today.get("nh250"),
+            "new_low_250": today.get("nl250"),
+            "stage2_pct": today.get("stage2"),
+            "stage4_pct": today.get("stage4"),
+        },
+        # 0-100. For 新低 与 stage4（下跌阶段占比），越高越差——prompt 里说明。
+        "pct_rank_60d": {
+            "up_ratio": _pct_rank(series("up_ratio"), today.get("up_ratio")),
+            "turnover": _pct_rank(series("amt"), amt),
+            "above_ma20": _pct_rank(series("above_ma20"), today.get("above_ma20")),
+            "new_low_63": _pct_rank(series("nl"), today.get("nl")),
+            "stage4": _pct_rank(series("stage4"), today.get("stage4")),
+        },
+        "recent5": recent,
+    }
+
+
 def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
-    """The browser half. Never raises: a failure is reported, not propagated."""
+    """Everything the pages carry that is not in a JSON feed.
+
+    Two independent halves: market.html is static and parsed over plain HTTP;
+    today.html needs a browser. Either can fail alone — the caller degrades one
+    section, not the whole brief.
+    """
+    out: Dict[str, Any] = {}
+    try:
+        out["breadth"] = market_breadth()
+    except Exception as exc:  # noqa: BLE001
+        out["breadth_error"] = f"{type(exc).__name__}: {exc}"
     try:
         page = render(timeout_ms)
     except Exception as exc:  # noqa: BLE001 - the page degrades, the run does not
-        return {"error": f"{type(exc).__name__}: {exc}"}
+        out["error"] = f"{type(exc).__name__}: {exc}"
+        return out
     strength = parse_strength(page)
     flows = parse_flows(page)
     panel = parse_panel(page)
     overseas = parse_overseas(page)
     if not strength and not flows:
-        return {"error": "rendered page had neither block"}
-    return {
-        "strength": strength,
-        "flows": flows,
-        "panel": panel,
-        "overseas": overseas,
-    }
+        out["error"] = "rendered page had neither block"
+        return out
+    out.update(
+        {
+            "strength": strength,
+            "flows": flows,
+            "panel": panel,
+            "overseas": overseas,
+            "indices": parse_indices(page),
+            "forecast": parse_forecast(page),
+        }
+    )
+    return out
 
 
 def _rpc(payload: Dict[str, Any], session: Optional[str] = None, timeout: float = 40.0):
