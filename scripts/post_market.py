@@ -165,16 +165,16 @@ ROTATION_RULE = (
 # with a verdict), and it never commits to anything tomorrow's data could refute
 # (two falsifiable checks are mandatory).
 #
-# The six headings are the product's, not the model's: a reader deciding what to
+# The four headings are the product's, not the model's: a reader deciding what to
 # do tomorrow wants the session read, the signals worth remembering, why the tape
-# moved, what happens next, and which theme and names to keep watching — in that
-# order. Letting the model choose its own headings produced six variations of
-# "today's mainline".
+# moved, and what happens next. The names to watch are a separate structure —
+# three buckets, because "already running", "not yet moving" and "moved today"
+# are three different bets, and a flat list makes the reader sort them himself.
 SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，不是数据播报。
 
 你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、外盘、连板网自己的次日推演与复盘正文。
 
-读者明天要据此做判断。所以六段各回答一个问题：先给结论，再给依据。
+读者明天要据此做判断。所以四段各回答一个问题：先给结论，再给依据。
 
 【口径，先读，读错会得出反向结论】
 - indices 是六个分类指数当日涨跌。重点在它们的离散度：科创50 涨而创业板跌，说明资金在换方向，不是普跌。
@@ -190,18 +190,23 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
 - candidates 按模板名分组：candidates[模板名] = {why, total, rows}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
 
-【六段，各回答一个问题】
+【四段，各回答一个问题】
 1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
 2. 重点信号：给 3 个今天最值得记住的异常，每个都要带"相对于什么"（60 日分位、昨日值、或与其他指数/板块的背离）。能挂上已有历史基准的就挂——next_day_base_rate 的样本量与频率、pct_rank_60d 的分位；挂不上的只描述异常本身，不要替它编历史统计。这一段是替读者划重点，不要把所有指标都念一遍。
 3. 盘面变动归因：钱从哪来、到哪去。用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。一条线涨停变多、另一条线变少，只能说明钱的分布变了；除非板块资金流也指向同一方向，否则直说"这一步无法证实"，不要写成资金迁移。
 4. 趋势展望：先给出连板网的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
-5. 重点关注题材：给 3 到 4 条，不是 1 到 2 条。每条用一句话说清为什么是它（连续天数、集中度、驱动、板块强弱里挑最有说服力的两点），再给一个明天能从同一份数据里读到、能证伪它的信号。题材只能从 theme_watch 取，不要自己造，也不要把 theme_watch 里的每一条都写进来；theme_watch 不足 3 条时就给 2 条，不要凑数，也不要把 industry_lines 的产业线当成当日题材。
-6. 重点关注个股：这一段不写成大段文字，改由 watchlist 字段承载——每个重点题材配 2 到 4 只，全篇合计 6 到 12 只。每只写清它在题材里的角色（龙头／跟随／补涨）、连板高度，以及位置；有 gain60 与 from_high 的必须用上，没有的就写"无 60 日位置数据"，不要估。名字只能从该题材的 members 里取。
 
-【明日候选，与第 6 段配套】
-watchlist 回答"今天的题材里盯哪几只"，还要回答"明天开盘看哪几只"。所以另给 tomorrow_candidates：3 到 5 只，整块默认全部从 candidates 的「优选蓄势」取——那张模板本来就是为明日准备的，当日未涨停但结构就绪，它是这一块的第一顺位来源，不是备选。只有优选蓄势当日不足 3 只时，才用「主线强攻」里位置还不高（from_high 贴近前高、gain60 没有大幅透支）、或「放量上攻」里首次放量的补足。
-每只写 theme 和 note。theme 直接写该票在面板里的 sector——那是它的题材归属标签，不要写成"题材未归类"，也不要为了贴合当日题材去改这个标签；当 sector 与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。若该票 mainline 是「🔥主线」，note 里点明它本身就在当日主线板块内。
-note 里不要复述 gain60、from_high、above_ma20、vol_ud——页面会用筛选面板的数回填，你复述一遍只会多一个可能写错的数字。已经写进 watchlist 的个股不要再放进 tomorrow_candidates，两个块是互补的：watchlist 是今天已经在动的，tomorrow 是还没动的。
+【明日关注，分三类】
+第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
+
+- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材直接取这些票的 sector——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当 sector 与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
+- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股从该题材的 members 里取。给 2 到 3 条题材，每条 2 到 3 只。
+- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围；个股从该题材 members 里取，也可以取「放量上攻」「主线强攻」里 sector 对得上的票。给 2 到 3 条题材，每条 2 到 3 只。
+
+三条纪律：
+1. 三类不重复。蓄势与另两类的边界是"还没涨 vs 已经在动"；主线与活跃的边界是"有连续性 vs 只有一天"。同一只票出现在两类里，等于这一块没做。
+2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数——组头会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
+3. 名字不许造。蓄势只能来自优选蓄势前 5；主线与活跃只能来自对应题材的 members，或两张面板的 rows。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -219,24 +224,34 @@ note 里不要复述 gain60、from_high、above_ma20、vol_ud——页面会用�
   {{"h": "盘面总结", "p": "70-110 字"}},
   {{"h": "重点信号", "p": "70-110 字"}},
   {{"h": "盘面变动归因", "p": "70-110 字"}},
-  {{"h": "趋势展望", "p": "70-110 字"}},
-  {{"h": "重点关注题材", "p": "90-130 字，点出 3 到 4 条题材"}}
+  {{"h": "趋势展望", "p": "70-110 字"}}
  ],
- "watchlist": [
-  {{"theme": "题材名，必须与第 5 段点名的一致",
-   "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
-   "stocks": [{{"name": "个股名，必须来自该题材 members",
-              "tag": "连板高度 · 子题材，如 3连板 · 光刻机；不超过 14 字",
-              "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
- ],
- "tomorrow_candidates": [
-  {{"name": "个股名，优先来自 candidates 的「优选蓄势」",
-   "theme": "该票的 sector 题材标签；与当日题材同义时写成 sector（对应当日题材 X）",
-   "note": "角色与明天为什么值得看；不要写 60 日涨幅或距高点，页面会回填；不超过 40 字"}}
- ],
+ "focus": {{
+  "蓄势": [
+   {{"theme": "该票在面板里的 sector 题材标签；与当日题材同义时写成 sector（对应当日题材 X）",
+    "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
+    "stocks": [{{"name": "个股名，只能来自优选蓄势前 5",
+               "tag": "它在题材里的角色，如 收敛最紧的一档；不超过 14 字",
+               "note": "位置与明天为什么值得看；不超过 36 字"}}]}}
+  ],
+  "主线": [
+   {{"theme": "题材名，必须与 theme_watch 里的一致",
+    "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
+    "stocks": [{{"name": "个股名，必须来自该题材 members",
+               "tag": "连板高度 · 子题材，如 3连板 · 光刻机；不超过 14 字",
+               "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
+  ],
+  "活跃": [
+   {{"theme": "题材名，必须与 theme_watch 里的一致",
+    "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
+    "stocks": [{{"name": "个股名，来自该题材 members 或两张面板的 rows",
+               "tag": "连板高度 · 子题材；不超过 14 字",
+               "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
+  ]
+ }},
  "dissent": "与连板网复盘的分歧，一句话；没有分歧就填空字符串，不要编"}}
 
-watchlist 的硬性要求：条数与第 5 段题材数一致；每个题材 2 到 4 只（该题材 members 不足 2 只时给 1 只并在 note 里说明）；全篇合计 6 到 12 只；不要把所有 members 原样罗列，也不要在 members 之外造名字。"""
+focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每条题材 1 到 3 只个股，全篇合计不超过 20 只；题材名不许自造；同一只票只出现在一类里；三类都不要把 members 原样罗列。"""
 
 
 def _panel_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -647,11 +662,45 @@ def _parse_read(text: str) -> Dict[str, Any]:
                             "note": str(item.get("note") or "").strip(),
                         }
                     )
+            focus = {}
+            raw_focus = doc.get("focus")
+            if isinstance(raw_focus, dict):
+                for bucket in ("蓄势", "主线", "活跃"):
+                    items = []
+                    for item in raw_focus.get(bucket) or []:
+                        if not isinstance(item, dict):
+                            continue
+                        theme = str(item.get("theme") or "").strip()
+                        stocks = []
+                        for st in item.get("stocks") or []:
+                            if isinstance(st, dict):
+                                name = str(st.get("name") or "").strip()
+                                if name:
+                                    stocks.append(
+                                        {
+                                            "name": name,
+                                            "tag": str(st.get("tag") or "").strip(),
+                                            "note": str(st.get("note") or "").strip(),
+                                        }
+                                    )
+                            elif isinstance(st, str) and st.strip():
+                                stocks.append({"name": st.strip(), "tag": "", "note": ""})
+                        if theme and stocks:
+                            items.append(
+                                {
+                                    "theme": theme,
+                                    "signal": str(item.get("signal") or "").strip(),
+                                    "stocks": stocks,
+                                }
+                            )
+                    if items:
+                        focus[bucket] = items
             return {
                 "headline": str(doc.get("headline") or "").strip(),
                 "sections": sections,
                 "watchlist": watch,
                 "tomorrow_candidates": tomorrow,
+                "focus": focus,
                 "dissent": text,
             }
     paras = [p.strip() for p in re.split(r"\n+", raw) if p.strip()]
