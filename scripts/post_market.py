@@ -271,8 +271,86 @@ def _state_class(state: str) -> str:
     }.get(state, "mute")
 
 
+_PAGE_CSS = """
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#fff;color:#606c71;
+  font:17px/1.75 "Open Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.page-header{color:#fff;text-align:center;background-color:#159957;
+  background-image:linear-gradient(120deg,#155799,#159957);
+  padding:38px 20px 32px;padding-top:calc(38px + env(safe-area-inset-top))}
+.project-name{margin:0 0 8px;font-size:23px;font-weight:600;letter-spacing:.2px;line-height:1.3;word-break:keep-all}
+.page-header .project-tagline{margin:0;font-size:14px;font-weight:400;color:rgba(255,255,255,.85);letter-spacing:.3px}
+main{max-width:680px;margin:0 auto;padding:22px 18px calc(44px + env(safe-area-inset-bottom))}
+main h2{margin:32px 0 12px;font-size:19px;font-weight:600;color:#159957;line-height:1.4}
+main h2:first-child{margin-top:6px}
+p{margin:0 0 1em}
+.lede{margin:0 0 20px;color:#4c5866}
+a{color:#1e6bb8;text-decoration:none}
+.read{border-left:3px solid #159957;padding:2px 0 2px 14px}
+.read p:last-child{margin-bottom:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e9ebec;
+  border:1px solid #e9ebec;border-radius:8px;overflow:hidden}
+.stat{background:#fff;padding:12px 4px;text-align:center}
+.stat b{display:block;font-size:20px;font-weight:600;color:#2b3440;line-height:1.25}
+.stat span{font-size:11px;color:#8a94a6}
+.lines{list-style:none;margin:0;padding:0}
+.line{padding:13px 0;border-bottom:1px solid #eff0f1}
+.line:last-child{border-bottom:0}
+.line-h{display:flex;align-items:center;gap:8px}
+.line-h b{font-size:17px;color:#2b3440;font-weight:600}
+.line-n{margin-top:4px;font-size:13.5px;color:#8a94a6}
+.line-n b{color:#2b3440;font-weight:600}
+.tag{font-size:11px;line-height:1;padding:3px 7px;border-radius:9px;background:#f0f2f5;color:#8a94a6}
+.tag.up{background:#fdecec;color:#d14343}
+.tag.down{background:#eaf6ef;color:#2e9e5b}
+.tag.hot{background:#fdf3e3;color:#c87a12}
+.drv{list-style:none;margin:0;padding:0}
+.drv li{padding:11px 0;border-bottom:1px solid #eff0f1}
+.drv li:last-child{border-bottom:0}
+.drv b{color:#2b3440;font-weight:600}
+.drv .cnt{color:#d14343;font-weight:600;margin-left:6px}
+.drv .why{display:block;margin-top:3px;font-size:13.5px;color:#8a94a6}
+.drv .ld{display:inline-block;margin-top:5px;font-size:12px;color:#c87a12}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
+th{font-weight:600;color:#8a94a6;font-size:11.5px;text-align:right;padding:7px 6px;
+  border-bottom:1px solid #e9ebec;background:#fafbfc}
+th:nth-child(-n+2){text-align:left}
+td{padding:9px 6px;border-bottom:1px solid #eff0f1;vertical-align:top}
+td.rk{color:#b3bcc9;font-variant-numeric:tabular-nums}
+td.nm{overflow:hidden}
+td.nm b{display:block;color:#2b3440;font-weight:600;font-size:14.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td.nm .sub{display:block;font-size:11px;color:#8a94a6;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.up{color:#d14343}
+.down{color:#2e9e5b}
+.hot{color:#c87a12}
+.mute{color:#8a94a6}
+.hint{font-size:12px;color:#8a94a6;margin:0 0 8px}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
+  font-size:12px;line-height:1.8;color:#98a2b3}
+footer a{color:#98a2b3;text-decoration:underline}
+@media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}}
+@media (prefers-color-scheme:dark){
+  body{background:#14171c;color:#c3cad6}
+  .stat{background:#14171c}.stat b,.line-h b,td.nm b,.drv b,.line-n b{color:#e6ebf2}
+  th{background:#1a1f26;color:#8a94a6}
+  .line,.drv li,td,footer,.stats{border-color:#252b33}
+}
+"""
+
+
 def render_html(payload: Dict[str, Any], summary: str, page_url: str) -> str:
-    """One self-contained page: no external CSS, no JS, readable inside WeChat."""
+    """One self-contained page wearing the daily digest's clothes.
+
+    The morning page is a Jekyll Cayman document: a blue-to-green banner, green
+    section headings, one white column. The evening brief keeps that, and then
+    pays for it on a phone — the matrix is a list rather than a seven-column
+    table, because at 430pt a table either shrinks the type or scrolls sideways,
+    and both lose the comparison it exists to make.
+    """
     kpi = payload.get("kpi") or {}
     matrix = payload.get("matrix") or {}
     day = matrix.get("day") or {}
@@ -280,64 +358,89 @@ def render_html(payload: Dict[str, Any], summary: str, page_url: str) -> str:
     picks = payload.get("filter") or {}
     date = kpi.get("date") or ""
 
-    rows = []
+    line_rows = []
     for l in lines:
         # Two shapes matter after the close: lines that drew limit-ups today,
         # and lines that had them yesterday and lost them. A line dark for two
         # sessions is history, and the page is about tomorrow.
         if l["today"] == 0 and l["prev"] == 0:
             continue
-        rows.append(
-            "<tr>"
-            f"<td class='mute'>{l['rank']}</td>"
-            f"<td class='name'>{_esc(l['line'])}</td>"
-            f"<td class='num'>{l['today']}<span class='prev'>/{l['prev']}</span></td>"
-            f"<td class='num {_pct_class(str(l['delta1']))}'>{l['delta1']:+d}</td>"
-            f"<td class='num {_pct_class(str(l['delta3']))}'>{l['delta3']:+d}</td>"
-            f"<td class='num'>{l['streak']}</td>"
-            f"<td class='{_state_class(l['state'])}'>{_esc(l['state'])}</td>"
-            "</tr>"
+        line_rows.append(
+            "<li class='line'>"
+            f"<div class='line-h'><b>{_esc(l['line'])}</b>"
+            f"<span class='tag {_state_class(l['state'])}'>{_esc(l['state'])}</span></div>"
+            f"<div class='line-n'>今日 <b>{l['today']}</b> 家 · 昨日 {l['prev']} 家 · "
+            f"日Δ <span class='{_pct_class(str(l['delta1']))}'>{l['delta1']:+d}</span> · "
+            f"3日Δ <span class='{_pct_class(str(l['delta3']))}'>{l['delta3']:+d}</span> · "
+            f"连续 {l['streak']} 天</div></li>"
         )
+
+    stats = [
+        (kpi.get("limit_up"), "涨停"),
+        (kpi.get("limit_down"), "跌停"),
+        (kpi.get("lianban"), "连板"),
+        (kpi.get("max_board"), "最高板"),
+        (f"{kpi.get('seal_rate_pct')}%", "封板率"),
+        (kpi.get("zhaban"), "炸板"),
+        (kpi.get("adv"), "上涨"),
+        (kpi.get("dec"), "下跌"),
+    ]
+    stat_html = "".join(
+        f"<div class='stat'><b>{_esc(v)}</b><span>{_esc(k)}</span></div>" for v, k in stats
+    )
 
     pick_blocks = []
     for label, block in picks.items():
         body = []
         for r in block.get("rows", []):
+            sub = " · ".join(x for x in [r.get("code") or "", r.get("sector") or ""] if x)
             body.append(
                 "<tr>"
-                f"<td class='mute'>{_esc(r['rank'])}</td>"
-                f"<td class='name'>{_esc(r['name'])}"
-                f"<span class='code'>{_esc(r['code'])}</span>"
-                f"<span class='sector'>{_esc(r['sector'])}</span></td>"
+                f"<td class='rk'>{_esc(r['rank'])}</td>"
+                f"<td class='nm'><b>{_esc(r['name'])}</b>"
+                f"<span class='sub'>{_esc(sub)}</span></td>"
                 f"<td class='num {_pct_class(r['gain60'])}'>{_esc(r['gain60'])}</td>"
                 f"<td class='num {_pct_class(r['from_high60'])}'>{_esc(r['from_high60'])}</td>"
                 "</tr>"
             )
         total = block.get("total")
         hint = f"共 {total} 只，免费可见前 5" if total else "前 5 只"
+        why = block.get("why") or ""
         pick_blocks.append(
-            f"<div class='card'><div class='card-h'><b>{_esc(label)}</b>"
-            f"<span class='mute'>{_esc(hint)}</span></div>"
-            f"<div class='why'>{_esc(block.get('why', ''))}</div>"
-            "<div class='scroll'><table><thead><tr>"
-            "<th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距高点</th>"
-            "</tr></thead><tbody>" + "".join(body) + "</tbody></table></div></div>"
+            f"<h2>{_esc(label)}</h2>"
+            f"<p class='hint'>{_esc(hint)}{('｜' + _esc(why)) if why else ''}</p>"
+            "<table><colgroup><col style='width:26px'><col>"
+            "<col style='width:74px'><col style='width:64px'></colgroup>"
+            "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距高点</th></tr></thead>"
+            "<tbody>" + "".join(body) + "</tbody></table>"
         )
 
     drivers = ""
     if day.get("lines"):
         items = "".join(
-            f"<li><b>{_esc(x['name'])}</b> <span class='num'>{x['count']}家</span>"
-            f"<span class='drv'>{_esc(x['driver'])}</span>"
-            f" <span class='ld'>{_esc(x['leader'])}</span></li>"
+            f"<li><b>{_esc(x['name'])}</b><span class='cnt'>{x['count']} 家</span>"
+            f"<span class='why'>{_esc(x['driver'])}</span>"
+            f"<span class='ld'>龙头 {_esc(x['leader'])}</span></li>"
             for x in day["lines"]
         )
-        drivers = f"<div class='card'><div class='card-h'><b>当日主线与驱动</b></div><ul class='drvlist'>{items}</ul></div>"
+        drivers = f"<h2>当日主线与驱动</h2><ul class='drv'>{items}</ul>"
 
     summary_html = ""
     if summary:
         paras = "".join(f"<p>{_esc(p)}</p>" for p in summary.split("\n") if p.strip())
-        summary_html = f"<section class='read'><h2>主线动向</h2>{paras}</section>"
+        summary_html = f"<h2>今日主线研判</h2><div class='read'>{paras}</div>"
+
+    top = [l for l in lines if l.get("today", 0) > 0]
+    if top:
+        lede = (
+            f"涨停 {kpi.get('limit_up')} 家、封板率 {kpi.get('seal_rate_pct')}%，"
+            f"{kpi.get('emotion_phase') or ''}；最强的是{top[0]['line']}，{top[0]['today']} 家涨停。"
+        )
+    else:
+        lede = (
+            f"涨停 {kpi.get('limit_up')} 家、封板率 {kpi.get('seal_rate_pct')}%，"
+            f"{kpi.get('emotion_phase') or ''}；今天没有产业线录得涨停。"
+        )
 
     mood = kpi.get("emotion_phase") or ""
     degree = day.get("degree")
@@ -345,84 +448,36 @@ def render_html(payload: Dict[str, Any], summary: str, page_url: str) -> str:
 
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>盘后总结 {_esc(date)}</title>
-<style>
-:root{{--bg:#f6f7f9;--fg:#1b1f27;--mute:#8a94a6;--line:#e3e6ec;--up:#d14343;--down:#2e9e5b;--hot:#e08a1e;--card:#fff}}
-*{{box-sizing:border-box}}
-body{{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}}
-.wrap{{max-width:760px;margin:0 auto;padding:16px 14px 40px}}
-header{{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:4px 0 14px}}
-header h1{{font-size:20px;margin:0}}
-.badge{{font-size:12px;padding:2px 8px;border-radius:10px;background:#eef1f6;color:var(--mute)}}
-.kpis{{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}}
-.kpi{{background:var(--card);border-radius:10px;padding:10px 8px;text-align:center;border:1px solid var(--line)}}
-.kpi b{{display:block;font-size:19px;line-height:1.3}}
-.kpi span{{font-size:11px;color:var(--mute)}}
-.read{{background:var(--card);border:1px solid var(--line);border-left:3px solid #3b6fd4;border-radius:10px;padding:14px 16px;margin-bottom:16px}}
-.read h2{{font-size:15px;margin:0 0 8px;color:#3b6fd4}}
-.read p{{margin:0 0 10px}}
-.read p:last-child{{margin-bottom:0}}
-.card{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}}
-.card-h{{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}}
-.card-h span{{font-size:12px;color:var(--mute)}}
-.why{{font-size:12px;color:var(--mute);margin-bottom:8px}}
-.scroll{{overflow-x:auto;-webkit-overflow-scrolling:touch}}
-table{{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}}
-th{{text-align:right;font-weight:500;color:var(--mute);font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line)}}
-th:nth-child(-n+2),td:nth-child(-n+2){{text-align:left}}
-td{{padding:6px 8px;border-bottom:1px solid #f0f2f5}}
-tr:last-child td{{border-bottom:0}}
-.name{{font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis}}
-.code{{font-size:11px;color:var(--mute);margin-left:5px;font-weight:400}}
-.sector{{font-size:11px;color:var(--mute);margin-left:6px;font-weight:400}}
-.prev{{font-size:11px;color:var(--mute);font-weight:400}}
-.num{{text-align:right;font-variant-numeric:tabular-nums}}
-.up{{color:var(--up)}}
-.down{{color:var(--down)}}
-.hot{{color:var(--hot);font-weight:600}}
-.mute{{color:var(--mute)}}
-.drvlist{{list-style:none;margin:0;padding:0}}
-.drvlist li{{padding:7px 0;border-bottom:1px solid #f0f2f5}}
-.drvlist li:last-child{{border-bottom:0}}
-.drv{{color:var(--mute);font-size:13px;margin-left:4px}}
-.ld{{font-size:12px;color:var(--hot);margin-left:6px;white-space:nowrap}}
-footer{{font-size:11px;color:var(--mute);line-height:1.8;margin-top:20px;border-top:1px solid var(--line);padding-top:12px}}
-footer a{{color:var(--mute)}}
-@media(max-width:480px){{.kpis{{grid-template-columns:repeat(4,1fr)}}.kpi b{{font-size:16px}}.kpi span{{font-size:10px}}}}
-</style></head><body><div class="wrap">
-<header><h1>盘后总结 {_esc(date)}</h1><span class="badge">{_esc(mood_text)}</span></header>
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kenny's Horizon {_esc(date)} 晚报 | Kenny's Horizon 每日精选新闻速递</title>
+<meta name="description" content="{_esc(lede)}">
+<meta property="og:title" content="Horizon 晚报：{_esc(date)}">
+<meta property="og:description" content="{_esc(lede)}">
+<meta property="og:url" content="{_esc(page_url)}">
+<meta name="theme-color" content="#157878">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>{_PAGE_CSS}</style></head><body>
+<header class="page-header">
+<h1 class="project-name">Kenny's Horizon {_esc(date)} 晚报</h1>
+<h2 class="project-tagline">Kenny's Horizon 每日精选新闻速递</h2>
+</header>
+<main>
+<p class="lede">{_esc(lede)}</p>
 {summary_html}
-
-<section class="kpis">
-<div class="kpi"><b>{_esc(kpi.get('limit_up'))}</b><span>涨停</span></div>
-<div class="kpi"><b>{_esc(kpi.get('limit_down'))}</b><span>跌停</span></div>
-<div class="kpi"><b>{_esc(kpi.get('lianban'))}</b><span>连板</span></div>
-<div class="kpi"><b>{_esc(kpi.get('max_board'))}</b><span>最高板</span></div>
-<div class="kpi"><b>{_esc(kpi.get('seal_rate_pct'))}%</b><span>封板率</span></div>
-<div class="kpi"><b>{_esc(kpi.get('zhaban'))}</b><span>炸板</span></div>
-<div class="kpi"><b>{_esc(kpi.get('adv'))}</b><span>上涨</span></div>
-<div class="kpi"><b>{_esc(kpi.get('dec'))}</b><span>下跌</span></div>
-</section>
-
-<div class="card"><div class="card-h"><b>主线矩阵</b><span>近 10 个交易日涨停家数</span></div>
-<div class="scroll"><table><thead><tr>
-<th>#</th><th>产业线</th><th>今日/昨</th><th>日Δ</th><th>3日Δ</th><th>连</th><th>状态</th>
-</tr></thead><tbody>{''.join(rows)}</tbody></table></div></div>
-
+<h2>盘面</h2>
+<div class="stats">{stat_html}</div>
+<h2>主线矩阵</h2>
+<ul class="lines">{''.join(line_rows)}</ul>
 {drivers}
-
 {''.join(pick_blocks)}
-
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
 <a href="https://lianban.net/filter.html">一键筛选</a>、
 <a href="https://lianban.net/days/{_esc(date)}.html">当日复盘</a>。
-行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。
+行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
-</div></body></html>"""
+</main></body></html>"""
 
 
 def push_webhook(url: str, title: str, desp: str, timeout: float = 30.0) -> bool:
@@ -532,7 +587,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
     headline = "、".join(f"{l['line']}{l['today']}" for l in top) or "无涨停线"
-    title = f"盘后 {date[5:]} {kpi.get('emotion_phase') or ''} {headline}".strip()
+    title = f"Horizon 晚报 {date[5:]} {kpi.get('emotion_phase') or ''} {headline}".strip()
     desp = "\n\n".join(
         part
         for part in [
