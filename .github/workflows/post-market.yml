@@ -1,11 +1,11 @@
 name: Post Market Brief
 
-# The matrix job records the close; this one reads it. 13:10 UTC is 21:10
-# Asia/Shanghai — ten minutes after the matrix run, so the two never fetch the
-# same page at the same moment.
+# The matrix job records the close; this one reads it. 11:10 UTC is 19:10
+# Asia/Shanghai — an hour after the matrix run, so the two never fetch the same
+# page at the same moment, and well after lianban's stated 16:00-17:00 定版.
 on:
   schedule:
-    - cron: '10 13 * * 1-5'
+    - cron: '10 11 * * 1-5'
   workflow_dispatch:
 
 # All three publishing jobs push the gh-pages branch, so they share one queue:
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   brief:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     permissions:
       contents: write
 
@@ -30,18 +30,47 @@ jobs:
         with:
           python-version: "3.12"
 
-      # The script is standard-library only, so there is no dependency install
-      # and no uv sync: the job is one fetch, one model call, one page.
+      # 主线强度 and 主力资金动向 have no JSON endpoint: the only way to read them
+      # is to let the page's own script run. Everything else in the brief is
+      # stdlib, so a browser that fails to install costs those two blocks only.
+      - name: Install the browser
+        run: |
+          pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+
+      # 19:10 is two hours past the stated finalisation, but "约" is not a
+      # guarantee: a day the pipeline slips would otherwise publish yesterday's
+      # numbers under today's name and push them to WeChat. opendata carries the
+      # site's own state, and only "final" on today's date counts as settled.
+      - name: Check lianban has settled today's close
+        id: fresh
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY=$(TZ=Asia/Shanghai date +%F)
+          curl -sf -A 'Mozilla/5.0' https://lianban.net/opendata/latest.json -o latest.json
+          STATE=$(python -c "import json;d=json.load(open('latest.json'));k=d.get('kpi') or {};print(k.get('date'),d.get('status'))")
+          echo "lianban date/status=$STATE today=$TODAY"
+          if [ "$STATE" = "$TODAY final" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::lianban reports '$STATE', not '$TODAY final' — the brief is skipped"
+          fi
+
       - name: Build the brief
+        if: steps.fresh.outputs.ok == 'true'
         env:
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
         run: python scripts/post_market.py --out-dir docs/post-market
 
       - name: Set current date as environment variable
+        if: steps.fresh.outputs.ok == 'true'
         run: echo "DATE=$(TZ=Asia/Shanghai date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Deploy to GitHub Pages
+        if: steps.fresh.outputs.ok == 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
