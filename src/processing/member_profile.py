@@ -67,8 +67,15 @@ def market_code(code: str) -> str:
 def parse_profile(payload: Dict[str, object]) -> str:
     """Turn an F10 payload into '云计算66.8%、通信设备33.0%' or ''.
 
-    Product-level lines are preferred; some companies only report by industry,
-    which is coarser but still enough to tell 有线电视 from 光模块.
+    Both breakdowns are read and the richer one wins. Product level is not
+    reliably finer: on 2026-11-19, of the names whose payload carried both,
+    84% reported a single product line that was itself an industry bucket
+    ("电子行业100.0%", "软件与信息技术服务业100.0%"), while their industry
+    breakdown named 服务器类收入92.5% or AIDC业务53.3%. A single coarse line
+    also reads as full revenue concentration, which is how 许继电气
+    ("电气机械及器材制造业100.0%") scored 1.00 and outranked every real
+    data-centre name in the shortlist. Ties go to the industry breakdown for
+    the same reason.
     """
     rows = payload.get("zygcfx") or []
     if not isinstance(rows, list) or not rows:
@@ -77,6 +84,7 @@ def parse_profile(payload: Dict[str, object]) -> str:
     if not dated:
         return ""
     latest = max(str(row["REPORT_DATE"])[:10] for row in dated)
+    breakdowns: Dict[str, str] = {}
     for op_type in ("1", "2"):
         picked = [
             row
@@ -96,11 +104,15 @@ def parse_profile(payload: Dict[str, object]) -> str:
             parts.append(f"{name}{ratio * 100:.1f}%")
             if len(parts) >= MAX_ITEMS:
                 break
-        if parts:
-            if len(parts) == 1 and any(word in parts[0] for word in _USELESS):
-                return ""
-            return "、".join(parts)
-    return ""
+        if parts and not (
+            len(parts) == 1 and any(word in parts[0] for word in _USELESS)
+        ):
+            breakdowns[op_type] = "、".join(parts)
+    if not breakdowns:
+        return ""
+    return max(
+        breakdowns.items(), key=lambda item: (len(item[1].split("、")), item[0] == "2")
+    )[1]
 
 
 def parse_ths(payload: Dict[str, object]) -> str:
@@ -236,8 +248,8 @@ class MemberProfiles:
 SEGMENTS = (
     ("设计", ("芯片设计", "IC设计", "集成电路设计", "设计服务", "IP授权", "EDA",
               "GPU", "CPU", "SoC", "MCU", "存储芯片", "模拟芯片", "射频", "处理器")),
-    ("制造", ("晶圆", "代工", "半导体设备", "光刻", "刻蚀", "薄膜", "硅片",
-              "电子特气", "光刻胶", "抛光", "制造")),
+    ("制造", ("晶圆", "代工", "半导体设备", "半导体专用设备", "光刻", "刻蚀", "薄膜",
+              "硅片", "电子特气", "光刻胶", "抛光", "制造")),
     ("封测", ("封装", "测试", "封测", "Chiplet", "先进封装")),
     ("整机", ("服务器", "整机", "模组", "光模块", "交换机", "路由器", "终端设备")),
     ("材料", ("材料", "化学品", "靶材", "基板", "覆铜板", "PCB", "印制电路", "铜箔")),
