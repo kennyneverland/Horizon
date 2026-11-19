@@ -11,6 +11,11 @@ when it chooses a theme, but the sentence a reader ends up with - "业绩提振�
 versus "该方向已过热" - is written here. Passing the state only to the picker
 left the fire mark with nothing to act on: on 2026-11-18 a theme sitting on 22
 limit-ups and marked hot still rendered as a fresh positive.
+
+The member list rides along for the same reason the state does: a bare theme
+name cannot tell the judge whether its constituents sit on the restricted side
+of a story or the substituting side. On 2026-11-19 an export-control item was
+read as negative for 国产 AI 芯片 because the judge only saw the theme name.
 """
 
 import asyncio
@@ -35,6 +40,9 @@ SYSTEM_PROMPT = """你是 A 股题材影响判定助手。给定一条新闻和�
 - 同一件事对不同题材经常方向相反。例如出口管制对国产替代题材偏积极、对依赖海外供应链的题材偏消极；价格战对头部厂商偏积极、对二线厂商偏消极。
 - 三个方向：positive（积极影响）、negative（负面影响）、neutral（多空交织，或只是提到该题材、看不出明确方向）。
 - 不要为了凑方向强行二选一：消息只是顺带提及该题材，或者利好利空同时存在且量级相当，就判 neutral。
+- 题材名后面【】内的内容是主线状态与成员名单，不属于题材名。输出 name 时只写题材名本身，不要带【】及其内容。
+- 先看题材成员是谁，再判断方向。同一件事对「站在受限方」的成员是利空，对「站在替代方」的成员是利好。例如海外芯片获取受限，对成员全是国产芯片设计的题材偏积极；对成员是海外卡租赁商的题材偏消极。
+- 「成员：」列出的是该题材的成分股，不是这条新闻涉及的公司。判断对象始终是这些成员，不是新闻里被点名的那家公司。
 - 题材后面若带主线状态（如「主线算力 涨停22🔥 前日5」），它说明该产业线上一交易日的涨停家数，只说明资金当天是否在交易这个方向，不是这条新闻导致它涨的证据。
 - 带 🔥 表示该方向已进入过热区（该站口径：单日 ≥20 家；其对 2022 年以来 946 个交易日的回测显示，达到该量级的主线次日家数腰斩概率约 66%）。方向仍按新闻本身判断，但 reason 必须体现该方向已被充分交易、追高风险上升，不得只写成新增利好。其中「涨停N🔥 前日低」属突然加速、消息驱动，持续性待次日验证；「涨停N🔥 前日也高」属连续亢奋，接近衰竭。
 - 标了「今日归零」表示该方向已退潮：方向仍按新闻本身判断，但 reason 应说明已回落，不得写成「正在发酵」。
@@ -118,13 +126,32 @@ class ThemeDirectionJudge:
                 getattr(item, "id", "?"),
             )
             return False
+        missed = []
         for theme in themes:
             verdict = verdicts.get(theme["name"])
             if verdict is None:
+                # The model sometimes echoes the whole labelled token
+                # ("AI芯片【状态：…】") as the name. Fall back to a prefix
+                # match so a formatting slip cannot silently drop the verdict.
+                for key, candidate in verdicts.items():
+                    if key.startswith(theme["name"]):
+                        verdict = candidate
+                        break
+            if verdict is None:
+                missed.append(str(theme["name"]))
                 continue
             theme["direction"] = verdict.direction
             if verdict.reason:
                 theme["direction_reason"] = verdict.reason
+        if missed:
+            # Silence here is what hid the 11-19 regression: the call returned
+            # usable verdicts, so the item counted as a success while a third
+            # of its themes had no direction at all.
+            logger.warning(
+                "Theme direction missing for %s: %s",
+                getattr(item, "id", "?"),
+                "、".join(missed),
+            )
         return True
 
     @staticmethod
@@ -147,8 +174,15 @@ class ThemeDirectionJudge:
         text = " ".join(matching_text(item).split())[:EXCERPT_CHARS]
         labelled = []
         for theme in themes:
+            extra = []
             tag = format_state(theme.get("mainline"))
-            labelled.append(f"{theme['name']}（{tag}）" if tag else str(theme["name"]))
+            if tag:
+                extra.append(f"状态：{tag}")
+            members = list(theme.get("members") or [])[:5]
+            if members:
+                extra.append("成员：" + "、".join(members))
+            suffix = f"【{'；'.join(extra)}】" if extra else ""
+            labelled.append(f"{theme['name']}{suffix}")
         names = "；".join(labelled)
         return (
             f"新闻内容：{text}\n\n"
