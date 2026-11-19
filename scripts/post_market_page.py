@@ -77,6 +77,9 @@ a{color:#1e6bb8;text-decoration:none}
 .wl-n{display:block;margin-top:3px;font-size:13.5px;color:#8a94a6;line-height:1.65}
 .tc{margin:0 0 4px}
 .tc .wl-u li{padding:10px 0}
+.focus h3{margin:14px 0 3px;font-size:16px;font-weight:600;color:#22313f;line-height:1.4}
+.focus h3 .tag{margin-left:8px;vertical-align:1px}
+.focus .wl{margin:0 0 12px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e9ebec;
   border:1px solid #e9ebec;border-radius:8px;overflow:hidden}
 .stat{background:#fff;padding:12px 4px;text-align:center}
@@ -126,7 +129,7 @@ footer a{color:#98a2b3;text-decoration:underline}
   .stat{background:#14171c}.stat b,.line-h b,td.nm b,.drv b,.line-n b{color:#e6ebf2}
   th{background:#1a1f26;color:#8a94a6}
   .line,.drv li,td,footer,.stats{border-color:#252b33}
-  .wl-h b,.wl-u .nm{color:#e6ebf2}
+  .wl-h b,.wl-u .nm,.focus h3{color:#e6ebf2}
   .wl-u li{border-color:#252b33}
 }
 """
@@ -181,6 +184,80 @@ def _watch_html(watch: List[Dict[str, Any]], meta: Dict[str, Dict[str, Any]]) ->
     return "<h3>重点关注个股</h3>" + "".join(groups)
 
 
+_FOCUS_ORDER = ("蓄势", "主线", "活跃")
+
+# Each bucket answers a different question, so each gets its own one-line frame
+# rather than a shared caption: 蓄势 is about position, 主线 about continuity,
+# 活跃 about whether one day becomes two.
+_FOCUS_DESC = {
+    "蓄势": "还没动、结构就绪：票池是连板网「优选蓄势」，题材取该票所属板块，位置由面板回填",
+    "主线": "已经在走、且有连续性：题材与个股来自当日题材明细，看的是明日能否延续",
+    "活跃": "今天刚动、持续性未验证：新上榜或单日放量，看的是明日能否接力",
+}
+
+
+def _focus_html(
+    focus: Dict[str, Any],
+    meta: Dict[str, Dict[str, Any]],
+    pos: Dict[str, Dict[str, Any]],
+) -> str:
+    """明日关注分三类，每类是一组「题材 → 该题材的重点个股」。
+
+    The old page answered "what to watch tomorrow" with one flat list plus a
+    separate candidate block, which forced the reader to work out which names
+    were already moving and which were not. Splitting by bucket does that work
+    once, on the page: 蓄势 names have no limit-up behind them yet, 主线 names
+    are riding a line that has already run, 活跃 names moved today and have to
+    prove it again tomorrow.
+    """
+    loose_meta = {_loose(k): v for k, v in meta.items()}
+    blocks = []
+    for bucket in _FOCUS_ORDER:
+        items = focus.get(bucket) or []
+        if not items:
+            continue
+        groups = []
+        for item in items:
+            theme = str(item.get("theme") or "")
+            info = meta.get(theme) or loose_meta.get(_loose(theme)) or {}
+            # 蓄势的题材是票自己的板块，不是当日涨停线，不挂涨停家数
+            chip = (
+                f"<span class='tag'>{info['count']} 家涨停</span>"
+                if bucket != "蓄势" and info.get("count")
+                else ""
+            )
+            rows = []
+            for st in item.get("stocks") or []:
+                key = (st.get("name") or "").replace(" ", "")
+                hit = pos.get(key) or {}
+                bits = []
+                if hit.get("gain60"):
+                    bits.append(f"60日 {hit['gain60']}")
+                if hit.get("from_high"):
+                    bits.append(f"距高点 {hit['from_high']}")
+                if st.get("note"):
+                    bits.append(st["note"])
+                tag = f"<span class='tag'>{_esc(st['tag'])}</span>" if st.get("tag") else ""
+                note = f"<span class='wl-n'>{_esc(' · '.join(bits))}</span>" if bits else ""
+                rows.append(f"<li><span class='nm'>{_esc(st['name'])}</span>{tag}{note}</li>")
+            if not rows:
+                continue
+            signal = item.get("signal") or ""
+            sig = f"<div class='wl-g'>{_esc(signal)}</div>" if signal else ""
+            groups.append(
+                f"<div class='wl'><h3>{_esc(theme)}{chip}</h3>{sig}"
+                f"<ul class='wl-u'>{''.join(rows)}</ul></div>"
+            )
+        if not groups:
+            continue
+        blocks.append(
+            f"<h2>明日关注 · {bucket}</h2>"
+            f"<div class='wl-g'>{_FOCUS_DESC[bucket]}</div>"
+            f"<div class='focus'>{''.join(groups)}</div>"
+        )
+    return "".join(blocks)
+
+
 def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """个股 → 它出现在哪张筛选面板、位置多少。
 
@@ -202,6 +279,9 @@ def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
 
 def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) -> str:
     """明日候选：还没涨、但结构就绪的那几只。
+
+    Kept for replies written before the three-bucket contract; the current
+    prompt returns ``focus`` instead.
 
     The position is filled in from the screening panel, not from the model: a
     number the model retypes is a number it can get wrong, and this block is
@@ -324,9 +404,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         drivers = f"<h2>当日主线与驱动</h2><ul class='drv'>{items}</ul>"
 
     # The model returns verdicts, not prose blocks: a headline that states the
-    # call, six sections that each defend one, and an explicit dissent against
-    # the site's own review. The headings come from the model's own answers, so
-    # the page shows its reasoning structure rather than a wall of text.
+    # call, four sections that each defend one, three buckets of names to watch,
+    # and an explicit dissent against the site's own review.
     if isinstance(read, str):
         read = {"headline": "", "sections": [{"h": "", "p": p} for p in read.split("\n") if p.strip()]}
     read = read or {}
@@ -344,10 +423,18 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             if sec.get("h"):
                 parts.append(f"<h3>{_esc(sec['h'])}</h3>")
             parts.append(f"<p>{_esc(sec['p'])}</p>")
-        if watch:
+        focus = read.get("focus") or {}
+        if focus:
+            parts.append(
+                _focus_html(focus, _theme_meta(payload), _filter_pos(payload))
+            )
+        elif watch:
+            # Replies written before the three-bucket contract still render.
             parts.append(_watch_html(watch, _theme_meta(payload)))
-        if read.get("tomorrow_candidates"):
-            parts.append(_tomorrow_html(read["tomorrow_candidates"], _filter_pos(payload)))
+            if read.get("tomorrow_candidates"):
+                parts.append(
+                    _tomorrow_html(read["tomorrow_candidates"], _filter_pos(payload))
+                )
         dis = read.get("dissent")
         if isinstance(dis, dict):
             text = str(dis.get("disagree") or dis.get("agree") or "").strip()
@@ -390,7 +477,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <style>{_PAGE_CSS}{EXTRA_CSS}</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
-<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 题材个股</h2>
+<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃</h2>
 </header>
 <main>
 {lede_html}
