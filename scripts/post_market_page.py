@@ -75,6 +75,8 @@ a{color:#1e6bb8;text-decoration:none}
 .wl-u .nm{font-size:15.5px;color:#2b3440;font-weight:600}
 .wl-u .tag{margin-left:8px}
 .wl-n{display:block;margin-top:3px;font-size:13.5px;color:#8a94a6;line-height:1.65}
+.tc{margin:0 0 4px}
+.tc .wl-u li{padding:10px 0}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e9ebec;
   border:1px solid #e9ebec;border-radius:8px;overflow:hidden}
 .stat{background:#fff;padding:12px 4px;text-align:center}
@@ -177,6 +179,59 @@ def _watch_html(watch: List[Dict[str, Any]], meta: Dict[str, Dict[str, Any]]) ->
             f"{signal}<ul class='wl-u'>{''.join(rows)}</ul></div>"
         )
     return "<h3>重点关注个股</h3>" + "".join(groups)
+
+
+def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """个股 → 它出现在哪张筛选面板、位置多少。
+
+    Only the fifteen names in the three free panels have a 60-day position, so a
+    name the model picked from elsewhere comes back empty and the row prints no
+    numbers rather than an estimate.
+    """
+    out: Dict[str, Dict[str, Any]] = {}
+    for label, block in (payload.get("filter") or {}).items():
+        for row in block.get("rows") or []:
+            out[row["name"].replace(" ", "")] = {
+                "panel": label,
+                "gain60": row.get("gain60"),
+                "from_high": row.get("from_high60"),
+            }
+    return out
+
+
+def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) -> str:
+    """明日候选：还没涨、但结构就绪的那几只。
+
+    The position is filled in from the screening panel, not from the model: a
+    number the model retypes is a number it can get wrong, and this block is
+    about position more than anything else. The model supplies the theme and the
+    reason; the panel supplies the 60-day gain and the distance from the high.
+    """
+    rows = []
+    for item in items:
+        key = (item.get("name") or "").replace(" ", "")
+        hit = pos.get(key) or {}
+        theme = item.get("theme") or ""
+        tags = ""
+        if theme:
+            cls = "tag mute" if "未归类" in theme else "tag"
+            tags += f"<span class='{cls}'>{_esc(theme)}</span>"
+        if hit.get("panel") and hit["panel"] != "优选蓄势":
+            tags += f"<span class='tag'>{_esc(hit['panel'])}</span>"
+        bits = []
+        if hit.get("gain60"):
+            bits.append(f"60日 {hit['gain60']}")
+        if hit.get("from_high"):
+            bits.append(f"距高点 {hit['from_high']}")
+        if item.get("note"):
+            bits.append(item["note"])
+        note = f"<span class='wl-n'>{_esc(' · '.join(bits))}</span>" if bits else ""
+        rows.append(f"<li><span class='nm'>{_esc(item.get('name'))}</span>{tags}{note}</li>")
+    return (
+        "<h3>明日候选（优选蓄势）</h3>"
+        "<div class='wl-g'>来自连板网「优选蓄势」：当日未涨停、结构就绪；位置由页面数据回填</div>"
+        f"<div class='tc'><ul class='wl-u'>{''.join(rows)}</ul></div>"
+    )
 
 
 def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
@@ -286,6 +341,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             parts.append(f"<p>{_esc(sec['p'])}</p>")
         if watch:
             parts.append(_watch_html(watch, _theme_meta(payload)))
+        if read.get("tomorrow_candidates"):
+            parts.append(_tomorrow_html(read["tomorrow_candidates"], _filter_pos(payload)))
         dis = read.get("dissent")
         if isinstance(dis, dict):
             text = str(dis.get("disagree") or dis.get("agree") or "").strip()
