@@ -35,6 +35,7 @@ import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -953,9 +954,12 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
 
 def _post_card(url: str, title: str, desp: str, timeout: float) -> "tuple[bool, str]":
     """One POST attempt. Returns (delivered, detail) instead of raising."""
-    body = json.dumps({"title": title, "desp": desp}, ensure_ascii=False).encode("utf-8")
+    # Server酱 parses the body as a form. Posting JSON leaves ``title`` unset and
+    # the API answers 400 "title 不能为空" — the field is simply not there as far
+    # as its parser is concerned.
+    body = urllib.parse.urlencode({"title": title, "desp": desp}).encode("utf-8")
     request = urllib.request.Request(
-        url, data=body, headers={"Content-Type": "application/json"}
+        url, data=body, headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
@@ -980,28 +984,16 @@ def _post_card(url: str, title: str, desp: str, timeout: float) -> "tuple[bool, 
     return False, f"code={code} {raw[:200]}"
 
 
-def push_webhook(
-    url: str, title: str, desp: str, timeout: float = 30.0, fallback_title: str = ""
-) -> bool:
-    """POST the Server酱-shaped body the daily digest already uses.
+def push_webhook(url: str, title: str, desp: str, timeout: float = 30.0) -> bool:
+    """POST one card to the Server酱 endpoint the daily digest uses.
 
-    ``HORIZON_WEBHOOK_URL`` is the same endpoint the daily digest posts to:
-    ``data/config.github.json`` renders it as ``{title, desp}`` under
-    ``platform: generic``. The digest's own title is short, so it never tests
-    the ceiling; this brief's is longer, and Server酱 answers an over-long title
-    with a bare 400. A second attempt with a shorter title costs one request and
-    turns that failure into a delivered card.
+    No retry: a rejected request still counts against the free daily quota, so a
+    second attempt on a bad payload only burns another message.
     """
     ok, detail = _post_card(url, title, desp, timeout)
     if ok:
         return True
     print(f"webhook failed: {detail}", file=sys.stderr)
-    if fallback_title and fallback_title != title:
-        print(f"webhook retry with a shorter title: {fallback_title}", file=sys.stderr)
-        ok2, detail2 = _post_card(url, fallback_title, desp, timeout)
-        if ok2:
-            return True
-        print(f"webhook failed again: {detail2}", file=sys.stderr)
     return False
 
 
@@ -1163,12 +1155,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         ]
         if part
     )
-    short_title = f"Kenny's Horizon {int(date[5:7])}月{int(date[8:10])}日晚报"
     print(
         f"push: title={len(title)} chars / {len(title.encode('utf-8'))} bytes, "
-        f"fallback={len(short_title.encode('utf-8'))} bytes, desp={len(desp)} chars"
+        f"desp={len(desp)} chars"
     )
-    ok = push_webhook(hook, title, desp, fallback_title=short_title)
+    ok = push_webhook(hook, title, desp)
     print(f"push: {'ok' if ok else 'failed'}")
     return 0 if ok else 1
 
