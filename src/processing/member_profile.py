@@ -256,14 +256,31 @@ _RATIO_RE = re.compile(r"(\d+(?:\.\d+)?)%")
 
 
 def business_strength(profile: str) -> float:
-    """Largest revenue share in the profile, or a neutral 0.5 for prose ones.
+    """Largest revenue share of a *named* business, or 0.5 for prose ones.
 
     A prose profile from the THS fallback names the business but carries no
     share; treating it as zero would push those names to the back of the
     shortlist for lack of a number rather than for lack of fit.
+
+    其他 is the residual bucket. Its share says the company is concentrated in
+    something, not that the theme's business is what it does: a profile of
+    「IDC租赁35.0%、其他65.0%」 must not outrank 「芯片设计61.0%」.
     """
     if not profile:
         return 0.0
+    ratios = []
+    for item in profile.split("、"):
+        match = _RATIO_RE.search(item)
+        if not match:
+            continue
+        label = item[: match.start()].strip()
+        if label.startswith("其他") or label.startswith("其它"):
+            continue
+        ratios.append(float(match.group(1)))
+    if ratios:
+        return max(ratios) / 100.0
+    # Nothing but residual lines: fall back to the largest share on record
+    # rather than pretending the company has no business at all.
     ratios = [float(value) for value in _RATIO_RE.findall(profile)]
     if ratios:
         return max(ratios) / 100.0
@@ -302,35 +319,93 @@ def diversify(
     profiles: Dict[str, str],
     limit: int = 5,
     max_per_segment: int = MAX_PER_SEGMENT,
+    pool: Optional[List[str]] = None,
+    label: str = "",
 ) -> List[str]:
     """Cap how many picks share one value-chain segment.
 
     Five names from one segment rise and fall together, which is one bet with
-    five tickers. The model's order is kept; a name over the cap is deferred
-    and only used to fill the line if nothing else is left.
+    five tickers. Capping a list of five can only re-order it, so the cap is
+    inert without alternates: the first version deferred the surplus and then
+    filled the line with it again, five in and the same five out.
+
+    The alternates are the theme's other annotated members, strongest business
+    first. That is the order the shortlist is built in, so the replacements are
+    the names the model could have picked, not arbitrary page-order tail.
     """
     if len(picks) <= 1:
         return picks[:limit]
-    segments = [segment_of(profiles.get(pick, "")) for pick in picks]
-    known = {segment for segment in segments if segment}
+    if pool is None:
+        # sorted() is stable, so equal strengths keep the page order.
+        alternates = sorted(
+            (name for name in profiles if name not in picks),
+            key=lambda name: -business_strength(profiles.get(name, "")),
+        )
+    else:
+        alternates = [name for name in pool if name not in picks]
+    segment_by_name = {
+        name: segment_of(profiles.get(name, "")) for name in list(picks) + alternates
+    }
+    known = {segment for segment in segment_by_name.values() if segment}
     if len(known) <= 1:
+        # The theme's own members sit in one link of the chain, so there is
+        # nothing to diversify into and the model's order stands.
         logger.warning("Rank diversity: single-segment, fallback")
         return picks[:limit]
     kept: List[str] = []
     counts: Dict[str, int] = {}
     deferred: List[str] = []
-    for pick, segment in zip(picks, segments):
+    for pick in picks:
+        segment = segment_by_name.get(pick, "")
         if segment and counts.get(segment, 0) >= max_per_segment:
             deferred.append(pick)
             continue
         kept.append(pick)
         if segment:
             counts[segment] = counts.get(segment, 0) + 1
-    for pick in deferred:
+    # Alternates with a known segment first: a name whose business line could
+    # not be read cannot be shown to help the mix, so it only fills after them.
+    ordered = [name for name in alternates if segment_by_name.get(name)]
+    ordered += [name for name in alternates if not segment_by_name.get(name)]
+    for pick in ordered + deferred:
         if len(kept) >= limit:
             break
+        if pick in kept:
+            continue
+        segment = segment_by_name.get(pick, "")
+        if segment and counts.get(segment, 0) >= max_per_segment:
+            continue
         kept.append(pick)
-    return kept[:limit]
+        if segment:
+            counts[segment] = counts.get(segment, 0) + 1
+    # A short line is worse than a repeated segment: fill from whatever is
+    # left rather than returning four names.
+    for pick in list(picks) + ordered + deferred:
+        if len(kept) >= limit:
+            break
+        if pick not in kept:
+            kept.append(pick)
+    final = kept[:limit]
+    # What the cap actually did, and the weakest business fit that survived.
+    # Both numbers are needed to read the run: 替换 0 means this pass did
+    # nothing and any improvement came from the shortlist alone.
+    tally: Dict[str, int] = {}
+    for name in final:
+        segment = segment_by_name.get(name, "")
+        if segment:
+            tally[segment] = tally.get(segment, 0) + 1
+    logger.warning(
+        "Rank diversity%s: %s | 替换 %d 只 | 主营min %.2f",
+        f" {label}" if label else "",
+        "/".join(f"{segment}{count}" for segment, count in sorted(tally.items()))
+        or "none",
+        sum(1 for name in final if name not in picks),
+        min(
+            (business_strength(profiles.get(name, "")) for name in final),
+            default=0.0,
+        ),
+    )
+    return final
 
 
 def render_listing(members: List[str], profiles: Dict[str, str], limit: int) -> str:
