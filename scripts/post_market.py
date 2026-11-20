@@ -14,6 +14,7 @@ Sources, all public:
   today.html      ｜主线强度 and 主力资金动向, which exist only as rendered DOM
   market.html     60 sessions of breadth, embedded as JSON
   lhb.html        龙虎榜 net-buy top fifteen, with reason and buy-side top seat
+  zaopan.html     监管异动（异常波动公告提醒），只作风险展示，不进候选
   MCP             lianban's own written review, published for agents
 
 The written read is the model's, not this script's: it is handed the numbers and
@@ -60,6 +61,9 @@ MAINLINE_URL = f"{BASE}/mainline.html"
 FILTER_URL = f"{BASE}/filter.html"
 OPENDATA_URL = f"{BASE}/opendata/latest.json"
 LHB_URL = f"{BASE}/lhb.html"
+# 监管异动只出现在晚报：早盘页 09:25 定版，08:00 的早报看到的还是半成品，
+# 19:10 再取才是当天完整的一份。
+ZAOPAN_URL = f"{BASE}/zaopan.html"
 
 # Only these three panels are wanted; the page renders ten, each showing its
 # top five for free. The map is data-p -> label as the page spells it.
@@ -81,6 +85,11 @@ _LHB_STK_RE = re.compile(r'data-stk="(\d{6})"\s+data-nm="([^"]+)"')
 _LHB_CHG_RE = re.compile(r'<span class="cg mono[^"]*">([^<]+)</span>')
 _LHB_NET_RE = re.compile(r'<span class="net mono[^"]*">([^<]+)</span>')
 _LHB_RS_RE = re.compile(r'<span class="rs">([^<]*)</span>')
+# 早盘页把当天快照日期印在标题旁，取它来挡住跨日误印。
+_ZAOPAN_SNAPSHOT_RE = re.compile(r"(\d{4}-\d{2}-\d{2})\s*早盘情报快照")
+_ALERT_RE = re.compile(
+    r'<span class="pmk warn" data-stk="(\d{6})" data-nm="([^"]+)">[^<]*<i>([^<]+)</i></span>'
+)
 
 
 def _text(raw: str) -> str:
@@ -199,6 +208,32 @@ def parse_lhb(page: str) -> Dict[str, Any]:
             }
         )
     return {"header": head.group(1).strip() if head else "", "items": items}
+
+
+def parse_alerts(page: str) -> Dict[str, Any]:
+    """监管异动：交易所异常波动公告提醒，按今年连板数排序。
+
+    This is a risk roster, not a candidate pool. Every name is on it because the
+    exchange flagged an abnormal move, which is the opposite of a reason to buy
+    tomorrow; the list is parsed and printed as-is and never enters
+    ``theme_watch``, ``candidates`` or the model's input, so it cannot leak into
+    the 活跃 bucket. Sorting is the site's: the names with the most limit-ups
+    this year come first, which is also the order a reader wants them in.
+    """
+    stamp = _ZAOPAN_SNAPSHOT_RE.search(page)
+    items: List[Dict[str, Any]] = []
+    for code, name, note in _ALERT_RE.findall(page):
+        kind, _, boards = _text(note).partition("·")
+        hit = re.search(r"(\d+)", boards)
+        items.append(
+            {
+                "code": code,
+                "name": _text(name),
+                "kind": kind.strip(),
+                "boards": int(hit.group(1)) if hit else None,
+            }
+        )
+    return {"snapshot": stamp.group(1) if stamp else "", "items": items}
 
 
 def _payload_codes(payload: Dict[str, Any]) -> List[str]:
@@ -329,12 +364,12 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 
 - 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
 - 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股从该题材的 members 里取。给 2 到 3 条题材，每条 2 到 3 只。
-- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。
+- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。监管异动（异常波动公告提醒）不在活跃候选之内：那份名单只说明交易所已经盯上它，不是「今天刚动」的证据，不要拿它补票，也不要在正文里把这些票写成活跃或明日方向。
 
 三条纪律：
 1. 三类不重复。蓄势与另两类的边界是"还没涨 vs 已经在动"；主线与活跃的边界是"有连续性 vs 只有一天"。同一只票出现在两类里，等于这一块没做。
 2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数或龙虎榜净额——组头和标签会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
-3. 名字不许造。蓄势只能来自优选蓄势前 5；主线只能来自对应题材的 members；活跃只能来自对应题材的 members、两张面板的 rows，或 lhb 里 theme／themes／sector 对得上的票。
+3. 名字不许造。蓄势只能来自优选蓄势前 5；主线只能来自对应题材的 members；活跃只能来自对应题材的 members、两张面板的 rows，或 lhb 里 theme／themes／sector 对得上的票；监管异动名单不在此列。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -1062,6 +1097,7 @@ def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts
         "extra": {},
         "lianban": {},
         "lhb": {},
+        "regulatory": {},
         "concepts": {},
         "errors": [],
     }
@@ -1081,6 +1117,10 @@ def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts
         payload["lhb"] = parse_lhb(fetch(LHB_URL, referer=MAINLINE_URL))
     except Exception as exc:  # noqa: BLE001
         payload["errors"].append(f"lhb: {exc}")
+    try:
+        payload["regulatory"] = parse_alerts(fetch(ZAOPAN_URL, referer=MAINLINE_URL))
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"regulatory: {exc}")
     if not no_browser:
         try:
             payload["extra"] = collect_extra()
@@ -1142,6 +1182,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("no date from any source; aborting", file=sys.stderr)
         return 2
     payload["date"] = date
+    # 监管异动带的是早盘页当天那一份；日期对不上就整块丢掉，宁可少一块，
+    # 也不要把上一交易日的异常波动名单当成今天的印出来。
+    regulatory = payload.get("regulatory") or {}
+    if regulatory and regulatory.get("snapshot") != date:
+        payload["errors"].append(
+            f"regulatory: snapshot {regulatory.get('snapshot') or '(none)'} != {date};"
+            " block skipped"
+        )
+        payload["regulatory"] = {}
 
     if not args.no_mcp:
         try:
