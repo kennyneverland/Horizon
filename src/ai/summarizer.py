@@ -8,7 +8,9 @@ from urllib.parse import quote, urlsplit
 
 from .localization import normalize_language
 from ..models import ContentItem
-from ..processing.ashare_themes import format_theme_line, source_footer
+from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
+from ..processing.conduction import direction_note
+from ..processing.premarket import fetch_premarket
 from ..processing.digest_rules import (
     TECH_CHILD_IDS,
     TECH_PARENT_TITLE,
@@ -58,6 +60,68 @@ def _format_tags(tags: list[str]) -> list[str]:
     return formatted
 
 
+_TICKER_RE = re.compile(r"^(.*?)\s*[（(](\d{6})[)）]\s*$")
+
+
+def _member_label(member: object) -> str:
+    """``旋极信息（300324）`` → ``旋极信息 300324``.
+
+    The bracket was half the readability problem: a ticker code, a direction
+    reason and the disclaimer all wore the same full-width pair, so the eye
+    could not tell one from another.
+    """
+    raw = str(member or "").strip()
+    match = _TICKER_RE.match(raw)
+    if match and match.group(1).strip():
+        return f"{_escape_markdown(match.group(1).strip())} {match.group(2)}"
+    return _escape_markdown(raw)
+
+
+def _render_theme_annotation(themes: list) -> str:
+    """One heading per direction, one line per theme, one disclaimer at the end.
+
+    Before, three brackets shared a single paragraph — ticker, reason,
+    disclaimer — and three themes with fifteen names ran together, so a reader
+    could not tell where one theme ended and why it was read that way. The
+    reason now sits beside the theme name it belongs to, codes lose their
+    brackets, and the disclaimer stands on its own line.
+    """
+    blocks: list[str] = []
+    for direction, heading in ((POSITIVE, "积极影响"), (NEGATIVE, "负面影响")):
+        rows = [theme for theme in themes if theme.get("direction") == direction]
+        if not rows:
+            continue
+        lines = [f"**{heading}**", ""]
+        for theme in rows:
+            parts = [f"**{_escape_markdown(theme.get('name') or '')}**"]
+            reason = _escape_markdown(direction_note(theme))
+            if reason:
+                parts.append(reason)
+            members = theme.get("members") or []
+            if members:
+                parts.append("、".join(_member_label(m) for m in members))
+            lines.append("- " + " · ".join(parts))
+        blocks.append("\n".join(lines))
+    pending = [
+        theme
+        for theme in themes
+        if theme.get("direction") not in (POSITIVE, NEGATIVE, NEUTRAL)
+    ]
+    if pending:
+        lines = ["**方向待定**", ""]
+        for theme in pending:
+            row = f"- **{_escape_markdown(theme.get('name') or '')}**"
+            members = theme.get("members") or []
+            if members:
+                row += " · " + "、".join(_member_label(m) for m in members)
+            lines.append(row)
+        blocks.append("\n".join(lines))
+    if not blocks:
+        return ""
+    blocks.append("*题材为规则匹配、方向为模型推测，非投资建议*")
+    return "\n\n".join(blocks)
+
+
 def _safe_url(value: object) -> Optional[str]:
     """Return an HTML/Markdown-safe HTTP(S) URL, or None for unsafe URLs."""
     raw = str(value).strip()
@@ -90,6 +154,9 @@ LABELS = {
         "references": "References",
         "tags": "Tags",
         "themes": "Themes",
+        "premarket": "Overnight tape",
+        "overnight_map": "US movers → A-share themes",
+        "premarket_note": "Backdrop only; the map is not a recommendation",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
         "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
         "empty_body": (
@@ -111,6 +178,9 @@ LABELS = {
         "references": "参考链接",
         "tags": "标签",
         "themes": "A股题材",
+        "premarket": "隔夜外围",
+        "overnight_map": "关键个股 → A股映射",
+        "premarket_note": "隔夜情绪参考，非题材推荐",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
         "empty_body": (
@@ -307,7 +377,8 @@ class DailySummarizer:
             )
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
-        body = header + toc + "".join(body_sections)
+        premarket = await self._premarket_block(labels) if language == "zh" else ""
+        body = header + premarket + toc + "".join(body_sections)
         # lianban's CC BY 4.0 licence requires attribution wherever its member
         # lists are shown; it only appears when a theme line was actually rendered.
         if language == "zh" and any(
@@ -329,6 +400,37 @@ class DailySummarizer:
         if language == "zh":
             parent_title = _pangu(parent_title)
         return nest_tech_sections(text, child_names, parent_title)
+
+    async def _premarket_block(self, labels: dict) -> str:
+        """Overnight tape as backdrop, printed above the table of contents.
+
+        Never a pick: across the five sessions to 2026-11-20, none of the
+        thirty mapped themes reached the top 100 of lianban's heat board
+        (median rank 575), so the block carries the move and the map and says
+        in one line that it is not a recommendation.
+        """
+        brief = await fetch_premarket()
+        if not brief:
+            return ""
+        lines: list[str] = []
+        indices = brief.get("indices") or []
+        if indices:
+            tape = " ｜ ".join(
+                f"{_escape_markdown(row['name'])} {row['pct']}" for row in indices
+            )
+            lines.append(f"**「{labels['premarket']}」** {tape}")
+        mapping = brief.get("mapping") or []
+        if mapping:
+            rows = []
+            for row in mapping:
+                label = f"{_escape_markdown(row['us'])} {row['pct']}"
+                themes = "·".join(_escape_markdown(name) for name in row["themes"])
+                rows.append(f"{label}（{themes}）" if themes else label)
+            lines.append(f"**{labels['overnight_map']}**：" + " ｜ ".join(rows))
+        if not lines:
+            return ""
+        lines.append(f"*{labels['premarket_note']}*")
+        return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
 
     def generate_webhook_overview(
         self,
@@ -502,15 +604,10 @@ class DailySummarizer:
         # and never phrased as advice. Only the Chinese digest carries it.
         if language == "zh":
             themes = (item.metadata or {}).get("ashare_themes") or []
-            theme_line = format_theme_line(themes)
-            if theme_line:
+            theme_block = _render_theme_annotation(themes)
+            if theme_block:
                 lines.extend(
-                    [
-                        "",
-                        _quote_block(
-                            f"**「{labels['themes']}」** {_escape_markdown(theme_line)}"
-                        ),
-                    ]
+                    ["", _quote_block(f"**「{labels['themes']}」**\n\n{theme_block}")]
                 )
 
         sources = artifact.sources if artifact else []
