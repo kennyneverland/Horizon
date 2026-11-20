@@ -1,6 +1,8 @@
 """Daily summary generation — pure programmatic rendering."""
 
+import asyncio
 import html
+import logging
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -10,6 +12,7 @@ from .localization import normalize_language
 from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
+from ..processing import next_day
 from ..processing.overnight import fetch_overnight
 from ..processing.premarket import fetch_premarket
 from ..processing.digest_rules import (
@@ -17,6 +20,8 @@ from ..processing.digest_rules import (
     TECH_PARENT_TITLE,
     nest_tech_sections,
 )
+
+logger = logging.getLogger(__name__)
 
 
 _CJK = r"[\u4e00-\u9fff\u3400-\u4dbf]"
@@ -384,7 +389,8 @@ class DailySummarizer:
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
         premarket = await self._overnight_block(labels) if language == "zh" else ""
         calendar = await self._calendar_block(labels) if language == "zh" else ""
-        body = header + premarket + calendar + toc + "".join(body_sections)
+        nextday = await self._next_day_block(items, date) if language == "zh" else ""
+        body = header + premarket + calendar + nextday + toc + "".join(body_sections)
         # lianban's CC BY 4.0 licence requires attribution wherever its member
         # lists are shown; it only appears when a theme line was actually rendered.
         if language == "zh" and any(
@@ -406,6 +412,41 @@ class DailySummarizer:
         if language == "zh":
             parent_title = _pangu(parent_title)
         return nest_tech_sections(text, child_names, parent_title)
+
+    async def _next_day_block(self, items: List[ContentItem], date: str) -> str:
+        """昨晚晚报的三类判断，与今早的新闻覆盖交叉成一张坐标。
+
+        晚报回答的是「钱明天往哪走」，早报回答的是「今天发生了什么」，而早报只从
+        标题措辞里找答案。两边过去没有接口：2026-11-19 晚报点了六条线，11-20 早报
+        只碰上一条，因为一条被晚报称作主线的题材，只有当天恰好有对应的新闻才会出现
+        在早报里。
+
+        这里把晚报读回来做交叉，得到四格：有判断且有新闻、有判断但今天没新闻、
+        有新闻但晚报没点名。第三格是早报自己长出来的新苗头，缺了它，早报就退化
+        成复述昨晚的结论。
+        """
+        themes: List[str] = []
+        for item in items:
+            for theme in (item.metadata or {}).get("ashare_themes") or []:
+                name = str(theme.get("name") or "").strip()
+                if name and name not in themes:
+                    themes.append(name)
+        if not themes:
+            return ""
+        try:
+            doc = await asyncio.to_thread(next_day.load, date)
+        except Exception as exc:  # noqa: BLE001 - 拿不到晚报不该拖垮早报
+            logger.warning("Next-day brief unavailable: %s", exc)
+            return ""
+        if not doc:
+            return ""
+        result = next_day.cross(doc, themes)
+        if not result.get("rows"):
+            return ""
+        block = next_day.render_matrix(result)
+        if not block:
+            return ""
+        return block + "\n\n---\n\n"
 
     async def _overnight_block(self, labels: dict) -> str:
         """Overnight US tape as backdrop, printed above the table of contents.
