@@ -1160,6 +1160,67 @@ def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts
     return payload
 
 
+def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
+    """The push body: the same read the page renders, as Markdown.
+
+    Server酱 renders Markdown in place, so the digest can carry the whole
+    verdict instead of a two-line teaser that forces a tap through to GitHub.
+    """
+    if not read:
+        return f"> {note}" if note else ""
+    out: List[str] = []
+    if read.get("headline"):
+        out.append(f"**{str(read['headline']).strip()}**")
+    # Server酱 renders Markdown only (no HTML), so the one-line stats sit in a
+    # blockquote under the verdict: grey, indented, visibly a footnote.
+    if note:
+        out.append(f"> {note}")
+    for sec in read.get("sections") or []:
+        if not isinstance(sec, dict):
+            continue
+        head = str(sec.get("h") or "").strip()
+        body = str(sec.get("p") or "").strip()
+        if head:
+            out.append(f"### {head}")
+        if body:
+            out.append(body)
+    focus = read.get("focus") or {}
+    for bucket in ("主线", "活跃", "蓄势"):
+        rows = focus.get(bucket) or []
+        if not rows:
+            continue
+        out.append(f"### {bucket}")
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            theme = str(row.get("theme") or "").strip()
+            signal = str(row.get("signal") or "").strip()
+            line = f"**{theme}**" if theme else ""
+            if signal:
+                line = f"{line}｜{signal}" if line else signal
+            if line:
+                out.append(line)
+            stocks_md = []
+            for stock in row.get("stocks") or []:
+                if not isinstance(stock, dict):
+                    continue
+                name = str(stock.get("name") or "").strip()
+                tag = str(stock.get("tag") or "").strip()
+                if name:
+                    stocks_md.append(f"- {name}" + (f"（{tag}）" if tag else ""))
+            if stocks_md:
+                out.append("\n".join(stocks_md))
+    dis = read.get("dissent")
+    if isinstance(dis, dict):
+        text = str(dis.get("disagree") or dis.get("agree") or "").strip()
+    else:
+        text = str(dis or "").strip()
+    if text:
+        out.append("### 与连板网复盘的分歧")
+        out.append(text)
+    return "\n\n".join(out)
+
+
 def _short_read(read: Dict[str, Any], limit: int = 220) -> str:
     """The push card's two lines: the call first, then the first section that defends it."""
     if not read:
@@ -1321,14 +1382,17 @@ def main(argv: Optional[List[str]] = None) -> int:
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
     headline = "、".join(f"{l['line']}{l['today']}" for l in top) or "无涨停线"
     title = f"Kenny's Horizon {int(date[5:7])}月{int(date[8:10])}日 盘后洞察晚报"
+    note = (
+        f"（{kpi.get('emotion_phase') or ''} 涨停{kpi.get('limit_up')} 跌停{kpi.get('limit_down')}"
+        f" 封板率{kpi.get('seal_rate_pct')}%"
+        + (f"｜主线 {headline}" if top else "")
+        + (f"｜总龙头 {lead}" if lead else "")
+        + "）"
+    )
     desp = "\n\n".join(
         part
         for part in [
-            f"**{kpi.get('emotion_phase') or ''}** 涨停{kpi.get('limit_up')} 跌停{kpi.get('limit_down')}"
-            f" 封板率{kpi.get('seal_rate_pct')}%"
-            + (f"｜主线 {headline}" if top else "")
-            + (f"｜总龙头 {lead}" if lead else ""),
-            _short_read(summary) if summary else "",
+            _read_markdown(summary, note),
             f"[查看盘后总结 →]({page_url})",
         ]
         if part
