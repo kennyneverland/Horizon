@@ -12,6 +12,7 @@ lookup leaves the name unannotated rather than dropping it.
 """
 
 import asyncio
+import atexit
 import base64
 import gzip
 import json
@@ -183,6 +184,11 @@ class ProfileCache:
         self._items: Dict[int, Dict[str, Dict[str, str]]] = {}
         self._dirty: set[int] = set()
         self._write_failed = False
+        # The digest is a one-shot CLI run, so the process exiting is the one
+        # moment every caller agrees the lookups are over. Hooking it here
+        # keeps the write out of the enrichment path: no caller has to know
+        # the cache exists for it to be persisted.
+        atexit.register(self.flush)
 
     def _shard_of(self, code: str) -> int:
         digits = "".join(ch for ch in str(code) if ch.isdigit())
@@ -266,6 +272,8 @@ class ProfileCache:
                     logger.warning("Member profile cache not written (%s): %s", path, exc)
                     self._write_failed = True
         self._dirty.clear()
+        if written:
+            logger.warning("Member profile cache: %d shard(s) written", written)
         return written
 
 
