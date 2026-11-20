@@ -12,12 +12,16 @@ lookup leaves the name unannotated rather than dropping it.
 """
 
 import asyncio
+import base64
 import gzip
 import json
 import logging
+import os
 import re
 import urllib.request
-from typing import Dict, List, Optional
+from datetime import date
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +43,20 @@ ANNOTATE_LIMIT = 120
 # Only products above this revenue share are worth naming.
 MIN_RATIO = 0.10
 MAX_ITEMS = 3
+
+# One digest re-fetches the same names across themes, and the same themes
+# recur day after day: on 2026-11-20 a single run asked for roughly 550
+# profiles in seven batches, most of them repeats of the previous run's
+# themes. The F10 endpoint rate-limits, so every lookup that succeeded is
+# kept on disk in four shards and reused until the quarterly report moves.
+CACHE_DIR = Path("data/member_profiles")
+CACHE_SHARDS = 4
+# Main-business mix follows the quarterly report, so a month is the longest a
+# profile can be trusted; the weekly refresh tops up whatever expires.
+CACHE_TTL_DAYS = 30
+# A lookup that came back empty is recorded for a day only: caching it for a
+# month would keep the name unannotated long after the endpoint recovered.
+EMPTY_TTL_DAYS = 1
 
 _CODE_RE = re.compile(r"(\d{6})")
 _MAIN_BIZ_RE = re.compile(
@@ -140,22 +158,145 @@ def parse_ths(payload: Dict[str, object]) -> str:
     return ""
 
 
+class ProfileCache:
+    """Sharded on-disk store: code -> profile, with the date it was fetched.
+
+    A missing shard is a cold cache, not an error, so reads stay silent; a
+    write failure is logged once, because a read-only checkout still has to
+    produce a digest. Set ``HORIZON_MEMBER_PROFILE_CACHE=0`` to bypass the
+    disk layer entirely.
+    """
+
+    def __init__(
+        self,
+        directory: Optional[Path | str] = None,
+        *,
+        shards: int = CACHE_SHARDS,
+        ttl_days: int = CACHE_TTL_DAYS,
+    ) -> None:
+        self.directory = Path(directory) if directory else CACHE_DIR
+        self.shards = max(int(shards), 1)
+        self.ttl_days = ttl_days
+        self.enabled = os.environ.get(
+            "HORIZON_MEMBER_PROFILE_CACHE", "1"
+        ).strip().lower() not in ("0", "false", "no", "off")
+        self._items: Dict[int, Dict[str, Dict[str, str]]] = {}
+        self._dirty: set[int] = set()
+        self._write_failed = False
+
+    def _shard_of(self, code: str) -> int:
+        digits = "".join(ch for ch in str(code) if ch.isdigit())
+        return int(digits or 0) % self.shards
+
+    def _path(self, shard: int) -> Path:
+        return self.directory / f"p{shard}.json.gz.b64"
+
+    def _load(self, shard: int) -> Dict[str, Dict[str, str]]:
+        if shard in self._items:
+            return self._items[shard]
+        items: Dict[str, Dict[str, str]] = {}
+        if self.enabled:
+            path = self._path(shard)
+            try:
+                raw = base64.b64decode(path.read_text(encoding="ascii"))
+                payload = json.loads(gzip.decompress(raw).decode("utf-8"))
+                if isinstance(payload, dict) and isinstance(payload.get("items"), dict):
+                    items = payload["items"]
+            except FileNotFoundError:
+                pass
+            except Exception as exc:  # noqa: BLE001 - a bad shard must not stop a digest
+                logger.warning("Member profile shard %s unreadable: %s", path, exc)
+        self._items[shard] = items
+        return items
+
+    def get(self, code: str) -> Optional[str]:
+        """Cached profile, "" when the lookup was known to come back empty.
+
+        ``None`` means a miss: never fetched, or older than the TTL. The two
+        are kept apart because an empty result is a fact worth remembering
+        for a day, while an expired one has to be asked again.
+        """
+        if not self.enabled:
+            return None
+        entry = self._load(self._shard_of(code)).get(str(code))
+        if not isinstance(entry, dict):
+            return None
+        try:
+            stamp = date.fromisoformat(str(entry.get("t") or ""))
+        except ValueError:
+            return None
+        age = (date.today() - stamp).days
+        profile = str(entry.get("p") or "")
+        limit = self.ttl_days if profile else EMPTY_TTL_DAYS
+        if age < 0 or age > limit:
+            return None
+        return profile
+
+    def put(self, code: str, name: str, profile: str, source: str) -> None:
+        """Record one lookup, successful or not, for the next run."""
+        if not self.enabled:
+            return
+        shard = self._shard_of(code)
+        self._load(shard)[str(code)] = {
+            "n": str(name or ""),
+            "p": str(profile or ""),
+            "g": segment_of(profile),
+            "s": str(source or ""),
+            "t": date.today().isoformat(),
+        }
+        self._dirty.add(shard)
+
+    def flush(self) -> int:
+        """Write the shards this run touched; returns how many were written."""
+        if not self.enabled or not self._dirty:
+            return 0
+        written = 0
+        for shard in sorted(self._dirty):
+            path = self._path(shard)
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                payload = {"v": 1, "items": self._items.get(shard) or {}}
+                blob = gzip.compress(
+                    json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+                )
+                path.write_text(base64.b64encode(blob).decode("ascii"), encoding="ascii")
+                written += 1
+            except Exception as exc:  # noqa: BLE001 - read-only checkout
+                if not self._write_failed:
+                    logger.warning("Member profile cache not written (%s): %s", path, exc)
+                    self._write_failed = True
+        self._dirty.clear()
+        return written
+
+
 class MemberProfiles:
-    """Per-run cache of main-business strings, keyed by member string."""
+    """Main-business strings for theme members, cached by stock code.
+
+    Keyed by code rather than by the member string: the same company appears
+    under several themes and the label around its ticker is not always
+    spelled the same way, which is how one run ended up fetching the same
+    names again in a later batch.
+    """
 
     def __init__(
         self,
         *,
         timeout: float = FETCH_TIMEOUT,
         concurrency: int = FETCH_CONCURRENCY,
+        cache: Optional[ProfileCache] = None,
     ):
         self.timeout = timeout
         self.concurrency = max(concurrency, 1)
+        self.cache = cache if cache is not None else ProfileCache()
         self._cache: Dict[str, str] = {}
+        self._names: Dict[str, str] = {}
 
-    def _fetch(self, code: str) -> str:
+    def _fetch(self, code: str) -> Tuple[str, str]:
         """F10 breakdown first, THS key points only when that says nothing."""
-        return self._fetch_f10(code) or self._fetch_ths(code)
+        profile = self._fetch_f10(code)
+        if profile:
+            return profile, "f10"
+        return self._fetch_ths(code), "ths"
 
     def _fetch_f10(self, code: str) -> str:
         request = urllib.request.Request(
@@ -207,7 +348,26 @@ class MemberProfiles:
     async def annotate(self, members: List[str]) -> Dict[str, str]:
         """Map member string -> '主营构成', for the ones that could be fetched."""
         targets = [m for m in members[:ANNOTATE_LIMIT] if stock_code(m)]
-        missing = [m for m in targets if m not in self._cache]
+        missing: List[str] = []
+        # One batch can name the same company twice under different labels
+        # (the theme page and the heat list spell it differently); the code,
+        # not the label, decides whether a lookup is still needed.
+        queued: set[str] = set()
+        for member in targets:
+            code = stock_code(member) or ""
+            if not code:
+                continue
+            self._names[code] = member
+            if code in self._cache or code in queued:
+                continue
+            queued.add(code)
+            # The disk layer answers most of the repeat asks: the same theme
+            # returns on later days, and its members do not change.
+            cached = self.cache.get(code)
+            if cached is not None:
+                self._cache[code] = cached
+                continue
+            missing.append(member)
         semaphore = asyncio.Semaphore(self.concurrency)
 
         async def run(member: str) -> None:
@@ -215,31 +375,43 @@ class MemberProfiles:
             if not code:
                 return
             async with semaphore:
-                profile = ""
+                profile, source = "", ""
                 # The endpoint intermittently answers with an empty body under
                 # load (three of twenty on a first pass, all of them fine on a
                 # retry), so a single attempt would silently thin the list.
                 for attempt in range(3):
                     try:
-                        profile = await asyncio.to_thread(self._fetch, code)
+                        profile, source = await asyncio.to_thread(self._fetch, code)
                         break
                     except Exception as exc:  # noqa: BLE001 - name still works alone
                         if attempt == 2:
                             logger.warning("Profile fetch failed for %s: %s", code, exc)
                         else:
                             await asyncio.sleep(0.4 * (attempt + 1))
-                self._cache[member] = profile
+                self._cache[code] = profile
+                # An empty answer is recorded too: it is a fact with a short
+                # life, and re-asking every run is what the limiter punishes.
+                self.cache.put(code, self._names.get(code, member), profile, source)
 
         if missing:
             await asyncio.gather(*(run(member) for member in missing))
-            hits = sum(1 for member in missing if self._cache.get(member))
+            hits = sum(1 for member in missing if self._cache.get(stock_code(member) or ""))
             logger.warning(
-                "Member profiles: %d/%d fetched for %d requested",
+                "Member profiles: %d/%d fetched for %d requested, %d from cache",
                 hits,
                 len(missing),
                 len(targets),
+                len(targets) - len(missing),
             )
-        return {member: self._cache[member] for member in targets if self._cache.get(member)}
+        return {
+            member: self._cache[code]
+            for member in targets
+            if (code := stock_code(member)) and self._cache.get(code)
+        }
+
+    def flush(self) -> int:
+        """Persist what this run fetched, so the next run starts warm."""
+        return self.cache.flush()
 
 
 # Business segments, in the order a theme's value chain usually reads. The
@@ -253,8 +425,11 @@ SEGMENTS = (
     ("封测", ("封装", "测试", "封测", "Chiplet", "先进封装")),
     ("整机", ("服务器", "整机", "模组", "光模块", "交换机", "路由器", "终端设备")),
     ("材料", ("材料", "化学品", "靶材", "基板", "覆铜板", "PCB", "印制电路", "铜箔")),
-    ("分销", ("分销", "代理", "贸易", "供应链", "批发")),
-    ("租赁", ("租赁", "IDC", "数据中心", "机柜", "运营")),
+    # 批发 and 运营 alone read as 批发金融业务 (a bank) and 运营商网络 (a
+    # carrier), which put 平安银行 in 分销 and 中兴通讯 in 租赁 and let the
+    # segment cap replace the right names for the wrong reason.
+    ("分销", ("分销", "代理", "贸易", "供应链", "批发贸易", "商品批发")),
+    ("租赁", ("租赁", "IDC", "数据中心", "机柜", "运营服务", "运营管理")),
     ("服务", ("软件", "系统集成", "解决方案", "运维", "云服务", "信息技术服务")),
 )
 # How many members the model sees. The page order is a three-month strength
