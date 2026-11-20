@@ -85,6 +85,21 @@ jobs:
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
         run: python scripts/post_market.py --out-dir docs/post-market --date "$TARGET"
+        # continue-on-error above keeps a dead build from blocking the deploy of a
+      # page that does exist — but it also reports green when no page was written
+      # at all: run #9 showed every step success while the deploy was skipped for
+      # want of an HTML file. Checking the exact file the deploy needs turns that
+      # silent miss into a red run.
+      - name: Check the brief was written
+        if: steps.fresh.outputs.ok == 'true'
+        run: |
+          set -euo pipefail
+          TARGET_FILE="docs/post-market/${TARGET}.html"
+          if [ ! -s "$TARGET_FILE" ]; then
+            echo "::error::no brief at $TARGET_FILE — the build failed silently"
+            exit 1
+          fi
+          echo "brief written: $TARGET_FILE ($(wc -c < "$TARGET_FILE") B)"
 
       - name: Set the brief date
         if: steps.fresh.outputs.ok == 'true'
