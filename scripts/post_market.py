@@ -61,6 +61,7 @@ from post_market_page import (  # noqa: E402
     _theme_meta,
     render_html,
 )
+from stock_concepts import _is_weak as _concept_is_weak  # noqa: E402
 from stock_concepts import _norm as _theme_key  # noqa: E402
 from stock_concepts import load_index as load_concept_index  # noqa: E402
 from stock_concepts import fetch_stock as concept_fetch  # noqa: E402
@@ -273,6 +274,10 @@ def _payload_codes(payload: Dict[str, Any]) -> List[str]:
     for card in (payload.get("extra") or {}).get("theme_members") or []:
         for member in card.get("members") or []:
             add(member.get("code"))
+    # 涨停池里的票大多不在面板和龙虎榜上，但它们是题材归位唯一的逐只来源，
+    # 所以也要进概念查询的范围。
+    for row in payload.get("em_zt") or []:
+        add(row.get("c"))
     return codes
 
 
@@ -362,7 +367,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
-- members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。
+- members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、panel 三张免费面板里归位到该题材的票（未必涨停，是「主线里结构就绪、还没走」的那类）、eastmoney 当日涨停股（连板网题材明细改版后不再提供逐只名单，这一路来自东财涨停池，按同花顺概念／行业板块归位）、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。eastmoney 这一路的 sub 是它的概念或行业标签，不是连板网的子题材，亲疏自己判断。members 的排列顺序就是取用优先级：panel（面板里归位到该题材、通常还没涨停）→ eastmoney（当日涨停池）→ related → candidate → leader。明日关注优先用排在前面的：要的是「结构就绪、还没走」，不是已经封板的结果。board 有值说明它今天已经涨停，3 连板及以上必须在 signal 或 tag 里写明位置偏高，不许当成低位机会；board 为空才是没封板的。
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
 - lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材。themes 是本地题材索引倒查出的归属——索引取自同花顺 F10 概念页，已与 lianban 题材库做归一化精确对齐，覆盖范围比面板宽得多，归位优先用它；concepts 是同花顺原始概念名，why 是公司自己披露的业务关联原文，可以用来交代它凭什么算这个题材，但只能引用原文意思，不要替公司补话。today_themes 是把 themes 按名称归一化对回当日题材口径的结果——只做去括号同名匹配，对上的可以直接归位；对不上不代表不属于，例如「光刻胶」对不上「光刻机（胶）」但它就是那条线，这种情况你自己判断。四者都空才表示归属未知。
 - candidates 按模板名分组：candidates[模板名] = {{why, total, rows}}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud／themes）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；themes 是同一套索引倒查出的题材名，sector 为空或只是一个宽泛标签（次新股、高股息、国企改革这类）时用它；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
@@ -458,15 +463,152 @@ def _trim(text: str, limit: int = 1500) -> str:
 # 当日题材名是矩阵口径（粗，如「光刻机（胶）」），逐只明细里的子题材是连板网自己的
 # 标签（细，如「光刻机」「光刻胶」）。两者字面不同，靠一张显式桥接表对上，不让模型猜。
 _THEME_SUBS = {
-    "光刻机（胶）": ("光刻机", "光刻胶", "光刻"),
+    "光刻机（胶）": ("光刻机", "光刻胶", "光刻", "电子化学"),
     "国产芯片": ("先进封装", "半导体", "芯片", "集成电路", "存储", "封测"),
-    "芯片": ("芯片", "半导体", "集成电路", "先进封装", "存储", "封测"),
-    "云计算数据中心": ("算力", "数据中心", "IDC", "云计算", "液冷", "服务器"),
-    "算力": ("算力", "数据中心", "IDC", "液冷", "服务器", "光模块", "CPO"),
-    "机器人": ("机器人", "机器视觉", "减速器", "丝杠", "人形机器人"),
-    "机器人概念": ("机器人", "机器视觉", "减速器", "丝杠", "人形机器人"),
+    "芯片": ("芯片", "半导体", "集成电路", "先进封装", "存储", "封测", "电子化学"),
+    "PCB": ("PCB", "印制电路", "覆铜板", "线路板", "元件"),
+    "PCB概念": ("PCB", "印制电路", "覆铜板", "线路板", "元件"),
+    "农业": ("农业", "种植", "饲料", "农产品", "渔业", "农化", "养殖", "种业", "食品"),
+    "云计算数据中心": ("算力", "数据中心", "IDC", "云计算", "液冷", "服务器", "IT服务"),
+    "算力": ("算力", "数据中心", "IDC", "液冷", "服务器", "光模块", "CPO", "IT服务"),
+    "机器人": ("机器人", "机器视觉", "减速器", "丝杠", "人形机器人", "通用设备"),
+    "机器人概念": ("机器人", "机器视觉", "减速器", "丝杠", "人形机器人", "通用设备"),
+    "AI应用(AI视频)": ("人工智能", "AIGC", "数字媒体", "传媒", "视频", "软件", "广告营销", "出版"),
+    "AI应用": ("人工智能", "AIGC", "数字媒体", "传媒", "视频", "软件", "广告营销", "出版"),
     "家电": ("家电", "家用电器", "小家电", "智能家居", "白色家电"),
 }
+
+
+def _board_label(lbc: Any) -> str:
+    """东财 ``lbc`` 的连板数 → 页面上的说法。1 板是首板，0 空着。"""
+    try:
+        n = int(lbc or 0)
+    except (TypeError, ValueError):
+        return ""
+    if n <= 0:
+        return ""
+    return "首板" if n == 1 else f"{n}连板"
+
+
+def _board_num(label: Any) -> int:
+    """``3连板`` → 3，``首板`` → 1，其余 0。只用来排序，不进正文。"""
+    text = str(label or "")
+    if text == "首板":
+        return 1
+    m = re.match(r"(\d+)\s*连板", text)
+    return int(m.group(1)) if m else 0
+
+
+def _em_members(
+    payload: Dict[str, Any], themes: List[str]
+) -> Dict[str, List[Dict[str, Any]]]:
+    """当日涨停股按题材归位，来源是东财涨停池加同花顺概念。
+
+    lianban 的题材明细面板改版后不再出现在 ``days/<date>.html`` 上——11-20 整页
+    渲染完 ``.zxc``／``#zxm`` 各出现 0 次，``parse_themes`` 只能返回空，兜底池
+    （也是从 detail 建的）跟着一起空。东财涨停池是唯一还活着的逐只来源：每只票
+    带行业板块 ``hybk`` 与连板数 ``lbc``，本地概念索引再补同花顺概念。
+
+    标签与 lianban 的题材名不是同一套口径（盛剑科技的行业是环保设备，真视通是
+    IT服务Ⅱ），所以只按 ``_THEME_SUBS`` 做子串归位，命不中就留空，不猜。命中的
+    票带 ``source=eastmoney``，让模型知道这是当日真实涨停，不是板块候选。
+    """
+    rows = payload.get("em_zt") or []
+    concepts = payload.get("concepts") or {}
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    for row in rows:
+        code = row.get("c") or ""
+        name = row.get("n") or ""
+        if not name:
+            continue
+        hit = concepts.get(code) or {}
+        raw = hit.get("concepts") or []
+        # 蹭热点的标签（次新股、国企改革、专精特新……）不参与归位：它们不说明
+        # 这家公司做什么，只说明它被谁持有过。行业板块同理，只在完全没有概念
+        # 可用时兜底，否则盛剑科技会按「环保设备」被挂到环保上去。
+        labels = [c.get("name") or "" for c in raw if c.get("name") and not _concept_is_weak(c.get("name") or "")]
+        fallback = "" if labels else (row.get("hybk") or "")
+        if fallback:
+            labels = [fallback]
+        for theme in themes:
+            subs = _THEME_SUBS.get(theme, ())
+            if not subs:
+                continue
+            # sub 记真正命中的那个标签，不是列表第一个：模型要能看出凭什么归到
+            # 这条题材，读者也是。命不中就不进，宁缺不猜。
+            hit_label = next(
+                (lab for lab in labels for sub in subs if sub and sub in lab), ""
+            )
+            if not hit_label:
+                continue
+            out.setdefault(theme, []).append(
+                {
+                    "name": name,
+                    "code": code,
+                    "board": _board_label(row.get("lbc")),
+                    "sub": hit_label,
+                    "source": "eastmoney",
+                }
+            )
+    for theme, items in out.items():
+        items.sort(key=lambda m: -_board_num(m.get("board")))
+        out[theme] = items[:8]
+    return out
+
+
+def _panel_members(
+    payload: Dict[str, Any], themes: List[str]
+) -> Dict[str, List[Dict[str, Any]]]:
+    """三张免费面板里的票，按概念归位到当日题材。
+
+    面板自己带的 ``sector`` 是「AI制药（医疗）」「可控核聚变」「多元金融」这类
+    全市场主线板块，和晚报的当日题材不是一套口径——拿它做子串匹配，11-20 的
+    15 只里只有北纬科技一只撞得上。改成和涨停池同一套概念归位，命中率才上来。
+
+    这一路的票多半没有涨停（真视通、龙版传媒除外），价值也在这里：涨停池只
+    回答「谁已经封板」，面板回答「谁在主线里、结构就绪但还没走」。所以它只做
+    补充，不单独撑起一条题材。
+    """
+    concepts = payload.get("concepts") or {}
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    for label, block in (payload.get("filter") or {}).items():
+        for row in block.get("rows") or []:
+            code = row.get("code") or ""
+            name = row.get("name") or ""
+            if not name:
+                continue
+            hit = concepts.get(code) or {}
+            raw = hit.get("concepts") or []
+            labels = [
+                c.get("name") or ""
+                for c in raw
+                if c.get("name") and not _concept_is_weak(c.get("name") or "")
+            ]
+            if not labels:
+                continue
+            for theme in themes:
+                subs = _THEME_SUBS.get(theme, ())
+                if not subs:
+                    continue
+                hit_label = next(
+                    (lab for lab in labels for sub in subs if sub and sub in lab), ""
+                )
+                if not hit_label:
+                    continue
+                out.setdefault(theme, []).append(
+                    {
+                        "name": name,
+                        "code": code,
+                        "board": "",
+                        "sub": hit_label,
+                        "source": "panel",
+                        "panel": label,
+                        "gain60": row.get("gain60"),
+                        "from_high": row.get("from_high60"),
+                        "sector": row.get("sector") or "",
+                    }
+                )
+    return out
 
 
 def _day_lines(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -536,8 +678,13 @@ def _theme_watch(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
                 "sector": row.get("sector") or "",
             }
 
+    lines = _day_lines(payload)
+    names = [x.get("name") or "" for x in lines]
+    em_pool = _em_members(payload, names)
+    panel_pool = _panel_members(payload, names)
+
     out: List[Dict[str, Any]] = []
-    for line in _day_lines(payload):
+    for line in lines:
         name = line.get("name") or ""
         card = cards.get(name) or {}
         subs = _THEME_SUBS.get(name, ())
@@ -567,6 +714,22 @@ def _theme_watch(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
             )
 
         if not card.get("exact"):
+            # 面板票排在涨停池前面：明日关注要的是「结构就绪、还没走」，不是
+            # 已经封板的结果。同一只票若也在涨停池里，board 借涨停池的连板数，
+            # 让它自己显出今天已经涨过，模型才不会把它当低位候选。
+            em_by_name = {
+                (m.get("name") or "").replace(" ", ""): m for m in em_pool.get(name, [])
+            }
+            for m in panel_pool.get(name, []):
+                item = dict(m)
+                key = (m.get("name") or "").replace(" ", "")
+                up = em_by_name.get(key)
+                if up:
+                    item["board"] = up.get("board") or ""
+                add(item, key)
+            # 再接东财涨停池：当日真实涨停，按概念／行业标签归位
+            for m in em_pool.get(name, []):
+                add(dict(m), (m.get("name") or "").replace(" ", ""))
             # 没有逐只明细：用子题材标签取相关涨停股，sub 保留给模型判断亲疏
             for m in pool:
                 sub = m.get("sub") or ""
@@ -1721,6 +1884,17 @@ def main(argv: Optional[List[str]] = None) -> int:
             payload["extra"]["signals"] = parse_signals(render_day(date))
         except Exception as exc:  # noqa: BLE001 - 少一块，不影响别的
             payload["errors"].append(f"signals: {exc}")
+    # 东财涨停池：lianban 的题材明细面板改版后，这是唯一还能逐只拿到的当日涨停
+    # 名单。一次请求换 28 行，比翻十页便宜；拿不到就少一块，不挡整份晚报。
+    try:
+        payload["em_zt"] = (eastmoney.pool("ZT", date) or {}).get("rows") or []
+        # 这 28 只大多不在面板／龙虎榜上，第一次 attach_concepts 没覆盖到；
+        # 补抓一次，题材归位才有概念标签可用。抓不到的票留空，不影响别的块。
+        if payload["em_zt"] and not args.no_fetch_concepts:
+            more = attach_concepts(payload, fetch_missing=True, save=args.save_concepts)
+            payload["concepts"].update(more)
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"eastmoney pool: {exc}")
     # 监管异动带的是早盘页当天那一份；日期对不上就整块丢掉，宁可少一块，
     # 也不要把上一交易日的异常波动名单当成今天的印出来。
     regulatory = payload.get("regulatory") or {}
