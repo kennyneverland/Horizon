@@ -1010,12 +1010,20 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
     return _parse_read(str(text or ""))
 
 
-def _post_card(url: str, title: str, desp: str, timeout: float) -> "tuple[bool, str]":
+def _post_card(
+    url: str, title: str, desp: str, timeout: float, short: str = ""
+) -> "tuple[bool, str]":
     """One POST attempt. Returns (delivered, detail) instead of raising."""
     # Server酱 parses the body as a form. Posting JSON leaves ``title`` unset and
     # the API answers 400 "title 不能为空" — the field is simply not there as far
     # as its parser is concerned.
-    body = urllib.parse.urlencode({"title": title, "desp": desp}).encode("utf-8")
+    fields = {"title": title, "desp": desp}
+    # ``short`` is the line the WeChat card prints before the body is opened.
+    # Left out, the card falls back to the first line of ``desp`` — which is now
+    # Markdown, so the recipient would read ``## 冰点极致分化`` with the hashes.
+    if short:
+        fields["short"] = short
+    body = urllib.parse.urlencode(fields).encode("utf-8")
     request = urllib.request.Request(
         url, data=body, headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
@@ -1066,7 +1074,9 @@ def _load_webhook_banners() -> List[str]:
     return []
 
 
-def push_webhook(urls: str, title: str, desp: str, timeout: float = 30.0) -> bool:
+def push_webhook(
+    urls: str, title: str, desp: str, timeout: float = 30.0, short: str = ""
+) -> bool:
     """POST one card to every endpoint listed in HORIZON_WEBHOOK_URL.
 
     The morning digest reads the same variable as a list — comma or newline
@@ -1084,11 +1094,23 @@ def push_webhook(urls: str, title: str, desp: str, timeout: float = 30.0) -> boo
         print("webhook failed: no endpoint", file=sys.stderr)
         return False
     banners = _load_webhook_banners()
+    # The pairing is positional, so a short banner list silently means "no
+    # greeting" for the tail recipients. Printing both counts makes a
+    # mis-ordered or truncated list visible in the run log.
+    print(f"push: {len(targets)} endpoints, {len(banners)} banners")
     delivered = 0
     for index, url in enumerate(targets):
         banner = banners[index] if index < len(banners) else ""
+        # Bold, so the greeting reads as a dedication above the card rather
+        # than as the first sentence of the brief. Skipped when the entry
+        # already carries its own emphasis.
+        if banner and "*" not in banner:
+            banner = f"**{banner}**"
         body = f"{banner}\n\n{desp}" if banner else desp
-        ok, detail = _post_card(url, title, body, timeout)
+        # Position and presence only: the URL carries the send key, the banner
+        # carries a name, and neither belongs in a public Actions log.
+        print(f"push[{index + 1}/{len(targets)}]: banner={'yes' if banner else 'no'}")
+        ok, detail = _post_card(url, title, body, timeout, short)
         # The URL carries the send key, so only the position is logged.
         print(f"push[{index + 1}/{len(targets)}]: {'ok' if ok else 'failed'}")
         if ok:
@@ -1160,46 +1182,102 @@ def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts
     return payload
 
 
+# Section heads carry one icon each: the emoji are fixed-colour glyphs, so they
+# read the same on a light and a dark background, which is exactly what a CSS
+# colour cannot promise here. Body text stays plain — decoration everywhere is
+# what makes a long card hard to scan.
+_SECTION_ICONS = {
+    "盘面总结": "📊",
+    "重点信号": "🔍",
+    "盘面变动归因": "🔄",
+    "趋势展望": "🔭",
+}
+_FOCUS_ICONS = {"主线": "🎯", "活跃": "🔥", "蓄势": "🌱"}
+
+
+_NUMBERED_MARK_RE = re.compile(r"(?:(?<=[。；;])|^)\s*([1-9])\s*[.、．]\s*")
+
+
+def _split_numbered(text: str) -> List[str]:
+    """Break a run-on "1. … 2. … 3. …" paragraph into separate items.
+
+    The model writes the key-signals section as one paragraph with inline
+    numbering, which arrives as a single wall of text. Splitting on the marks
+    only when there are at least two keeps ordinary prose — and sentences that
+    merely mention a figure — untouched.
+    """
+    marks = list(_NUMBERED_MARK_RE.finditer(text))
+    if len(marks) < 2:
+        return [text]
+    items: List[str] = []
+    for index, mark in enumerate(marks):
+        end = marks[index + 1].start() if index + 1 < len(marks) else len(text)
+        seg = text[mark.end():end].strip()
+        if seg:
+            items.append(f"{mark.group(1)}. {seg}")
+    return items if len(items) >= 2 else [text]
+
+
+def _head(level: int, icon: str, text: str) -> str:
+    """One heading line: level, optional icon, then the label."""
+    marks = "#" * level
+    return f"{marks} {icon} {text}" if icon else f"{marks} {text}"
+
+
 def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
     """The push body: the same read the page renders, as Markdown.
 
-    Server酱 renders Markdown in place, so the digest can carry the whole
-    verdict instead of a two-line teaser that forces a tap through to GitHub.
+    Server酱 renders Markdown only — no HTML and no CSS — so no colour can be
+    set from here, and an inline ``<font color>`` would arrive as literal text.
+    What survives both the light and the dark WeChat webview is structure:
+    heading levels, blockquotes and horizontal rules carry the hierarchy, and
+    the icons sit on section heads where they work as anchors. Nothing in the
+    body depends on a background colour to stay legible, so neither theme can
+    swallow a line.
     """
     if not read:
-        return f"> {note}" if note else ""
+        return f"> 🌡️ {note}" if note else ""
     out: List[str] = []
-    if read.get("headline"):
-        out.append(f"**{str(read['headline']).strip()}**")
-    # Server酱 renders Markdown only (no HTML), so the one-line stats sit in a
-    # blockquote under the verdict: grey, indented, visibly a footnote.
+    headline = str(read.get("headline") or "").strip()
+    if headline:
+        out.append(f"## {headline}")
+    # The stats line stays a blockquote under the verdict: grey, indented and
+    # visibly a footnote, so it never competes with the call above it.
     if note:
-        out.append(f"> {note}")
+        out.append(f"> 🌡️ {note}")
     for sec in read.get("sections") or []:
         if not isinstance(sec, dict):
             continue
         head = str(sec.get("h") or "").strip()
         body = str(sec.get("p") or "").strip()
         if head:
-            out.append(f"### {head}")
+            out.append("---")
+            out.append(_head(3, _SECTION_ICONS.get(head, ""), head))
         if body:
-            out.append(body)
+            items = _split_numbered(body)
+            # One blank-line-joined block per section: keeping the numbered
+            # items on adjacent lines lets Markdown render them as one list.
+            out.append("\n".join(items) if len(items) > 1 else body)
     focus = read.get("focus") or {}
+    if any(focus.get(b) for b in ("主线", "活跃", "蓄势")):
+        out.append("---")
+        out.append(_head(2, "", "明日关注"))
     for bucket in ("主线", "活跃", "蓄势"):
         rows = focus.get(bucket) or []
         if not rows:
             continue
-        out.append(f"### {bucket}")
+        out.append(_head(3, _FOCUS_ICONS.get(bucket, ""), bucket))
         for row in rows:
             if not isinstance(row, dict):
                 continue
             theme = str(row.get("theme") or "").strip()
             signal = str(row.get("signal") or "").strip()
-            line = f"**{theme}**" if theme else ""
+            if theme:
+                # The theme is the label; the call under it is a blockquote so
+                # the two do not read as one run-on sentence.
+                out.append(f"**{theme}**")
             if signal:
-                line = f"{line}｜{signal}" if line else signal
-            if line:
-                out.append(line)
+                out.append(f"> {signal}")
             stocks_md = []
             for stock in row.get("stocks") or []:
                 if not isinstance(stock, dict):
@@ -1207,7 +1285,7 @@ def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
                 name = str(stock.get("name") or "").strip()
                 tag = str(stock.get("tag") or "").strip()
                 if name:
-                    stocks_md.append(f"- {name}" + (f"（{tag}）" if tag else ""))
+                    stocks_md.append(f"- **{name}**" + (f" · {tag}" if tag else ""))
             if stocks_md:
                 out.append("\n".join(stocks_md))
     dis = read.get("dissent")
@@ -1216,19 +1294,28 @@ def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
     else:
         text = str(dis or "").strip()
     if text:
-        out.append("### 与连板网复盘的分歧")
-        out.append(text)
+        out.append("---")
+        out.append(_head(3, "⚖️", "与连板网复盘的分歧"))
+        out.append(f"> {text}")
     return "\n\n".join(out)
 
 
-def _short_read(read: Dict[str, Any], limit: int = 220) -> str:
-    """The push card's two lines: the call first, then the first section that defends it."""
-    if not read:
-        return ""
-    head = read.get("headline") or ""
-    first = next((s.get("p") for s in read.get("sections") or [] if s.get("p")), "")
-    flat = " ".join((head + "。" + first).split()) if head else " ".join(first.split())
-    return flat[:limit] + ("…" if len(flat) > limit else "")
+def _card_short(read: Dict[str, Any], note: str = "", limit: int = 48) -> str:
+    """The one line WeChat shows on the card, before the body is opened.
+
+    Server酱 renders ``desp`` as Markdown but prints ``short`` as plain text on
+    the notification card. Without it the card shows the raw ``##`` and ``**``
+    of the first line; with it the recipient sees a sentence.
+    """
+    head = str((read or {}).get("headline") or "").strip()
+    stats = note.strip().strip("（）()").strip()
+    line = f"{head}｜{stats}" if head and stats else (head or stats)
+    line = " ".join(line.split())
+    if len(line) > limit:
+        # Drop a dangling separator before the ellipsis: a card ending in "｜…"
+        # reads as a rendering bug rather than as a shortened sentence.
+        line = line[:limit].rstrip("｜|·、，, ") + "…"
+    return line
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -1401,7 +1488,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         f"push: title={len(title)} chars / {len(title.encode('utf-8'))} bytes, "
         f"desp={len(desp)} chars"
     )
-    ok = push_webhook(hook, title, desp)
+    ok = push_webhook(hook, title, desp, short=_card_short(summary, note))
     print(f"push: {'ok' if ok else 'failed'}")
     return 0 if ok else 1
 
