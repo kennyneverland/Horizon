@@ -2003,6 +2003,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         summary = llm_read(payload, _load_ai_conf(Path(args.config)))
 
     page_url = f"{args.base_url.rstrip('/')}/{date}.html"
+    # 页面要把「题材 → 逐只成员」写进 next-day-brief JSON 块给早报读。theme_watch
+    # 只在 build_model_input 里算过一次，--no-llm 时根本不会算，所以这里落一份。
+    if not payload.get("theme_watch"):
+        payload["theme_watch"] = _theme_watch(payload)
     html = render_html(payload, summary, page_url)
 
     out_dir = Path(args.out_dir)

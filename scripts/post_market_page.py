@@ -12,6 +12,7 @@ which is text the model wrote — it is rendered as written, never recomputed.
 from __future__ import annotations
 
 import html as _html
+import json
 import re
 from typing import Any, Dict, List
 
@@ -456,6 +457,124 @@ def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) 
     )
 
 
+def _next_day_block(payload: Dict[str, Any], read: Any) -> str:
+    """写给明早早报读的 ``next-day-brief`` JSON 块。
+
+    ``src/processing/next_day.py`` 一直在找这个 id 的块，但晚报从没写过它——
+    早报至今走的是「按标题结构兜底解析」那条路。块里除了早报已经在用的三类桶
+    （主线／活跃／蓄势），再补两块它现在拿不到的市场事实：
+
+    - ``leaders``：题材 → 当日涨停家数 → 龙头，口径与页面「当日主线」一致；
+    - ``movers``：逐只成员，带连板高度与来源（panel／eastmoney），早报据此在
+      题材行尾追加「市场载体」，让「新闻挂的票」和「市场真买的票」同屏。
+
+    只写事实，不写判断：早报怎么用是它的事，这里不做筛选。
+    """
+    if not isinstance(read, dict):
+        return ""
+    focus = read.get("focus") or {}
+    buckets: Dict[str, List[Dict[str, Any]]] = {}
+    for bucket in ("主线", "活跃", "蓄势"):
+        rows = []
+        for item in focus.get(bucket) or []:
+            if not isinstance(item, dict):
+                continue
+            theme = str(item.get("theme") or "").strip()
+            if not theme:
+                continue
+            rows.append(
+                {
+                    "theme": theme,
+                    "badge": str(item.get("badge") or "").strip(),
+                    "signal": str(item.get("signal") or "").strip(),
+                    "stocks": [
+                        {
+                            "name": str(s.get("name") or "").strip(),
+                            "tag": str(s.get("tag") or "").strip(),
+                        }
+                        for s in (item.get("stocks") or [])
+                        if isinstance(s, dict) and str(s.get("name") or "").strip()
+                    ],
+                }
+            )
+        if rows:
+            buckets[bucket] = rows
+    if not buckets:
+        return ""
+
+    meta = _theme_meta(payload)
+    day = (payload.get("matrix") or {}).get("day") or {}
+    drivers = {
+        str(line.get("name") or ""): str(line.get("driver") or "")
+        for line in (day.get("lines") or [])
+    }
+    movers: List[Dict[str, Any]] = []
+    seen = set()
+    for card in payload.get("theme_watch") or []:
+        theme = str(card.get("theme") or "")
+        for m in card.get("members") or []:
+            name = str(m.get("name") or "").strip()
+            key = (theme, name.replace(" ", ""))
+            if not name or key in seen:
+                continue
+            seen.add(key)
+            movers.append(
+                {
+                    "name": name,
+                    "code": str(m.get("code") or "").strip(),
+                    "board": str(m.get("board") or "").strip(),
+                    "theme": theme,
+                    "source": str(m.get("source") or "").strip(),
+                }
+            )
+
+    # 滞后时 _theme_meta 只给家数不给龙头（它不肯把上一场的龙头挂到今天的题材
+    # 上）。但早报的「市场载体」那一行最需要龙头，所以从当日成员里按连板高度补
+    # 一个——那是今天的票，不是借来的。
+    by_theme: Dict[str, List[Dict[str, Any]]] = {}
+    for m in movers:
+        by_theme.setdefault(m["theme"], []).append(m)
+
+    def _boards(label: str) -> int:
+        if label == "首板":
+            return 1
+        digits = re.sub(r"\D", "", label or "")
+        return int(digits) if digits else 0
+
+    leaders = []
+    for name, info in meta.items():
+        leader = str(info.get("leader") or "")
+        board = ""
+        if not leader:
+            pool = [m for m in by_theme.get(name, []) if m.get("board")]
+            if pool:
+                best = max(pool, key=lambda m: _boards(m.get("board") or ""))
+                leader = best.get("name") or ""
+                board = best.get("board") or ""
+        leaders.append(
+            {
+                "theme": name,
+                "count": info.get("count"),
+                "leader": leader,
+                "board": board,
+                "driver": drivers.get(name) or "",
+            }
+        )
+
+    doc = {
+        "version": 1,
+        "date": str((payload.get("kpi") or {}).get("date") or ""),
+        "buckets": buckets,
+        "leaders": leaders,
+        "movers": movers,
+        "blocked": [],
+    }
+    payload_json = json.dumps(doc, ensure_ascii=False).replace("</", "<\\/")
+    return (
+        f'<script type="application/json" id="next-day-brief">{payload_json}</script>\n'
+    )
+
+
 def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     """One self-contained page wearing the daily digest's clothes.
 
@@ -469,6 +588,14 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     matrix = payload.get("matrix") or {}
     day = matrix.get("day") or {}
     lines = matrix.get("lines") or []
+    # 每日主线块常滞后一个交易日，而且 payload 里不一定带 stale 这个键：
+    # 11-20 的 day 只有 date/phase/degree/leader/lines，`day.get("stale")` 取到
+    # None 就直接落到 elif，把 11-19 的光刻机（胶）11 家印在当日标题下。这里按
+    # 日期自己判一次，和 _theme_meta 用的是同一条规则。
+    dates = matrix.get("dates") or []
+    stale = day.get("stale")
+    if stale is None:
+        stale = bool(day.get("date") and dates and day.get("date") != dates[0])
     picks = payload.get("filter") or {}
     concepts = payload.get("concepts") or {}
     extra = render_sections(payload)
@@ -540,7 +667,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         )
 
     drivers = ""
-    if day.get("stale"):
+    if stale:
         # The page's 每日主线 block still shows the previous session; the
         # matrix column for today is current, so show that and name the taxonomy.
         fallback = [x for x in lines if x.get("today", 0) > 0][:6]
@@ -565,6 +692,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     if isinstance(read, str):
         read = {"headline": "", "sections": [{"h": "", "p": p} for p in read.split("\n") if p.strip()]}
     read = read or {}
+    next_day = _next_day_block(payload, read)
     summary_html = ""
     if read.get("sections"):
         parts = []
@@ -658,4 +786,5 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
-</main></body></html>"""
+</main>
+{next_day}</body></html>"""
