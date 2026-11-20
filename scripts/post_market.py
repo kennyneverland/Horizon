@@ -1794,7 +1794,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
     headline = "、".join(f"{l['line']}{l['today']}" for l in top) or "无涨停线"
     # 与页面 header 同一串文字：微信标题和正文标题下的引导语对得上。
-    title = f"Kenny's Horizon {date} 盘后洞察晚报"
+    #
+    # 但 Server酱 的 title 只收 32 个字符，超出部分直接砍掉：完整写法
+    # 「Kenny's Horizon 2026-11-20 盘后洞察晚报」是 33 个字符，被砍掉的正好是
+    # 「晚报」的「报」。日期改写成「11月20日」省 4 个字符，落在 29，产品名
+    # 一个字不动，也不会因为哪天改了文案又悄悄超限——超了就在日志里喊一声。
+    stamp = date
+    _md = re.fullmatch(r"\d{4}-(\d{2})-(\d{2})", date or "")
+    if _md:
+        stamp = f"{int(_md.group(1))}月{int(_md.group(2))}日"
+    title = f"Kenny's Horizon {stamp} 盘后洞察晚报"
+    if len(title) > 32:
+        print(f"warning: title {len(title)} chars > 32, Server酱 will cut it", file=sys.stderr)
     note = (
         f"（{kpi.get('emotion_phase') or ''} 涨停{kpi.get('limit_up')} 跌停{kpi.get('limit_down')}"
         f" 封板率{kpi.get('seal_rate_pct')}%"
