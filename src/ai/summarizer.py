@@ -11,6 +11,7 @@ from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
 from ..processing.overnight import fetch_overnight
+from ..processing.premarket import fetch_premarket
 from ..processing.digest_rules import (
     TECH_CHILD_IDS,
     TECH_PARENT_TITLE,
@@ -157,6 +158,7 @@ LABELS = {
         "premarket": "Overnight tape",
         "overnight_map": "US movers → A-share themes",
         "overnight_asof": "US close {date}",
+        "calendar": "Today's calendar",
         "premarket_note": "Backdrop only; the map is not a recommendation",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
         "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
@@ -182,6 +184,7 @@ LABELS = {
         "premarket": "隔夜外围",
         "overnight_map": "关键个股 → A股映射",
         "overnight_asof": "美东 {date} 收盘",
+        "calendar": "今日日历",
         "premarket_note": "隔夜情绪参考，非题材推荐",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
@@ -380,7 +383,8 @@ class DailySummarizer:
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
         premarket = await self._overnight_block(labels) if language == "zh" else ""
-        body = header + premarket + toc + "".join(body_sections)
+        calendar = await self._calendar_block(labels) if language == "zh" else ""
+        body = header + premarket + calendar + toc + "".join(body_sections)
         # lianban's CC BY 4.0 licence requires attribution wherever its member
         # lists are shown; it only appears when a theme line was actually rendered.
         if language == "zh" and any(
@@ -440,6 +444,40 @@ class DailySummarizer:
         if close:
             note = f"{labels['overnight_asof'].format(date=close)} · {note}"
         lines.append(f"*{note}*")
+        return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
+
+    async def _calendar_block(self, labels: dict) -> str:
+        """Today's scheduled events, printed under the overnight tape.
+
+        A calendar belongs in the morning: by 19:10 the limit-up board has
+        already answered what happened today, and what the reader needs then is
+        tomorrow's list, not today's. The page carries the day's macro prints,
+        unlocks and ex-rights dates from 06:00, so 08:00 sees the whole set. On
+        a weekend the page has no snapshot and the block is skipped, which is
+        right: there is no session to schedule.
+        """
+        brief = await fetch_premarket()
+        if not brief:
+            return ""
+        events = (brief.get("events") or "").strip()
+        calendar = brief.get("calendar") or []
+        if not events and not calendar:
+            return ""
+        # Full-width brackets keep the macro line out of the Markdown escaper.
+        if events:
+            events = events.replace("(", "（").replace(")", "）")
+        lines: list[str] = []
+        if events:
+            lines.append(f"**「{labels['calendar']}」** {_escape_markdown(events)}")
+        grouped: dict[str, list] = {}
+        for row in calendar:
+            grouped.setdefault(str(row.get("tag") or ""), []).append(row)
+        for tag, rows in grouped.items():
+            names = "、".join(
+                f"{_escape_markdown(row.get('name') or '')} {row.get('code') or ''}".strip()
+                for row in rows
+            )
+            lines.append(f"**{_escape_markdown(tag)}**：{names}")
         return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
 
     def generate_webhook_overview(
