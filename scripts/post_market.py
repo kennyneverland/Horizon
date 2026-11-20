@@ -358,6 +358,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - share_of_all_limit_up_pct 是集中度，不是强度。sector_strength_pct 是板块当日涨跌幅：涨停家数多而板块在跌，是个股突围，不是板块行情。
 - relay 衡量接力还赚不赚钱，不衡量今天强不强。
 - next_day_base_rate 是连板网用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
+- third_party_review 是连板网自己写的复盘正文，已核对为当日定版，写的是它的判断而不是数据。它和你的读法不同时，分歧点就在那里；它为空表示今天没有可取的第二意见，dissent 也必须为空。
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
@@ -427,7 +428,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
                "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
   ]
  }},
- "dissent": "与连板网复盘的分歧，一句话；没有分歧就填空字符串，不要编"}}
+ "dissent": "针对 third_party_review 的表态，一句话：判断不同就写不同在哪、依据哪条数据；完全一致就写「与连板网复盘判断一致」；third_party_review 为空则留空字符串。不许复述它的内容，也不许编造它没说过的观点"}}
 
 focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每条题材 1 到 3 只个股，全篇合计不超过 20 只；题材名不许自造；同一只票只出现在一类里；三类都不要把 members 原样罗列。"""
 
@@ -1850,6 +1851,13 @@ def main(argv: Optional[List[str]] = None) -> int:
             data_markdown(payload),
         ]
         if part
+    )
+    # dissent 空着不报错、也不占版面，事后只能靠日志判断是「模型认为一致」
+    # 还是「模型根本没拿到那份复盘」。两个长度一起打，一眼能分清。
+    _lb = payload.get("lianban") or {}
+    print(
+        f"read: third_party={len(_lb.get('ai_review') or '')} chars, "
+        f"dissent={len(str(summary.get('dissent') or ''))} chars"
     )
     print(
         f"push: title={len(title)} chars / {len(title.encode('utf-8'))} bytes, "
