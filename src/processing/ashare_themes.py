@@ -40,6 +40,7 @@ as inferred and carries the source attribution.
 from __future__ import annotations
 
 import asyncio
+import atexit
 import base64
 import gzip
 import json
@@ -49,6 +50,7 @@ import time
 import unicodedata
 import urllib.request
 import zlib
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -116,6 +118,12 @@ DIRECTION_LABELS = {
 # 相对强度"前 3。2026-11-18 实测：794 个题材里 rank<=200 的有 181 个。
 # 前 200 一个都没命中时，先让模型在全量索引里选，再由词表匹配兜底。
 HOT_THEME_LIMIT = 200
+
+# 成员表跨运行缓存。runner 每次都是干净的，只有落盘 + actions/cache 才能把它带过
+# run；目录与成员主营画像共用，workflow 里已经缓存了 data/member_profiles。
+# 当天抓到的算新鲜；更早的只在抓取失败时拿出来用——题材行宁可旧一天，也不要只剩题材名。
+MEMBERS_CACHE_DIR = Path("data/member_profiles")
+MEMBERS_CACHE_FILE = "theme_members.json.gz.b64"
 
 _ASCII_TERM_RE = re.compile(r"[a-z0-9&.\- ]+")
 _ITEMLIST_RE = re.compile(
@@ -464,6 +472,10 @@ class MemberFetcher:
     _shared_exhausted = False
     # Monotonic time before which no fetch may start (set on a 429).
     _shared_cooldown_until = 0.0
+    # 跨运行缓存（按题材名归一化后索引），None 表示还没读盘。
+    _shared_members: Optional[Dict[str, Dict[str, Any]]] = None
+    _shared_members_dirty = False
+    _shared_registered = False
 
     def __init__(
         self,
@@ -528,6 +540,75 @@ class MemberFetcher:
             MemberFetcher._shared_slugs = self._load_slugs()
         return MemberFetcher._shared_hot
 
+    @classmethod
+    def _load_members(cls) -> Dict[str, Dict[str, Any]]:
+        """题材成员表的跨运行缓存，落在 data/member_profiles。"""
+        if cls._shared_members is not None:
+            return cls._shared_members
+        items: Dict[str, Dict[str, Any]] = {}
+        path = MEMBERS_CACHE_DIR / MEMBERS_CACHE_FILE
+        try:
+            raw = base64.b64decode(path.read_text(encoding="ascii"))
+            doc = json.loads(zlib.decompress(raw).decode("utf-8"))
+            if isinstance(doc, dict):
+                items = {str(k): v for k, v in doc.items() if isinstance(v, dict)}
+        except FileNotFoundError:
+            pass
+        except Exception as exc:  # noqa: BLE001 - a bad cache must not stop a digest
+            logger.warning("Theme member cache unreadable (%s): %s", path, exc)
+        cls._shared_members = items
+        return items
+
+    @staticmethod
+    def _today() -> str:
+        return datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
+
+    @classmethod
+    def _cached_on(cls, key: str) -> str:
+        return str((cls._load_members().get(key) or {}).get("date") or "")
+
+    @classmethod
+    def _members(cls, key: str, allow_stale: bool = False) -> List[str]:
+        """缓存里的成员表。当天抓的算新鲜，更早的只有明确要旧值时才给。"""
+        entry = cls._load_members().get(key) or {}
+        names = [str(n) for n in entry.get("members") or [] if str(n).strip()]
+        if not names:
+            return []
+        if entry.get("date") == cls._today() or allow_stale:
+            return names
+        return []
+
+    @classmethod
+    def _remember(cls, key: str, names: List[str]) -> None:
+        cls._load_members()[key] = {"date": cls._today(), "members": list(names)}
+        cls._shared_members_dirty = True
+        if not cls._shared_registered:
+            cls._shared_registered = True
+            atexit.register(cls.flush_members)
+
+    @classmethod
+    def flush_members(cls) -> None:
+        """写回缓存。只读 checkout 或坏路径只记一条日志，不影响出报。"""
+        if not cls._shared_members_dirty or not cls._shared_members:
+            return
+        path = MEMBERS_CACHE_DIR / MEMBERS_CACHE_FILE
+        try:
+            MEMBERS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            raw = zlib.compress(
+                json.dumps(cls._shared_members, ensure_ascii=False).encode("utf-8"), 9
+            )
+            path.write_text(base64.b64encode(raw).decode("ascii"), encoding="ascii")
+            # 写成功就清脏，避免 atexit 再写一遍同内容。
+            cls._shared_members_dirty = False
+            logger.warning(
+                "Theme member cache: %d themes written to %s",
+                len(cls._shared_members),
+                path,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Theme member cache not written (%s): %s", path, exc)
+
+
     def _resolve_slug(self, slug: str, name: Optional[str]) -> str:
         """Return the theme's current page path, falling back to the stored one."""
         if not name:
@@ -567,6 +648,12 @@ class MemberFetcher:
             slug = self._resolve_slug(slug, name)
             if slug in self._cache:
                 return self._cache[slug]
+            # 当天已经抓过这个题材，就不必再花一次请求，也不必赌 lianban 这次不返回 429。
+            key = _normalise(name or slug)
+            fresh = self._members(key)
+            if fresh:
+                self._cache[slug] = fresh
+                return fresh
             if MemberFetcher._shared_used >= self.budget:
                 # Reported once per run: a digest that runs out of budget
                 # would otherwise log the same line for every later theme.
@@ -608,7 +695,19 @@ class MemberFetcher:
                     names = []
                 if names:
                     break
-            if not names:
+            if names:
+                self._remember(key, names)
+            else:
+                # 抓不到就用上次那份：题材行宁可旧一天，也不要整行只剩题材名。
+                stale = self._members(key, allow_stale=True)
+                if stale:
+                    logger.warning(
+                        "Member fetch empty for theme %s; using the list cached on %s",
+                        slug,
+                        self._cached_on(key),
+                    )
+                    self._cache[slug] = stale
+                    return stale
                 logger.warning(
                     "No members parsed for theme %s (index lists %s); the page "
                     "answered without a member list",
