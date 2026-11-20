@@ -37,6 +37,7 @@ from ..models import ArtifactSource, ContentArtifact, ContentBlock, ContentItem
 from ..processing.ashare_themes import (
     NEGATIVE,
     NEUTRAL,
+    POSITIVE,
     MemberFetcher,
     ThemeIndex,
     attach_themes,
@@ -71,6 +72,47 @@ MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题�
 
 输出格式：只输出 JSON。
 {"picks": ["股票名", "股票名"]}"""
+
+# A theme's members are not all beneficiaries: 首旅酒店 sits in 阿里概念
+# because Alibaba holds a stake, not because hotel revenue moves with Alibaba
+# Cloud; 华升股份 sits in 算力租赁 with textiles as its main business. On
+# 2026-11-20 29% of the theme-stock pairs read like this.
+#
+# The gate is a blocklist, not an allowlist. A real equipment maker reports
+# 「销售专用设备及备品备件」 or 「测试机、分选机」 — no industry noun at all —
+# so any allowlist of tech words drops the names the reader wants. Naming the
+# industries that cannot benefit costs nothing when the guess is wrong: the
+# member simply stays in the list.
+MIN_BUSINESS_MATCH = 2
+OFF_TOPIC_BUSINESS = (
+    # 消费与服务
+    "酒店", "餐饮", "旅游", "文旅", "景区", "免税", "零售", "超市", "百货",
+    "景观设计", "园林", "装饰", "工程咨询",
+    "纺织", "服装", "鞋帽", "皮革", "家纺", "家居", "家具",
+    "食品", "饮料", "白酒", "啤酒", "乳制品", "调味品", "农业", "养殖", "饲料",
+    "家用电器", "生活电器", "厨电", "小家电", "空调", "冰箱", "洗衣机",
+    # 医药医疗
+    "医疗", "医药", "制药", "器械", "血糖", "呼吸治疗", "临床", "疫苗", "中药",
+    # 传媒与文娱
+    "传媒", "楼宇媒体", "广告", "影视", "有线电视", "出版", "游戏", "院线",
+    # 金融地产
+    "银行", "证券", "保险", "信托", "房地产", "地产", "物业",
+    # 交运与周期
+    "航空", "机场", "航运", "港口", "铁路", "公路", "物流", "快递",
+    "钢铁", "煤炭", "有色", "水泥", "玻璃", "基础化工", "农药", "化肥", "造纸",
+    # 传统制造
+    "汽车零部件", "整车", "轮胎", "工程机械", "农机", "船舶",
+    "仪表", "风机", "阀门", "锅炉", "变压器", "电线电缆",
+    # 与算力无关的电子消费
+    "红外", "电子价签", "耳机", "音响", "手机", "LED显示", "照明",
+)
+
+
+def _off_topic_business(profile: str) -> bool:
+    """Whether a member's main business rules out any AI-theme read-through."""
+    text = profile or ""
+    return any(term in text for term in OFF_TOPIC_BUSINESS)
+
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
@@ -272,10 +314,18 @@ class ContentEnricher:
             outcomes = await gather_ai_tasks([process(item, task_id) for item in items])
 
         self._log_theme_metrics(items)
-        # Run-wide passes: a theme seen both ways in one digest, and a negative
-        # verdict that still listed tickers, both need every item in hand.
+        # Run-wide passes: a theme seen both ways in one digest, a positive
+        # verdict the tape does not support, and a negative verdict that still
+        # listed tickers, all need every item in hand.
         self._merge_theme_directions(items)
+        self._align_direction_with_state(items)
         self._suppress_negative_members(items)
+        # Every item is done, so the profiles fetched this run are written
+        # once: tomorrow's themes are largely the same set of names, and the
+        # F10 endpoint charges a request for each repeat.
+        written = self._member_profiles.flush()
+        if written:
+            logger.warning("Member profile cache: %d shard(s) written", written)
 
         return EnrichmentBatchResult(
             succeeded_ids=[item_id for item_id, exc in outcomes if exc is None],
@@ -410,6 +460,43 @@ class ContentEnricher:
                     theme["direction"] = NEUTRAL
                 kept.add(name)
         logger.warning("Direction conflict merged: %s", "、".join(sorted(conflicts)))
+
+    # A positive verdict has to agree with the tape. On 2026-11-20 four lines
+    # said 积极影响 and then wrote 板块回落 / 已退潮 in their own reason: the
+    # direction judge reads the story, not the session, so it cannot know the
+    # theme closed with no limit-up.
+    FADE_WORDS = ("回落", "退潮", "见顶", "走弱", "高位")
+
+    def _align_direction_with_state(self, items: list[ContentItem]) -> None:
+        """Downgrade a positive call the tape does not support.
+
+        Two triggers, both already on the theme: a mainline state with no
+        limit-up today and a flat-or-shrinking three-day count, and the judge's
+        own reason saying 回落/退潮. Either one makes the line contradict the
+        count printed next to it, so the verdict drops to neutral and the
+        reason records which check fired.
+        """
+        faded: list[str] = []
+        for item in items:
+            for theme in (item.metadata or {}).get("ashare_themes") or []:
+                if theme.get("direction") != POSITIVE:
+                    continue
+                state = theme.get("mainline") or {}
+                reason = str(theme.get("direction_reason") or "").strip()
+                cold = (
+                    bool(state)
+                    and int(state.get("today") or 0) == 0
+                    and int(state.get("delta3") or 0) <= 0
+                )
+                worded = any(word in reason for word in self.FADE_WORDS)
+                if not (cold or worded):
+                    continue
+                note = "板块无涨停" if cold else "理由自述回落"
+                theme["direction"] = NEUTRAL
+                theme["direction_reason"] = f"{reason}；{note}" if reason else note
+                faded.append(f"{theme.get('name')}({note})")
+        if faded:
+            logger.warning("Direction aligned with tape: %s", "、".join(faded))
 
     def _suppress_negative_members(self, items: list[ContentItem]) -> None:
         """A negative verdict lists no names.
@@ -566,6 +653,25 @@ class ContentEnricher:
             return list(members)
         excerpt = " ".join(matching_text(item).split())[:800]
         profiles = await self._member_profiles.annotate(members)
+        # A member whose main business is a hotel or a textile mill cannot be
+        # moved by a computing-power story, whatever the theme page says: on
+        # 2026-11-20 首旅酒店 (hotels 93.4%) sat in 阿里概念 and 华升股份
+        # (textiles 82.1%) in 算力租赁. Dropping them before the shortlist is
+        # what the revenue ranking could not do.
+        on_topic = [
+            member
+            for member in members
+            if not _off_topic_business(profiles.get(member, ""))
+        ]
+        if len(on_topic) >= MIN_BUSINESS_MATCH:
+            members = on_topic
+        else:
+            logger.warning(
+                "Business gate %s: %d/%d on topic, kept the original list",
+                theme_name,
+                len(on_topic),
+                len(members),
+            )
         # Only the names whose business is large enough for the story to move
         # reach the model; the page order's tail is kept out of the prompt,
         # not out of the member list.
