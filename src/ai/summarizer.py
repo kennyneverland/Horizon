@@ -10,6 +10,7 @@ from .localization import normalize_language
 from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
+from ..processing.market_prior import load_state as load_market_prior
 from ..processing.overnight import fetch_overnight
 from ..processing.premarket import fetch_premarket
 from ..processing.digest_rules import (
@@ -64,18 +65,23 @@ def _format_tags(tags: list[str]) -> list[str]:
 _TICKER_RE = re.compile(r"^(.*?)\s*[（(](\d{6})[)）]\s*$")
 
 
-def _member_label(member: object) -> str:
-    """``旋极信息（300324）`` → ``旋极信息 300324``.
+def _member_label(member: object, note: str = "") -> str:
+    """``旋极信息（300324）`` → ``旋极信息 300324``，带注脚时补一句.
 
     The bracket was half the readability problem: a ticker code, a direction
     reason and the disclaimer all wore the same full-width pair, so the eye
-    could not tell one from another.
+    could not tell one from another. The note is the one bracket that carries
+    information: whether this ticker traded yesterday, and how.
     """
     raw = str(member or "").strip()
     match = _TICKER_RE.match(raw)
     if match and match.group(1).strip():
-        return f"{_escape_markdown(match.group(1).strip())} {match.group(2)}"
-    return _escape_markdown(raw)
+        label = f"{_escape_markdown(match.group(1).strip())} {match.group(2)}"
+    else:
+        label = _escape_markdown(raw)
+    if note:
+        label += f"（{_escape_markdown(note)}）"
+    return label
 
 
 def _render_theme_annotation(themes: list) -> str:
@@ -87,6 +93,9 @@ def _render_theme_annotation(themes: list) -> str:
     reason now sits beside the theme name it belongs to, codes lose their
     brackets, and the disclaimer stands on its own line.
     """
+    # 前一交易日的涨停、炸板与龙虎榜：只加一句注脚，名单与顺序不动。
+    # 与隔夜外围、早盘情报一样在渲染时取，取不到就整段不加。
+    prior = load_market_prior()
     blocks: list[str] = []
     for direction, heading in ((POSITIVE, "积极影响"), (NEGATIVE, "负面影响")):
         rows = [theme for theme in themes if theme.get("direction") == direction]
@@ -100,7 +109,10 @@ def _render_theme_annotation(themes: list) -> str:
                 parts.append(reason)
             members = theme.get("members") or []
             if members:
-                parts.append("、".join(_member_label(m) for m in members))
+                notes = prior.notes_for(members) if prior.available else {}
+                parts.append(
+                    "、".join(_member_label(m, notes.get(m, "")) for m in members)
+                )
             lines.append("- " + " · ".join(parts))
         blocks.append("\n".join(lines))
     pending = [
@@ -114,7 +126,10 @@ def _render_theme_annotation(themes: list) -> str:
             row = f"- **{_escape_markdown(theme.get('name') or '')}**"
             members = theme.get("members") or []
             if members:
-                row += " · " + "、".join(_member_label(m) for m in members)
+                notes = prior.notes_for(members) if prior.available else {}
+                row += " · " + "、".join(
+                    _member_label(m, notes.get(m, "")) for m in members
+                )
             lines.append(row)
         blocks.append("\n".join(lines))
     if not blocks:
