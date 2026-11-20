@@ -1,0 +1,334 @@
+"""The evening brief's three buckets, read back by the next morning's digest.
+
+The evening brief answers "where is the money going tomorrow" with three named
+buckets — 主线 (running, with continuity), 活跃 (moved today, unproven) and
+蓄势 (not moved yet, structure ready). The morning digest answers "what
+happened", and it answers it from headline wording alone. The two never met:
+on 2026-11-19 the brief named six themes and the 11-20 digest touched one of
+them, because a theme the brief called a 主线 only reaches the digest when that
+morning happens to carry a matching story.
+
+So the brief is read back here. The page the brief already publishes carries a
+``next-day-brief`` JSON block; this module fetches the most recent one before
+today and hands the three buckets to the digest, which crosses them with the
+day's stories. Nothing here decides anything: it is the same lookup discipline
+as the theme index, and a missing page simply means the digest runs as before.
+
+Two things the block is *not* used for. It does not replace the digest's theme
+match — a name list from yesterday is not a match for today's headline. And it
+does not turn 蓄势 into recommendations: those are stocks that have not moved,
+and presenting them as tomorrow's buys is the one reading the brief itself
+refuses to make.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import re
+import urllib.request
+from datetime import date as _date
+from datetime import timedelta
+from typing import Any, Dict, Iterable, List, Optional
+
+logger = logging.getLogger(__name__)
+
+BRIEF_URL = "https://kennyneverland.github.io/Horizon/post-market/{date}.html"
+BLOCK_RE = re.compile(
+    r'<script[^>]*id="next-day-brief"[^>]*>(.*?)</script>', re.S
+)
+# A long weekend is the widest gap the digest should still look back across;
+# beyond that the brief is describing a different week.
+LOOKBACK_DAYS = 5
+BUCKET_ORDER = ("主线", "活跃", "蓄势")
+# 晚报「蓄势」用的是板块名，早报用的是连板网题材库的名字，两套口径字面不通。
+# 这张表只收两类对应：晚报自己写明了的（「轻工制造（对应当日题材 家电）」），
+# 和一边确实包含另一边的（光刻机 ⊂ 半导体设备）。联想性的对应一律不收——
+# 把「通用设备」认成「机器人」会把「无新消息」误报成「有覆盖」，那是假证据。
+_BUCKET_BRIDGE = {
+    "轻工制造": ("家电", "家用电器"),
+    "光刻机（胶）": ("半导体设备", "光刻机"),
+}
+_NOISE_RE = re.compile(r"[（(][^）)]*[）)]|\s+")
+
+
+def _fold(text: Any) -> str:
+    """Drop brackets, spaces and the 概念/板块 suffix so two names can be compared."""
+    out = _NOISE_RE.sub("", str(text or ""))
+    for suffix in ("概念", "板块", "指数", "行业"):
+        if out.endswith(suffix) and len(out) > len(suffix) + 1:
+            out = out[: -len(suffix)]
+    return out.strip()
+
+
+def _shift(day: str, back: int) -> str:
+    try:
+        base = _date.fromisoformat(day)
+    except ValueError:
+        return ""
+    return (base - timedelta(days=back)).isoformat()
+
+
+def _get(url: str, timeout: float = 20.0) -> str:
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (compatible; HorizonDigest/1.0; "
+                "+https://github.com/kennyneverland/Horizon)"
+            ),
+            "Accept-Encoding": "gzip",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        raw = response.read()
+        if response.headers.get("Content-Encoding") == "gzip":
+            import gzip
+
+            raw = gzip.decompress(raw)
+    return raw.decode("utf-8", "replace")
+
+
+def load(day: str, base: str = BRIEF_URL, lookback: int = LOOKBACK_DAYS) -> Optional[Dict[str, Any]]:
+    """The most recent brief published before ``day``, or None.
+
+    ``day`` is the digest's own date. The brief for the previous session is what
+    the reader saw last night, so the walk starts one day back and stops at the
+    first page that carries the block — a Monday digest reaches back to Friday.
+    """
+    for back in range(1, lookback + 1):
+        target = _shift(day, back)
+        if not target:
+            return None
+        try:
+            page = _get(base.format(date=target))
+        except Exception as exc:  # noqa: BLE001 - a missing brief is not an error
+            logger.info("next-day brief %s unavailable (%s)", target, exc)
+            continue
+        doc: Optional[Dict[str, Any]] = None
+        match = BLOCK_RE.search(page)
+        if match:
+            try:
+                parsed = json.loads(match.group(1))
+            except ValueError as exc:
+                logger.warning("next-day brief %s is not valid JSON: %s", target, exc)
+                parsed = None
+            if isinstance(parsed, dict):
+                doc = parsed
+        if doc is None:
+            # 老页面没有 JSON 块。同一份内容就在页面上，按标题结构读一遍，
+            # 这样新块上线之前发布的晚报也能用——回验不用等一天。
+            doc = _parse_page(page)
+        if doc is None:
+            continue
+        doc["_source_date"] = target
+        doc["_gap_days"] = back
+        return doc
+    logger.info("no next-day brief found within %d days of %s", lookback, day)
+    return None
+
+
+def _related(late_theme: str, morning_theme: str) -> bool:
+    """Whether a brief theme and a digest theme are the same line.
+
+    Only two things count: the folded names match, or one contains the other.
+    A bridge entry widens that for the buckets the brief labels with a sector
+    name, and nothing else does — a wrong join here would credit the digest with
+    covering a line it never touched.
+    """
+    a, b = _fold(late_theme), _fold(morning_theme)
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    if a in b or b in a:
+        return True
+    for alias in _BUCKET_BRIDGE.get(late_theme, ()):  # exact key, not folded
+        folded = _fold(alias)
+        if folded and (folded == b or folded in b or b in folded):
+            return True
+    return False
+
+
+_SECTION_RE = re.compile(
+    r"<h2>\s*明日关注\s*·\s*(蓄势|主线|活跃)\s*</h2>(.*?)(?=<h2>|<footer|</main>)",
+    re.S,
+)
+_ITEM_RE = re.compile(r"<div class='wl'>(.*?)</div>\s*(?=<div class='wl'>|</div>|$)", re.S)
+_H3_RE = re.compile(r"<h3>(.*?)</h3>", re.S)
+_TAG_RE = re.compile(r"<span class='tag'>([^<]*)</span>")
+_NAME_RE = re.compile(r"<span class='nm'>([^<]*)</span>")
+_BADGE_RE = re.compile(r"^\s*(\d+)\s*家涨停\s*$")
+
+
+def _parse_page(page: str) -> Optional[Dict[str, Any]]:
+    """Read the three buckets out of a page that predates the JSON block.
+
+    Same content, different carrier. The block is preferred because it carries
+    the signal line and the stock tags verbatim; this reader exists so a brief
+    published before the block shipped is still usable, and so a template change
+    that breaks the block degrades to parsing rather than to nothing.
+    """
+    buckets: Dict[str, List[Dict[str, Any]]] = {}
+    for bucket, body in _SECTION_RE.findall(page):
+        rows = []
+        for chunk in _ITEM_RE.findall(body):
+            head = _H3_RE.search(chunk)
+            if not head:
+                continue
+            raw = head.group(1)
+            theme = re.sub(r"<[^>]+>", "", raw).strip()
+            badge = ""
+            tag = _TAG_RE.search(raw)
+            if tag:
+                badge = tag.group(1).strip()
+                theme = theme[: -len(badge)].strip() if theme.endswith(badge) else theme
+            if not theme:
+                continue
+            rows.append(
+                {
+                    "theme": theme,
+                    "badge": badge if _BADGE_RE.match(badge) else badge,
+                    "signal": "",
+                    "stocks": [
+                        {"name": name.replace(" ", "").strip(), "tag": ""}
+                        for name in _NAME_RE.findall(chunk)
+                        if name.strip()
+                    ],
+                }
+            )
+        if rows:
+            buckets[bucket] = rows
+    if not buckets:
+        return None
+    return {"version": 0, "buckets": buckets, "blocked": []}
+
+
+def buckets(doc: Optional[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    """The three buckets as ``{bucket: [{theme, badge, stocks, signal}]}``."""
+    if not doc:
+        return {}
+    raw = doc.get("buckets") or {}
+    out: Dict[str, List[Dict[str, Any]]] = {}
+    for bucket in BUCKET_ORDER:
+        rows = []
+        for row in raw.get(bucket) or []:
+            if not isinstance(row, dict):
+                continue
+            theme = str(row.get("theme") or "").strip()
+            if not theme:
+                continue
+            rows.append(
+                {
+                    "theme": theme,
+                    "badge": str(row.get("badge") or "").strip(),
+                    "signal": str(row.get("signal") or "").strip(),
+                    "stocks": [
+                        str(s.get("name") if isinstance(s, dict) else s).strip()
+                        for s in (row.get("stocks") or [])
+                        if str(s.get("name") if isinstance(s, dict) else s).strip()
+                    ],
+                }
+            )
+        if rows:
+            out[bucket] = rows
+    return out
+
+
+def cross(
+    doc: Optional[Dict[str, Any]],
+    morning_themes: Iterable[str],
+) -> Dict[str, Any]:
+    """Cross the brief's buckets with the themes the digest actually matched.
+
+    Returns ``{"rows": [...], "fresh": [...], "source_date": str}``. Each row is
+    one brief theme with the digest themes that answer to it and how many stories
+    carried them; ``fresh`` is the digest's own themes that no bucket named —
+    the lines that showed up without warning. ``fresh`` is what keeps this from
+    being a one-way filter: a new line has to be able to appear.
+    """
+    themes = [str(t).strip() for t in morning_themes if str(t).strip()]
+    rows: List[Dict[str, Any]] = []
+    claimed: set[str] = set()
+    for bucket in BUCKET_ORDER:
+        for row in buckets(doc).get(bucket) or []:
+            hit = [t for t in themes if _related(row["theme"], t)]
+            claimed.update(hit)
+            rows.append(
+                {
+                    "bucket": bucket,
+                    "theme": row["theme"],
+                    "badge": row["badge"],
+                    "stocks": row["stocks"],
+                    "matched": hit,
+                    "stories": len(hit),
+                }
+            )
+    fresh = [t for t in themes if t not in claimed]
+    return {
+        "rows": rows,
+        "fresh": fresh,
+        "source_date": str((doc or {}).get("_source_date") or ""),
+        "gap_days": int((doc or {}).get("_gap_days") or 0),
+    }
+
+
+def _cell(text: str) -> str:
+    """A markdown table cell: pipes and newlines would break the row."""
+    return str(text or "").replace("|", "／").replace("\n", " ").strip()
+
+
+def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = None) -> str:
+    """The 题材坐标 block: the brief's three buckets crossed with today's stories.
+
+    Two columns carry the whole idea. 晚报判断 is what last night's brief said
+    the market was doing; 今日新闻 is whether this morning's digest has a story
+    for it. A row with a count is a call that arrived with a catalyst; a row
+    reading 无新消息 is a call the reader would otherwise never hear about,
+    because the digest only prints themes it has a headline for.
+
+    新苗头 is the fourth row group and it is not decoration: a digest that only
+    echoed last night's buckets would stop being able to report a new line.
+    """
+    labels = labels or {}
+    rows = result.get("rows") or []
+    fresh = result.get("fresh") or []
+    if not rows and not fresh:
+        return ""
+
+    title = labels.get("title") or "题材坐标"
+    head = labels.get("head") or "昨晚晚报判断 × 今早新闻覆盖"
+    col_brief = labels.get("brief") or "晚报判断"
+    col_theme = labels.get("theme") or "题材"
+    col_news = labels.get("news") or "今日新闻"
+    col_stock = labels.get("stock") or "晚报点名个股"
+    fresh_label = labels.get("fresh") or "新苗头"
+    none_label = labels.get("none") or "无新消息"
+
+    lines = [f"## {title}", "", f"> {head}", ""]
+    lines.append(f"| {col_brief} | {col_theme} | {col_news} | {col_stock} |")
+    lines.append("| --- | --- | --- | --- |")
+    for row in rows:
+        theme = row["theme"]
+        if row.get("badge"):
+            theme = f"{theme}（{row['badge']}）"
+        if row.get("matched"):
+            news = "、".join(row["matched"])
+        else:
+            news = f"**{none_label}**"
+        stocks = "、".join(row.get("stocks") or []) or "—"
+        lines.append(
+            f"| {row['bucket']} | {_cell(theme)} | {_cell(news)} | {_cell(stocks)} |"
+        )
+    if fresh:
+        lines.append(
+            f"| {fresh_label} | {_cell('、'.join(fresh))} | 有新闻，晚报未点名 | — |"
+        )
+    source = result.get("source_date") or ""
+    if source:
+        gap = int(result.get("gap_days") or 0)
+        note = f"依据 {source} 晚报"
+        if gap > 1:
+            note += f"（距今 {gap} 天，跨非交易日）"
+        lines += ["", f"> {note}；晚报三类是盘面判断，不是买卖建议。"]
+    return "\n".join(lines) + "\n"
