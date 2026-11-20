@@ -47,10 +47,12 @@ jobs:
           pip install --disable-pip-version-check playwright pydantic
           python -m playwright install --with-deps chromium
 
-      # 19:10 is two hours past the stated finalisation, but "约" is not a
-      # guarantee: a day the pipeline slips would otherwise publish yesterday's
-      # numbers under today's name and push them to WeChat. opendata carries the
-      # site's own state, and only "final" on the target date counts as settled.
+      # 21:40 is ten minutes past the finalisation actually observed (21:30 on
+      # the four sessions measured), but "约" is not a guarantee: a day the
+      # pipeline slips would otherwise publish yesterday's numbers under today's
+      # name and push them to WeChat. opendata carries the site's own state, and
+      # only "final" on the target date counts as settled. A weekend dispatch
+      # fails this gate on its own — there is no Saturday or Sunday session.
       #
       # TARGET is what the page will be filed under: today by default, or the
       # date passed to a manual dispatch so a missed evening can be backfilled.
