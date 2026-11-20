@@ -37,6 +37,14 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      # 成员主营画像抓一次就复用；runner 每次都是全新的，只有 cache 能把它带过 run。
+      - name: Restore member profile cache
+        uses: actions/cache@v4
+        with:
+          path: data/member_profiles
+          key: member-profiles-${{ github.run_id }}
+          restore-keys: |
+            member-profiles-
       - name: Prepare GitHub Actions config
         run: cp data/config.github.json data/config.json
 
