@@ -84,6 +84,12 @@ MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题�
 # industries that cannot benefit costs nothing when the guess is wrong: the
 # member simply stays in the list.
 MIN_BUSINESS_MATCH = 2
+# Two labels override the blocklist instead of joining it. 美的集团 books
+# data-centre thermal under 「商业及工业解决方案」 while 「智能家居」 carries
+# most of the revenue, and 歌华有线 books IDC under 「信息业务」 behind
+# 「有线电视」. A hit on one of these means the profile does hold a business the
+# story can move, so the member stays in even though another line matches.
+BUSINESS_EXCEPTIONS = ("商业及工业解决方案", "信息业务")
 OFF_TOPIC_BUSINESS = (
     # 消费与服务
     "酒店", "餐饮", "旅游", "文旅", "景区", "免税", "零售", "超市", "百货",
@@ -111,6 +117,8 @@ OFF_TOPIC_BUSINESS = (
 def _off_topic_business(profile: str) -> bool:
     """Whether a member's main business rules out any AI-theme read-through."""
     text = profile or ""
+    if any(term in text for term in BUSINESS_EXCEPTIONS):
+        return False
     return any(term in text for term in OFF_TOPIC_BUSINESS)
 
 
