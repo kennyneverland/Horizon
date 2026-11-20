@@ -56,8 +56,9 @@ from ..processing.tools import ToolRegistry, ToolResult
 
 logger = logging.getLogger(__name__)
 
-# The page ranks members by three-month strength, not by fit. The first item
-# naming a theme keeps the page order; later items re-rank against their story.
+# The page ranks members by three-month strength, not by fit. Every theme line
+# is ranked against its own story; page order survives only as the fallback for
+# a failed rank call.
 MEMBER_LIMIT = 5
 MEMBER_FLOOR = 3
 MEMBER_RANK_PROMPT = """你是 A 股分析师。给定一条新闻、一个题材和该题材的成分股名单，选出与这条新闻关系最直接的 3–5 只股票。
@@ -232,8 +233,6 @@ class ContentEnricher:
         # kept putting unrelated companies at the front of a theme.
         self._member_profiles = MemberProfiles()
         self._theme_picker = ThemePicker(ai_client, mainline=self._mainline)
-        # Themes whose tickers this run already rendered; see _attach_members.
-        self._rendered_themes: set[str] = set()
         self._validate_profile_tools()
 
     def _validate_profile_tools(self) -> None:
@@ -612,7 +611,7 @@ class ContentEnricher:
         self._log_decision(item)
 
     async def _attach_members(self, item: ContentItem) -> None:
-        """Fetch member lists for the themes the digest will actually render.
+        """Fetch member lists and rank each one against this item's story.
 
         Runs after the direction pass: a theme judged neutral never reaches the
         line, so fetching its members first spent roughly half of the lianban
@@ -621,41 +620,37 @@ class ContentEnricher:
         whose verdict call failed still renders under 方向待定, so it is
         fetched here too.
 
-        A theme's first item keeps the page order and shows five names. Later
-        items re-rank the same member list against their own story, because the
-        page order is a three-month strength ranking rather than a fit for the
-        story: repeating it unchanged put one ticker set in nine of thirty-three
-        lines on 2026-11-18.
+        Every line is ranked the same way. The first line used to keep the page
+        order verbatim — five names by three-month strength, whatever the story
+        — which left the digest's most visible line outside every later
+        improvement: the business gate, the profile shortlist, the market
+        check. Page order is now only what a line falls back to when the rank
+        call itself fails.
         """
         themes = (item.metadata or {}).get("ashare_themes") or []
         fetcher = MemberFetcher()
         for theme in themes:
             if theme.get("direction") == NEUTRAL or theme.get("members"):
                 continue
-            key = str(theme.get("slug") or theme.get("name") or "")
             members = await fetcher.get(
                 theme["slug"], theme.get("members_count"), theme.get("name")
             )
             theme["member_total"] = len(members)
-            if key and key in self._rendered_themes:
-                theme["members"] = await self._rank_members(
-                    item, str(theme.get("name") or ""), members
-                )
-                continue
-            if key:
-                self._rendered_themes.add(key)
-            theme["members"] = pick_members(members, MEMBER_LIMIT)
+            theme["members"] = await self._rank_members(
+                item, str(theme.get("name") or ""), members
+            )
 
     async def _rank_members(
         self, item: ContentItem, theme_name: str, members: list[str]
     ) -> list[str]:
-        """Re-rank a repeated theme's members against this story.
+        """Rank a theme's members against this story.
 
-        The page order is a three-month strength ranking, so the same theme on a
-        second story would otherwise print the same five tickers again. The
+        The page order is a three-month strength ranking, so it answers "which
+        names have been strong", never "which names this event touches". The
         model sees the story and the theme's own list and keeps only the names
         whose business the event touches; it may return fewer than five, and
-        page order only tops the line up to MEMBER_FLOOR.
+        the strongest businesses on the profile shortlist top the line up to
+        MEMBER_FLOOR.
         """
         if len(members) <= MEMBER_LIMIT:
             return list(members)
@@ -708,8 +703,10 @@ class ContentEnricher:
                     if name in member and member not in picked:
                         picked.append(member)
                         break
-        # A floor, not a quota: three relevant names stand.
-        for member in pick_members(members, MEMBER_FLOOR):
+        # A floor, not a quota: three relevant names stand. The top-up follows
+        # the profile shortlist rather than the page order, so a thin answer is
+        # still filled with names the story can move.
+        for member in shortlist:
             if len(picked) >= MEMBER_FLOOR:
                 break
             if member not in picked:
