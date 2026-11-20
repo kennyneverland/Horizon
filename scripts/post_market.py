@@ -43,7 +43,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+# 东财客户端住在 digest 包里（早报的日历块也用它），从脚本目录再上一层才够得着。
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
+from src.processing import eastmoney  # noqa: E402
 from lianban_extra import collect_extra, mcp_review  # noqa: E402
 from post_market_page import render_html  # noqa: E402
 from stock_concepts import _norm as _theme_key  # noqa: E402
@@ -1191,6 +1194,67 @@ def main(argv: Optional[List[str]] = None) -> int:
             " block skipped"
         )
         payload["regulatory"] = {}
+
+    # 六个盘面数字是公开交易事实，不是某家站点的判断：东财与连板网在 2026-11-19
+    # 逐个相等（涨停 23、跌停 68、炸板 24、封板率 48.9%、连板 5、最高 3 板）。
+    # 东财做第一来源，连板网只补它独有的字段（情绪阶段、degree、资金面文字）。
+    try:
+        em_kpi = eastmoney.kpi(date)
+    except Exception as exc:  # noqa: BLE001 - a missing block, not a failed brief
+        payload["errors"].append(f"eastmoney kpi: {exc}")
+        em_kpi = {}
+    if em_kpi:
+        kpi_block = payload.get("kpi") or {}
+        for field in (
+            "limit_up",
+            "limit_down",
+            "zhaban",
+            "seal_rate_pct",
+            "lianban",
+            "max_board",
+        ):
+            if em_kpi.get(field) is not None:
+                kpi_block[field] = em_kpi[field]
+        kpi_block.setdefault("date", date)
+        kpi_block["_breadth_source"] = "eastmoney"
+        payload["kpi"] = kpi_block
+
+    # 龙虎榜同理：东财两个报表给名称、涨跌幅、净额、上榜原因与买一席位，与连板网
+    # 引的是同一批交易所披露。取不到就留着连板网那份，不因为换源把这块弄没。
+    try:
+        em_lhb = eastmoney.lhb(date)
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"eastmoney lhb: {exc}")
+        em_lhb = {}
+    # 龙虎榜是收盘后陆续披露的，盘中跑到这里可能只有几只；不足 10 只就认为还没出全，
+    # 留着连板网那份完整的，不拿半张榜顶掉它。
+    if len(em_lhb.get("items") or []) >= 10:
+        payload["lhb_site"] = payload.get("lhb") or {}
+        payload["lhb"] = em_lhb
+        # 换过来的票未必在连板网那份前 15 里，题材归属得按新名单再查一遍。
+        try:
+            payload["concepts"] = attach_concepts(
+                payload,
+                fetch_missing=not args.no_fetch_concepts,
+                save=args.save_concepts,
+            )
+        except Exception as exc:  # noqa: BLE001
+            payload["errors"].append(f"concepts(lhb): {exc}")
+
+    # 资金面：连板网的 today.html 只有浏览器渲染才拿得到；缺了就用东财板块资金流补，
+    # 只补净流入/净流出两列，不碰它的主线强度评分——那是它自己的模型，换不来。
+    if not ((payload.get("extra") or {}).get("flows")):
+        try:
+            inflow = eastmoney.sector_flow(5, descending=True)
+            outflow = eastmoney.sector_flow(5, descending=False)
+        except Exception as exc:  # noqa: BLE001
+            payload["errors"].append(f"eastmoney flow: {exc}")
+            inflow, outflow = [], []
+        if inflow:
+            payload.setdefault("extra", {})["flows"] = {
+                "主力净流入（东财）": inflow,
+                "主力净流出（东财）": outflow,
+            }
 
     if not args.no_mcp:
         try:
