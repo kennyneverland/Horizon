@@ -133,6 +133,63 @@ def render(timeout_ms: int = 60000) -> str:
     return html
 
 
+DAY_URL = "https://lianban.net/days/{date}.html"
+
+# 今日信号面：一条一个 .sgr，左边是彩色标签，右边是说明。说明在页面里就已经
+# 被截断（以 … 结尾），抓下来就是读者看到的长度，没有更长的版本可取。
+_SIG_RE = re.compile(
+    r'<div class="sgr">\s*<i class="wchip[^"]*">(.*?)</i>\s*<em>(.*?)</em>',
+    re.S,
+)
+
+
+def render_day(date: str, timeout_ms: int = 60000) -> str:
+    """Load ``/days/<date>.html`` and return the settled DOM.
+
+    The 今日信号面 block exists in no JSON feed — not in opendata, not in the
+    MCP payload — and the page builds it after its fingerprint check, so a plain
+    HTTP fetch returns the 6 KB shell with the block absent. Chromium is the
+    only route to it.
+    """
+    from playwright.sync_api import sync_playwright  # imported late: optional
+
+    url = DAY_URL.format(date=date)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(args=["--no-sandbox"])
+        context = browser.new_context(
+            viewport={"width": 1400, "height": 1200}, locale="zh-CN"
+        )
+        page = context.new_page()
+        page.route(
+            "**/*",
+            lambda route: route.abort()
+            if route.request.resource_type in ("image", "media", "font")
+            else route.continue_(),
+        )
+        page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+        # state="attached"：这一块在页面上是折叠的（元素存在但不可见），
+        # 等 visible 会一直等到超时。
+        page.wait_for_selector(".aisig .sgr", state="attached", timeout=timeout_ms)
+        html = page.content()
+        browser.close()
+    return html
+
+
+def parse_signals(page: str) -> List[Dict[str, str]]:
+    """``[{chip, text}]`` — the signal rows in the order the page prints them.
+
+    ``chip`` keeps its emoji: it is the colour coding the site uses (🔴 risk /
+    🔵 setup / ❄️ defence) and the only thing separating the three rows at a
+    glance.
+    """
+    out: List[Dict[str, str]] = []
+    for chip, text in _SIG_RE.findall(page):
+        name, body = _clean(chip), _clean(text)
+        if name and body:
+            out.append({"chip": name, "text": body})
+    return out
+
+
 def parse_strength(page: str) -> List[Dict[str, Any]]:
     """``[{name, pct, bar}]`` — bar is the relative width the site draws, 0-100."""
     out = []
@@ -611,6 +668,10 @@ EXTRA_CSS = """
 .zr b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .zp{width:46px;text-align:right;font-size:11px;color:#98a2b3;font-variant-numeric:tabular-nums}
 .quote{border-left:3px solid #d9dee7;padding:2px 0 2px 14px;color:#4c5866;font-size:15px}
+.sgs{display:flex;flex-direction:column;gap:8px;margin:0 0 6px}
+.sg{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;background:#f7f8fa;border-radius:8px}
+.sgc{flex:0 0 auto;font-size:12.5px;line-height:1.6;padding:1px 8px;border-radius:10px;background:#eceff3;color:#2b3440;white-space:nowrap}
+.sgt{flex:1;min-width:0;font-size:13.5px;line-height:1.7;color:#4c5866}
 .chg{font-size:12.5px;color:#8a94a6;margin:0 0 12px;line-height:1.9}
 .chg b{font-weight:600}
 .det{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
@@ -726,11 +787,38 @@ def _funds_html(payload: Dict[str, Any]) -> str:
     return "".join(out)
 
 
+def _signals_html(payload: Dict[str, Any]) -> str:
+    """今日信号面：连板网按历史形态自动触发的状态提示。
+
+    每条都是「形态 + 历史统计」，不是本页判断，也不指向个股，所以整块放在
+    复盘正文下面，标注来源。
+    """
+    rows = ((payload.get("extra") or {}).get("signals")) or []
+    if not rows:
+        return ""
+    items = "".join(
+        f"<div class='sg'><span class='sgc'>{_esc(str(r.get('chip') or ''))}</span>"
+        f"<span class='sgt'>{_esc(str(r.get('text') or ''))}</span></div>"
+        for r in rows
+        if r.get("chip") and r.get("text")
+    )
+    if not items:
+        return ""
+    return (
+        "<h2>今日信号面</h2>"
+        f"<div class='sgs'>{items}</div>"
+        "<p class='hint'>连板网按历史形态自动触发，非本页判断</p>"
+    )
+
+
 def _review_html(payload: Dict[str, Any]) -> str:
     doc = payload.get("lianban") or {}
     text = (doc.get("ai_review") or "").strip()
+    # 信号面是另一次抓取（days 页），不跟 MCP 的正文共命运：正文没取到或没过
+    # 当日校验时，这一块只要抓到了就照常出。
+    signals = _signals_html(payload)
     if not text:
-        return ""
+        return signals + _overseas_html(payload)
     # 全文照登：复盘固定两段，砍掉第二段「重点游资」等于把席位分析整段丢掉。
     # 600 字上限只是防哪天原文突然变长，目前最长 520 字，等于不截。
     body = text.strip()
@@ -745,6 +833,7 @@ def _review_html(payload: Dict[str, Any]) -> str:
         "<h2>连板网复盘</h2>"
         f"<div class='quote'>{body_html}</div>"
         f"<p class='hint'>连板网原文摘录，非本页判断{' · ' + link if link else ''}</p>"
+        + signals
         + _overseas_html(payload)
     )
 

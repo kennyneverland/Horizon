@@ -47,7 +47,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
 from src.processing import eastmoney  # noqa: E402
-from lianban_extra import collect_extra, mcp_review  # noqa: E402
+from lianban_extra import (  # noqa: E402
+    collect_extra,
+    mcp_review,
+    parse_signals,
+    render_day,
+)
 from post_market_page import (  # noqa: E402
     _FOCUS_DESC,
     _filter_pos,
@@ -1561,6 +1566,21 @@ def _review_lines(payload: Dict[str, Any]) -> List[str]:
     return ["\n>\n".join("> " + p.replace("\n", "\n> ") for p in paras)]
 
 
+def _signal_lines(payload: Dict[str, Any]) -> List[str]:
+    """今日信号面：形态 + 历史统计，一条一段。
+
+    标签自带 🔴/🔵/❄️，那是连板网用来区分「风险 / 机会 / 防守」的唯一标记，
+    去掉这三个 emoji 就只剩三行长得一样的话。
+    """
+    out: List[str] = []
+    for row in ((payload.get("extra") or {}).get("signals")) or []:
+        chip = str(row.get("chip") or "").strip()
+        text = str(row.get("text") or "").strip()
+        if chip and text:
+            out.append(f"**{chip}** {text}")
+    return out
+
+
 def _overseas_lines(payload: Dict[str, Any]) -> List[str]:
     groups = (payload.get("extra") or {}).get("overseas") or []
     out = []
@@ -1613,6 +1633,7 @@ def data_markdown(payload: Dict[str, Any]) -> str:
     add("龙虎榜 · 题材归属", _lhb_lines(payload))
     add("监管异动", _regulatory_lines(payload))
     add("连板网复盘", _review_lines(payload))
+    add("今日信号面", _signal_lines(payload))
     add("外盘参考", _overseas_lines(payload))
     if not sections:
         return ""
@@ -1658,6 +1679,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("no date from any source; aborting", file=sys.stderr)
         return 2
     payload["date"] = date
+    # 今日信号面只存在于 days/<date>.html，而且那块要等页面自己的脚本跑完才
+    # 出现（直接 HTTP 抓回来的是 6 KB 空壳）。date 是上面几个源合出来的，
+    # 所以放在这里抓：进 collect() 的时候还不知道该抓哪一天。
+    if not args.no_browser:
+        try:
+            payload["extra"]["signals"] = parse_signals(render_day(date))
+        except Exception as exc:  # noqa: BLE001 - 少一块，不影响别的
+            payload["errors"].append(f"signals: {exc}")
     # 监管异动带的是早盘页当天那一份；日期对不上就整块丢掉，宁可少一块，
     # 也不要把上一交易日的异常波动名单当成今天的印出来。
     regulatory = payload.get("regulatory") or {}
