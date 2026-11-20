@@ -977,24 +977,67 @@ def _post_card(url: str, title: str, desp: str, timeout: float) -> "tuple[bool, 
     try:
         doc = json.loads(raw)
     except ValueError:
-        return True, ""
+        # An error page is not a delivery receipt. Treating it as success is how a
+        # broken endpoint keeps printing "push: ok" while nothing ever lands.
+        return False, f"non-JSON response: {raw[:120]}"
     code = doc.get("code", doc.get("errno", 0))
     if code in (0, "0", None):
         return True, ""
     return False, f"code={code} {raw[:200]}"
 
 
-def push_webhook(url: str, title: str, desp: str, timeout: float = 30.0) -> bool:
-    """POST one card to the Server酱 endpoint the daily digest uses.
+def _load_webhook_banners() -> List[str]:
+    """Read data/webhook_banners.json: one greeting per endpoint, by position.
+
+    The same file the morning digest reads, so a recipient sees the same line in
+    both cards. A missing or malformed file simply means no banners.
+    """
+    candidates = [Path("data/webhook_banners.json")]
+    here = globals().get("__file__")
+    if here:
+        candidates.append(Path(here).resolve().parent.parent / "data" / "webhook_banners.json")
+    for path in candidates:
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        rows = doc.get("banners") if isinstance(doc, dict) else None
+        if isinstance(rows, list):
+            return [str(row or "").strip() for row in rows]
+        return []
+    return []
+
+
+def push_webhook(urls: str, title: str, desp: str, timeout: float = 30.0) -> bool:
+    """POST one card to every endpoint listed in HORIZON_WEBHOOK_URL.
+
+    The morning digest reads the same variable as a list — comma or newline
+    separated, one entry per recipient — and pairs each entry with a greeting
+    from data/webhook_banners.json, by position. The evening card mirrors that,
+    so both cards reach the same people in the same shape. Posting the raw value
+    as a single URL would build a malformed address the moment a second
+    subscriber is appended.
 
     No retry: a rejected request still counts against the free daily quota, so a
     second attempt on a bad payload only burns another message.
     """
-    ok, detail = _post_card(url, title, desp, timeout)
-    if ok:
-        return True
-    print(f"webhook failed: {detail}", file=sys.stderr)
-    return False
+    targets = [u.strip() for u in re.split(r"[,\n]+", urls or "") if u.strip()]
+    if not targets:
+        print("webhook failed: no endpoint", file=sys.stderr)
+        return False
+    banners = _load_webhook_banners()
+    delivered = 0
+    for index, url in enumerate(targets):
+        banner = banners[index] if index < len(banners) else ""
+        body = f"{banner}\n\n{desp}" if banner else desp
+        ok, detail = _post_card(url, title, body, timeout)
+        # The URL carries the send key, so only the position is logged.
+        print(f"push[{index + 1}/{len(targets)}]: {'ok' if ok else 'failed'}")
+        if ok:
+            delivered += 1
+        else:
+            print(f"webhook failed: {detail}", file=sys.stderr)
+    return delivered == len(targets)
 
 
 def _load_ai_conf(path: Path) -> Dict[str, Any]:
