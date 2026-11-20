@@ -379,7 +379,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
 
 - 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
-- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股从该题材的 members 里取。给 2 到 3 条题材，每条 2 到 3 只。
+- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股只能从该题材的 members 里取，members 为空表示当日没有逐只明细，这条题材就只写 signal、stocks 给空数组，不许从面板、别的题材或龙虎榜凑一只填进去。给 2 到 3 条题材，每条 0 到 3 只。
 - 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。监管异动（异常波动公告提醒）不在活跃候选之内：那份名单只说明交易所已经盯上它，不是「今天刚动」的证据，不要拿它补票，也不要在正文里把这些票写成活跃或明日方向。
 
 三条纪律：
@@ -469,6 +469,38 @@ _THEME_SUBS = {
 }
 
 
+def _day_lines(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """当日该用哪一份题材清单。
+
+    每日主线块常常滞后一个交易日（``day.date != matrix.dates[0]``），它的
+    name／count／driver 都属于上一场。11-20 的「明日关注」因此写着光刻机（胶）
+    和国产芯片，而当日矩阵是芯片、PCB、农业、机器人——题材名错位之后，模型
+    再拿面板里的票去填，就出现「国产芯片」下面挂一只算力股。
+
+    滞后的块只保留 phase／degree／leader（另有 stale 判断），题材名一律改用
+    矩阵当日列：那是同一天的数据，代价是分类更粗、没有 driver 和龙头。
+    """
+    matrix = payload.get("matrix") or {}
+    day = matrix.get("day") or {}
+    dates = matrix.get("dates") or []
+    stale = day.get("stale")
+    if stale is None:
+        stale = bool(day.get("date") and dates and day.get("date") != dates[0])
+    if not stale:
+        return list(day.get("lines") or [])
+    return [
+        {
+            "name": row.get("line") or "",
+            "count": row.get("today"),
+            "driver": "",
+            "leader": "",
+            "streak": row.get("streak"),
+        }
+        for row in (matrix.get("lines") or [])
+        if row.get("line") and (row.get("today") or 0) > 0
+    ]
+
+
 def _theme_watch(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
     """每条当日题材配一份可点名的个股池。
 
@@ -505,7 +537,7 @@ def _theme_watch(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
             }
 
     out: List[Dict[str, Any]] = []
-    for line in day.get("lines") or []:
+    for line in _day_lines(payload):
         name = line.get("name") or ""
         card = cards.get(name) or {}
         subs = _THEME_SUBS.get(name, ())
@@ -586,6 +618,7 @@ def _theme_watch(payload: Dict[str, Any]) -> List[Dict[str, Any]]:
             {
                 "theme": name,
                 "limit_up": line.get("count"),
+                "streak": line.get("streak"),
                 "driver": line.get("driver") or "",
                 "leader": " ".join(
                     x for x in [leader.get("name") or "", card.get("leader_board") or ""] if x
