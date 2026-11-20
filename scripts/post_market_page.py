@@ -155,9 +155,29 @@ def _theme_meta(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     The model names the theme; the count and the leader are the page's own
     numbers, so they are attached here rather than asked for in the prompt —
     a model that paraphrases them is a model that can get them wrong.
+
+    When the 每日主线 block is a session behind, its counts belong to the
+    previous day and must not be hung on today's themes — that is how the page
+    came to print "光刻机（胶）11 家涨停" on a day whose own count was unknown.
+    The matrix column for today is current, but it is the coarser 产业线
+    taxonomy, so a theme with no line of its own goes without a count rather
+    than borrowing a neighbour's.
     """
-    out = {}
-    for line in ((payload.get("matrix") or {}).get("day") or {}).get("lines") or []:
+    matrix = payload.get("matrix") or {}
+    day = matrix.get("day") or {}
+    dates = matrix.get("dates") or []
+    stale = day.get("stale")
+    if stale is None:
+        stale = bool(day.get("date") and dates and day.get("date") != dates[0])
+
+    out: Dict[str, Dict[str, Any]] = {}
+    if stale:
+        for row in matrix.get("lines") or []:
+            name = row.get("line") or ""
+            if name and row.get("today"):
+                out[name] = {"count": row.get("today"), "leader": ""}
+        return out
+    for line in day.get("lines") or []:
         name = line.get("name") or ""
         if name:
             out[name] = {"count": line.get("count"), "leader": line.get("leader") or ""}

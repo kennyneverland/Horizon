@@ -48,7 +48,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
 from src.processing import eastmoney  # noqa: E402
 from lianban_extra import collect_extra, mcp_review  # noqa: E402
-from post_market_page import render_html  # noqa: E402
+from post_market_page import (  # noqa: E402
+    _FOCUS_DESC,
+    _filter_pos,
+    _lhb_map,
+    _loose,
+    _theme_meta,
+    render_html,
+)
 from stock_concepts import _norm as _theme_key  # noqa: E402
 from stock_concepts import load_index as load_concept_index  # noqa: E402
 from stock_concepts import fetch_stock as concept_fetch  # noqa: E402
@@ -721,7 +728,15 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         g["label"]: {x["name"]: x["pct"] for x in g["items"]}
         for g in (extra.get("overseas") or [])
     }
-    third_party = _trim((payload.get("lianban") or {}).get("ai_review") or "")
+    # 双保险：mcp_review 已把没过当日校验的正文清空，这里再按凭证挡一次，
+    # 防止别的路径把 ai_review 直接塞进 payload。旧缓存没有 date_verified
+    # 字段（None），按可信处理，免得回补历史日期时整段消失。
+    lianban = payload.get("lianban") or {}
+    third_party = (
+        _trim(lianban.get("ai_review") or "")
+        if lianban.get("date_verified") is not False
+        else ""
+    )
 
     # 龙虎榜的票大多不在三张面板前 5，所以归属要两个来源一起查：面板的 sector，
     # 和当日题材明细的 members（海立股份、江化微这类只在 members 里）。两个都查不到
@@ -787,7 +802,13 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
             # stale block means they describe the previous session, so they are
             # withheld rather than passed off as today's.
             "degree": None if day.get("stale") else day.get("degree"),
-            "settled": (payload.get("lianban") or {}).get("status") or kpi.get("_status"),
+            # 只有通过当日校验的 status 才能代表「今天定版了」：前一天那份
+            # 也是 final，拿它当代理会把今天的盘面说成已定版。
+            "settled": (
+                (payload.get("lianban") or {}).get("status")
+                if (payload.get("lianban") or {}).get("date_verified")
+                else kpi.get("_status")
+            ),
             "leader": None if day.get("stale") else day.get("leader"),
             "leader_badge": None if day.get("stale") else day.get("leader_badge"),
         },
@@ -1224,7 +1245,13 @@ def _head(level: int, icon: str, text: str) -> str:
     return f"{marks} {icon} {text}" if icon else f"{marks} {text}"
 
 
-def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
+# 页面 header 的第二行。推文补上同一句，两边标题下的引导语才不是两套说法。
+_TAGLINE = "盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃"
+
+
+def _read_markdown(
+    read: Dict[str, Any], note: str = "", payload: Optional[Dict[str, Any]] = None
+) -> str:
     """The push body: the same read the page renders, as Markdown.
 
     Server酱 renders Markdown only — no HTML and no CSS — so no colour can be
@@ -1234,10 +1261,20 @@ def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
     the icons sit on section heads where they work as anchors. Nothing in the
     body depends on a background colour to stay legible, so neither theme can
     swallow a line.
+
+    The counts, the 60-day position and the dragon-tiger net amount are read
+    from the payload, never from the model's prose: a figure the model retypes
+    is a figure it can get wrong, and the page already holds the right one.
     """
     if not read:
         return f"> 🌡️ {note}" if note else ""
-    out: List[str] = []
+    payload = payload or {}
+    meta = _theme_meta(payload)
+    loose_meta = {_loose(k): v for k, v in meta.items()}
+    pos = _filter_pos(payload)
+    board_map = _lhb_map(payload)
+
+    out: List[str] = [_TAGLINE]
     headline = str(read.get("headline") or "").strip()
     if headline:
         out.append(f"## {headline}")
@@ -1267,15 +1304,26 @@ def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
         if not rows:
             continue
         out.append(_head(3, _FOCUS_ICONS.get(bucket, ""), bucket))
+        # 页面在每类标题下有一句“这一类回答什么问题”，推文照搬同一句。
+        desc = _FOCUS_DESC.get(bucket)
+        if desc:
+            out.append(f"> {desc}")
         for row in rows:
             if not isinstance(row, dict):
                 continue
             theme = str(row.get("theme") or "").strip()
             signal = str(row.get("signal") or "").strip()
+            info = meta.get(theme) or loose_meta.get(_loose(theme)) or {}
+            # 蓄势的题材是票自己的板块，不是当日涨停线，不挂涨停家数。
+            chip = (
+                f"{info['count']} 家涨停"
+                if bucket != "蓄势" and info.get("count")
+                else ""
+            )
             if theme:
-                # The theme is the label; the call under it is a blockquote so
-                # the two do not read as one run-on sentence.
-                out.append(f"**{theme}**")
+                # 题材名本身常带括号（光刻机（胶）），再套一层括号会挤成一团，
+                # 用间隔号把家数分出去。
+                out.append(f"**{theme}**" + (f" · {chip}" if chip else ""))
             if signal:
                 out.append(f"> {signal}")
             stocks_md = []
@@ -1283,9 +1331,23 @@ def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
                 if not isinstance(stock, dict):
                     continue
                 name = str(stock.get("name") or "").strip()
+                if not name:
+                    continue
+                key = name.replace(" ", "")
+                hit = pos.get(key) or {}
+                bits = []
                 tag = str(stock.get("tag") or "").strip()
-                if name:
-                    stocks_md.append(f"- **{name}**" + (f" · {tag}" if tag else ""))
+                if tag:
+                    bits.append(tag)
+                if hit.get("gain60"):
+                    bits.append(f"60日 {hit['gain60']}")
+                if hit.get("from_high"):
+                    bits.append(f"距高点 {hit['from_high']}")
+                board = board_map.get(key) or {}
+                if bucket == "活跃" and board.get("net"):
+                    bits.append(f"龙虎榜 {board['net']}")
+                line = f"- **{name}**" + (f" · {' · '.join(bits)}" if bits else "")
+                stocks_md.append(line)
             if stocks_md:
                 out.append("\n".join(stocks_md))
     dis = read.get("dissent")
@@ -1293,6 +1355,11 @@ def _read_markdown(read: Dict[str, Any], note: str = "") -> str:
         text = str(dis.get("disagree") or dis.get("agree") or "").strip()
     else:
         text = str(dis or "").strip()
+    # 代码侧兜底：lianban 的复盘没过当日校验时 ai_review 已被清空，模型手里
+    # 根本没有第三方内容，它写出来的「分歧」就是对着空气反驳。这一节由数据
+    # 决定去留，不指望 prompt 让模型自己闭嘴。
+    if text and not str((payload or {}).get("lianban", {}).get("ai_review") or "").strip():
+        text = ""
     if text:
         out.append("---")
         out.append(_head(3, "⚖️", "与连板网复盘的分歧"))
@@ -1316,6 +1383,244 @@ def _card_short(read: Dict[str, Any], note: str = "", limit: int = 48) -> str:
         # reads as a rendering bug rather than as a shortened sentence.
         line = line[:limit].rstrip("｜|·、，, ") + "…"
     return line
+
+
+from typing import Any, Dict, List
+
+
+def _join(items: List[str], sep: str = " · ") -> str:
+    return sep.join(x for x in items if x)
+
+
+def _rows(items: List[str], per_line: int = 4) -> List[str]:
+    """长列表按 per_line 折行：一行塞十项在手机上会横向溢出。"""
+    return [_join(items[i:i + per_line]) for i in range(0, len(items), per_line)]
+
+
+def _panel_list(payload: Dict[str, Any]) -> List[Dict[str, str]]:
+    return ((payload.get("extra") or {}).get("panel") or [])
+
+
+def _kpi_lines(payload: Dict[str, Any]) -> List[str]:
+    kpi = payload.get("kpi") or {}
+    panel = _panel_map(payload)
+
+    def val(label: str) -> str:
+        return str((panel.get(label) or {}).get("value") or "").strip()
+
+    def sub(label: str) -> str:
+        return str((panel.get(label) or {}).get("sub") or "").strip()
+
+    out: List[str] = []
+    out.append(_join([
+        f"涨停 **{kpi['limit_up']}**" if kpi.get("limit_up") is not None else "",
+        f"跌停 **{kpi['limit_down']}**" if kpi.get("limit_down") is not None else "",
+        f"封板率 **{kpi['seal_rate_pct']}%**" if kpi.get("seal_rate_pct") is not None else "",
+        f"炸板 {kpi['zhaban']}" if kpi.get("zhaban") is not None else "",
+        f"连板 {kpi['lianban']}" if kpi.get("lianban") is not None else "",
+        f"最高 {kpi['max_board']} 板" if kpi.get("max_board") is not None else "",
+    ]))
+    if kpi.get("adv") is not None and kpi.get("dec") is not None:
+        out.append(_join([
+            f"上涨 {kpi['adv']} / 下跌 {kpi['dec']}",
+            f"两市成交 {val('两市成交')}" if val("两市成交") else "",
+        ]))
+    phase = str(kpi.get("emotion_phase") or "").strip() or val("情绪周期")
+    hl = val("新高/新低63日")
+    out.append(_join([
+        f"情绪 **{phase}**" if phase else "",
+        sub("情绪周期"),
+        f"新高/新低 {hl}" if hl else "",
+    ]))
+    # 较前值逐项来自面板的 sub，按页面顺序拼成一行。
+    deltas = [
+        f"{str(r.get('label') or '').strip()} {str(r.get('sub') or '').replace('较前值', '').strip()}"
+        for r in _panel_list(payload)
+        if str(r.get("sub") or "").startswith("较前值")
+    ]
+    if deltas:
+        out.append("较前值：" + _join(deltas))
+    yl_v, yl_s = val("昨涨停今表现"), sub("昨涨停今表现")
+    if yl_v:
+        out.append(_join([f"昨涨停今表现 **{yl_v}**", yl_s,
+                          f"炸板率 {sub('炸板').replace('率 ', '')}" if sub("炸板") else ""]))
+    return [x for x in out if x]
+
+
+def _strength_lines(payload: Dict[str, Any]) -> List[str]:
+    rows = (payload.get("extra") or {}).get("strength") or []
+    items = [f"{r['name']} {r['pct']}" for r in rows if r.get("name")]
+    return _rows(items, 4)
+
+
+def _flow_lines(payload: Dict[str, Any]) -> List[str]:
+    flows = (payload.get("extra") or {}).get("flows") or {}
+    out = []
+    for label, rows in flows.items():
+        cells = [
+            f"{r['name']} {r['amount']}" + (f"（{r['pct']}）" if r.get("pct") else "")
+            for r in (rows or [])[:5] if r.get("name")
+        ]
+        if cells:
+            out.append(f"**{label}** " + " · ".join(cells))
+    return out
+
+
+def _matrix_lines(payload: Dict[str, Any]) -> List[str]:
+    matrix = payload.get("matrix") or {}
+    out = []
+    for row in matrix.get("lines") or []:
+        today, prev = row.get("today", 0), row.get("prev", 0)
+        if today == 0 and prev == 0:
+            continue
+        bits = [f"昨 {prev}", f"日Δ {row['delta1']:+d}", f"连续 {row['streak']} 天"]
+        if row.get("state"):
+            bits.append(str(row["state"]))
+        out.append(f"- **{row['line']}** {today} 家（" + " · ".join(bits) + "）")
+        if len(out) >= 8:
+            break
+    return out
+
+
+def _driver_lines(payload: Dict[str, Any]) -> List[str]:
+    matrix = payload.get("matrix") or {}
+    day = matrix.get("day") or {}
+    dates = matrix.get("dates") or []
+    stale = day.get("stale")
+    if stale is None:
+        stale = bool(day.get("date") and dates and day.get("date") != dates[0])
+    if stale or not day.get("lines"):
+        # 每日主线块滞后时用矩阵当日列，并写明口径，别让读者以为那是原表。
+        fb = [x for x in (matrix.get("lines") or []) if x.get("today", 0) > 0][:6]
+        if not fb:
+            return []
+        items = [f"**{x['line']}** {x['today']} 家" for x in fb]
+        return ["（产业线口径 · 页面每日主线为 " + str(day.get("date") or "前一日") + "）"] + _rows(items, 3)
+    out = []
+    for x in day["lines"]:
+        line = f"- **{x['name']}** {x['count']} 家"
+        if x.get("driver"):
+            line += f"｜{x['driver']}"
+        if x.get("leader"):
+            line += f"｜龙头 {x['leader']}"
+        out.append(line)
+    return out
+
+
+def _pick_lines(payload: Dict[str, Any], limit: int = 4) -> List[str]:
+    out = []
+    for label, block in (payload.get("filter") or {}).items():
+        rows = block.get("rows") or []
+        if not rows:
+            continue
+        total = block.get("total")
+        head = f"**{label}**" + (f" 共 {total} 只" if total else "")
+        out.append(head)
+        for r in rows[:limit]:
+            bits = _join([str(r.get("sector") or ""), f"60日 {r.get('gain60')}" if r.get("gain60") else "",
+                          f"距高点 {r.get('from_high60')}" if r.get("from_high60") else ""])
+            out.append(f"- **{r.get('name')}**" + (f" {bits}" if bits else ""))
+    return out
+
+
+def _lhb_lines(payload: Dict[str, Any], limit: int = 8) -> List[str]:
+    items = (payload.get("lhb") or {}).get("items") or []
+    concepts = payload.get("concepts") or {}
+    out = []
+    for it in items[:limit]:
+        theme = ""
+        for t in ((concepts.get(it.get("code") or "") or {}).get("themes") or [])[:1]:
+            theme = t
+        bits = _join([str(it.get("net") or ""), str(it.get("chg") or ""), theme])
+        out.append(f"- **{it.get('name')}**" + (f" {bits}" if bits else ""))
+    return out
+
+
+def _regulatory_lines(payload: Dict[str, Any], limit: int = 8) -> List[str]:
+    items = (payload.get("regulatory") or {}).get("items") or []
+    out = []
+    for it in items[:limit]:
+        bits = _join([str(it.get("kind") or ""),
+                      f"今年 {it['boards']} 板" if it.get("boards") else ""])
+        out.append(f"- **{it.get('name')}**" + (f" {bits}" if bits else ""))
+    return out
+
+
+def _review_lines(payload: Dict[str, Any]) -> List[str]:
+    doc = payload.get("lianban") or {}
+    text = str(doc.get("ai_review") or "").strip()
+    if not text:
+        return []
+    # 全文照登，理由同页面侧：第二段「重点游资」才是席位信息最密的地方。
+    body = text
+    if len(body) > 600:
+        body = body[:600].rstrip() + "…"
+    paras = [p.strip() for p in body.split("\n\n") if p.strip()]
+    # 每段一个引用行、段间留一个空引用行：Markdown 里这仍是同一个引用块的两段，
+    # 不会裂成两个灰框。
+    return ["\n>\n".join("> " + p.replace("\n", "\n> ") for p in paras)]
+
+
+def _overseas_lines(payload: Dict[str, Any]) -> List[str]:
+    groups = (payload.get("extra") or {}).get("overseas") or []
+    out = []
+    for g in groups:
+        items = [f"{x['name']} {x['pct']}" for x in (g.get("items") or []) if x.get("name")]
+        if items:
+            out.append(f"**{str(g.get('label') or '').split(' · ')[0]}** " + " · ".join(items))
+    return out
+
+
+def _pack(lines: List[str]) -> List[str]:
+    """连续的列表行用单换行连成一块。
+
+    Markdown 把空行分隔的 ``- `` 项渲染成松散列表，每项套一层 <p>，
+    手机上间距翻倍；同一块里的项只换行不空行，才是紧凑列表。
+    """
+    out: List[str] = []
+    buf: List[str] = []
+    for x in lines:
+        if x.startswith(("- ", "> ")):
+            buf.append(x)
+            continue
+        if buf:
+            out.append("\n".join(buf))
+            buf = []
+        out.append(x)
+    if buf:
+        out.append("\n".join(buf))
+    return out
+
+
+def data_markdown(payload: Dict[str, Any]) -> str:
+    """页面上的数字板块，按页面顺序排成 Markdown。
+
+    研判是主角，这里是支撑：所以整段只用 ``##`` 标题分节，不再逐个加图标，
+    视觉上比上面的研判低一层。
+    """
+    sections: List[tuple] = []
+
+    def add(title: str, lines: List[str]) -> None:
+        if lines:
+            sections.append((title, _pack(lines)))
+
+    add("盘面", _kpi_lines(payload))
+    add("主线强度", _strength_lines(payload))
+    add("主力资金", _flow_lines(payload))
+    add("主线矩阵", _matrix_lines(payload))
+    add("当日主线", _driver_lines(payload))
+    add("筛选面板", _pick_lines(payload))
+    add("龙虎榜 · 题材归属", _lhb_lines(payload))
+    add("监管异动", _regulatory_lines(payload))
+    add("连板网复盘", _review_lines(payload))
+    add("外盘参考", _overseas_lines(payload))
+    if not sections:
+        return ""
+    out: List[str] = ["---"]
+    for title, lines in sections:
+        out.append(f"## {title}")
+        out.extend(lines)
+    return "\n\n".join(out)
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -1426,7 +1731,27 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if not args.no_mcp:
         try:
-            payload["lianban"] = mcp_review(date)
+            review = mcp_review(date)
+            payload["lianban"] = review
+            # 这一段是「模型拿去对比的是不是当天」的唯一凭证，跑完必须能在
+            # 日志里看到，而不是等推送出来才发现对错了日子。
+            check = review.get("date_check") or {}
+            if review.get("date_verified"):
+                print(
+                    f"mcp review: date={date} verified"
+                    f" kpi={check.get('kpi_date')}"
+                    f" updated={check.get('updated_at')}"
+                    f" status={check.get('status')}"
+                    f" text_counts={check.get('text_counts_matched')}/3",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    f"mcp review: date={date} REJECTED"
+                    f" reasons={check.get('reasons')}"
+                    f" dropped={review.get('rejected')}",
+                    file=sys.stderr,
+                )
         except Exception as exc:  # noqa: BLE001
             payload["errors"].append(f"mcp: {exc}")
     for err in payload["errors"]:
@@ -1468,7 +1793,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
     headline = "、".join(f"{l['line']}{l['today']}" for l in top) or "无涨停线"
-    title = f"Kenny's Horizon {int(date[5:7])}月{int(date[8:10])}日 盘后洞察晚报"
+    # 与页面 header 同一串文字：微信标题和正文标题下的引导语对得上。
+    title = f"Kenny's Horizon {date} 盘后洞察晚报"
     note = (
         f"（{kpi.get('emotion_phase') or ''} 涨停{kpi.get('limit_up')} 跌停{kpi.get('limit_down')}"
         f" 封板率{kpi.get('seal_rate_pct')}%"
@@ -1479,8 +1805,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     desp = "\n\n".join(
         part
         for part in [
-            _read_markdown(summary, note),
-            f"[查看盘后总结 →]({page_url})",
+            _read_markdown(summary, note, payload),
+            # 页面上的数字板块：推文里此前只有研判，读者要跳出去才看得到盘面与矩阵。
+            data_markdown(payload),
         ]
         if part
     )

@@ -435,6 +435,82 @@ def _rpc(payload: Dict[str, Any], session: Optional[str] = None, timeout: float 
     return json.loads(raw), sid
 
 
+# 判断「这份复盘是不是这一天的」，四层证据缺一不可。写在这里而不是调用处，
+# 是因为 mcp_review 是唯一入口：页面、推送、模型输入三条路都从它拿数据。
+_DAY_PAT = re.compile(r"/days/(\d{4}-\d{2}-\d{2})\.html")
+_COUNT_PAT = {
+    "adv": re.compile(r"上涨\s*(\d+)\s*家"),
+    "dec": re.compile(r"下跌\s*(\d+)\s*家"),
+    "limit_down": re.compile(r"跌停\s*(\d+)\s*家"),
+}
+
+
+def _check_day(body: Dict[str, Any], date: str) -> Dict[str, Any]:
+    """Verify that this review really belongs to ``date``.
+
+    The date cannot be taken from the request: the endpoint answers with the
+    latest session when ``date`` is omitted, and a date outside the anonymous
+    window comes back as an empty object rather than an error. Either path can
+    hand yesterday's write-up to a model that is asked to disagree with it, so
+    every layer below has to agree with the requested day on its own.
+
+    L1 ``kpi.date``      the session the server itself labels the numbers with
+    L2 ``page``/``source``  the ``/days/YYYY-MM-DD.html`` the text came from
+    L3 ``updated_at``    the write-up must have been produced that same day
+    L4 ``status``        only ``final`` is settled; anything else may still move
+    L5 the counts in the text against the same response's ``kpi``
+    """
+    kpi = body.get("kpi") or {}
+    text = str(body.get("ai_review") or "")
+    kpi_date = str(kpi.get("date") or "").strip()
+    page = str(body.get("page") or "") or str(body.get("source") or "")
+    updated = str(body.get("updated_at") or "").strip()
+    status = str(body.get("status") or "").strip()
+    link = _DAY_PAT.search(page)
+    page_date = link.group(1) if link else ""
+
+    reasons: List[str] = []
+    if not kpi_date:
+        reasons.append("kpi.date 为空")
+    elif kpi_date != date:
+        reasons.append(f"kpi.date={kpi_date}")
+    if not page_date:
+        reasons.append("page 无日期")
+    elif page_date != date:
+        reasons.append(f"page={page_date}")
+    if not updated:
+        reasons.append("updated_at 为空")
+    elif not updated.startswith(date):
+        reasons.append(f"updated_at={updated}")
+    if status != "final":
+        reasons.append(f"status={status or '空'}")
+
+    # 前四层看的是元数据，这一层看正文本身：把正文里自报的涨跌家数跟同一份
+    # 响应的 kpi 对一遍。元数据被改成今天、正文却还是昨天的，只有这里能抓到。
+    matched, conflicts = 0, []
+    for key, pat in _COUNT_PAT.items():
+        hit = pat.search(text)
+        want = kpi.get(key)
+        if not hit or want is None:
+            continue
+        matched += 1
+        if int(hit.group(1)) != int(want):
+            conflicts.append(f"{key} 正文{hit.group(1)}≠kpi{want}")
+    reasons.extend(conflicts)
+
+    return {
+        "requested": date,
+        "kpi_date": kpi_date,
+        "page_date": page_date,
+        "updated_at": updated,
+        "status": status,
+        "text_counts_matched": matched,
+        "text_counts_conflict": bool(conflicts),
+        "ok": not reasons,
+        "reasons": reasons,
+    }
+
+
 def mcp_review(date: str, timeout: float = 45.0) -> Dict[str, Any]:
     """The day's review from lianban's own MCP endpoint — the sanctioned route.
 
@@ -480,7 +556,7 @@ def mcp_review(date: str, timeout: float = 45.0) -> Dict[str, Any]:
         body = json.loads(content[0].get("text") or "{}")
     except ValueError:
         return {"error": "MCP returned non-JSON text"}
-    return {
+    review = {
         "status": body.get("status"),
         "status_label": body.get("status_label"),
         "updated_at": body.get("updated_at"),
@@ -488,6 +564,20 @@ def mcp_review(date: str, timeout: float = 45.0) -> Dict[str, Any]:
         "ai_review": body.get("ai_review") or "",
         "page": body.get("page") or "",
     }
+    check = _check_day(body, date)
+    review["date_check"] = check
+    review["date_verified"] = check["ok"]
+    if not check["ok"]:
+        # 校验不过就整块丢掉：模型拿不到这一天的复盘，就不会去跟错的日子对比；
+        # 页面和推送也因为这个字段为空而不渲染那一段。原始长度留在 date_check 里，
+        # 跑完看日志就知道是「没取到」还是「取到了但不是当天」。
+        review["rejected"] = {
+            "ai_review_chars": len(review["ai_review"]),
+            "themes": len(review["themes"]),
+        }
+        review["ai_review"] = ""
+        review["themes"] = []
+    return review
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -641,14 +731,19 @@ def _review_html(payload: Dict[str, Any]) -> str:
     text = (doc.get("ai_review") or "").strip()
     if not text:
         return ""
-    first = text.split("\n\n")[0].strip()
-    if len(first) > 280:
-        first = first[:280].rstrip() + "…"
+    # 全文照登：复盘固定两段，砍掉第二段「重点游资」等于把席位分析整段丢掉。
+    # 600 字上限只是防哪天原文突然变长，目前最长 520 字，等于不截。
+    body = text.strip()
+    if len(body) > 600:
+        body = body[:600].rstrip() + "…"
     page = doc.get("page") or ""
     link = f"<a href='{_esc(page)}'>查看原文</a>" if page else ""
+    # .quote 没有 white-space，段落间的空行会被 HTML 折成空格，两段会连成一坨，
+    # 所以换行要显式转成 <br>。
+    body_html = _esc(body).replace("\n\n", "<br><br>").replace("\n", "<br>")
     return (
         "<h2>连板网复盘</h2>"
-        f"<div class='quote'>{_esc(first)}</div>"
+        f"<div class='quote'>{body_html}</div>"
         f"<p class='hint'>连板网原文摘录，非本页判断{' · ' + link if link else ''}</p>"
         + _overseas_html(payload)
     )
