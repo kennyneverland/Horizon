@@ -238,10 +238,18 @@ def summarise(matrix: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def build(page: str) -> Dict[str, Any]:
     matrix = parse_matrix(page)
+    day = parse_day(page)
+    latest = matrix["dates"][0] if matrix["dates"] else None
+    if day is not None:
+        # The matrix and the 每日主线 block do not republish on the same clock:
+        # the table can already carry today while the block still shows the
+        # previous session. Flag it so a caller never prints yesterday's
+        # drivers under today's date.
+        day["stale"] = bool(latest) and day.get("date") != latest
     return {
         "dates": matrix["dates"],
         "totals": matrix["totals"],
-        "day": parse_day(page),
+        "day": day,
         "lines": summarise(matrix),
     }
 
@@ -254,7 +262,8 @@ def render(data: Dict[str, Any], top: Optional[int] = None) -> str:
     if day:
         phase = f"{day.get('phase') or '?'} · {day.get('degree')}°"
         lead = f"{day.get('leader') or '-'} {day.get('leader_badge') or ''}".strip()
-        head += f"\n情绪 {phase}｜总龙头 {lead}"
+        suffix = f"（{day.get('date')}）" if day.get("stale") else ""
+        head += f"\n情绪 {phase}｜总龙头 {lead}{suffix}"
     head += "\n当日涨停 " + " ".join(str(totals.get(date, 0)) for date in dates)
 
     rows = data["lines"] if top is None else data["lines"][:top]
@@ -282,7 +291,10 @@ def render(data: Dict[str, Any], top: Optional[int] = None) -> str:
     if mismatched:
         out += ["", "⚠ 过热判定与页面 🔥 不一致：" + "、".join(mismatched)]
     if day.get("lines"):
-        out += ["", "每日主线（驱动逻辑）"]
+        label = "每日主线（驱动逻辑）"
+        if day.get("stale"):
+            label += f" · 页面为 {day.get('date')}，非当日"
+        out += ["", label]
         for item in day["lines"]:
             out.append(
                 f"  {item['name']} {item['count']}家 · {item['driver']} · {item['leader']}"

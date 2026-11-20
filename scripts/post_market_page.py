@@ -520,7 +520,17 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         )
 
     drivers = ""
-    if day.get("lines"):
+    if day.get("stale"):
+        # The page's 每日主线 block still shows the previous session; the
+        # matrix column for today is current, so show that and name the taxonomy.
+        fallback = [x for x in lines if x.get("today", 0) > 0][:6]
+        if fallback:
+            items = "".join(
+                f"<li><b>{_esc(x['line'])}</b><span class='cnt'>{x['today']} 家</span></li>"
+                for x in fallback
+            )
+            drivers = f"<h2>当日主线（产业线口径）</h2><ul class='drv'>{items}</ul>"
+    elif day.get("lines"):
         items = "".join(
             f"<li><b>{_esc(x['name'])}</b><span class='cnt'>{x['count']} 家</span>"
             f"<span class='why'>{_esc(x['driver'])}</span>"

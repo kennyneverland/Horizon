@@ -346,7 +346,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - share_of_all_limit_up_pct 是集中度，不是强度。sector_strength_pct 是板块当日涨跌幅：涨停家数多而板块在跌，是个股突围，不是板块行情。
 - relay 衡量接力还赚不赚钱，不衡量今天强不强。
 - next_day_base_rate 是连板网用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
-- 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。
+- 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
 - members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。
@@ -661,16 +661,33 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
     # and the named leader exist. It used to be joined onto the matrix rows by
     # name, and the names never match (光刻机（胶） vs 芯片), so both fields were
     # silently dropped and the model had no catalyst at all.
-    themes = [
-        {
-            "theme": x.get("name"),
-            "limit_up": x.get("count"),
-            "driver": x.get("driver") or "",
-            "leader": x.get("leader") or "",
-        }
-        for x in (day.get("lines") or [])
-        if x.get("name")
-    ]
+    if day.get("stale"):
+        # The page's 每日主线 block is still on the previous session, but the
+        # matrix column for today is current. Fall back to it: same 产业线
+        # taxonomy as industry_lines, no driver text, and marked so the model
+        # knows the two views carry the same numbers.
+        themes = [
+            {
+                "theme": x["line"],
+                "limit_up": x["today"],
+                "driver": "",
+                "leader": "",
+                "fallback": "industry_lines",
+            }
+            for x in lines
+            if x.get("today", 0) > 0
+        ]
+    else:
+        themes = [
+            {
+                "theme": x.get("name"),
+                "limit_up": x.get("count"),
+                "driver": x.get("driver") or "",
+                "leader": x.get("leader") or "",
+            }
+            for x in (day.get("lines") or [])
+            if x.get("name")
+        ]
 
     flows = {
         label: [{"name": r["name"], "amount": r["amount"], "pct": r["pct"]} for r in rows[:5]]
@@ -766,10 +783,13 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         "date": kpi.get("date"),
         "session": {
             "phase": kpi.get("emotion_phase"),
-            "degree": day.get("degree"),
+            # degree / leader / leader_badge all ride on the 每日主线 block; a
+            # stale block means they describe the previous session, so they are
+            # withheld rather than passed off as today's.
+            "degree": None if day.get("stale") else day.get("degree"),
             "settled": (payload.get("lianban") or {}).get("status") or kpi.get("_status"),
-            "leader": day.get("leader"),
-            "leader_badge": day.get("leader_badge"),
+            "leader": None if day.get("stale") else day.get("leader"),
+            "leader_badge": None if day.get("stale") else day.get("leader_badge"),
         },
         "breadth": {
             "limit_up": kpi.get("limit_up"),
@@ -1293,7 +1313,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("HORIZON_WEBHOOK_URL not set; push skipped", file=sys.stderr)
         return 0
     day = matrix.get("day") or {}
-    lead = " ".join(
+    # 总龙头 lives in the same 每日主线 block; when that block is a session
+    # behind, the name belongs to the previous day and must not go out as today's.
+    lead = "" if day.get("stale") else " ".join(
         x for x in [day.get("leader") or "", day.get("leader_badge") or ""] if x
     )
     top = [l for l in matrix.get("lines") or [] if l.get("today", 0) > 0][:3]
