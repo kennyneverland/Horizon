@@ -2,20 +2,16 @@
 
 The page is server-rendered, so one GET carries every block: overseas
 indices, the overnight US → A-share theme map, exchange alerts and today's
-calendar. It is printed as backdrop and never as a pick. Across the five
-sessions to 2026-11-20, none of the thirty mapped themes reached the top 100
-of lianban's own heat board (median rank 575), so a reader who traded the map
-would have been wrong every day. The digest therefore shows the tape and the
-map, and says so in one line.
+calendar. Only the calendar is printed by the digest now — the tape moved to
+Sina, which answers on weekends and carries no browse quota.
 
 Timing matters more than parsing here. The page starts refreshing at 06:00
 Beijing and is not finalised until 09:25, while the digest runs at 08:00 and
-also runs on weekends. The two blocks the digest prints — the overseas close
-and the map — are fixed once the US session ends at 05:00, so they are whole
-at 08:00. The briefs that keep changing before 09:25 are the morning headlines
-and the exchange alerts, and neither is printed. Every fetch is still checked
-against the snapshot date on the page: on a Saturday the page still carries
-Friday's snapshot, and a stale tape is worse than no tape.
+also runs on weekends. Unlocks, ex-rights dates and macro prints are published
+days ahead, so they are whole at 08:00; the morning headlines and the exchange
+alerts keep changing until 09:25, and neither is printed. Every fetch is still
+checked against the snapshot date on the page: on a Saturday the page still
+carries Friday's snapshot, and a stale calendar is worse than none.
 """
 
 from __future__ import annotations
@@ -58,6 +54,8 @@ _ALERT_RE = re.compile(
 _CALENDAR_RE = re.compile(
     r'<span class="pmk" data-stk="(\d{6})" data-nm="([^"]+)"><i>([^<]+)</i>[^<]*<i>([^<]+)</i></span>'
 )
+# The macro line sits ahead of the ticker chips: 「🌍 中国 贷款市场报价利率(LPR)、…」
+_EVENTS_RE = re.compile(r"今日日历</b>\s*<i>[^<]*</i>\s*<div class=\"pmc\">(.*?)</div>", re.S)
 
 
 def _plain(raw: str) -> str:
@@ -65,9 +63,10 @@ def _plain(raw: str) -> str:
 
 
 def parse(page: str) -> Dict[str, Any]:
-    """Split the rendered page into the four blocks the digest may print."""
+    """Split the rendered page into the blocks the digest may print."""
     brief: Dict[str, Any] = {
         "snapshot": "",
+        "events": "",
         "indices": [],
         "mapping": [],
         "alerts": [],
@@ -76,6 +75,9 @@ def parse(page: str) -> Dict[str, Any]:
     stamp = _SNAPSHOT_RE.search(page)
     if stamp:
         brief["snapshot"] = stamp.group(1)
+    events = _EVENTS_RE.search(page)
+    if events:
+        brief["events"] = _plain(events.group(1))
     for name, pct in _INDEX_RE.findall(page):
         brief["indices"].append({"name": name.strip(), "pct": pct})
     for _tone, pct, ticker, rest in _MAP_RE.findall(page):
@@ -103,10 +105,9 @@ async def fetch_premarket(
     """One GET per run; any failure returns None and the digest drops the block.
 
     A retry spends another request against an endpoint that already answers 429
-    when asked too often, and a missing backdrop is not worth a blocked digest.
+    when asked too often, and a missing calendar is not worth a blocked digest.
     A snapshot dated for another day is dropped as well: the cron runs every
-    day, so a Saturday run would otherwise print Friday's overseas close as if
-    it were this morning's.
+    day, so a Saturday run would otherwise print Friday's calendar as today's.
     """
     try:
         async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, follow_redirects=True) as client:
@@ -116,7 +117,7 @@ async def fetch_premarket(
     except Exception as exc:  # noqa: BLE001 - the block is optional
         logger.warning("Pre-market brief unavailable: %s", exc)
         return None
-    if not brief["indices"] and not brief["mapping"]:
+    if not brief["indices"] and not brief["mapping"] and not brief["calendar"]:
         logger.warning("Pre-market brief parsed empty; block skipped")
         return None
     expected = expect_date or datetime.now(CST).strftime("%Y-%m-%d")
