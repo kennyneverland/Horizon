@@ -10,7 +10,7 @@ from .localization import normalize_language
 from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
-from ..processing.premarket import fetch_premarket
+from ..processing.overnight import fetch_overnight
 from ..processing.digest_rules import (
     TECH_CHILD_IDS,
     TECH_PARENT_TITLE,
@@ -156,6 +156,7 @@ LABELS = {
         "themes": "Themes",
         "premarket": "Overnight tape",
         "overnight_map": "US movers → A-share themes",
+        "overnight_asof": "US close {date}",
         "premarket_note": "Backdrop only; the map is not a recommendation",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
         "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
@@ -180,6 +181,7 @@ LABELS = {
         "themes": "A股题材",
         "premarket": "隔夜外围",
         "overnight_map": "关键个股 → A股映射",
+        "overnight_asof": "美东 {date} 收盘",
         "premarket_note": "隔夜情绪参考，非题材推荐",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
@@ -377,7 +379,7 @@ class DailySummarizer:
             )
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
-        premarket = await self._premarket_block(labels) if language == "zh" else ""
+        premarket = await self._overnight_block(labels) if language == "zh" else ""
         body = header + premarket + toc + "".join(body_sections)
         # lianban's CC BY 4.0 licence requires attribution wherever its member
         # lists are shown; it only appears when a theme line was actually rendered.
@@ -401,35 +403,43 @@ class DailySummarizer:
             parent_title = _pangu(parent_title)
         return nest_tech_sections(text, child_names, parent_title)
 
-    async def _premarket_block(self, labels: dict) -> str:
-        """Overnight tape as backdrop, printed above the table of contents.
+    async def _overnight_block(self, labels: dict) -> str:
+        """Overnight US tape as backdrop, printed above the table of contents.
 
         Never a pick: across the five sessions to 2026-11-20, none of the
         thirty mapped themes reached the top 100 of lianban's heat board
         (median rank 575), so the block carries the move and the map and says
         in one line that it is not a recommendation.
+
+        The source answers on weekends as well, so a Saturday digest prints
+        Friday's close and a Monday digest prints that same close again — which
+        is why the line names the session instead of the run date.
         """
-        brief = await fetch_premarket()
+        brief = await fetch_overnight()
         if not brief:
             return ""
         lines: list[str] = []
         indices = brief.get("indices") or []
         if indices:
             tape = " ｜ ".join(
-                f"{_escape_markdown(row['name'])} {row['pct']}" for row in indices
+                f"{_escape_markdown(row['name'])} {row['pct']:+.2f}%" for row in indices
             )
             lines.append(f"**「{labels['premarket']}」** {tape}")
-        mapping = brief.get("mapping") or []
-        if mapping:
+        movers = brief.get("movers") or []
+        if movers:
             rows = []
-            for row in mapping:
-                label = f"{_escape_markdown(row['us'])} {row['pct']}"
+            for row in movers:
+                label = f"{_escape_markdown(row['ticker'])} {row['pct']:+.2f}%"
                 themes = "·".join(_escape_markdown(name) for name in row["themes"])
                 rows.append(f"{label}（{themes}）" if themes else label)
             lines.append(f"**{labels['overnight_map']}**：" + " ｜ ".join(rows))
         if not lines:
             return ""
-        lines.append(f"*{labels['premarket_note']}*")
+        close = brief.get("close_date") or ""
+        note = labels["premarket_note"]
+        if close:
+            note = f"{labels['overnight_asof'].format(date=close)} · {note}"
+        lines.append(f"*{note}*")
         return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
 
     def generate_webhook_overview(
