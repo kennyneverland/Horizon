@@ -121,10 +121,17 @@ td.nm .sub{display:block;font-size:11px;color:#8a94a6;white-space:nowrap;
 .hot{color:#c87a12}
 .mute{color:#8a94a6}
 .hint{font-size:12px;color:#8a94a6;margin:0 0 8px}
+.reg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:#e9ebec;border:1px solid #e9ebec;border-radius:8px;overflow:hidden}
+.reg li{background:#fff;padding:8px 10px;min-width:0}
+.reg b{display:block;font-size:14px;color:#2b3440;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reg .sub{display:block;font-size:11px;color:#8a94a6;
+  font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
   font-size:12px;line-height:1.8;color:#98a2b3}
 footer a{color:#98a2b3;text-decoration:underline}
-@media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}}
+@media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}.reg{grid-template-columns:1fr}}
 @media (prefers-color-scheme:dark){main h2,.read h3{color:#e8a765}.read .verdict{color:#f2e6d8}a{color:#e8a765}
   body{background:#14171c;color:#c3cad6}
   .stat{background:#14171c}.stat b,.line-h b,td.nm b,.drv b,.line-n b{color:#e6ebf2}
@@ -132,6 +139,8 @@ footer a{color:#98a2b3;text-decoration:underline}
   .line,.drv li,td,footer,.stats{border-color:#252b33}
   .wl-h b,.wl-u .nm,.focus h3{color:#e6ebf2}
   .wl-u li{border-color:#252b33}
+  .reg{background:#252b33;border-color:#252b33}.reg li{background:#14171c}
+  .reg b{color:#e6ebf2}
 }
 """
 
@@ -330,6 +339,36 @@ def _lhb_html(payload: Dict[str, Any]) -> str:
         "<table><colgroup><col><col style='width:66px'><col style='width:78px'></colgroup>"
         "<thead><tr><th>个股 / 所属题材</th><th>涨跌</th><th>净额</th></tr></thead>"
         "<tbody>" + "".join(rows) + "</tbody></table>"
+    )
+
+
+def _regulatory_html(payload: Dict[str, Any]) -> str:
+    """监管异动：交易所异常波动公告提醒，只作风险展示。
+
+    Deliberately a roster and nothing more: no theme column, no position in any
+    panel, no path into tomorrow's candidates. The three buckets above answer
+    "what to watch"; this list answers "what the exchange already flagged", and
+    letting the two touch is how a risk list turns into a buy list. The count,
+    the order and the wording are the site's.
+    """
+    reg = payload.get("regulatory") or {}
+    items = reg.get("items") or []
+    if not items:
+        return ""
+    chips = []
+    for x in items:
+        bits = [x.get("code") or ""]
+        if x.get("boards"):
+            bits.append(f"今年{x['boards']}板")
+        chips.append(
+            f"<li><b>{_esc(x.get('name'))}</b>"
+            f"<span class='sub'>{_esc(' · '.join(b for b in bits if b))}</span></li>"
+        )
+    return (
+        "<h2>监管异动 · 异常波动提醒</h2>"
+        f"<p class='hint'>共 {len(items)} 只，按今年连板数排序；"
+        "仅作风险提示，不进入明日候选，也不参与「活跃」判定</p>"
+        "<ul class='reg'>" + "".join(chips) + "</ul>"
     )
 
 
@@ -579,6 +618,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 {drivers}
 {''.join(pick_blocks)}
 {_lhb_html(payload)}
+{_regulatory_html(payload)}
 {extra['review']}
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
