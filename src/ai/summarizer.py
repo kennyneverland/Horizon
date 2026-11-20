@@ -1,6 +1,8 @@
 """Daily summary generation — pure programmatic rendering."""
 
+import asyncio
 import html
+import logging
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -10,6 +12,7 @@ from .localization import normalize_language
 from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
+from ..processing import next_day
 from ..processing.overnight import fetch_overnight
 from ..processing.premarket import fetch_premarket
 from ..processing.digest_rules import (
@@ -17,6 +20,8 @@ from ..processing.digest_rules import (
     TECH_PARENT_TITLE,
     nest_tech_sections,
 )
+
+logger = logging.getLogger(__name__)
 
 
 _CJK = r"[\u4e00-\u9fff\u3400-\u4dbf]"
@@ -78,7 +83,67 @@ def _member_label(member: object) -> str:
     return _escape_markdown(raw)
 
 
-def _render_theme_annotation(themes: list) -> str:
+def _board_rank(label: str) -> int:
+    """``3连板`` → 3，``首板`` → 1。只用来排序。"""
+    if label == "首板":
+        return 1
+    digits = re.sub(r"\D", "", label or "")
+    return int(digits) if digits else 0
+
+
+def _carrier_line(theme: dict, members: list, brief_doc: object) -> str:
+    """题材行下面那行「市场载体」：晚报说这条线今天真被买了哪些票。
+
+    只在「这些票还没出现在本行成员里」时出现——重复的不印，成员表长度与来源
+    一个字都不动。载体是证据，不是推荐：所以带上晚报的题材名与涨停家数，让
+    读者看得见这是盘面口径，不是本行标题的复述。
+    """
+    if not brief_doc:
+        return ""
+    name = str(theme.get("name") or "").strip()
+    if not name:
+        return ""
+    try:
+        carrier = next_day.carriers(brief_doc, name)
+    except Exception:  # noqa: BLE001 - 载体缺一行不影响正文
+        return ""
+    if not carrier:
+        return ""
+    have = {
+        str(m.get("name") if isinstance(m, dict) else m).replace(" ", "")
+        for m in (members or [])
+    }
+    extra = [
+        m
+        for m in carrier.get("movers") or []
+        if str(m.get("name") or "").replace(" ", "") not in have
+    ]
+    if not extra:
+        return ""
+    leader = carrier.get("leader") or ""
+    extra.sort(
+        key=lambda m: (
+            0 if str(m.get("name") or "") == leader else 1,
+            -_board_rank(str(m.get("board") or "")),
+        )
+    )
+    label = f"市场载体（{carrier.get('theme') or ''}"
+    if carrier.get("count"):
+        label += f" {carrier['count']} 家涨停"
+    label += "）"
+    names = []
+    for m in extra[:4]:
+        bit = _escape_markdown(str(m.get("name") or ""))
+        board = str(m.get("board") or "")
+        if board:
+            bit += f" {board}"
+        if board and _board_rank(board) >= 3:
+            bit += " · 位置偏高"
+        names.append(bit)
+    return "  - " + label + "：" + "、".join(names)
+
+
+def _render_theme_annotation(themes: list, brief_doc: object = None) -> str:
     """One heading per direction, one line per theme, one disclaimer at the end.
 
     Before, three brackets shared a single paragraph — ticker, reason,
@@ -102,6 +167,9 @@ def _render_theme_annotation(themes: list) -> str:
             if members:
                 parts.append("、".join(_member_label(m) for m in members))
             lines.append("- " + " · ".join(parts))
+            carrier_line = _carrier_line(theme, members, brief_doc)
+            if carrier_line:
+                lines.append(carrier_line)
         blocks.append("\n".join(lines))
     pending = [
         theme
@@ -384,7 +452,15 @@ class DailySummarizer:
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
         premarket = await self._overnight_block(labels) if language == "zh" else ""
         calendar = await self._calendar_block(labels) if language == "zh" else ""
-        body = header + premarket + calendar + toc + "".join(body_sections)
+        # 晚报只读一次：三类桶和「市场载体」都要用，分两处各拉一遍没必要。
+        self._brief_doc = None
+        if language == "zh":
+            try:
+                self._brief_doc = await asyncio.to_thread(next_day.load, date)
+            except Exception as exc:  # noqa: BLE001 - 拿不到晚报不该拖垮早报
+                logger.warning("Next-day brief unavailable: %s", exc)
+        nextday = await self._next_day_block(items, date) if language == "zh" else ""
+        body = header + premarket + calendar + nextday + toc + "".join(body_sections)
         # lianban's CC BY 4.0 licence requires attribution wherever its member
         # lists are shown; it only appears when a theme line was actually rendered.
         if language == "zh" and any(
@@ -406,6 +482,37 @@ class DailySummarizer:
         if language == "zh":
             parent_title = _pangu(parent_title)
         return nest_tech_sections(text, child_names, parent_title)
+
+    async def _next_day_block(self, items: List[ContentItem], date: str) -> str:
+        """昨晚晚报的三类判断，与今早的新闻覆盖交叉成一张坐标。
+
+        晚报回答的是「钱明天往哪走」，早报回答的是「今天发生了什么」，而早报只从
+        标题措辞里找答案。两边过去没有接口：2026-11-19 晚报点了六条线，11-20 早报
+        只碰上一条，因为一条被晚报称作主线的题材，只有当天恰好有对应的新闻才会出现
+        在早报里。
+
+        这里把晚报读回来做交叉，得到四格：有判断且有新闻、有判断但今天没新闻、
+        有新闻但晚报没点名。第三格是早报自己长出来的新苗头，缺了它，早报就退化
+        成复述昨晚的结论。
+        """
+        themes: List[str] = []
+        for item in items:
+            for theme in (item.metadata or {}).get("ashare_themes") or []:
+                name = str(theme.get("name") or "").strip()
+                if name and name not in themes:
+                    themes.append(name)
+        if not themes:
+            return ""
+        doc = getattr(self, "_brief_doc", None)
+        if not doc:
+            return ""
+        result = next_day.cross(doc, themes)
+        if not result.get("rows"):
+            return ""
+        block = next_day.render_matrix(result)
+        if not block:
+            return ""
+        return block + "\n\n---\n\n"
 
     async def _overnight_block(self, labels: dict) -> str:
         """Overnight US tape as backdrop, printed above the table of contents.
@@ -652,7 +759,9 @@ class DailySummarizer:
         # and never phrased as advice. Only the Chinese digest carries it.
         if language == "zh":
             themes = (item.metadata or {}).get("ashare_themes") or []
-            theme_block = _render_theme_annotation(themes)
+            theme_block = _render_theme_annotation(
+                themes, getattr(self, "_brief_doc", None)
+            )
             if theme_block:
                 lines.extend(
                     ["", _quote_block(f"**「{labels['themes']}」**\n\n{theme_block}")]
