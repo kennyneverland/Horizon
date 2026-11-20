@@ -7,6 +7,15 @@ sessions to 2026-11-20, none of the thirty mapped themes reached the top 100
 of lianban's own heat board (median rank 575), so a reader who traded the map
 would have been wrong every day. The digest therefore shows the tape and the
 map, and says so in one line.
+
+Timing matters more than parsing here. The page starts refreshing at 06:00
+Beijing and is not finalised until 09:25, while the digest runs at 08:00 and
+also runs on weekends. The two blocks the digest prints — the overseas close
+and the map — are fixed once the US session ends at 05:00, so they are whole
+at 08:00. The briefs that keep changing before 09:25 are the morning headlines
+and the exchange alerts, and neither is printed. Every fetch is still checked
+against the snapshot date on the page: on a Saturday the page still carries
+Friday's snapshot, and a stale tape is worse than no tape.
 """
 
 from __future__ import annotations
@@ -14,6 +23,7 @@ from __future__ import annotations
 import html
 import logging
 import re
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 import httpx
@@ -22,6 +32,9 @@ logger = logging.getLogger(__name__)
 
 PREMARKET_URL = "https://lianban.net/zaopan.html"
 TIMEOUT_SECONDS = 20.0
+# The page stamps its snapshot in Beijing time; the digest's own date is UTC.
+CST = timezone(timedelta(hours=8))
+_SNAPSHOT_RE = re.compile(r"(\d{4}-\d{2}-\d{2})\s*早盘情报快照")
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -54,11 +67,15 @@ def _plain(raw: str) -> str:
 def parse(page: str) -> Dict[str, Any]:
     """Split the rendered page into the four blocks the digest may print."""
     brief: Dict[str, Any] = {
+        "snapshot": "",
         "indices": [],
         "mapping": [],
         "alerts": [],
         "calendar": [],
     }
+    stamp = _SNAPSHOT_RE.search(page)
+    if stamp:
+        brief["snapshot"] = stamp.group(1)
     for name, pct in _INDEX_RE.findall(page):
         brief["indices"].append({"name": name.strip(), "pct": pct})
     for _tone, pct, ticker, rest in _MAP_RE.findall(page):
@@ -80,11 +97,16 @@ def parse(page: str) -> Dict[str, Any]:
     return brief
 
 
-async def fetch_premarket(url: str = PREMARKET_URL) -> Optional[Dict[str, Any]]:
+async def fetch_premarket(
+    url: str = PREMARKET_URL, expect_date: Optional[str] = None
+) -> Optional[Dict[str, Any]]:
     """One GET per run; any failure returns None and the digest drops the block.
 
     A retry spends another request against an endpoint that already answers 429
     when asked too often, and a missing backdrop is not worth a blocked digest.
+    A snapshot dated for another day is dropped as well: the cron runs every
+    day, so a Saturday run would otherwise print Friday's overseas close as if
+    it were this morning's.
     """
     try:
         async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, follow_redirects=True) as client:
@@ -97,8 +119,17 @@ async def fetch_premarket(url: str = PREMARKET_URL) -> Optional[Dict[str, Any]]:
     if not brief["indices"] and not brief["mapping"]:
         logger.warning("Pre-market brief parsed empty; block skipped")
         return None
+    expected = expect_date or datetime.now(CST).strftime("%Y-%m-%d")
+    if brief["snapshot"] != expected:
+        logger.warning(
+            "Pre-market brief is dated %s, expected %s; block skipped",
+            brief["snapshot"] or "(no date on page)",
+            expected,
+        )
+        return None
     logger.warning(
-        "Pre-market brief: %d indices, %d mappings, %d alerts, %d calendar",
+        "Pre-market brief %s: %d indices, %d mappings, %d alerts, %d calendar",
+        brief["snapshot"],
         len(brief["indices"]),
         len(brief["mapping"]),
         len(brief["alerts"]),
