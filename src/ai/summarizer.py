@@ -109,10 +109,13 @@ def _carrier_line(theme: dict, members: list, brief_doc: object) -> str:
         return ""
     if not carrier:
         return ""
-    have = {
-        str(m.get("name") if isinstance(m, dict) else m).replace(" ", "")
-        for m in (members or [])
-    }
+    # 成员是「旋极信息（300324）」这种带代码的字符串，movers 里只有名字。
+    # 直接比字符串永远对不上，去重会失效——先把括号和代码剥掉再比。
+    have = set()
+    for m in members or []:
+        raw = str(m.get("name") if isinstance(m, dict) else m).strip()
+        hit = _TICKER_RE.match(raw)
+        have.add((hit.group(1) if hit else raw).replace(" ", "").strip())
     extra = [
         m
         for m in carrier.get("movers") or []
