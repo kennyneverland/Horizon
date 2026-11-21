@@ -48,6 +48,18 @@ BUCKET_ORDER = ("主线", "活跃", "蓄势")
 _BUCKET_BRIDGE = {
     "轻工制造": ("家电", "家用电器"),
     "光刻机（胶）": ("半导体设备", "光刻机"),
+    # 下面四条是产业链的上下位，不是联想：晚报点的是产业线（芯片、算力），
+    # 早报的题材标签是这条线上的具体环节（设备、封测、液冷、光模块）。不收
+    # 它们，「新苗头」会把晚报已经点过的线全部重报一遍——2026-11-20 那行 19
+    # 个里有 15 个是这么来的。宽泛且跨行业的标签（阿里概念、蚂蚁金服概念）
+    # 仍然不收：它们不对应某一条线，硬归就是造假证据。
+    "芯片": ("半导体", "半导体设备", "集成电路", "集成电路制造", "先进封装", "封测"),
+    "算力": (
+        "数据中心", "AIDC", "云计算", "液冷服务器", "CPO", "光模块",
+        "英伟达", "算力租赁",
+    ),
+    "多元金融": ("证券", "银行", "保险"),
+    "AI应用(AI视频)": ("AI智能体", "智能体", "垂直应用软件", "AI视频"),
 }
 _NOISE_RE = re.compile(r"[（(][^）)]*[）)]|\s+")
 
@@ -319,14 +331,19 @@ def _cell(text: str) -> str:
 def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = None) -> str:
     """The 题材坐标 block: the brief's three buckets crossed with today's stories.
 
-    Two columns carry the whole idea. 晚报判断 is what last night's brief said
+    Two fields carry the whole idea. 晚报判断 is what last night's brief said
     the market was doing; 今日新闻 is whether this morning's digest has a story
-    for it. A row with a count is a call that arrived with a catalyst; a row
+    for it. A line with a count is a call that arrived with a catalyst; a line
     reading 无新消息 is a call the reader would otherwise never hear about,
     because the digest only prints themes it has a headline for.
 
-    新苗头 is the fourth row group and it is not decoration: a digest that only
+    新苗头 is the fourth group and it is not decoration: a digest that only
     echoed last night's buckets would stop being able to report a new line.
+
+    Rendered as a list rather than a Markdown table: Server酱's desp does not
+    render tables, so a table reaches WeChat as a wall of pipes plus the
+    ``| --- | --- | --- | --- |`` separator row. One line per theme keeps the
+    four fields and survives the renderer.
     """
     labels = labels or {}
     rows = result.get("rows") or []
@@ -336,31 +353,22 @@ def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = Non
 
     title = labels.get("title") or "题材坐标"
     head = labels.get("head") or "昨晚晚报判断 × 今早新闻覆盖"
-    col_brief = labels.get("brief") or "晚报判断"
-    col_theme = labels.get("theme") or "题材"
-    col_news = labels.get("news") or "今日新闻"
-    col_stock = labels.get("stock") or "晚报点名个股"
     fresh_label = labels.get("fresh") or "新苗头"
     none_label = labels.get("none") or "无新消息"
 
     lines = [f"## {title}", "", f"> {head}", ""]
-    lines.append(f"| {col_brief} | {col_theme} | {col_news} | {col_stock} |")
-    lines.append("| --- | --- | --- | --- |")
     for row in rows:
         theme = row["theme"]
         if row.get("badge"):
             theme = f"{theme}（{row['badge']}）"
-        if row.get("matched"):
-            news = "、".join(row["matched"])
-        else:
-            news = f"**{none_label}**"
+        news = "、".join(row["matched"]) if row.get("matched") else f"**{none_label}**"
         stocks = "、".join(row.get("stocks") or []) or "—"
         lines.append(
-            f"| {row['bucket']} | {_cell(theme)} | {_cell(news)} | {_cell(stocks)} |"
+            f"- **{row['bucket']}** {_cell(theme)} — {_cell(news)} — {_cell(stocks)}"
         )
     if fresh:
         lines.append(
-            f"| {fresh_label} | {_cell('、'.join(fresh))} | 有新闻，晚报未点名 | — |"
+            f"- **{fresh_label}** {_cell('、'.join(fresh))} — 有新闻，晚报未点名"
         )
     source = result.get("source_date") or ""
     if source:
