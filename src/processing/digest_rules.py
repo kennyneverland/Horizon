@@ -31,6 +31,15 @@ _PRIORITY_SOURCES = ("Gawin Research",)
 # item is materially weaker than what it displaces, and the slot is not taken.
 _PRIORITY_TOLERANCE = 1.0
 
+# Groups whose configured limit is also the hard ceiling during backlog fill.
+# The reader is told "每组最多 N 条" for these, so a 5-item group must never
+# render 7.
+_NO_OVERFLOW_GROUPS = ("ai-hardware", "ai-app")
+
+# Explicit overflow ceilings. 其他科技动态 is configured at 5 so the balancer
+# fills other groups first, but may grow to 8 when backlog items are left over.
+_OVERFLOW_CAP_OVERRIDE = {"tech-news": 8}
+
 
 def _score_of(item) -> float:
     analysis = item.processing.analysis if item.processing else None
@@ -80,9 +89,10 @@ def _log_profile_pass_rate(orchestrator, before, after) -> None:
 def _trim_for_dedup(orchestrator, candidates):
     """Keep only the per-group items that could still reach the digest.
 
-    The balancer never publishes more than ``limit`` items from a group and can
-    only overflow to ``limit + max(2, limit // 2)`` when filling unused slots,
-    so anything below that cut is dropped later regardless. Trimming before the
+    The balancer never publishes more than ``limit`` items from a group. The
+    backlog fill may use ``limit + max(2, limit // 2)`` for 财经要闻 and 中国股市,
+    an explicit 8 for 其他科技动态, and ``limit`` for the two AI groups; the
+    margin kept here covers all of them, plus priority slots. Trimming before the
     AI pass keeps the pairwise comparison small: 80 candidates cost 24 minutes
     on 2026-11-17, and that grows faster than the item count.
     """
@@ -307,9 +317,16 @@ def apply_digest_with_rules(orchestrator, items, base_balance, *, log: bool = Tr
         default_group = digest.default_group
 
         def _overflow_cap(group_key: str):
+            # AI 硬件与 AI 应用是硬上限：溢出曾让这两组从 5 条变成 7 条。
+            # 其他科技动态按显式上限 8 条补位，其余组按 limit + max(2, limit//2)。
             limit = limits.get(group_key)
             if limit is None:
                 return None
+            if group_key in _NO_OVERFLOW_GROUPS:
+                return limit
+            override = _OVERFLOW_CAP_OVERRIDE.get(group_key)
+            if override is not None:
+                return override
             return limit + max(2, limit // 2)
 
         chosen = {id(item) for item in selected}
