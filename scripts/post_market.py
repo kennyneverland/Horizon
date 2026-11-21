@@ -353,7 +353,7 @@ ROTATION_RULE = (
 # are three different bets, and a flat list makes the reader sort them himself.
 SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，不是数据播报。
 
-你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、龙虎榜、外盘、连板网自己的次日推演与复盘正文。
+你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、龙虎榜、外盘、第三方信源自己的次日推演与复盘正文。
 
 读者明天要据此做判断。所以四段各回答一个问题：先给结论，再给依据。
 
@@ -363,23 +363,23 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - industry_lines[].delta_1d 是与前一交易日的差，delta_3d 是与前三个交易日均值的差。差值已经算好，不要再自己减。
 - share_of_all_limit_up_pct 是集中度，不是强度。sector_strength_pct 是板块当日涨跌幅：涨停家数多而板块在跌，是个股突围，不是板块行情。
 - relay 衡量接力还赚不赚钱，不衡量今天强不强。
-- next_day_base_rate 是连板网用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
-- third_party_review 是连板网自己写的复盘正文，已核对为当日定版，写的是它的判断而不是数据，通常只有两三段（情绪与资金归因、重点游资），不一定给方向结论。你的任务不是表态同意不同意，而是拿手里的数据逐条检验它：把它的主张摘出来，用 industry_lines 的 recent5／peak_10d／delta_1d／delta_3d／streak、breadth_history 的 pct_rank_60d、flows 的板块资金、relay、lhb 的净额、theme_watch 的涨停家数与连板高度去核，判「同／异／它没说」。它为空表示今天没有可取的第二意见，dissent.checks 与 dissent.summary 都留空。
+- next_day_base_rate 是第三方信源用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
+- third_party_review 是第三方信源自己写的复盘正文，已核对为当日定版，写的是它的判断而不是数据，通常只有两三段（情绪与资金归因、重点游资），不一定给方向结论。你的任务不是表态同意不同意，而是拿手里的数据逐条检验它：把它的主张摘出来，用 industry_lines 的 recent5／peak_10d／delta_1d／delta_3d／streak、breadth_history 的 pct_rank_60d、flows 的板块资金、relay、lhb 的净额、theme_watch 的涨停家数与连板高度去核，判「同／异／它没说」。它为空表示今天没有可取的第二意见，dissent.checks 与 dissent.summary 都留空。
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
-- theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
-- members[].board 是连板高度（3连板／3天2板／首板），sub 是连板网的子题材标签，source 标明来源：limit_up 当日涨停股、panel 三张免费面板里归位到该题材的票（未必涨停，是「主线里结构就绪、还没走」的那类）、eastmoney 当日涨停股（连板网题材明细改版后不再提供逐只名单，这一路来自东财涨停池，按同花顺概念／行业板块归位）、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。eastmoney 这一路的 sub 是它的概念或行业标签，不是连板网的子题材，亲疏自己判断。members 的排列顺序就是取用优先级：panel（面板里归位到该题材、通常还没涨停）→ eastmoney（当日涨停池）→ related → candidate → leader。明日关注优先用排在前面的：要的是「结构就绪、还没走」，不是已经封板的结果。board 有值说明它今天已经涨停，3 连板及以上必须在 signal 或 tag 里写明位置偏高，不许当成低位机会；board 为空才是没封板的。
+- theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是第三方信源的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
+- members[].board 是连板高度（3连板／3天2板／首板），sub 是第三方信源的子题材标签，source 标明来源：limit_up 当日涨停股、panel 三张免费面板里归位到该题材的票（未必涨停，是「主线里结构就绪、还没走」的那类）、eastmoney 当日涨停股（第三方信源题材明细改版后不再提供逐只名单，这一路来自东财涨停池，按同花顺概念／行业板块归位）、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。eastmoney 这一路的 sub 是它的概念或行业标签，不是第三方信源的子题材，亲疏自己判断。members 的排列顺序就是取用优先级：panel（面板里归位到该题材、通常还没涨停）→ eastmoney（当日涨停池）→ related → candidate → leader。明日关注优先用排在前面的：要的是「结构就绪、还没走」，不是已经封板的结果。board 有值说明它今天已经涨停，3 连板及以上必须在 signal 或 tag 里写明位置偏高，不许当成低位机会；board 为空才是没封板的。
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
-- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材。themes 是本地题材索引倒查出的归属——索引取自同花顺 F10 概念页，已与 lianban 题材库做归一化精确对齐，覆盖范围比面板宽得多，归位优先用它；concepts 是同花顺原始概念名，why 是公司自己披露的业务关联原文，可以用来交代它凭什么算这个题材，但只能引用原文意思，不要替公司补话。today_themes 是把 themes 按名称归一化对回当日题材口径的结果——只做去括号同名匹配，对上的可以直接归位；对不上不代表不属于，例如「光刻胶」对不上「光刻机（胶）」但它就是那条线，这种情况你自己判断。四者都空才表示归属未知。
-- candidates 按模板名分组：candidates[模板名] = {{why, total, rows}}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud／themes）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；themes 是同一套索引倒查出的题材名，sector 为空或只是一个宽泛标签（次新股、高股息、国企改革这类）时用它；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是连板网自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
+- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材。themes 是本地题材索引倒查出的归属——索引取自同花顺 F10 概念页，已与第三方信源题材库做归一化精确对齐，覆盖范围比面板宽得多，归位优先用它；concepts 是同花顺原始概念名，why 是公司自己披露的业务关联原文，可以用来交代它凭什么算这个题材，但只能引用原文意思，不要替公司补话。today_themes 是把 themes 按名称归一化对回当日题材口径的结果——只做去括号同名匹配，对上的可以直接归位；对不上不代表不属于，例如「光刻胶」对不上「光刻机（胶）」但它就是那条线，这种情况你自己判断。四者都空才表示归属未知。
+- candidates 按模板名分组：candidates[模板名] = {{why, total, rows}}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud／themes）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；themes 是同一套索引倒查出的题材名，sector 为空或只是一个宽泛标签（次新股、高股息、国企改革这类）时用它；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是第三方信源自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
 
-- 判断主线用连板网自己的口径，不另立标准：{rule}（这条是连板网的原文口径，引用它来判断，不要换成更宽的「连续两天」或更严的「五天」。）
+- 判断主线用第三方信源自己的口径，不另立标准：{rule}（这条是第三方信源的原文口径，引用它来判断，不要换成更宽的「连续两天」或更严的「五天」。）
 
 【四段，各回答一个问题】
 1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
 2. 重点信号：给 3 个今天最值得记住的异常，每个都要带"相对于什么"（60 日分位、昨日值、或与其他指数/板块的背离）。能挂上已有历史基准的就挂——next_day_base_rate 的样本量与频率、pct_rank_60d 的分位；挂不上的只描述异常本身，不要替它编历史统计。这一段是替读者划重点，不要把所有指标都念一遍。
 3. 盘面变动归因：钱从哪来、到哪去。用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。一条线涨停变多、另一条线变少，只能说明钱的分布变了；除非板块资金流也指向同一方向，否则直说"这一步无法证实"，不要写成资金迁移。
-4. 趋势展望：先给出连板网的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
+4. 趋势展望：先给出第三方信源的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
 
 【明日关注，分三类】
 第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
@@ -437,7 +437,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
  "dissent": {{
   "checks": [
    {{"claim": "摘出 third_party_review 的一条主张，不改写原意，不超过 30 字",
-    "verdict": "同｜异｜它没说，三选一",
+    "verdict": "同｜异，二选一；它没提到的不要列",
     "basis": "判定依据：点名用到的指标与数值，必须来自输入 JSON，不超过 50 字"}}
   ],
   "summary": "一句话：分歧在哪、或我们补了什么它没说的，不超过 60 字"}}}}
@@ -446,10 +446,11 @@ focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每�
 
 dissent 的硬性要求：
 1. checks 摘 2 到 4 条，覆盖 third_party_review 的主要主张；它只写了一段就摘 1 条，不许为凑数编它没说过的话。
-2. 每条 basis 必须点名输入里的具体数据——产业线的 recent5／peak_10d／delta_1d／delta_3d／streak、宽度分位 pct_rank_60d、板块资金 flows、relay、lhb 净额、theme_watch 的涨停家数与连板高度。拿不出数据的，verdict 写「它没说」，basis 写清它漏了哪一项。
+2. 每条 basis 必须点名输入里的具体数据——产业线的近5日与10日峰值、单日与3日变化、连续天数，市场宽度的60日分位，板块资金，连板接力，龙虎榜净额，当日题材的涨停家数与连板高度。拿不出数据支撑的条目直接不要输出，不要写「它没说」占位。
 3. verdict 写「异」的，basis 必须给出与它相反的那条数据；只是读法不同、数据同向的，不许判「异」。
 4. 不许把 next_day_base_rate 当成 third_party_review 的观点：它没有次日推演，基准率是统计频率，不是它的判断。
-5. summary 不许只写「与连板网复盘判断一致」；就算结论一致，也要写清是用哪几项数据核过的。它没覆盖而今天数据里明显的（例如某条产业线的十日趋势在转向），写进 summary。"""
+5. summary 不许只写「与第三方信源复盘判断一致」；就算结论一致，也要写清是用哪几项数据核过的。它没覆盖而今天数据里明显的（例如某条产业线的十日趋势在转向），写进 summary。
+6. claim 与 basis 用中文业务语言写，不许出现 industry_lines、theme_watch、limit_up、board、lhb、flows、relay、recent5、peak_10d、delta_1d、delta_3d、streak、pct_rank_60d 这类字段名或代码标识；读者看的是晚报，不是数据结构。"""
 
 
 def _panel_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -949,7 +950,7 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
     # 字段（None），按可信处理，免得回补历史日期时整段消失。
     lianban = payload.get("lianban") or {}
     third_party = (
-        _trim(lianban.get("ai_review") or "")
+        str(lianban.get("ai_review") or "").strip()
         if lianban.get("date_verified") is not False
         else ""
     )
@@ -1580,7 +1581,7 @@ def _read_markdown(
         dis = {"checks": [], "summary": ""}
     if dis["checks"] or dis["summary"]:
         out.append("---")
-        out.append(_head(3, "⚖️", "与连板网复盘的分歧"))
+        out.append(_head(3, "⚖️", "与第三方复盘结论对比"))
         for c in dis["checks"]:
             bits = [f"**{c['verdict']}**"] if c.get("verdict") else []
             if c.get("claim"):
@@ -1778,10 +1779,9 @@ def _review_lines(payload: Dict[str, Any]) -> List[str]:
     text = str(doc.get("ai_review") or "").strip()
     if not text:
         return []
-    # 全文照登，理由同页面侧：第二段「重点游资」才是席位信息最密的地方。
-    body = text
-    if len(body) > 600:
-        body = body[:600].rstrip() + "…"
+    # 全文照登：第二段「重点游资」是席位信息最密的地方，截断会把结论切掉，
+    # 读者看到的「…」不是排版省略，是内容缺失。
+    body = text.replace("连板网", "第三方信源").replace("lianban.net", "第三方信源")
     paras = [p.strip() for p in body.split("\n\n") if p.strip()]
     # 每段一个引用行、段间留一个空引用行：Markdown 里这仍是同一个引用块的两段，
     # 不会裂成两个灰框。
@@ -1854,7 +1854,7 @@ def data_markdown(payload: Dict[str, Any]) -> str:
     add("筛选面板", _pick_lines(payload))
     add("龙虎榜 · 题材归属", _lhb_lines(payload))
     add("监管异动", _regulatory_lines(payload))
-    add("连板网复盘", _review_lines(payload))
+    add("第三方复盘", _review_lines(payload))
     add("今日信号面", _signal_lines(payload))
     add("外盘参考", _overseas_lines(payload))
     if not sections:
@@ -1874,7 +1874,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--date", help="override the date in the filename (debug)")
     parser.add_argument("--no-llm", action="store_true", help="skip the written read")
     parser.add_argument("--no-browser", action="store_true", help="skip the rendered blocks")
-    parser.add_argument("--no-mcp", action="store_true", help="skip lianban's own review")
+    parser.add_argument("--no-mcp", action="store_true", help="skip the third-party review")
     parser.add_argument("--no-push", action="store_true", help="write the page, do not push")
     parser.add_argument("--dump-model-input", action="store_true", help="print the model payload and exit")
     parser.add_argument(
