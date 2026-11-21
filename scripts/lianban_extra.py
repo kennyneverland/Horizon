@@ -142,6 +142,14 @@ _SIG_RE = re.compile(
     re.S,
 )
 
+# ``.sgr`` 的 <em> 是列表里的省略版（结尾固定带「…」），全文在同页折叠的
+# ``.topwarn`` 浮层里：<b> 是标题、<span> 是完整正文。默认 display:none，
+# 但 page.content() 照样带出来，正则能读到。
+_SIG_FULL_RE = re.compile(
+    r'<div[^>]*class="topwarn[^"]*"[^>]*>\s*<b>(.*?)</b>\s*<span>(.*?)</span>',
+    re.S,
+)
+
 
 def render_day(date: str, timeout_ms: int = 60000) -> str:
     """Load ``/days/<date>.html`` and return the settled DOM.
@@ -183,6 +191,13 @@ def parse_signals(page: str) -> List[Dict[str, str]]:
     glance.
     """
     out: List[Dict[str, str]] = []
+    # 先取折叠浮层里的全文；取不到再退回列表里的省略版，至少不丢这一块。
+    for chip, text in _SIG_FULL_RE.findall(page):
+        name, body = _clean(chip), _clean(text)
+        if name and body:
+            out.append({"chip": name, "text": body})
+    if out:
+        return out
     for chip, text in _SIG_RE.findall(page):
         name, body = _clean(chip), _clean(text)
         if name and body:
