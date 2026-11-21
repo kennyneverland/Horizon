@@ -228,6 +228,54 @@ def sector_flow(limit: int = 5, descending: bool = True) -> List[Dict[str, Any]]
     return out
 
 
+CONCEPT_FS = "m:90+t:3"
+
+
+def concept_flow(page_size: int = 100, max_pages: int = 6) -> List[Dict[str, Any]]:
+    """概念板块的当日涨跌幅与主力净额。
+
+    连板网 ``#s-strength`` 既不公开算法，板块集合也和它自己的主线趋势对不上，
+    主线强度改从这里取：涨跌幅与主力净额都是交易所行情口径，与 kpi、龙虎榜
+    同一套接口。一页最多 100 行，概念板块有几百个，所以要翻页。
+    """
+    out: List[Dict[str, Any]] = []
+    for page in range(1, max_pages + 1):
+        query = urllib.parse.urlencode(
+            {
+                "pn": page,
+                "pz": page_size,
+                "po": 1,
+                "np": 1,
+                "fltt": 2,
+                "invt": 2,
+                "fid": "f3",
+                "fs": CONCEPT_FS,
+                "fields": "f12,f14,f3,f62",
+            }
+        )
+        doc = _get_json(f"{CLIST_URL}?{query}")
+        data = doc.get("data") or {}
+        rows = data.get("diff") or []
+        if not rows:
+            break
+        for row in rows:
+            pct = row.get("f3")
+            if not isinstance(pct, (int, float)):
+                continue
+            net = row.get("f62")
+            out.append(
+                {
+                    "name": str(row.get("f14") or ""),
+                    "pct": float(pct),
+                    "net": float(net) if isinstance(net, (int, float)) else None,
+                }
+            )
+        total = data.get("total") or 0
+        if len(rows) < page_size or (total and len(out) >= total):
+            break
+    return out
+
+
 def calendar(date: str) -> Dict[str, List[Dict[str, str]]]:
     """当日解禁与除权除息，拼成早报日历块需要的行。"""
     lift = _report(
