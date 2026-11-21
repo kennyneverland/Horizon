@@ -832,7 +832,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <h2>盘面</h2>
 <div class="stats">{stat_html}</div>
 {extra['funds']}
-<h2>主线矩阵</h2>
+<h2>主线追踪</h2>
 <ul class="lines">{''.join(line_rows)}</ul>
 {drivers}
 {''.join(pick_blocks)}

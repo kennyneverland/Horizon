@@ -1849,7 +1849,7 @@ def data_markdown(payload: Dict[str, Any]) -> str:
     add("盘面", _kpi_lines(payload))
     add("主线强度", _strength_lines(payload))
     add("主力资金", _flow_lines(payload))
-    add("主线矩阵", _matrix_lines(payload))
+    add("主线追踪", _matrix_lines(payload))
     add("当日主线", _driver_lines(payload))
     add("筛选面板", _pick_lines(payload))
     add("龙虎榜 · 题材归属", _lhb_lines(payload))
