@@ -23,6 +23,51 @@ def _esc(value: Any) -> str:
     return _html.escape(str(value if value is not None else ""))
 
 
+_FIELD_WORDS = [
+    ("third_party_review", "第三方复盘"),
+    ("next_day_base_rate", "次日基准率"),
+    ("breadth_history", "市场宽度历史"),
+    ("industry_lines", "产业线数据"),
+    ("theme_watch", "题材监控"),
+    ("pct_rank_60d", "60日分位"),
+    ("peak_10d", "10日峰值"),
+    ("delta_1d", "单日变化"),
+    ("delta_3d", "3日变化"),
+    ("recent5", "近5日"),
+    ("limit_up", "涨停家数"),
+    ("above_ma20", "站上20日线"),
+    ("from_high", "距高点"),
+    ("gain60", "60日涨幅"),
+    ("vol_ud", "量比"),
+    ("streak", "连续天数"),
+    ("relay", "连板接力"),
+    ("flows", "板块资金"),
+    ("lhb", "龙虎榜"),
+    ("members", "成分股"),
+    ("candidates", "候选股"),
+    ("lianban.net", "第三方信源"),
+    ("连板网", "第三方信源"),
+]
+
+
+def _plain(text: Any) -> str:
+    """把模型爱写的字段名翻成读者能懂的业务词。
+
+    模型照着输入 JSON 的键名复述（``industry_lines``、``limit_up=6``），
+    读者看到的是代码而不是判断。prompt 已要求它说人话，这里再做一层兜底：
+    它不听话时，渲染层不能把字段名原样端上去。
+    """
+    s = str(text if text is not None else "")
+    if not s:
+        return ""
+    for key, word in _FIELD_WORDS:
+        s = re.sub(r"(?<![A-Za-z_])" + re.escape(key) + r"(?![A-Za-z_])", word, s)
+    s = re.sub(r"(?<![A-Za-z_])board(?=\s*=)", "连板高度", s)
+    s = re.sub(r"(?<=[\u4e00-\u9fff])\s*=\s*", "为", s)
+    s = re.sub(r"连板高度为(\d+)连板", r"\1连板", s)
+    return s
+
+
 def _dissent_view(dis: Any) -> Dict[str, Any]:
     """把模型的 dissent 归一成 {checks, summary}，渲染层只面对一种形状。
 
@@ -38,14 +83,18 @@ def _dissent_view(dis: Any) -> Dict[str, Any]:
             claim = str(c.get("claim") or "").strip()
             if not claim:
                 continue
+            verdict = str(c.get("verdict") or "").strip()
+            # 「它没说」对读者没有信息量：这一条不渲染，也不占一行位置。
+            if any(k in verdict for k in ("没说", "没提", "未提", "未覆盖", "未涉及", "未说明", "未给出")):
+                continue
             checks.append(
                 {
-                    "claim": claim,
-                    "verdict": str(c.get("verdict") or "").strip(),
-                    "basis": str(c.get("basis") or "").strip(),
+                    "claim": _plain(claim),
+                    "verdict": _plain(verdict),
+                    "basis": _plain(c.get("basis")),
                 }
             )
-        summary = str(
+        summary = _plain(
             dis.get("summary") or dis.get("disagree") or dis.get("agree") or ""
         ).strip()
         return {"checks": checks, "summary": summary}
@@ -75,7 +124,7 @@ def _dissent_html(dis: Dict[str, Any]) -> str:
         return ""
     body = f"<ul class='dissent'>{''.join(rows)}</ul>" if rows else ""
     tail = f"<p class='dsum'>{_esc(summary)}</p>" if summary else ""
-    return f"<h3>与连板网复盘的分歧</h3>{body}{tail}"
+    return f"<h3>与第三方复盘结论对比</h3>{body}{tail}"
 
 
 def _pct_class(raw: str) -> str:
@@ -306,7 +355,7 @@ _FOCUS_ORDER = ("蓄势", "主线", "活跃")
 # rather than a shared caption: 蓄势 is about position, 主线 about continuity,
 # 活跃 about whether one day becomes two.
 _FOCUS_DESC = {
-    "蓄势": "还没动、结构就绪：票池是连板网「优选蓄势」，题材取该票所属板块，位置由面板回填",
+    "蓄势": "还没动、结构就绪：票池是第三方信源「优选蓄势」，题材取该票所属板块，位置由面板回填",
     "主线": "已经在走、且有连续性：题材与个股来自当日题材明细，看的是明日能否延续",
     "活跃": "今天刚动、持续性未验证：新上榜或单日放量，看的是明日能否接力",
 }
@@ -517,7 +566,7 @@ def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) 
         rows.append(f"<li><span class='nm'>{_esc(item.get('name'))}</span>{tags}{note}</li>")
     return (
         "<h3>明日候选（优选蓄势）</h3>"
-        "<div class='wl-g'>取自连板网「优选蓄势」：当日未涨停、结构就绪；标签是该票的题材归属，位置由页面数据回填</div>"
+        "<div class='wl-g'>取自第三方信源「优选蓄势」：当日未涨停、结构就绪；标签是该票的题材归属，位置由页面数据回填</div>"
         f"<div class='tc'><ul class='wl-u'>{''.join(rows)}</ul></div>"
     )
 
@@ -840,11 +889,11 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 {_regulatory_html(payload)}
 {extra['review']}
 <footer>
-数据来源：<a href="https://lianban.net/mainline.html">连板网 · 主线追踪</a>、
+数据来源：<a href="https://lianban.net/mainline.html">第三方信源 · 主线追踪</a>、
 <a href="https://lianban.net/filter.html">一键筛选</a>、
 <a href="https://lianban.net/today.html">当日复盘</a>、
 <a href="https://lianban.net/lhb.html">龙虎榜</a>。
-行情与题材数据版权归连板网，依 CC BY 4.0 署名引用。<br>
+行情与题材数据版权归第三方信源，依 CC BY 4.0 署名引用。<br>
 本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
 </footer>
 </main>
