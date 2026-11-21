@@ -37,4 +37,3 @@ The reader is a technology and market practitioner based in mainland China. With
 These preferences shift scores within the 7-10 band. They do not relax the evidence bar: an item still needs concrete evidence to score high. Do not inflate scores for rumor, unverified social-media chatter, or stock-touting content that lacks a verifiable source.
 
 Use three to five specific topic tags.
-<!-- AIGC: {"Label":"1","ContentProducer":"001191110000802100433B10002","ProduceID":"369716489411119_1795235643_a4c7687cfe5753f9bccd40ad3b905920","ReservedCode1":"3b46c7df032a4a554ccb0122086621c701a1a0dfb7b4bc4f65ace629ab51c3cc","ContentPropagator":"001191110000802100433B10002","PropagateID":"369716489411119_1795235643_a4c7687cfe5753f9bccd40ad3b905920","ReservedCode2":"3b46c7df032a4a554ccb0122086621c701a1a0dfb7b4bc4f65ace629ab51c3cc"} -->
