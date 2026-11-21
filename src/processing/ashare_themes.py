@@ -97,7 +97,7 @@ THEME_PROFILES = frozenset(
     {"finance-news", "china-market", "tech-news", "ai-hardware", "ai-app"}
 )
 FETCH_TIMEOUT = 12.0
-SOURCE_LABEL = "连板网 lianban.net"
+SOURCE_LABEL = "第三方信源"
 # A matched theme says the story is about that sector; it does not say whether
 # the story helps or hurts it. The direction pass asks the model for that, and
 # these are the only answers it may give.
