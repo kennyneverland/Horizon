@@ -351,30 +351,34 @@ def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = Non
     if not rows and not fresh:
         return ""
 
-    title = labels.get("title") or "题材坐标"
-    head = labels.get("head") or "昨晚晚报判断 × 今早新闻覆盖"
+    title = labels.get("title") or "今日建议关注题材"
     fresh_label = labels.get("fresh") or "新苗头"
-    none_label = labels.get("none") or "无新消息"
 
-    lines = [f"## {title}", "", f"> {head}", ""]
+    lines = [f"## {title}", ""]
+    order = ["主线", "蓄势", "活跃"]
+    grouped: Dict[str, List[Dict[str, Any]]] = {name: [] for name in order}
     for row in rows:
-        theme = row["theme"]
-        if row.get("badge"):
-            theme = f"{theme}（{row['badge']}）"
-        news = "、".join(row["matched"]) if row.get("matched") else f"**{none_label}**"
-        stocks = "、".join(row.get("stocks") or []) or "—"
-        lines.append(
-            f"- **{row['bucket']}** {_cell(theme)} — {_cell(news)} — {_cell(stocks)}"
-        )
+        grouped.setdefault(str(row.get("bucket") or ""), []).append(row)
+
+    for bucket in order:
+        items = grouped.get(bucket) or []
+        if not items:
+            continue
+        lines.append(f"**{bucket}：**")
+        for row in items:
+            theme = row["theme"]
+            if row.get("badge"):
+                theme = f"{theme}（{row['badge']}）"
+            parts = [_cell(theme)]
+            news = "、".join(row.get("matched") or [])
+            if news:
+                parts.append(_cell(news))
+            stocks = "、".join(row.get("stocks") or [])
+            if stocks:
+                parts.append(_cell(stocks))
+            lines.append("- " + " — ".join(parts))
+        lines.append("")
     if fresh:
-        lines.append(
-            f"- **{fresh_label}** {_cell('、'.join(fresh))} — 有新闻，晚报未点名"
-        )
-    source = result.get("source_date") or ""
-    if source:
-        gap = int(result.get("gap_days") or 0)
-        note = f"依据 {source} 晚报"
-        if gap > 1:
-            note += f"（距今 {gap} 天，跨非交易日）"
-        lines += ["", f"> {note}；晚报三类是盘面判断，不是买卖建议。"]
-    return "\n".join(lines) + "\n"
+        lines.append(f"**{fresh_label}：**")
+        lines.append(f"- {_cell('、'.join(fresh))}")
+    return "\n".join(lines).rstrip() + "\n"
