@@ -1,6 +1,6 @@
 # Evaluation goal
 
-Evaluate whether a technology news item carries industrial, commercial, or capital-market significance for readers who follow the AI and computing industry as investors and operators. The reader wants to know what changes competitive position, revenue, cost structure, or policy — not how software is implemented.
+Evaluate whether an item carries industrial, commercial, or capital-market significance for readers who follow technology and healthcare outside AI models, AI applications and the compute supply chain, as investors and operators. The reader wants to know what changes competitive position, revenue, cost structure, or policy — not how software is implemented.
 
 # Scoring rubric
 
@@ -28,12 +28,13 @@ Score these at 5 or below unless the item explicitly ties them to commercial or 
 
 The reader is a technology and market practitioner based in mainland China. Within the 7-10 bands, give the benefit of the doubt to items that match these interests:
 
-- **AI applications and commercialization.** Agent products, concrete deployment cases, paid usage and pricing models, unit economics, and evidence of real adoption rather than demos.
-- **Compute and inference cost.** Chips and accelerators, training and inference infrastructure, capacity supply, serving efficiency, and shifts in token pricing.
-- **China's AI industry.** Progress of domestic models and vendors, policy and regulation, supply-chain localization, and competitive dynamics inside the Chinese market.
-- **Catalysts for China A-share themes.** Events, disclosures, executive remarks, or policy signals that could plausibly reprice listed A-share themes such as AI applications, computing power, optical modules, servers, or domestic chips. State the affected theme when you score it.
-- **Industry structure and competition.** Market-share shifts, pricing power, supply agreements, capacity buildouts, and executive or ownership changes at major vendors.
+- **Consumer electronics and automotive technology.** Shipments and share shifts, platform policy on devices, in-car compute and autonomy milestones, and supplier wins or losses that reprice a chain.
+- **Brain-computer interfaces and AI in healthcare.** Clinical readouts, regulatory clearance, reimbursement decisions, and the first paying deployments rather than demos.
+- **Innovative drugs.** Trial data, approvals, licensing and out-licensing deals, and financing events where the value sits in the asset or the science.
+- **Telecommunications and cybersecurity.** Spectrum and standards decisions, carrier capex, disclosed breaches, exploited vulnerabilities, and regulation that forces operational change.
+- **Financial technology.** Payments and digital-banking economics, exchange and brokerage infrastructure, insurtech, and rules that change how services reach customers.
 
 These preferences shift scores within the 7-10 band. They do not relax the evidence bar: an item still needs concrete evidence to score high. Do not inflate scores for rumor, unverified social-media chatter, or stock-touting content that lacks a verifiable source.
 
 Use three to five specific topic tags.
+<!-- AIGC: {"Label":"1","ContentProducer":"001191110000802100433B10002","ProduceID":"369716489411119_1795235643_a4c7687cfe5753f9bccd40ad3b905920","ReservedCode1":"3b46c7df032a4a554ccb0122086621c701a1a0dfb7b4bc4f65ace629ab51c3cc","ContentPropagator":"001191110000802100433B10002","PropagateID":"369716489411119_1795235643_a4c7687cfe5753f9bccd40ad3b905920","ReservedCode2":"3b46c7df032a4a554ccb0122086621c701a1a0dfb7b4bc4f65ace629ab51c3cc"} -->
