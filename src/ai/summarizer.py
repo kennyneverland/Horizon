@@ -463,7 +463,7 @@ class DailySummarizer:
             except Exception as exc:  # noqa: BLE001 - 拿不到晚报不该拖垮早报
                 logger.warning("Next-day brief unavailable: %s", exc)
         nextday = await self._next_day_block(items, date) if language == "zh" else ""
-        body = header + premarket + calendar + nextday + toc + "".join(body_sections)
+        body = header + premarket + calendar + toc + "".join(body_sections) + nextday
         # lianban's CC BY 4.0 licence requires attribution wherever its member
         # lists are shown; it only appears when a theme line was actually rendered.
         if language == "zh" and any(
@@ -515,7 +515,7 @@ class DailySummarizer:
         block = next_day.render_matrix(result)
         if not block:
             return ""
-        return block + "\n\n---\n\n"
+        return "\n\n---\n\n" + block
 
     async def _overnight_block(self, labels: dict) -> str:
         """Overnight US tape as backdrop, printed above the table of contents.
