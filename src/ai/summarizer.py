@@ -416,7 +416,7 @@ class DailySummarizer:
 
         header = (
             f"# {labels['header']} - {date}\n\n"
-            f"> {labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
+            f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
             "---\n\n"
         )
 
@@ -437,7 +437,12 @@ class DailySummarizer:
                     f"\u2b50\ufe0f {view_item.score}/10"
                 )
             toc_sections.append("\n".join(toc_entries))
-            body_sections.append(f"## {profile_name}\n\n")
+            section_title = (
+                f"{profile_name}（标题汇总如下，详情下滑阅读）"
+                if language == "zh"
+                else profile_name
+            )
+            body_sections.append(f"## {section_title}\n\n")
             body_sections.extend(
                 self._format_item(
                     view_item.item,
@@ -464,12 +469,8 @@ class DailySummarizer:
                 logger.warning("Next-day brief unavailable: %s", exc)
         nextday = await self._next_day_block(items, date) if language == "zh" else ""
         body = header + premarket + calendar + toc + "".join(body_sections) + nextday
-        # lianban's CC BY 4.0 licence requires attribution wherever its member
-        # lists are shown; it only appears when a theme line was actually rendered.
-        if language == "zh" and any(
-            (item.metadata or {}).get("ashare_themes") for item in items
-        ):
-            body = body.rstrip("\n") + f"\n\n{_escape_markdown(source_footer())}\n"
+        # 读者不需要看数据来源署名：题材成员已经内嵌在「今日建议关注题材」里，
+        # 页脚再挂一行只会把正文挤长。
         text = normalize_language(body, language)
         # The three technology groups render as one section with sub-headings
         # rather than as peers of 财经新闻 and 中国股市.
@@ -538,7 +539,7 @@ class DailySummarizer:
             tape = " ｜ ".join(
                 f"{_escape_markdown(row['name'])} {row['pct']:+.2f}%" for row in indices
             )
-            lines.append(f"**「{labels['premarket']}」** {tape}")
+            lines.append(f"{labels['premarket']}：{tape}")
         movers = brief.get("movers") or []
         if movers:
             rows = []
@@ -546,7 +547,7 @@ class DailySummarizer:
                 label = f"{_escape_markdown(row['ticker'])} {row['pct']:+.2f}%"
                 themes = "·".join(_escape_markdown(name) for name in row["themes"])
                 rows.append(f"{label}（{themes}）" if themes else label)
-            lines.append(f"**{labels['overnight_map']}**：" + " ｜ ".join(rows))
+            lines.append(f"{labels['overnight_map']}：" + " ｜ ".join(rows))
         if not lines:
             return ""
         close = brief.get("close_date") or ""
@@ -554,7 +555,7 @@ class DailySummarizer:
         if close:
             note = f"{labels['overnight_asof'].format(date=close)} · {note}"
         lines.append(f"*{note}*")
-        return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
+        return "\n\n".join(lines) + "\n\n---\n\n"
 
     async def _calendar_block(self, labels: dict) -> str:
         """Today's scheduled events, printed under the overnight tape.
@@ -605,13 +606,13 @@ class DailySummarizer:
         if language == "zh":
             header = (
                 f"# {labels['header']} - {date}\n\n"
-                f"> 从 {total_fetched} 条内容中筛选出 {len(items)} 条重要资讯。\n\n"
+                f"从 {total_fetched} 条内容中筛选出 {len(items)} 条重要资讯。\n\n"
                 "下面会按内容逐条发送详情，你可以只看感兴趣的标题。\n\n"
             )
         else:
             header = (
                 f"# {labels['header']} - {date}\n\n"
-                f"> Selected {len(items)} important items from {total_fetched} fetched items.\n\n"
+                f"Selected {len(items)} important items from {total_fetched} fetched items.\n\n"
                 "Details will be sent item by item so you can read only the topics you care about.\n\n"
             )
 
@@ -754,9 +755,7 @@ class DailySummarizer:
                 if language == "zh":
                     block_title = _pangu(block_title)
                     block_content = _pangu(block_content)
-                lines.extend(
-                    ["", _quote_block(f"**「{block_title}」** {block_content}")]
-                )
+                lines.extend(["", f"「{block_title}」 {block_content}"])
 
         # A-share theme lookup: a plain rule match, so it is labelled as inferred
         # and never phrased as advice. Only the Chinese digest carries it.
@@ -766,9 +765,7 @@ class DailySummarizer:
                 themes, getattr(self, "_brief_doc", None)
             )
             if theme_block:
-                lines.extend(
-                    ["", _quote_block(f"**「{labels['themes']}」**\n\n{theme_block}")]
-                )
+                lines.extend(["", f"「{labels['themes']}」\n\n{theme_block}"])
 
         sources = artifact.sources if artifact else []
         if sources:
@@ -789,7 +786,7 @@ class DailySummarizer:
         if analysis and analysis.tags:
             tags_str = ", ".join(_format_tags(analysis.tags))
             lines.append("")
-            lines.append(f"**{labels['tags']}**: {tags_str}")
+            lines.append(f"{labels['tags']}: {tags_str}")
 
         lines.append("")
         lines.append("---")
