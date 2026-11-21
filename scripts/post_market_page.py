@@ -23,6 +23,61 @@ def _esc(value: Any) -> str:
     return _html.escape(str(value if value is not None else ""))
 
 
+def _dissent_view(dis: Any) -> Dict[str, Any]:
+    """把模型的 dissent 归一成 {checks, summary}，渲染层只面对一种形状。
+
+    新契约是对象；老回复是字符串或 {agree, disagree}，三种都要能读。字符串
+    一律当 summary、checks 留空，页面据此回落到单段——不因为模型没按结构
+    输出就整节消失。
+    """
+    if isinstance(dis, dict):
+        checks = []
+        for c in dis.get("checks") or []:
+            if not isinstance(c, dict):
+                continue
+            claim = str(c.get("claim") or "").strip()
+            if not claim:
+                continue
+            checks.append(
+                {
+                    "claim": claim,
+                    "verdict": str(c.get("verdict") or "").strip(),
+                    "basis": str(c.get("basis") or "").strip(),
+                }
+            )
+        summary = str(
+            dis.get("summary") or dis.get("disagree") or dis.get("agree") or ""
+        ).strip()
+        return {"checks": checks, "summary": summary}
+    return {"checks": [], "summary": str(dis or "").strip()}
+
+
+def _dissent_html(dis: Dict[str, Any]) -> str:
+    """逐条核对渲染成清单：verdict 用色区分，claim 是它说的，basis 是我们的数据。"""
+    rows = []
+    for c in dis.get("checks") or []:
+        verdict = c.get("verdict") or ""
+        # 契约写的是「同／异／它没说」，但模型会写「不同」「未覆盖」这类变体；
+        # 按关键词判而不是按首字，避免「不同」被染成"同"的绿色。
+        if "异" in verdict or "不同" in verdict:
+            cls = "dv-diff"
+        elif "没说" in verdict or "未提" in verdict or "未覆盖" in verdict:
+            cls = "dv-miss"
+        else:
+            cls = "dv-same"
+        rows.append(
+            f"<li><span class='dv {cls}'>{_esc(verdict)}</span>"
+            f"<span class='dc'>{_esc(c.get('claim') or '')}</span>"
+            f"<span class='db'>{_esc(c.get('basis') or '')}</span></li>"
+        )
+    summary = dis.get("summary") or ""
+    if not rows and not summary:
+        return ""
+    body = f"<ul class='dissent'>{''.join(rows)}</ul>" if rows else ""
+    tail = f"<p class='dsum'>{_esc(summary)}</p>" if summary else ""
+    return f"<h3>与连板网复盘的分歧</h3>{body}{tail}"
+
+
 def _pct_class(raw: str) -> str:
     text = str(raw or "").strip()
     if text.startswith("+"):
@@ -64,6 +119,16 @@ a{color:#a1521a;text-decoration:none}
 .read h3{margin:16px 0 6px;font-size:15px;font-weight:600;color:#a1521a;letter-spacing:.2px}
 .read h3:first-of-type{margin-top:0}
 .read .tag{margin-right:6px}
+.read ul.dissent{list-style:none;margin:6px 0 0;padding:0}
+.read ul.dissent li{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-bottom:1px solid #f0f2f4;font-size:13px;line-height:1.65}
+.read ul.dissent li:last-child{border-bottom:0}
+.read .dv{flex:0 0 auto;font-size:11.5px;padding:1px 7px;border-radius:9px;background:#eceff3;color:#2b3440;white-space:nowrap}
+.read .dv-diff{background:#fbe9e7;color:#b3402c}
+.read .dv-miss{background:#eef1f6;color:#5a6473}
+.read .dv-same{background:#e8f2ea;color:#2f6b3f}
+.read .dc{flex:0 0 auto;max-width:38%;color:#22313f}
+.read .db{flex:1;min-width:0;color:#6b7684}
+.read .dsum{margin:8px 0 0;font-size:13.5px;color:#4c5866}
 .wl{margin:0 0 18px}
 .wl-h{display:flex;align-items:baseline;gap:8px;margin:16px 0 4px}
 .wl-h:first-child{margin-top:2px}
@@ -721,13 +786,9 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
                 parts.append(
                     _tomorrow_html(read["tomorrow_candidates"], _filter_pos(payload))
                 )
-        dis = read.get("dissent")
-        if isinstance(dis, dict):
-            text = str(dis.get("disagree") or dis.get("agree") or "").strip()
-        else:
-            text = str(dis or "").strip()
-        if text:
-            parts.append(f"<h3>与连板网复盘的分歧</h3><p>{_esc(text)}</p>")
+        dis = _dissent_view(read.get("dissent"))
+        if dis["checks"] or dis["summary"]:
+            parts.append(_dissent_html(dis))
         summary_html = f"<h2>盘后洞察</h2><div class='read'>{''.join(parts)}</div>"
 
     top = [l for l in lines if l.get("today", 0) > 0]

@@ -55,6 +55,7 @@ from lianban_extra import (  # noqa: E402
 )
 from post_market_page import (  # noqa: E402
     _FOCUS_DESC,
+    _dissent_view,
     _filter_pos,
     _lhb_map,
     _loose,
@@ -363,7 +364,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - share_of_all_limit_up_pct 是集中度，不是强度。sector_strength_pct 是板块当日涨跌幅：涨停家数多而板块在跌，是个股突围，不是板块行情。
 - relay 衡量接力还赚不赚钱，不衡量今天强不强。
 - next_day_base_rate 是连板网用同情绪阶段的历史样本算出的次日频率，是基准率，不是预测。
-- third_party_review 是连板网自己写的复盘正文，已核对为当日定版，写的是它的判断而不是数据。它和你的读法不同时，分歧点就在那里；它为空表示今天没有可取的第二意见，dissent 也必须为空。
+- third_party_review 是连板网自己写的复盘正文，已核对为当日定版，写的是它的判断而不是数据，通常只有两三段（情绪与资金归因、重点游资），不一定给方向结论。你的任务不是表态同意不同意，而是拿手里的数据逐条检验它：把它的主张摘出来，用 industry_lines 的 recent5／peak_10d／delta_1d／delta_3d／streak、breadth_history 的 pct_rank_60d、flows 的板块资金、relay、lhb 的净额、theme_watch 的涨停家数与连板高度去核，判「同／异／它没说」。它为空表示今天没有可取的第二意见，dissent.checks 与 dissent.summary 都留空。
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是连板网的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
@@ -433,9 +434,22 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
                "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
   ]
  }},
- "dissent": "针对 third_party_review 的表态，一句话：判断不同就写不同在哪、依据哪条数据；完全一致就写「与连板网复盘判断一致」；third_party_review 为空则留空字符串。不许复述它的内容，也不许编造它没说过的观点"}}
+ "dissent": {{
+  "checks": [
+   {{"claim": "摘出 third_party_review 的一条主张，不改写原意，不超过 30 字",
+    "verdict": "同｜异｜它没说，三选一",
+    "basis": "判定依据：点名用到的指标与数值，必须来自输入 JSON，不超过 50 字"}}
+  ],
+  "summary": "一句话：分歧在哪、或我们补了什么它没说的，不超过 60 字"}}}}
 
-focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每条题材 1 到 3 只个股，全篇合计不超过 20 只；题材名不许自造；同一只票只出现在一类里；三类都不要把 members 原样罗列。"""
+focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每条题材 1 到 3 只个股，全篇合计不超过 20 只；题材名不许自造；同一只票只出现在一类里；三类都不要把 members 原样罗列。
+
+dissent 的硬性要求：
+1. checks 摘 2 到 4 条，覆盖 third_party_review 的主要主张；它只写了一段就摘 1 条，不许为凑数编它没说过的话。
+2. 每条 basis 必须点名输入里的具体数据——产业线的 recent5／peak_10d／delta_1d／delta_3d／streak、宽度分位 pct_rank_60d、板块资金 flows、relay、lhb 净额、theme_watch 的涨停家数与连板高度。拿不出数据的，verdict 写「它没说」，basis 写清它漏了哪一项。
+3. verdict 写「异」的，basis 必须给出与它相反的那条数据；只是读法不同、数据同向的，不许判「异」。
+4. 不许把 next_day_base_rate 当成 third_party_review 的观点：它没有次日推演，基准率是统计频率，不是它的判断。
+5. summary 不许只写「与连板网复盘判断一致」；就算结论一致，也要写清是用哪几项数据核过的。它没覆盖而今天数据里明显的（例如某条产业线的十日趋势在转向），写进 summary。"""
 
 
 def _panel_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -1086,12 +1100,7 @@ def _parse_read(text: str) -> Dict[str, Any]:
                 for s in (doc.get("sections") or [])
                 if isinstance(s, dict) and str(s.get("p") or "").strip()
             ]
-            dissent = doc.get("dissent")
-            if isinstance(dissent, dict):
-                # Older replies used {agree, disagree}; keep reading them.
-                text = str(dissent.get("disagree") or dissent.get("agree") or "").strip()
-            else:
-                text = str(dissent or "").strip()
+            dissent = _dissent_view(doc.get("dissent"))
             watch = []
             for item in doc.get("watchlist") or []:
                 if not isinstance(item, dict):
@@ -1171,10 +1180,10 @@ def _parse_read(text: str) -> Dict[str, Any]:
                 "watchlist": watch,
                 "tomorrow_candidates": tomorrow,
                 "focus": focus,
-                "dissent": text,
+                "dissent": dissent,
             }
     paras = [p.strip() for p in re.split(r"\n+", raw) if p.strip()]
-    return {"headline": "", "sections": [{"h": "", "p": p} for p in paras], "dissent": ""}
+    return {"headline": "", "sections": [{"h": "", "p": p} for p in paras], "dissent": {"checks": [], "summary": ""}}
 
 
 def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420.0) -> Dict[str, Any]:
@@ -1192,7 +1201,7 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
             {"role": "user", "content": json.dumps(build_model_input(payload), ensure_ascii=False)},
         ],
         "temperature": 0.4,
-        "max_tokens": 3000,
+        "max_tokens": 4200,
         # qwen3 默认开思考，一次能跑满五分钟；这份活要的是按模板填判断，
         # 不需要思维链，关掉后通常三十秒内返回。
         "enable_thinking": False,
@@ -1226,10 +1235,21 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
         print(f"written read failed: {exc}", file=sys.stderr)
         return {}
     try:
-        text = doc["choices"][0]["message"]["content"]
+        choice = doc["choices"][0]
+        text = choice["message"]["content"]
     except (KeyError, IndexError, TypeError):
         print("written read: unexpected response shape", file=sys.stderr)
         return {}
+    # dissent 改成逐条核对后输出变长，截断会静默退化成 fallback 解析：JSON 少了
+    # 一截，_parse_read 找不到闭合括号就把整段当段落，页面看起来只是"模型没写
+    # 结构"。finish_reason 是唯一能当场分清这两种情况的信号。
+    finish = str(choice.get("finish_reason") or "")
+    if finish and finish != "stop":
+        print(
+            f"written read: finish_reason={finish} — 输出可能被截断，"
+            "检查 max_tokens 与 focus/dissent 的字数上限",
+            file=sys.stderr,
+        )
     return _parse_read(str(text or ""))
 
 
@@ -1552,20 +1572,25 @@ def _read_markdown(
                 stocks_md.append(line)
             if stocks_md:
                 out.append("\n".join(stocks_md))
-    dis = read.get("dissent")
-    if isinstance(dis, dict):
-        text = str(dis.get("disagree") or dis.get("agree") or "").strip()
-    else:
-        text = str(dis or "").strip()
+    dis = _dissent_view(read.get("dissent"))
     # 代码侧兜底：lianban 的复盘没过当日校验时 ai_review 已被清空，模型手里
     # 根本没有第三方内容，它写出来的「分歧」就是对着空气反驳。这一节由数据
     # 决定去留，不指望 prompt 让模型自己闭嘴。
-    if text and not str((payload or {}).get("lianban", {}).get("ai_review") or "").strip():
-        text = ""
-    if text:
+    if not str((payload or {}).get("lianban", {}).get("ai_review") or "").strip():
+        dis = {"checks": [], "summary": ""}
+    if dis["checks"] or dis["summary"]:
         out.append("---")
         out.append(_head(3, "⚖️", "与连板网复盘的分歧"))
-        out.append(f"> {text}")
+        for c in dis["checks"]:
+            bits = [f"**{c['verdict']}**"] if c.get("verdict") else []
+            if c.get("claim"):
+                bits.append(c["claim"])
+            line = " · ".join(bits)
+            if c.get("basis"):
+                line += f" — {c['basis']}"
+            out.append(f"- {line}")
+        if dis["summary"]:
+            out.append(f"> {dis['summary']}")
     return "\n\n".join(out)
 
 
@@ -2066,9 +2091,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     # dissent 空着不报错、也不占版面，事后只能靠日志判断是「模型认为一致」
     # 还是「模型根本没拿到那份复盘」。两个长度一起打，一眼能分清。
     _lb = payload.get("lianban") or {}
+    _dis = _dissent_view(summary.get("dissent"))
     print(
         f"read: third_party={len(_lb.get('ai_review') or '')} chars, "
-        f"dissent={len(str(summary.get('dissent') or ''))} chars"
+        f"dissent_checks={len(_dis['checks'])} summary={len(_dis['summary'])} chars"
     )
     print(
         f"push: title={len(title)} chars / {len(title.encode('utf-8'))} bytes, "
