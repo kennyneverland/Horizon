@@ -1,6 +1,6 @@
 # Technology news profile
 
-Use this profile **only** for items that fall into one of these eight areas. If an item does not fit one of them, do not use this profile.
+Use this profile **only** for items that fall into one of these nine areas. If an item does not fit one of them, do not use this profile.
 
 1. **Consumer electronics** — phones, PCs, wearables, AR/VR headsets, smart-home devices, and the components and supply chain behind them.
 2. **Brain-computer interfaces** — neural implants, invasive and non-invasive BCIs, and the clinical or consumer products built on them.
@@ -10,6 +10,7 @@ Use this profile **only** for items that fall into one of these eight areas. If 
 6. **Telecommunications** — 5G/6G, spectrum, carrier strategy, satellite, and networking equipment outside the AI data-centre stack.
 7. **AI in healthcare** — AI applied to diagnosis, medical imaging, drug discovery, clinical workflow, and the regulatory clearance around it.
 8. **Innovative drugs** — novel drug candidates, clinical trial readouts, approvals, licensing deals, and biotech financing where the story is the asset or the science.
+9. **Robotics and embodied AI** — humanoid and industrial robots, embodied-AI models, actuators and components, and deployments that change manufacturing, logistics or service economics.
 
 Typical items include product launches, supply agreements, regulatory decisions, clinical results, security incidents, and competitive shifts that change share, cost or policy.
 
@@ -21,3 +22,4 @@ Do not use this profile for:
 - Content whose primary value is a long-form argument, a step-by-step tutorial, a full academic paper, routine updates, or promotional material without substantive information.
 
 A short section is expected and acceptable — do not stretch a boundary to fill it.
+<!-- AIGC: {"Label":"1","ContentProducer":"001191110000802100433B10002","ProduceID":"369716489411119_1795263071_51aa525167f73995a708a224248a710a","ReservedCode1":"d5c29627ee74ca3a9fd92f182d7fcb8cb188ddf0b7cd246a9e120b9eb7eeffeb","ContentPropagator":"001191110000802100433B10002","PropagateID":"369716489411119_1795263071_51aa525167f73995a708a224248a710a","ReservedCode2":"d5c29627ee74ca3a9fd92f182d7fcb8cb188ddf0b7cd246a9e120b9eb7eeffeb"} -->
