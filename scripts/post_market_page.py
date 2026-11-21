@@ -68,6 +68,22 @@ def _plain(text: Any) -> str:
     return s
 
 
+def _poem_text(raw: Any) -> str:
+    """诗句只留本体：去掉《题名》、引号与作者署名，其余原样。"""
+    text = str(raw or "").strip()
+    text = re.sub(r"^《[^》]{1,20}》\s*", "", text)
+    text = text.strip().strip("「」“”\"'《》")
+    text = re.sub(r"[（(][^）)]{0,20}[）)]\s*$", "", text).strip()
+    return text[:40]
+
+
+def _poem_from(raw: Any) -> str:
+    """出处保留《诗名》与作者，只去掉模型爱加的前缀破折号和外层引号。"""
+    text = str(raw or "").strip().strip("「」“”\"'")
+    text = re.sub(r"^[-—–~\s]+", "", text)
+    return text[:40]
+
+
 def _dissent_view(dis: Any) -> Dict[str, Any]:
     """把模型的 dissent 归一成 {checks, summary}，渲染层只面对一种形状。
 
@@ -165,6 +181,8 @@ a{color:#a1521a;text-decoration:none}
 .read{border-left:3px solid #c97a33;padding:2px 0 2px 14px}
 .read p:last-child{margin-bottom:0}
 .read .verdict{font-size:19px;line-height:1.5;font-weight:600;color:#22313f;margin:0 0 14px}
+.read .poem{text-align:center;font-size:16.5px;line-height:1.8;letter-spacing:.16em;color:#8b6a4a;font-weight:500;margin:0 0 10px}
+.read .poem-from{text-align:center;font-size:12.5px;letter-spacing:.06em;color:#a08a72;margin:0 0 16px}
 .read h3{margin:16px 0 6px;font-size:15px;font-weight:600;color:#a1521a;letter-spacing:.2px}
 .read h3:first-of-type{margin-top:0}
 .read .tag{margin-right:6px}
@@ -247,7 +265,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
   font-size:12px;line-height:1.8;color:#98a2b3}
 footer a{color:#98a2b3;text-decoration:underline}
 @media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}.reg{grid-template-columns:1fr}}
-@media (prefers-color-scheme:dark){main h2,.read h3{color:#e8a765}.read .verdict{color:#f2e6d8}a{color:#e8a765}
+@media (prefers-color-scheme:dark){main h2,.read h3{color:#e8a765}.read .verdict{color:#f2e6d8}.read .poem{color:#c9a882}.read .poem-from{color:#a89a86}a{color:#e8a765}
   body{background:#14171c;color:#c3cad6}
   .stat{background:#14171c}.stat b,.line-h b,td.nm b,.drv b,.line-n b{color:#e6ebf2}
   th{background:#1a1f26;color:#8a94a6}
@@ -718,7 +736,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             f"<span class='tag {_state_class(l['state'])}'>{_esc(l['state'])}</span></div>"
             f"<div class='line-n'>今日 <b>{l['today']}</b> 家涨停 · 昨日 {l['prev']} 家 · "
             f"当日涨停数<span class='{_pct_class(str(l['delta1']))}'>{l['delta1']:+d}</span> · "
-            f"3日Δ <span class='{_pct_class(str(l['delta3']))}'>{l['delta3']:+d}</span> · "
+            f"3日涨停数<span class='{_pct_class(str(l['delta3']))}'>{l['delta3']:+d}</span> · "
             f"连续 {l['streak']} 天</div></li>"
         )
 
@@ -793,6 +811,13 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     focus_html = ""
     if read.get("sections"):
         parts = []
+        poem = _poem_text(read.get("poem"))
+        if poem:
+            # 诗句居中放在开篇定性之前；模型偶尔自带引号，这里统一由模板补。
+            parts.append(f"<p class='poem'>「{_esc(poem)}」</p>")
+            src = _poem_from(read.get("poem_from"))
+            if src:
+                parts.append(f"<p class='poem-from'>——{_esc(src)}</p>")
         if read.get("headline"):
             parts.append(f"<p class='verdict'>{_esc(read['headline'])}</p>")
         sections = list(read["sections"])

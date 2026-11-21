@@ -399,12 +399,16 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - 禁止买卖建议、目标价、仓位、点位、任何荐股语气。
 - 禁止"综上所述""值得关注""后市可期""静待方向选择"这类空话。
 - 禁止复述页面上已有的表格。
+- poem 是开篇引子：必须是同一首诗里**相连的两句**，10 到 28 字，只给诗句本身，不加作者、不加书名号、不加解释。不许从两首诗里各取一句拼起来。poem_from 给出处，格式固定为《诗名》· 作者，例如 《登高》· 杜甫。
+- 选句的依据是你自己写的那四段：从盘面总结、重点信号、变动归因、趋势展望里体现的涨跌结构、资金去向、情绪阶段、市场宽度中，找出当天的内在气质，再按这个气质去找相符的两句——诗句要和这四段的判断站在一起，不能与你自己写的盘面结论相反。退潮、普涨、分化、缩量各有各的句子，不要用放之四海皆可的励志句。优先用现成的真实诗句，一个字都不许改；实在找不到气质相符的，就自己写两句七言——每句七个字、两句共十四字，两句要押同一个韵、意思连贯，仍须贴合上面四段的判断，不要写成通用励志句。自创时 poem_from 固定写 《无题》· 周鼎，不许署别的名字，也不许写成「佚名」。
 - 禁止编造样本量、命中率、历史概率与形态统计；除了 next_day_base_rate 与 pct_rank_60d，任何统计数字都不许出现在正文里。
 - 输入里没有的东西就写"数据未提供"，不要用推测补齐，也不要把"没有这个消息"写成"没有催化"。
 
 【输出格式】
 只输出一个 JSON 对象，不要 markdown 代码块，不要任何解释文字：
-{{"headline": "一句话定性，不超过 18 字，必须是判断而不是描述",
+{{"poem": "同一首诗中相连的两句，10 到 28 字，必须真实存在、能查到，只给诗句本身",
+ "poem_from": "《诗名》· 作者名，例如 《登高》· 杜甫；自己写的固定填 《无题》· 周鼎",
+ "headline": "一句话定性，不超过 18 字，必须是判断而不是描述",
  "sections": [
   {{"h": "盘面总结", "p": "70-110 字"}},
   {{"h": "重点信号", "p": "70-110 字"}},
@@ -1176,6 +1180,8 @@ def _parse_read(text: str) -> Dict[str, Any]:
                     if items:
                         focus[bucket] = items
             return {
+                "poem": str(doc.get("poem") or "").strip(),
+                "poem_from": str(doc.get("poem_from") or "").strip(),
                 "headline": str(doc.get("headline") or "").strip(),
                 "sections": sections,
                 "watchlist": watch,
@@ -1469,6 +1475,24 @@ def _head(level: int, icon: str, text: str) -> str:
 
 
 # 页面 header 的第二行。推文补上同一句，两边标题下的引导语才不是两套说法。
+def _clean_poem(raw: Any) -> str:
+    """模型偶尔自带题名、引号或作者署名，统一剥掉，只留诗句本身。"""
+    text = str(raw or "").strip()
+    # 《登高》无边落木萧萧下 —— 先把整段题名去掉，否则 strip 只吃掉左书名号，
+    # 会留下「登高》」这种半个符号。
+    text = re.sub(r"^《[^》]{1,20}》\s*", "", text)
+    text = text.strip().strip("「」“”\"'《》")
+    text = re.sub(r"[（(][^）)]{0,20}[）)]\s*$", "", text).strip()
+    return text[:40]
+
+
+def _clean_poem_from(raw: Any) -> str:
+    """出处保留《诗名》与作者，只去掉模型爱加的前缀破折号和外层引号。"""
+    text = str(raw or "").strip().strip("「」“”\"'")
+    text = re.sub(r"^[-—–~\s]+", "", text)
+    return text[:40]
+
+
 _TAGLINE = "盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃"
 
 
@@ -1562,6 +1586,15 @@ def _read_markdown(
     payload = payload or {}
 
     out: List[str] = [_TAGLINE]
+    poem = _clean_poem(read.get("poem"))
+    if poem:
+        # 微信只渲染 Markdown，没有居中；引用块是唯一能让诗句单独成行、
+        # 不并进正文的办法。网页那边是真居中。出处另起一行，同一个引用块内。
+        src = _clean_poem_from(read.get("poem_from"))
+        block = f"> 「{poem}」"
+        if src:
+            block += f"\n>\n> ——{src}"
+        out.append(block)
     headline = str(read.get("headline") or "").strip()
     if headline:
         out.append(f"## {headline}")
