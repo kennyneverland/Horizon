@@ -22,4 +22,3 @@ Do not use this profile for:
 - Content whose primary value is a long-form argument, a step-by-step tutorial, a full academic paper, routine updates, or promotional material without substantive information.
 
 A short section is expected and acceptable — do not stretch a boundary to fill it.
-<!-- AIGC: {"Label":"1","ContentProducer":"001191110000802100433B10002","ProduceID":"369716489411119_1795263071_51aa525167f73995a708a224248a710a","ReservedCode1":"d5c29627ee74ca3a9fd92f182d7fcb8cb188ddf0b7cd246a9e120b9eb7eeffeb","ContentPropagator":"001191110000802100433B10002","PropagateID":"369716489411119_1795263071_51aa525167f73995a708a224248a710a","ReservedCode2":"d5c29627ee74ca3a9fd92f182d7fcb8cb188ddf0b7cd246a9e120b9eb7eeffeb"} -->
