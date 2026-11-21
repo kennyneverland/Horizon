@@ -119,12 +119,12 @@ def _dissent_html(dis: Dict[str, Any]) -> str:
             f"<span class='dc'>{_esc(c.get('claim') or '')}</span>"
             f"<span class='db'>{_esc(c.get('basis') or '')}</span></li>"
         )
-    summary = dis.get("summary") or ""
-    if not rows and not summary:
+    # 结语不再渲染：读者要的是逐条核对，一句总结只是把清单又概括一遍，
+    # 而且容易写成「它缺乏数据支撑」这类无法核对的话。summary 仍留在
+    # _dissent_view 的返回里，只给日志看长度，不上页面。
+    if not rows:
         return ""
-    body = f"<ul class='dissent'>{''.join(rows)}</ul>" if rows else ""
-    tail = f"<p class='dsum'>{_esc(summary)}</p>" if summary else ""
-    return f"<h3>与第三方复盘结论对比</h3>{body}{tail}"
+    return f"<h3>与第三方复盘结论对比</h3><ul class='dissent'>{''.join(rows)}</ul>"
 
 
 def _pct_class(raw: str) -> str:
@@ -351,15 +351,6 @@ def _lhb_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
 
 _FOCUS_ORDER = ("蓄势", "主线", "活跃")
 
-# Each bucket answers a different question, so each gets its own one-line frame
-# rather than a shared caption: 蓄势 is about position, 主线 about continuity,
-# 活跃 about whether one day becomes two.
-_FOCUS_DESC = {
-    "蓄势": "还没动、结构就绪：票池是第三方信源「优选蓄势」，题材取该票所属板块，位置由面板回填",
-    "主线": "已经在走、且有连续性：题材与个股来自当日题材明细，看的是明日能否延续",
-    "活跃": "今天刚动、持续性未验证：新上榜或单日放量，看的是明日能否接力",
-}
-
 
 def _focus_html(
     focus: Dict[str, Any],
@@ -428,7 +419,6 @@ def _focus_html(
             continue
         blocks.append(
             f"<h2>明日关注 · {bucket}</h2>"
-            f"<div class='wl-g'>{_FOCUS_DESC[bucket]}</div>"
             f"<div class='focus'>{''.join(groups)}</div>"
         )
     return "".join(blocks)
@@ -726,8 +716,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             "<li class='line'>"
             f"<div class='line-h'><b>{_esc(l['line'])}</b>"
             f"<span class='tag {_state_class(l['state'])}'>{_esc(l['state'])}</span></div>"
-            f"<div class='line-n'>今日 <b>{l['today']}</b> 家 · 昨日 {l['prev']} 家 · "
-            f"日Δ <span class='{_pct_class(str(l['delta1']))}'>{l['delta1']:+d}</span> · "
+            f"<div class='line-n'>今日 <b>{l['today']}</b> 家涨停 · 昨日 {l['prev']} 家 · "
+            f"当日涨停数<span class='{_pct_class(str(l['delta1']))}'>{l['delta1']:+d}</span> · "
             f"3日Δ <span class='{_pct_class(str(l['delta3']))}'>{l['delta3']:+d}</span> · "
             f"连续 {l['streak']} 天</div></li>"
         )
@@ -780,25 +770,17 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             "<tbody>" + "".join(body) + "</tbody></table>"
         )
 
-    drivers = ""
-    if stale:
-        # The page's 每日主线 block still shows the previous session; the
-        # matrix column for today is current, so show that and name the taxonomy.
-        fallback = [x for x in lines if x.get("today", 0) > 0][:6]
-        if fallback:
-            items = "".join(
-                f"<li><b>{_esc(x['line'])}</b><span class='cnt'>{x['today']} 家</span></li>"
-                for x in fallback
-            )
-            drivers = f"<h2>当日主线（产业线口径）</h2><ul class='drv'>{items}</ul>"
-    elif day.get("lines"):
-        items = "".join(
-            f"<li><b>{_esc(x['name'])}</b><span class='cnt'>{x['count']} 家</span>"
-            f"<span class='why'>{_esc(x['driver'])}</span>"
-            f"<span class='ld'>龙头 {_esc(x['leader'])}</span></li>"
-            for x in day["lines"]
-        )
-        drivers = f"<h2>当日主线与驱动</h2><ul class='drv'>{items}</ul>"
+    pick_section = (
+        f"<h2>第三方信源选股参考</h2>{''.join(pick_blocks)}" if pick_blocks else ""
+    )
+
+    # 当日主线与主线追踪读的是同一份产业线数据，只保留主线追踪；没有主线时
+    # 连标题一起省掉，不留一个空段落。
+    lines_section = (
+        f"<h2>主线追踪</h2><ul class=\"lines\">{''.join(line_rows)}</ul>"
+        if line_rows
+        else ""
+    )
 
     # The model returns verdicts, not prose blocks: a headline that states the
     # call, four sections that each defend one, three buckets of names to watch,
@@ -808,6 +790,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     read = read or {}
     next_day = _next_day_block(payload, read)
     summary_html = ""
+    focus_html = ""
     if read.get("sections"):
         parts = []
         if read.get("headline"):
@@ -823,17 +806,15 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             parts.append(f"<p>{_esc(sec['p'])}</p>")
         focus = read.get("focus") or {}
         if focus:
-            parts.append(
-                _focus_html(
-                    focus, _theme_meta(payload), _filter_pos(payload), _lhb_map(payload)
-                )
+            focus_html = _focus_html(
+                focus, _theme_meta(payload), _filter_pos(payload), _lhb_map(payload)
             )
         elif watch:
             # Replies written before the three-bucket contract still render.
-            parts.append(_watch_html(watch, _theme_meta(payload)))
+            focus_html = _watch_html(watch, _theme_meta(payload))
             if read.get("tomorrow_candidates"):
-                parts.append(
-                    _tomorrow_html(read["tomorrow_candidates"], _filter_pos(payload))
+                focus_html += _tomorrow_html(
+                    read["tomorrow_candidates"], _filter_pos(payload)
                 )
         dis = _dissent_view(read.get("dissent"))
         if dis["checks"] or dis["summary"]:
@@ -881,13 +862,14 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <h2>盘面</h2>
 <div class="stats">{stat_html}</div>
 {extra['funds']}
-<h2>主线追踪</h2>
-<ul class="lines">{''.join(line_rows)}</ul>
-{drivers}
-{''.join(pick_blocks)}
+{lines_section}
 {_lhb_html(payload)}
 {_regulatory_html(payload)}
 {extra['review']}
+{extra['signals']}
+{focus_html}
+{pick_section}
+{extra['overseas']}
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">第三方信源 · 主线追踪</a>、
 <a href="https://lianban.net/filter.html">一键筛选</a>、

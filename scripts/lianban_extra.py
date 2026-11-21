@@ -93,14 +93,33 @@ _ZMS_RE = re.compile(r'<div class="zms">(.*)', re.S)
 _WC_RE = re.compile(
     r'<span class="wc" data-stk="(\d{6})" data-nm="([^"]*)">(.*?)</span>', re.S
 )
+# 板块行是 <div class="zr">，个股行多两个属性：<div class="zr" data-stk="688981"
+# data-nm="中芯国际">。只匹配无属性写法会把个股流入/流出整块丢掉。
+# 块末行的 </div> 会被切块边界吞掉，所以结束标签写成可选。
 _ZR_RE = re.compile(
-    r'<div class="zr"><b>(.*?)</b><i class="[^"]*">(.*?)</i><em class="[^"]*">(.*?)</em></div>',
+    r'<div class="zr"[^>]*><b>(.*?)</b><i class="[^"]*">(.*?)</i><em class="[^"]*">(.*?)</em>(?:</div>)?',
     re.S,
 )
 
 
 def _clean(raw: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", raw)).strip()
+
+
+def _prev_value(value: str, delta: str) -> str:
+    """今日值 − 变化量 = 昨日值，单位只从今日值取。
+
+    面板的 value 是 "28"、"5板"、"80%"，delta 是 "+5"、"+1板"、"+31.1点"：
+    封板率的变化单位是「点」而今日值是「%」，所以单位不能跟着 delta 走。
+    """
+    vm = re.search(r"-?\d+(?:\.\d+)?", str(value or ""))
+    dm = re.search(r"[-+]?\d+(?:\.\d+)?", str(delta or ""))
+    if not vm or not dm:
+        return ""
+    prev = float(vm.group(0)) - float(dm.group(0))
+    unit = re.sub(r"[-+]?\d+(?:\.\d+)?", "", str(value)).strip()
+    num = str(int(prev)) if abs(prev - round(prev)) < 1e-9 else f"{prev:.1f}"
+    return f"{num}{unit}"
 
 
 def render(timeout_ms: int = 60000) -> str:
@@ -214,22 +233,36 @@ def parse_strength(page: str) -> List[Dict[str, Any]]:
 
 
 def parse_flows(page: str) -> Dict[str, List[Dict[str, str]]]:
-    """``{"板块流入": [{name, pct, amount}], ...}`` in the order the page prints."""
+    """``{"板块流入": [{name, pct, amount}], ...}`` in the order the page prints.
+
+    页面 #zjf 下有四个块：板块流入、板块流出、个股流入、个股流出，每块八行。
+    四组都取，顺序照页面，不在这里截断。
+    """
     start = page.find('id="zjf"')
     if start < 0:
         return {}
     block = page[start : start + 12000]
+    # 按标题切段，而不是按 <div class="zc">…</div></div> 匹配：后者会把每块最后
+    # 一行的 </div> 当成块结束符，末行永远读不到（实测每组 8 行只出 7 行）。
+    heads = [
+        (m.start(), _clean(m.group(1)))
+        for m in re.finditer(r'<div class="zh">(.*?)</div>', block)
+    ]
     out: Dict[str, List[Dict[str, str]]] = {}
-    for chunk in _ZC_RE.findall(block):
-        head = _ZH_RE.search(chunk)
-        if not head:
-            continue
+    for idx, (pos, label) in enumerate(heads):
+        if idx + 1 < len(heads):
+            end = heads[idx + 1][0]
+        else:
+            tail = block[pos:]
+            m = re.search(r"</div></div>", tail)
+            end = pos + (m.end() if m else len(tail))
+        seg = block[pos:end]
         rows = [
             {"name": _clean(n), "pct": _clean(p), "amount": _clean(a)}
-            for n, p, a in _ZR_RE.findall(chunk)
+            for n, p, a in _ZR_RE.findall(seg)
         ]
-        if rows:
-            out[_clean(head.group(1))] = rows
+        if rows and label:
+            out[label] = rows
     return out
 
 
@@ -729,7 +762,9 @@ def _panel_html(payload: Dict[str, Any]) -> str:
         if not row or not row["sub"].startswith("较前值"):
             continue
         delta = row["sub"].replace("较前值", "").strip()
-        changes.append(f"{label} <b class='{_pct_class(delta)}'>{_esc(delta)}</b>")
+        prev = _prev_value(row["value"], delta)
+        tail = f"（昨 {_esc(prev)}）" if prev else ""
+        changes.append(f"{label} <b class='{_pct_class(delta)}'>{_esc(delta)}</b>{tail}")
     zb = panel.get("炸板")
     if zb and zb["sub"]:
         changes.append(f"炸板{_esc(zb['sub'])}")
@@ -759,7 +794,7 @@ def _panel_html(payload: Dict[str, Any]) -> str:
 
     html = ""
     if changes:
-        html += f"<p class='chg'>较前值：{' · '.join(changes)}</p>"
+        html += f"<p class='chg'>较昨日：{' · '.join(changes)}</p>"
     if rows:
         html += f"<div class='det'>{''.join(rows)}</div>"
     return html
@@ -792,7 +827,7 @@ def _funds_html(payload: Dict[str, Any]) -> str:
                 f"<div class='zr'><span class='zn'>{_esc(r['name'])}</span>"
                 f"<b class='{_pct_class(r['amount'])}'>{_esc(r['amount'])}</b>"
                 f"<span class='zp'>{_esc(r['pct'])}</span></div>"
-                for r in rows[:5]
+                for r in rows
             )
             cols.append(f"<div class='zc'><div class='zh'>{_esc(label)}</div>{body}</div>")
         out.append(
@@ -827,13 +862,15 @@ def _signals_html(payload: Dict[str, Any]) -> str:
 
 
 def _review_html(payload: Dict[str, Any]) -> str:
+    """复盘正文一块，信号面与外盘由 render_sections 单独给出。
+
+    页面顺序是复盘 → 今日信号面 → 明日关注 → 外盘参考。三块来自三次不同抓取，
+    拼在一起就再也拆不开，所以这里只出正文，位置交给页面决定。
+    """
     doc = payload.get("lianban") or {}
     text = (doc.get("ai_review") or "").strip()
-    # 信号面是另一次抓取（days 页），不跟 MCP 的正文共命运：正文没取到或没过
-    # 当日校验时，这一块只要抓到了就照常出。
-    signals = _signals_html(payload)
     if not text:
-        return signals + _overseas_html(payload)
+        return ""
     # 全文照登：复盘固定两段，砍掉第二段「重点游资」等于把席位分析整段丢掉。
     # 600 字上限只是防哪天原文突然变长，目前最长 520 字，等于不截。
     body = text.strip()
@@ -848,8 +885,6 @@ def _review_html(payload: Dict[str, Any]) -> str:
         "<h2>连板网复盘</h2>"
         f"<div class='quote'>{body_html}</div>"
         f"<p class='hint'>连板网原文摘录，非本页判断{' · ' + link if link else ''}</p>"
-        + signals
-        + _overseas_html(payload)
     )
 
 
@@ -873,7 +908,7 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
 
 
 def render_sections(payload: Dict[str, Any]) -> Dict[str, str]:
-    """``{"funds": ..., "review": ...}`` — empty strings when a source is missing."""
+    """``{"funds", "review", "signals", "overseas"}`` — empty when a source is missing."""
     try:
         funds = _funds_html(payload)
     except Exception as exc:  # noqa: BLE001
@@ -884,7 +919,17 @@ def render_sections(payload: Dict[str, Any]) -> Dict[str, str]:
     except Exception as exc:  # noqa: BLE001
         print(f"review render failed: {exc}", file=sys.stderr)
         review = ""
-    return {"funds": funds, "review": review}
+    try:
+        signals = _signals_html(payload)
+    except Exception as exc:  # noqa: BLE001
+        print(f"signals render failed: {exc}", file=sys.stderr)
+        signals = ""
+    try:
+        overseas = _overseas_html(payload)
+    except Exception as exc:  # noqa: BLE001
+        print(f"overseas render failed: {exc}", file=sys.stderr)
+        overseas = ""
+    return {"funds": funds, "review": review, "signals": signals, "overseas": overseas}
 
 
 if __name__ == "__main__":

@@ -48,13 +48,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
 from src.processing import eastmoney  # noqa: E402
 from lianban_extra import (  # noqa: E402
+    _prev_value,
     collect_extra,
     mcp_review,
     parse_signals,
     render_day,
 )
 from post_market_page import (  # noqa: E402
-    _FOCUS_DESC,
     _dissent_view,
     _filter_pos,
     _lhb_map,
@@ -1472,65 +1472,29 @@ def _head(level: int, icon: str, text: str) -> str:
 _TAGLINE = "盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃"
 
 
-def _read_markdown(
-    read: Dict[str, Any], note: str = "", payload: Optional[Dict[str, Any]] = None
-) -> str:
-    """The push body: the same read the page renders, as Markdown.
+def _focus_markdown(
+    read: Dict[str, Any], payload: Optional[Dict[str, Any]] = None
+) -> List[str]:
+    """明日关注的 Markdown 行，不含大标题。
 
-    Server酱 renders Markdown only — no HTML and no CSS — so no colour can be
-    set from here, and an inline ``<font color>`` would arrive as literal text.
-    What survives both the light and the dark WeChat webview is structure:
-    heading levels, blockquotes and horizontal rules carry the hierarchy, and
-    the icons sit on section heads where they work as anchors. Nothing in the
-    body depends on a background colour to stay legible, so neither theme can
-    swallow a line.
-
-    The counts, the 60-day position and the dragon-tiger net amount are read
-    from the payload, never from the model's prose: a figure the model retypes
-    is a figure it can get wrong, and the page already holds the right one.
+    位置由调用方决定：data_markdown 把它挂在「今日信号面」之后，读者看完今日
+    盘面再看明日关注。每类只留标题、题材、个股，不解释票池怎么来的。
     """
-    if not read:
-        return f"> 🌡️ {note}" if note else ""
+    focus = read.get("focus") or {}
+    if not any(focus.get(b) for b in ("主线", "活跃", "蓄势")):
+        return []
     payload = payload or {}
     meta = _theme_meta(payload)
     loose_meta = {_loose(k): v for k, v in meta.items()}
     pos = _filter_pos(payload)
     board_map = _lhb_map(payload)
 
-    out: List[str] = [_TAGLINE]
-    headline = str(read.get("headline") or "").strip()
-    if headline:
-        out.append(f"## {headline}")
-    # The stats line stays a blockquote under the verdict: grey, indented and
-    # visibly a footnote, so it never competes with the call above it.
-    if note:
-        out.append(f"> 🌡️ {note}")
-    for sec in read.get("sections") or []:
-        if not isinstance(sec, dict):
-            continue
-        head = str(sec.get("h") or "").strip()
-        body = str(sec.get("p") or "").strip()
-        if head:
-            out.append("---")
-            out.append(_head(3, _SECTION_ICONS.get(head, ""), head))
-        if body:
-            items = _split_numbered(body)
-            # One blank-line-joined block per section: keeping the numbered
-            # items on adjacent lines lets Markdown render them as one list.
-            out.append("\n".join(items) if len(items) > 1 else body)
-    focus = read.get("focus") or {}
-    if any(focus.get(b) for b in ("主线", "活跃", "蓄势")):
-        out.append("---")
-        out.append(_head(2, "", "明日关注"))
+    out: List[str] = []
     for bucket in ("主线", "活跃", "蓄势"):
         rows = focus.get(bucket) or []
         if not rows:
             continue
         out.append(_head(3, _FOCUS_ICONS.get(bucket, ""), bucket))
-        # 页面在每类标题下有一句“这一类回答什么问题”，推文照搬同一句。
-        desc = _FOCUS_DESC.get(bucket)
-        if desc:
-            out.append(f"> {desc}")
         for row in rows:
             if not isinstance(row, dict):
                 continue
@@ -1573,13 +1537,60 @@ def _read_markdown(
                 stocks_md.append(line)
             if stocks_md:
                 out.append("\n".join(stocks_md))
+    return out
+
+
+def _read_markdown(
+    read: Dict[str, Any], note: str = "", payload: Optional[Dict[str, Any]] = None
+) -> str:
+    """The push body: the same read the page renders, as Markdown.
+
+    Server酱 renders Markdown only — no HTML and no CSS — so no colour can be
+    set from here, and an inline ``<font color>`` would arrive as literal text.
+    What survives both the light and the dark WeChat webview is structure:
+    heading levels, blockquotes and horizontal rules carry the hierarchy, and
+    the icons sit on section heads where they work as anchors. Nothing in the
+    body depends on a background colour to stay legible, so neither theme can
+    swallow a line.
+
+    The counts, the 60-day position and the dragon-tiger net amount are read
+    from the payload, never from the model's prose: a figure the model retypes
+    is a figure it can get wrong, and the page already holds the right one.
+    """
+    if not read:
+        return f"> 🌡️ {note}" if note else ""
+    payload = payload or {}
+
+    out: List[str] = [_TAGLINE]
+    headline = str(read.get("headline") or "").strip()
+    if headline:
+        out.append(f"## {headline}")
+    # The stats line stays a blockquote under the verdict: grey, indented and
+    # visibly a footnote, so it never competes with the call above it.
+    if note:
+        out.append(f"> 🌡️ {note}")
+    for sec in read.get("sections") or []:
+        if not isinstance(sec, dict):
+            continue
+        head = str(sec.get("h") or "").strip()
+        body = str(sec.get("p") or "").strip()
+        if head:
+            out.append("---")
+            out.append(_head(3, _SECTION_ICONS.get(head, ""), head))
+        if body:
+            items = _split_numbered(body)
+            # One blank-line-joined block per section: keeping the numbered
+            # items on adjacent lines lets Markdown render them as one list.
+            out.append("\n".join(items) if len(items) > 1 else body)
     dis = _dissent_view(read.get("dissent"))
     # 代码侧兜底：lianban 的复盘没过当日校验时 ai_review 已被清空，模型手里
     # 根本没有第三方内容，它写出来的「分歧」就是对着空气反驳。这一节由数据
     # 决定去留，不指望 prompt 让模型自己闭嘴。
     if not str((payload or {}).get("lianban", {}).get("ai_review") or "").strip():
         dis = {"checks": [], "summary": ""}
-    if dis["checks"] or dis["summary"]:
+    # 结语不上推文：逐条核对已经说清同异，一句总结只是重复，还常写成无法
+    # 核对的判断。summary 只用于日志里的长度诊断。
+    if dis["checks"]:
         out.append("---")
         out.append(_head(3, "⚖️", "与第三方复盘结论对比"))
         for c in dis["checks"]:
@@ -1590,8 +1601,6 @@ def _read_markdown(
             if c.get("basis"):
                 line += f" — {c['basis']}"
             out.append(f"- {line}")
-        if dis["summary"]:
-            out.append(f"> {dis['summary']}")
     return "\n\n".join(out)
 
 
@@ -1660,14 +1669,19 @@ def _kpi_lines(payload: Dict[str, Any]) -> List[str]:
         sub("情绪周期"),
         f"新高/新低 {hl}" if hl else "",
     ]))
-    # 较前值逐项来自面板的 sub，按页面顺序拼成一行。
-    deltas = [
-        f"{str(r.get('label') or '').strip()} {str(r.get('sub') or '').replace('较前值', '').strip()}"
-        for r in _panel_list(payload)
-        if str(r.get("sub") or "").startswith("较前值")
-    ]
+    # 较昨日逐项来自面板的 sub，按页面顺序拼成一行；括号里是昨日收盘值，
+    # 由今日值减变化量算出（面板的「前值」就是上一交易日）。
+    deltas = []
+    for r in _panel_list(payload):
+        raw_sub = str(r.get("sub") or "")
+        if not raw_sub.startswith("较前值"):
+            continue
+        delta = raw_sub.replace("较前值", "").strip()
+        prev = _prev_value(r.get("value"), delta)
+        label = str(r.get("label") or "").strip()
+        deltas.append(f"{label} {delta}" + (f"（昨 {prev}）" if prev else ""))
     if deltas:
-        out.append("较前值：" + _join(deltas))
+        out.append("较昨日：" + _join(deltas))
     yl_v, yl_s = val("昨涨停今表现"), sub("昨涨停今表现")
     if yl_v:
         out.append(_join([f"昨涨停今表现 **{yl_v}**", yl_s,
@@ -1675,22 +1689,84 @@ def _kpi_lines(payload: Dict[str, Any]) -> List[str]:
     return [x for x in out if x]
 
 
+# 主线名 → 东财概念板块名。两边不同名是常态（芯片在概念板块里可能叫半导体），
+# 先按别名精确对，对不上再按名称包含兜底；都对不上就跳过并记日志。
+_STRENGTH_ALIASES = {
+    "芯片": ("芯片", "半导体", "国产芯片", "半导体概念"),
+    "PCB": ("PCB", "印制电路板", "覆铜板"),
+    "农业": ("农业种植", "农牧饲渔", "种业", "转基因"),
+    "机器人": ("机器人概念", "人形机器人", "机器人"),
+    "AI应用": ("AI应用", "多模态AI", "AI语料", "AIGC概念"),
+    "算力": ("算力概念", "东数西算", "算力租赁", "云计算"),
+}
+
+
+def _concept_match(theme: str, boards: List[Dict[str, Any]]):
+    """主线名 → 最贴近的概念板块，返回 (板块, 命中名)；对不上返回 (None, "")。"""
+    key = re.split(r"[（(]", theme)[0].strip()
+    if not key:
+        return None, ""
+    by_name = {b["name"]: b for b in boards}
+    for name in (key, *_STRENGTH_ALIASES.get(key, ())):
+        hit = by_name.get(name)
+        if hit is not None:
+            return hit, name
+    candidates = [b for b in boards if key in b["name"]]
+    if not candidates:
+        return None, ""
+    hit = min(candidates, key=lambda b: len(b["name"]))
+    return hit, hit["name"]
+
+
 def _strength_lines(payload: Dict[str, Any]) -> List[str]:
-    rows = (payload.get("extra") or {}).get("strength") or []
-    items = [f"{r['name']} {r['pct']}" for r in rows if r.get("name")]
-    return _rows(items, 4)
+    """主线强度：主线在概念板块里的当日涨跌幅，涨幅在前、跌幅在后。
+
+    数据源是东财概念板块，与 kpi、龙虎榜同一套行情。连板网的 #s-strength
+    不再使用——它的板块集合和它自己的主线趋势对不上，也没有公开算法。
+    """
+    lines = (payload.get("matrix") or {}).get("lines") or []
+    themes = [
+        str(r.get("line") or "").strip()
+        for r in lines
+        if str(r.get("line") or "").strip() and (r.get("today") or r.get("prev"))
+    ]
+    if not themes:
+        return []
+    try:
+        boards = eastmoney.concept_flow()
+    except Exception as exc:  # noqa: BLE001 - 缺一块，不是整份晚报失败
+        print(f"strength: concept boards failed: {exc}", file=sys.stderr)
+        return []
+    rows = []
+    for theme in themes:
+        hit, matched = _concept_match(theme, boards)
+        if hit is None:
+            print(f"strength: {theme} 未匹配到概念板块", file=sys.stderr)
+            continue
+        rows.append((theme, hit["pct"], matched))
+    if not rows:
+        return []
+    rows.sort(key=lambda x: -x[1])
+    return _rows([f"{t} {p:+.1f}%" for t, p, _ in rows], 4)
 
 
 def _flow_lines(payload: Dict[str, Any]) -> List[str]:
+    """主力资金：板块流入/流出、个股流入/流出四组，按页面顺序全量输出。
+
+    页面每组八行，截到前五会把读者最想看的尾部（净额较小的那几只）切掉。
+    每组标题单独一行，条目每行三条，手机上不会横向溢出。
+    """
     flows = (payload.get("extra") or {}).get("flows") or {}
     out = []
     for label, rows in flows.items():
         cells = [
             f"{r['name']} {r['amount']}" + (f"（{r['pct']}）" if r.get("pct") else "")
-            for r in (rows or [])[:5] if r.get("name")
+            for r in (rows or []) if r.get("name")
         ]
-        if cells:
-            out.append(f"**{label}** " + " · ".join(cells))
+        if not cells:
+            continue
+        out.append(f"**{label}**")
+        out.extend(_rows(cells, 3))
     return out
 
 
@@ -1701,10 +1777,14 @@ def _matrix_lines(payload: Dict[str, Any]) -> List[str]:
         today, prev = row.get("today", 0), row.get("prev", 0)
         if today == 0 and prev == 0:
             continue
-        bits = [f"昨 {prev}", f"日Δ {row['delta1']:+d}", f"连续 {row['streak']} 天"]
+        bits = [
+            f"昨 {prev}",
+            f"当日涨停数{row['delta1']:+d}",
+            f"连续 {row['streak']} 天",
+        ]
         if row.get("state"):
             bits.append(str(row["state"]))
-        out.append(f"- **{row['line']}** {today} 家（" + " · ".join(bits) + "）")
+        out.append(f"- **{row['line']}** {today} 家涨停（" + " · ".join(bits) + "）")
         if len(out) >= 8:
             break
     return out
@@ -1834,11 +1914,14 @@ def _pack(lines: List[str]) -> List[str]:
     return out
 
 
-def data_markdown(payload: Dict[str, Any]) -> str:
+def data_markdown(
+    payload: Dict[str, Any], focus_lines: Optional[List[str]] = None
+) -> str:
     """页面上的数字板块，按页面顺序排成 Markdown。
 
     研判是主角，这里是支撑：所以整段只用 ``##`` 标题分节，不再逐个加图标，
-    视觉上比上面的研判低一层。
+    视觉上比上面的研判低一层。明日关注不在研判里，挂在「今日信号面」之后：
+    读者先看完今日盘面，再读明天要盯的题材。
     """
     sections: List[tuple] = []
 
@@ -1847,15 +1930,20 @@ def data_markdown(payload: Dict[str, Any]) -> str:
             sections.append((title, _pack(lines)))
 
     add("盘面", _kpi_lines(payload))
-    add("主线强度", _strength_lines(payload))
+    # 资金先于主线：先看钱往哪去，再看哪条线在走。主线追踪与主线强度同属主线
+    # 一段，前后相接；当日主线已由主线追踪覆盖，不再重复。
     add("主力资金", _flow_lines(payload))
     add("主线追踪", _matrix_lines(payload))
-    add("当日主线", _driver_lines(payload))
-    add("筛选面板", _pick_lines(payload))
+    add("主线强度", _strength_lines(payload))
     add("龙虎榜 · 题材归属", _lhb_lines(payload))
     add("监管异动", _regulatory_lines(payload))
     add("第三方复盘", _review_lines(payload))
     add("今日信号面", _signal_lines(payload))
+    if focus_lines:
+        sections.append(("明日关注", _pack(focus_lines)))
+    # 选股参考是第三方信源的面板，排在明日关注之后：读者先看我们的判断，再看
+    # 别人的候选池，两边的口径不会混在一起。
+    add("第三方信源选股参考", _pick_lines(payload))
     add("外盘参考", _overseas_lines(payload))
     if not sections:
         return ""
@@ -2084,7 +2172,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         for part in [
             _read_markdown(summary, note, payload),
             # 页面上的数字板块：推文里此前只有研判，读者要跳出去才看得到盘面与矩阵。
-            data_markdown(payload),
+            data_markdown(payload, _focus_markdown(summary, payload)),
         ]
         if part
     )
