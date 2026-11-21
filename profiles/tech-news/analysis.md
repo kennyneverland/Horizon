@@ -33,7 +33,9 @@ The reader is a technology and market practitioner based in mainland China. With
 - **Innovative drugs.** Trial data, approvals, licensing and out-licensing deals, and financing events where the value sits in the asset or the science.
 - **Telecommunications and cybersecurity.** Spectrum and standards decisions, carrier capex, disclosed breaches, exploited vulnerabilities, and regulation that forces operational change.
 - **Financial technology.** Payments and digital-banking economics, exchange and brokerage infrastructure, insurtech, and rules that change how services reach customers.
+- **Robotics and embodied AI.** Humanoid and industrial robot launches, embodied-AI model releases, actuator or component cost shifts, and factory or logistics deployments with visible unit economics.
 
 These preferences shift scores within the 7-10 band. They do not relax the evidence bar: an item still needs concrete evidence to score high. Do not inflate scores for rumor, unverified social-media chatter, or stock-touting content that lacks a verifiable source.
 
 Use three to five specific topic tags.
+<!-- AIGC: {"Label":"1","ContentProducer":"001191110000802100433B10002","ProduceID":"369716489411119_1795263072_134dded030464386288d6add8ef61bce","ReservedCode1":"09e71037ea7a721077903d2cbea2d127b77a9727cfee1e44b530691a3b2b3cd9","ContentPropagator":"001191110000802100433B10002","PropagateID":"369716489411119_1795263072_134dded030464386288d6add8ef61bce","ReservedCode2":"09e71037ea7a721077903d2cbea2d127b77a9727cfee1e44b530691a3b2b3cd9"} -->
