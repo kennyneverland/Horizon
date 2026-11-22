@@ -20,6 +20,8 @@ import json
 import re
 import sys
 import urllib.request
+
+import httpx
 from typing import Any, Dict, List, Optional
 
 TODAY_URL = "https://lianban.net/today.html"
@@ -279,6 +281,90 @@ def parse_overseas(page: str) -> List[Dict[str, Any]]:
     return out
 
 
+_EM_ULIST = "https://push2.eastmoney.com/api/qt/ulist.np/get"
+# 东财 ulist：f3 是涨跌幅×100，f12 是代码（不含市场号）
+_EM_ASIA = (("恒指", "100.HSI"), ("恒科", "124.HSTECH"), ("日经", "100.N225"), ("韩国", "100.KS11"))
+_SINA_HQ = "https://hq.sinajs.cn/list="
+_SINA_US = (("道指", "gb_dji"), ("标普", "gb_inx"), ("纳综", "gb_ixic"))
+# hf_ 是外盘期货连续：0 最新、7 昨收，涨跌幅自己算
+_SINA_FUT = (("纳指期", "hf_NQ"), ("标普期", "hf_ES"))
+
+
+def _overseas_get(url: str, headers: Optional[Dict[str, str]] = None, timeout: float = 20.0) -> str:
+    """东财会掐掉 urllib 的 TLS 指纹（RemoteDisconnected），httpx 才放行。
+
+    仓库里 src/processing/eastmoney.py 走的也是 httpx，这里保持一致。
+    """
+    with httpx.Client(timeout=timeout, headers=headers or {"User-Agent": UA}) as client:
+        resp = client.get(url)
+        resp.raise_for_status()
+        return resp.text
+
+
+def _pct(value: float) -> str:
+    return f"{value:+.2f}%"
+
+
+def fetch_overseas() -> List[Dict[str, Any]]:
+    """外盘参考：亚太走东财 ulist，前夜美股与期指走新浪 hq。
+
+    原先是解析连板网当天页面的 DOM（见 parse_overseas），但连板网报价更新滞后，
+    晚报 21:40 出稿时可能还是下午的旧值；页面一改版整块还会直接丢失。东财与新浪
+    都是稳定接口，也不占连板网的浏览配额。取不到就返回空，宁缺不错。
+    """
+    groups: List[Dict[str, Any]] = []
+
+    try:
+        secids = ",".join(code for _, code in _EM_ASIA)
+        raw = _overseas_get(f"{_EM_ULIST}?fields=f2,f3,f12,f13,f14&secids={secids}")
+        diff = (json.loads(raw).get("data") or {}).get("diff") or []
+        by_code = {str(row.get("f12")): row for row in diff}
+        items = []
+        for name, code in _EM_ASIA:
+            row = by_code.get(code.split(".", 1)[1])
+            if not row or row.get("f3") in (None, "-", ""):
+                continue
+            value = float(row["f3"]) / 100
+            items.append({"name": name, "pct": _pct(value), "up": value >= 0})
+        if items:
+            groups.append({"label": "亚太", "items": items})
+    except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
+        print(f"overseas(asia) failed: {exc}", file=sys.stderr)
+
+    try:
+        codes = [c for _, c in _SINA_US] + [c for _, c in _SINA_FUT]
+        raw = _overseas_get(
+            _SINA_HQ + ",".join(codes),
+            headers={"Referer": "https://finance.sina.com.cn", "User-Agent": UA},
+        )
+        rows = dict(re.findall(r'var hq_str_(\w+)="([^"]*)";', raw))
+        items = []
+        for name, code in _SINA_US:
+            parts = (rows.get(code) or "").split(",")
+            if len(parts) < 3 or not parts[2]:
+                continue
+            value = float(parts[2])
+            items.append({"name": name, "pct": _pct(value), "up": value >= 0})
+        for name, code in _SINA_FUT:
+            parts = (rows.get(code) or "").split(",")
+            if len(parts) < 8:
+                continue
+            try:
+                last, prev = float(parts[0]), float(parts[7])
+            except ValueError:
+                continue
+            if prev <= 0:
+                continue
+            value = (last / prev - 1) * 100
+            items.append({"name": name, "pct": _pct(value), "up": value >= 0})
+        if items:
+            groups.append({"label": "美股", "items": items})
+    except Exception as exc:  # noqa: BLE001
+        print(f"overseas(us) failed: {exc}", file=sys.stderr)
+
+    return groups
+
+
 def parse_panel(page: str) -> List[Dict[str, str]]:
     """``[{label, value, sub}]`` for the KPI strip, in page order.
 
@@ -499,7 +585,7 @@ def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
     strength = parse_strength(page)
     flows = parse_flows(page)
     panel = parse_panel(page)
-    overseas = parse_overseas(page)
+    overseas = fetch_overseas()
     if not strength and not flows:
         out["error"] = "rendered page had neither block"
         return out
@@ -963,7 +1049,7 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
         )
         rows.append(f"<div class='ovr'><span class='ovl'>{_esc(label)}</span>{chips}</div>")
     return (
-        "<h2>外盘参考</h2><p class='hint'>当日亚太与前夜美股 · 报价时间见连板网明细</p>"
+        "<h2>外盘参考</h2><p class='hint'>当日亚太与前夜美股 · 东财 / 新浪报价</p>"
         f"<div class='ovg'>{''.join(rows)}</div>"
     )
 
