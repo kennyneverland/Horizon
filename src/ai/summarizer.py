@@ -191,7 +191,7 @@ def _render_theme_annotation(themes: list, brief_doc: object = None) -> str:
         blocks.append("\n".join(lines))
     if not blocks:
         return ""
-    blocks.append("*题材为规则匹配、方向为模型推测，非投资建议*")
+    blocks.append("*本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。*")
     return "\n\n".join(blocks)
 
 
