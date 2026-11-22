@@ -41,10 +41,13 @@ jobs:
 
       # 主线强度 and 主力资金动向 have no JSON endpoint: the only way to read them
       # is to let the page's own script run. Everything else in the brief is
-      # stdlib, so a browser that fails to install costs those two blocks only.
+      # stdlib except the overseas tape, which needs httpx — Eastmoney drops
+      # urllib's TLS fingerprint, so the fallback source has to come from a
+      # client that gets through. A browser that fails to install costs those
+      # two blocks only.
       - name: Install the browser
         run: |
-          pip install --disable-pip-version-check playwright pydantic
+          pip install --disable-pip-version-check playwright pydantic httpx
           python -m playwright install --with-deps chromium
 
       # 21:40 is ten minutes past the finalisation actually observed (21:30 on
