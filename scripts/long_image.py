@@ -155,8 +155,13 @@ def upload_oss(path: Path, key_prefix: str = "horizon/") -> str:
     headers = _oss_headers(key, body, bucket, ctype)
     headers["Authorization"] = f"OSS {ak_id}:{_oss_signature(ak_secret, 'PUT', bucket, key, headers)}"
 
+    # 必须用三级域名（虚拟主机）寻址：path-style 的 oss-cn-beijing.aliyuncs.com/桶/key
+    # 会被 OSS 拒成 SecondLevelDomainForbidden（403），早报第一次跑就会挂在这里。
     req = urllib.request.Request(
-        f"https://{host}/{urllib.parse.quote(key)}", data=body, headers=headers, method="PUT"
+        f"https://{bucket}.{host}/{urllib.parse.quote(key)}",
+        data=body,
+        headers=headers,
+        method="PUT",
     )
     with urllib.request.urlopen(req, timeout=60) as resp:
         if resp.status not in (200, 201):
