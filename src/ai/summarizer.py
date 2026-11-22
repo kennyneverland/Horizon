@@ -13,6 +13,7 @@ from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
 from ..processing import next_day
+from ..processing.asia_open import fetch_asia_open
 from ..processing.overnight import fetch_overnight
 from ..processing.premarket import fetch_premarket
 from ..processing.digest_rules import (
@@ -230,6 +231,7 @@ LABELS = {
         "overnight_map": "US movers → A-share themes",
         "overnight_asof": "US close {date}",
         "calendar": "Today's calendar",
+        "asia_open": "Asia open",
         "premarket_note": "Backdrop only; the map is not a recommendation",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
         "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
@@ -256,6 +258,7 @@ LABELS = {
         "overnight_map": "关键个股 → A股映射",
         "overnight_asof": "美东 {date} 收盘",
         "calendar": "今日日历",
+        "asia_open": "亚太当日开盘",
         "premarket_note": "隔夜情绪参考，非题材推荐",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
@@ -530,27 +533,54 @@ class DailySummarizer:
         Friday's close and a Monday digest prints that same close again — which
         is why the line names the session instead of the run date.
         """
-        brief = await fetch_overnight()
-        if not brief:
-            return ""
+        # 两块取数互不依赖：美股那头断了，亚太开盘也不该跟着消失。
+        brief, asia = await asyncio.gather(
+            fetch_overnight(), fetch_asia_open(), return_exceptions=True
+        )
+        if isinstance(brief, BaseException):
+            logger.warning("Overnight tape failed: %s", brief)
+            brief = None
+        if isinstance(asia, BaseException):
+            logger.warning("Asia open tape failed: %s", asia)
+            asia = None
+
+        indices_line = ""
+        movers_line = ""
+        close = ""
+        if brief:
+            indices = brief.get("indices") or []
+            if indices:
+                tape = " ｜ ".join(
+                    f"{_escape_markdown(row['name'])} {row['pct']:+.2f}%"
+                    for row in indices
+                )
+                indices_line = f"{labels['premarket']}：{tape}"
+            movers = brief.get("movers") or []
+            if movers:
+                rows = []
+                for row in movers:
+                    label = f"{_escape_markdown(row['ticker'])} {row['pct']:+.2f}%"
+                    themes = "·".join(_escape_markdown(name) for name in row["themes"])
+                    rows.append(f"{label}（{themes}）" if themes else label)
+                movers_line = f"{labels['overnight_map']}：" + " ｜ ".join(rows)
+            close = brief.get("close_date") or ""
+
+        # 两个指数行挨着放：隔夜看美股，今早看亚太；个股映射随后。
         lines: list[str] = []
-        indices = brief.get("indices") or []
-        if indices:
+        if indices_line:
+            lines.append(indices_line)
+        # 08:00 这一跑正压在东证与韩交所开盘上，所以这行是全天唯一当日的数据。
+        if asia:
             tape = " ｜ ".join(
-                f"{_escape_markdown(row['name'])} {row['pct']:+.2f}%" for row in indices
+                f"{_escape_markdown(row['name'])} {row['last']:,.2f} {row['pct']:+.2f}%"
+                for row in asia["rows"]
             )
-            lines.append(f"{labels['premarket']}：{tape}")
-        movers = brief.get("movers") or []
-        if movers:
-            rows = []
-            for row in movers:
-                label = f"{_escape_markdown(row['ticker'])} {row['pct']:+.2f}%"
-                themes = "·".join(_escape_markdown(name) for name in row["themes"])
-                rows.append(f"{label}（{themes}）" if themes else label)
-            lines.append(f"{labels['overnight_map']}：" + " ｜ ".join(rows))
+            lines.append(f"{labels['asia_open']}：{tape}")
+        if movers_line:
+            lines.append(movers_line)
+
         if not lines:
             return ""
-        close = brief.get("close_date") or ""
         note = labels["premarket_note"]
         if close:
             note = f"{labels['overnight_asof'].format(date=close)} · {note}"
