@@ -11,7 +11,7 @@
 依赖只有标准库 + playwright：OSS 走 V1 签名自己拼，不引 oss2，省掉动 uv.lock。
 
 用法：
-    python scripts/long_image.py --url https://.../post-market/2026-11-20.html \
+    python scripts/long_image.py --url https://.../post-market/2026-11-20.html \\
         --title "11月20日 盘后洞察晚报"        # 读 HORIZON_WEBHOOK_URL，按人分别推
 
     # 本地调样式：直接拍文件，不推
@@ -123,12 +123,12 @@ def _oss_headers(key: str, body: bytes, bucket: str, content_type: str) -> dict:
 
 
 def _oss_signature(secret: str, verb: str, bucket: str, key: str, headers: dict) -> str:
-    """OSS V1 签名：VERB\nContent-MD5\nContent-Type\nDate\nCanonicalizedOSSHeaders\nCanonicalizedResource"""
+    """OSS V1 签名：VERB\\nContent-MD5\\nContent-Type\\nDate\\nCanonicalizedOSSHeaders\\nCanonicalizedResource"""
     canon_headers = "".join(
-        f"{k.lower()}:{headers[k]}\n" for k in sorted(headers) if k.lower().startswith("x-oss-")
+        f"{k.lower()}:{headers[k]}\\n" for k in sorted(headers) if k.lower().startswith("x-oss-")
     )
     resource = f"/{bucket}/{key}"
-    to_sign = f"{verb}\n\n{headers.get('Content-Type', '')}\n{headers.get('Date', '')}\n{canon_headers}{resource}"
+    to_sign = f"{verb}\\n\\n{headers.get('Content-Type', '')}\\n{headers.get('Date', '')}\\n{canon_headers}{resource}"
     digest = hmac.new(secret.encode(), to_sign.encode(), hashlib.sha1).digest()
     return base64.b64encode(digest).decode()
 
@@ -192,18 +192,60 @@ def upload_oss(path: Path, key_prefix: str = "horizon/") -> str:
 
 
 # ---------------------------------------------------------------- 截图
-def wait_ready(url: str, timeout: int = 300, marker: str = "") -> None:
-    """等页面真的上线：Pages 部署有延迟，commit 完立刻拍会拍到 404 或上一期。"""
+def _sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _local_mirror(url: str) -> Optional[Path]:
+    """把线上地址映射回 runner 里的构建产物，用来判断远端是不是已经是新版本。
+
+    Pages 部署有 CDN 缓存：commit 完立刻请求，拿到的常常还是上一版 HTML。而
+    --marker 只认「2026-11-20」这种日期字样，旧页面同样含这串，于是会立刻放行，
+    拍出来的就是一张旧图（2026-11-22 晚报就栽在这里：部署 09:33:11 推完，长图
+    09:33:12 开等，13 秒就"成功"了）。所以再加一道闸：远端 HTML 必须和本地刚
+    构建的 docs/ 那份逐字节一致，才算真的上线。
+    """
+    path = urllib.parse.urlsplit(url).path
+    parts = [seg for seg in path.split("/") if seg]
+    if parts and parts[0] == "Horizon":
+        parts = parts[1:]
+    if not parts:
+        return None
+    candidate = Path("docs").joinpath(*parts)
+    return candidate if candidate.is_file() else None
+
+
+def wait_ready(url: str, timeout: int = 300, marker: str = "") -> str:
+    """等页面真的上线，返回拿去截图的地址（带 cache-buster）。
+
+    Pages 部署有延迟，commit 完立刻拍会拍到 404 或上一期。两道闸：marker 必须在
+    页面里，且远端 HTML 必须和本地刚构建的那份逐字节一致。请求带 cb= 时间戳，
+    绕开 CDN 缓存，否则缓存没过期前会一直读到旧版、白等到超时。
+    """
+    mirror = _local_mirror(url)
+    want = _sha256(mirror.read_bytes()) if mirror else ""
+    if mirror:
+        print(f"ready-check: 比对本地 {mirror}（{mirror.stat().st_size} B，sha={want[:12]}）")
+    else:
+        print("ready-check: 没找到本地构建产物，只校验 marker（可能拍到旧版）")
     deadline = time.time() + timeout
     last = ""
     while time.time() < deadline:
+        probe = f"{url}{'&' if '?' in url else '?'}cb={int(time.time())}"
         try:
-            with urllib.request.urlopen(url, timeout=20) as resp:
-                body = resp.read().decode("utf-8", "replace")
-            if resp.status == 200 and (not marker or marker in body):
-                print(f"ready: {url}")
-                return
-            last = f"status={resp.status} marker={'hit' if marker and marker in body else 'miss'}"
+            with urllib.request.urlopen(probe, timeout=20) as resp:
+                raw = resp.read()
+            body = raw.decode("utf-8", "replace")
+            hit = not marker or marker in body
+            fresh = not want or _sha256(raw) == want
+            if resp.status == 200 and hit and fresh:
+                print(f"ready: {url}（marker={'hit' if marker else 'n/a'}，远端已是新版本）")
+                return probe
+            last = (
+                f"status={resp.status} "
+                f"marker={'hit' if marker and marker in body else 'miss'} "
+                f"版本={'新' if fresh else '旧'}"
+            )
         except Exception as exc:  # noqa: BLE001 - 没上线就继续等
             last = f"{type(exc).__name__}: {exc}"
         time.sleep(10)
@@ -358,7 +400,7 @@ def _load_banners(path) -> list:
 
 def _split_targets(targets: str) -> list:
     """HORIZON_WEBHOOK_URL 是逗号或换行分隔的多条完整地址，一条一个收件人。"""
-    return [t.strip() for t in re.split(r"[,\n]+", targets or "") if t.strip()]
+    return [t.strip() for t in re.split(r"[,\\n]+", targets or "") if t.strip()]
 
 
 def push_image(targets: str, title: str, image_urls, link: str = "", banners_path=None) -> bool:
@@ -374,9 +416,9 @@ def push_image(targets: str, title: str, image_urls, link: str = "", banners_pat
         print("push failed: 没有推送地址", file=sys.stderr)
         return False
     urls = [image_urls] if isinstance(image_urls, str) else list(image_urls)
-    desc = "\n\n".join(f"![长图]({u})" for u in urls)
+    desc = "\\n\\n".join(f"![长图]({u})" for u in urls)
     if link:
-        desc += f"\n\n[网页版]({link})"
+        desc += f"\\n\\n[网页版]({link})"
     banners = _load_banners(banners_path) if banners_path else []
     print(f"push: {len(ends)} endpoints, {len(banners)} banners")
     delivered = 0
@@ -384,7 +426,7 @@ def push_image(targets: str, title: str, image_urls, link: str = "", banners_pat
         banner = banners[index] if index < len(banners) else ""
         if banner and "*" not in banner:
             banner = f"**{banner}**"
-        body = f"{banner}\n\n{desc}" if banner else desc
+        body = f"{banner}\\n\\n{desc}" if banner else desc
         data = urllib.parse.urlencode(
             {"title": title[:32], "desp": body, "short": title[:48]}
         ).encode()
@@ -435,8 +477,7 @@ def main(argv: Optional[list] = None) -> int:
         ap.error("--url 或 --html 至少给一个")
 
     if args.url:
-        wait_ready(args.url, timeout=args.wait, marker=args.marker)
-        target = args.url
+        target = wait_ready(args.url, timeout=args.wait, marker=args.marker)
     else:
         target = Path(args.html).resolve().as_uri()
 
