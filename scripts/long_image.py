@@ -11,7 +11,7 @@
 依赖只有标准库 + playwright：OSS 走 V1 签名自己拼，不引 oss2，省掉动 uv.lock。
 
 用法：
-    python scripts/long_image.py --url https://.../post-market/2026-11-20.html \\
+    python scripts/long_image.py --url https://.../post-market/2026-11-20.html \
         --title "11月20日 盘后洞察晚报"        # 读 HORIZON_WEBHOOK_URL，按人分别推
 
     # 本地调样式：直接拍文件，不推
@@ -123,12 +123,12 @@ def _oss_headers(key: str, body: bytes, bucket: str, content_type: str) -> dict:
 
 
 def _oss_signature(secret: str, verb: str, bucket: str, key: str, headers: dict) -> str:
-    """OSS V1 签名：VERB\\nContent-MD5\\nContent-Type\\nDate\\nCanonicalizedOSSHeaders\\nCanonicalizedResource"""
+    """OSS V1 签名：VERB\nContent-MD5\nContent-Type\nDate\nCanonicalizedOSSHeaders\nCanonicalizedResource"""
     canon_headers = "".join(
-        f"{k.lower()}:{headers[k]}\\n" for k in sorted(headers) if k.lower().startswith("x-oss-")
+        f"{k.lower()}:{headers[k]}\n" for k in sorted(headers) if k.lower().startswith("x-oss-")
     )
     resource = f"/{bucket}/{key}"
-    to_sign = f"{verb}\\n\\n{headers.get('Content-Type', '')}\\n{headers.get('Date', '')}\\n{canon_headers}{resource}"
+    to_sign = f"{verb}\n\n{headers.get('Content-Type', '')}\n{headers.get('Date', '')}\n{canon_headers}{resource}"
     digest = hmac.new(secret.encode(), to_sign.encode(), hashlib.sha1).digest()
     return base64.b64encode(digest).decode()
 
@@ -400,7 +400,7 @@ def _load_banners(path) -> list:
 
 def _split_targets(targets: str) -> list:
     """HORIZON_WEBHOOK_URL 是逗号或换行分隔的多条完整地址，一条一个收件人。"""
-    return [t.strip() for t in re.split(r"[,\\n]+", targets or "") if t.strip()]
+    return [t.strip() for t in re.split(r"[,\n]+", targets or "") if t.strip()]
 
 
 def push_image(targets: str, title: str, image_urls, link: str = "", banners_path=None) -> bool:
@@ -416,9 +416,9 @@ def push_image(targets: str, title: str, image_urls, link: str = "", banners_pat
         print("push failed: 没有推送地址", file=sys.stderr)
         return False
     urls = [image_urls] if isinstance(image_urls, str) else list(image_urls)
-    desc = "\\n\\n".join(f"![长图]({u})" for u in urls)
+    desc = "\n\n".join(f"![长图]({u})" for u in urls)
     if link:
-        desc += f"\\n\\n[网页版]({link})"
+        desc += f"\n\n[网页版]({link})"
     banners = _load_banners(banners_path) if banners_path else []
     print(f"push: {len(ends)} endpoints, {len(banners)} banners")
     delivered = 0
@@ -426,7 +426,7 @@ def push_image(targets: str, title: str, image_urls, link: str = "", banners_pat
         banner = banners[index] if index < len(banners) else ""
         if banner and "*" not in banner:
             banner = f"**{banner}**"
-        body = f"{banner}\\n\\n{desc}" if banner else desc
+        body = f"{banner}\n\n{desc}" if banner else desc
         data = urllib.parse.urlencode(
             {"title": title[:32], "desp": body, "short": title[:48]}
         ).encode()
