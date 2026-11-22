@@ -87,3 +87,27 @@ jobs:
           commit_message: "📝 Daily Summary: ${{ env.DATE }}"
           publish_branch: gh-pages
           enable_jekyll: true
+
+      # 长图版：必须在部署之后拍，拍的是已经上线的那一版；文字版推送在 Python 里，
+      # 这一步只多发一条纯图消息，两条都落在微信里，可分别转发。
+      - name: Push long image
+        env:
+          SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
+          OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${OSS_ENDPOINT:-}" ] || [ -z "${SENDKEY:-}" ]; then
+            echo "OSS 或 SENDKEY 未配置，跳过长图推送"
+            exit 0
+          fi
+          pip install --disable-pip-version-check -q playwright
+          python -m playwright install --with-deps chromium
+          Y=$(date +%Y); M=$(date +%m); D=$(date +%d)
+          python scripts/long_image.py \
+            --url "https://kennyneverland.github.io/Horizon/${Y}/${M}/${D}/summary-zh.html" \
+            --title "${M#0}月${D#0}日 早报长图" \
+            --marker "${Y}-${M}-${D}" \
+            --key-prefix "horizon/morning/"
