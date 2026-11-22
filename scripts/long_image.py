@@ -4,11 +4,15 @@
 为什么单独成脚本：长图必须拍已经部署上线的那一版，而推送发生在 commit 之前。
 所以这一步挂在 workflow 的 commit 之后，轮询页面 200 再拍，不会拍到上一期。
 
+收件人来自 HORIZON_WEBHOOK_URL，和文字版是同一份名单、同一个顺序：第 1 条是
+收件人自己，第 2 条是朋友；问候语按位置从 data/webhook_banners.json 取，所以
+朋友收到的长图上也带着「噜妹天天发财」那一行，两版观感一致。
+
 依赖只有标准库 + playwright：OSS 走 V1 签名自己拼，不引 oss2，省掉动 uv.lock。
 
 用法：
     python scripts/long_image.py --url https://.../post-market/2026-11-20.html \
-        --title "11月20日 盘后洞察晚报" --sendkey "$SENDKEY"
+        --title "11月20日 盘后洞察晚报"        # 读 HORIZON_WEBHOOK_URL，按人分别推
 
     # 本地调样式：直接拍文件，不推
     python scripts/long_image.py --html docs/post-market/2026-11-20.html --out /tmp/a.png --no-push
@@ -23,6 +27,7 @@ import hmac
 import json
 import mimetypes
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -118,7 +123,7 @@ def _oss_headers(key: str, body: bytes, bucket: str, content_type: str) -> dict:
 
 
 def _oss_signature(secret: str, verb: str, bucket: str, key: str, headers: dict) -> str:
-    """OSS V1 签名：VERB\\nContent-MD5\\nContent-Type\\nDate\\nCanonicalizedOSSHeaders\\nCanonicalizedResource"""
+    """OSS V1 签名：VERB\nContent-MD5\nContent-Type\nDate\nCanonicalizedOSSHeaders\nCanonicalizedResource"""
     canon_headers = "".join(
         f"{k.lower()}:{headers[k]}\n" for k in sorted(headers) if k.lower().startswith("x-oss-")
     )
@@ -198,18 +203,47 @@ def _plan_slices(marks: list, total: int, max_h: int) -> list:
 
     早报 3.9 万 CSS px，一张图是 7.8 万像素高、十几兆，微信里打不开；切成几段
     仍是一条消息里的几张图，读者往下划就是连续的，断点也不会切在句子中间。
+
+    默认「能塞就塞满」的贪心切法，断点尽量落在标题上。只有一种情况例外：末段
+    短得像个空尾巴（晚报 1.07 万 px 会被切成 10000 + 751），这时按段数均分重排，
+    让几段长度接近；重排时仍优先吸附到标题，并且每段都不得超过 max_h。
     """
     if total <= max_h:
         return [(0, total)]
-    cuts, start = [], 0
+
+    greedy, start = [], 0
     while total - start > max_h:
         limit = start + max_h
         cands = [m for m in marks if start + max_h * 0.35 < m <= limit]
         cut = max(cands) if cands else limit
-        cuts.append((start, cut - start))
+        greedy.append((start, cut - start))
         start = cut
-    cuts.append((start, total - start))
-    return cuts
+    greedy.append((start, total - start))
+
+    n = len(greedy)
+    if greedy[-1][1] >= (total / n) * 0.5:
+        return greedy
+
+    # 末段过短：按 n 段均分，切点优先吸附标题，否则退回均分位置。
+    target = total / n
+    balanced, start = [], 0
+    for k in range(1, n):
+        want = k * target
+        lo = max(start + 1, total - max_h * (n - k))
+        hi = min(start + max_h, total - 1)
+        if lo > hi:
+            cut = int(hi)
+        else:
+            window = max(target * 0.18, 300)
+            cands = [m for m in marks if lo <= m <= hi and abs(m - want) <= window]
+            if cands:
+                cut = int(min(cands, key=lambda m: abs(m - want)))
+            else:
+                cut = int(round(min(max(want, lo), hi)))
+        balanced.append((start, cut - start))
+        start = cut
+    balanced.append((start, total - start))
+    return balanced
 
 
 def shoot(
@@ -291,23 +325,72 @@ def shoot(
 
 
 # ---------------------------------------------------------------- 推送
-def push_image(sendkey: str, title: str, image_urls, link: str = "") -> bool:
-    """Server酱 只认 Markdown：正文一行一张图，微信里点开就是长图。"""
+def _load_banners(path) -> list:
+    """问候语按位置对应推送地址，和文字版共用同一份 data/webhook_banners.json。
+
+    第 1 条是收件人自己、不配问候语；第 2 条是朋友、配「噜妹天天发财」那行。
+    文件缺失时返回空表，长图照推，只是不带问候语。
+    """
+    try:
+        doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    rows = doc.get("banners") if isinstance(doc, dict) else None
+    if not isinstance(rows, list):
+        return []
+    return [str(row or "").strip() for row in rows]
+
+
+def _split_targets(targets: str) -> list:
+    """HORIZON_WEBHOOK_URL 是逗号或换行分隔的多条完整地址，一条一个收件人。"""
+    return [t.strip() for t in re.split(r"[,\n]+", targets or "") if t.strip()]
+
+
+def push_image(targets: str, title: str, image_urls, link: str = "", banners_path=None) -> bool:
+    """Server酱 只认 Markdown：正文一行一张图，微信里点开就是长图。
+
+    收件人来自 HORIZON_WEBHOOK_URL，和文字版是同一份名单、同一个顺序；问候语
+    按位置从 webhook_banners.json 取，所以朋友收到的长图上也带着「噜妹天天发财」。
+    直接 POST 整条地址，不自己拼域名——Server酱³ 的地址是 push.ft07.com，
+    旧版是 sctapi.ftqq.com，拼错了只会拿到 404。
+    """
+    ends = _split_targets(targets)
+    if not ends:
+        print("push failed: 没有推送地址", file=sys.stderr)
+        return False
     urls = [image_urls] if isinstance(image_urls, str) else list(image_urls)
     desc = "\n\n".join(f"![长图]({u})" for u in urls)
     if link:
         desc += f"\n\n[网页版]({link})"
-    data = urllib.parse.urlencode(
-        {"title": title[:32], "desp": desc, "short": title[:48]}
-    ).encode()
-    req = urllib.request.Request(
-        f"https://sctapi.ftqq.com/{sendkey}.send", data=data, method="POST"
-    )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        doc = json.loads(resp.read().decode("utf-8", "replace") or "{}")
-    ok = doc.get("code") == 0
-    print(f"push: {'ok' if ok else 'failed'} {doc.get('message', '')}")
-    return ok
+    banners = _load_banners(banners_path) if banners_path else []
+    print(f"push: {len(ends)} endpoints, {len(banners)} banners")
+    delivered = 0
+    for index, endpoint in enumerate(ends):
+        banner = banners[index] if index < len(banners) else ""
+        if banner and "*" not in banner:
+            banner = f"**{banner}**"
+        body = f"{banner}\n\n{desc}" if banner else desc
+        data = urllib.parse.urlencode(
+            {"title": title[:32], "desp": body, "short": title[:48]}
+        ).encode()
+        req = urllib.request.Request(endpoint, data=data, method="POST")
+        print(f"push[{index + 1}/{len(ends)}]: banner={'yes' if banner else 'no'}")
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                doc = json.loads(resp.read().decode("utf-8", "replace") or "{}")
+        except urllib.error.HTTPError as exc:
+            detail = ""
+            try:
+                detail = exc.read().decode("utf-8", "replace")[:200]
+            except Exception:  # noqa: BLE001
+                pass
+            print(f"push[{index + 1}/{len(ends)}]: failed HTTP {exc.code} {detail}", file=sys.stderr)
+            continue
+        ok = doc.get("code") == 0
+        print(f"push[{index + 1}/{len(ends)}]: {'ok' if ok else 'failed'} {doc.get('message', '')}")
+        if ok:
+            delivered += 1
+    return delivered == len(ends)
 
 
 def main(argv: Optional[list] = None) -> int:
@@ -321,7 +404,12 @@ def main(argv: Optional[list] = None) -> int:
     ap.add_argument("--theme", default="hermes", choices=["hermes", "none"])
     ap.add_argument("--wait", type=int, default=300, help="等页面就绪的秒数")
     ap.add_argument("--marker", default="", help="页面里必须出现的字样，防拍到上一期")
-    ap.add_argument("--sendkey", default=os.environ.get("SENDKEY", ""))
+    ap.add_argument("--webhook", default=os.environ.get("HORIZON_WEBHOOK_URL", ""),
+                    help="逗号或换行分隔的完整推送地址，与文字版共用 HORIZON_WEBHOOK_URL")
+    ap.add_argument("--banners", default="data/webhook_banners.json",
+                    help="问候语文件，按位置对应推送地址")
+    ap.add_argument("--sendkey", default=os.environ.get("SENDKEY", ""),
+                    help="兼容旧用法：单个 SendKey，会自动拼 sctapi 地址")
     ap.add_argument("--no-push", action="store_true")
     ap.add_argument("--key-prefix", default="horizon/")
     ap.add_argument("--max-height", type=int, default=MAX_PIXEL_HEIGHT,
@@ -346,13 +434,16 @@ def main(argv: Optional[list] = None) -> int:
 
     if args.no_push:
         return 0
-    if not args.sendkey:
-        print("没有 sendkey，只落图不推送", file=sys.stderr)
+    targets = (args.webhook or "").strip()
+    if not targets and args.sendkey:
+        targets = f"https://sctapi.ftqq.com/{args.sendkey}.send"
+    if not targets:
+        print("没有推送地址（HORIZON_WEBHOOK_URL / --sendkey 都为空），只落图不推送", file=sys.stderr)
         return 1
     urls = [upload_oss(path, key_prefix=args.key_prefix) for path in paths]
     for u in urls:
         print(f"upload: {u}")
-    return 0 if push_image(args.sendkey, args.title, urls, args.url or "") else 1
+    return 0 if push_image(targets, args.title, urls, args.url or "", args.banners) else 1
 
 
 if __name__ == "__main__":
