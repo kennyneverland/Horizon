@@ -36,7 +36,7 @@ _FIELD_WORDS = [
     ("recent5", "近5日"),
     ("limit_up", "涨停家数"),
     ("above_ma20", "站上20日线"),
-    ("from_high", "距高点"),
+    ("from_high", "距60日高点"),
     ("gain60", "60日涨幅"),
     ("vol_ud", "量比"),
     ("streak", "连续天数"),
@@ -443,10 +443,12 @@ def _focus_html(
                 key = (st.get("name") or "").replace(" ", "")
                 hit = pos.get(key) or {}
                 bits = []
+                if hit.get("today"):
+                    bits.append(f"今日 {hit['today']}")
                 if hit.get("gain60"):
                     bits.append(f"60日 {hit['gain60']}")
                 if hit.get("from_high"):
-                    bits.append(f"距高点 {hit['from_high']}")
+                    bits.append(f"距60日高点 {hit['from_high']}")
                 if st.get("note"):
                     bits.append(st["note"])
                 tag = f"<span class='tag'>{_esc(st['tag'])}</span>" if st.get("tag") else ""
@@ -569,6 +571,16 @@ def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
                 "gain60": row.get("gain60"),
                 "from_high": row.get("from_high60"),
             }
+    # 模型选的票不在三张面板里，位置由 post_market 按日线补过一份，只补缺。
+    for name, hit in (payload.get("focus_pos") or {}).items():
+        cur = out.get(name)
+        if cur is None:
+            out[name] = dict(hit)
+        else:
+            # 面板那份 60 日两项是源站原值，只补它没有的（今日涨幅）。
+            for key, val in hit.items():
+                if val and not cur.get(key):
+                    cur[key] = val
     return out
 
 
@@ -599,10 +611,12 @@ def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) 
         if hit.get("panel") and hit["panel"] != "优选蓄势":
             tags += f"<span class='tag'>{_esc(hit['panel'])}</span>"
         bits = []
+        if hit.get("today"):
+            bits.append(f"今日 {hit['today']}")
         if hit.get("gain60"):
             bits.append(f"60日 {hit['gain60']}")
         if hit.get("from_high"):
-            bits.append(f"距高点 {hit['from_high']}")
+            bits.append(f"距60日高点 {hit['from_high']}")
         if item.get("note"):
             bits.append(item["note"])
         note = f"<span class='wl-n'>{_esc(' · '.join(bits))}</span>" if bits else ""
@@ -818,8 +832,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             f"<h2>{_esc(label)}</h2>"
             + (f"<p class='hint'>{_esc(why)}</p>" if why else "")
             + "<table><colgroup><col style='width:26px'><col>"
-            "<col style='width:74px'><col style='width:64px'></colgroup>"
-            "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距高点</th></tr></thead>"
+            "<col style='width:82px'><col style='width:88px'></colgroup>"
+            "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距60日高点</th></tr></thead>"
             "<tbody>" + "".join(body) + "</tbody></table>"
         )
 

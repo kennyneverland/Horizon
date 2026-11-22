@@ -254,6 +254,136 @@ def parse_alerts(page: str) -> Dict[str, Any]:
     return {"snapshot": stamp.group(1) if stamp else "", "items": items}
 
 
+_EM_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+
+
+def _secid(code: str) -> str:
+    """6 开头是沪市，其余按深市算。北交所 4/8 开头暂不覆盖。"""
+    return f"1.{code}" if code.startswith("6") else f"0.{code}"
+
+
+def _name_code_map(payload: Dict[str, Any]) -> Dict[str, str]:
+    """票名 → 代码。focus 里的个股只有名字，取日线前得先把代码找回来。"""
+    out: Dict[str, str] = {}
+
+    def put(name: Any, code: Any) -> None:
+        key = str(name or "").replace(" ", "")
+        val = str(code or "").strip()
+        if key and len(val) == 6 and val.isdigit():
+            out.setdefault(key, val)
+
+    for item in (payload.get("lhb") or {}).get("items") or []:
+        put(item.get("name"), item.get("code"))
+    for block in (payload.get("filter") or {}).values():
+        for row in block.get("rows") or []:
+            put(row.get("name"), row.get("code"))
+    for card in (payload.get("extra") or {}).get("theme_members") or []:
+        for member in card.get("members") or []:
+            put(member.get("name"), member.get("code"))
+    for row in payload.get("em_zt") or []:
+        put(row.get("n"), row.get("c"))
+    return out
+
+
+def _kline_60(code: str) -> Optional[Dict[str, str]]:
+    """60 日涨幅与距 60 日高点，用日线收盘算。
+
+    连板网那两列没标口径，这里统一按收盘价：涨幅取第 61 根到最新一根，
+    高点取最近 60 根收盘里的最高。个别票会和它差零点几个点。取不到返回
+    None，页面上就不显示这两项，不拿估算值填。
+    """
+    query = urllib.parse.urlencode(
+        {
+            "secid": _secid(code),
+            "klt": 101,
+            "fqt": 1,
+            "lmt": 70,
+            "fields1": "f1,f2,f3",
+            "fields2": "f51,f53",
+        }
+    )
+    try:
+        req = urllib.request.Request(f"{_EM_KLINE}?{query}", headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = json.loads(resp.read().decode("utf-8", "replace"))
+    except Exception as exc:  # noqa: BLE001 - 少一只不影响别的
+        print(f"kline({code}) failed: {exc}", file=sys.stderr)
+        return None
+    closes: List[float] = []
+    for line in (data.get("data") or {}).get("klines") or []:
+        parts = str(line).split(",")
+        if len(parts) < 2:
+            continue
+        try:
+            closes.append(float(parts[1]))
+        except ValueError:
+            continue
+    if len(closes) < 61:
+        return None
+    last, base, high = closes[-1], closes[-61], max(closes[-60:])
+    prev = closes[-2]
+    if base <= 0 or high <= 0 or prev <= 0:
+        return None
+    return {
+        "today": f"{(last / prev - 1) * 100:+.1f}%",
+        "gain60": f"{(last / base - 1) * 100:+.1f}%",
+        "from_high": f"{(last / high - 1) * 100:+.1f}%",
+    }
+
+
+def _fill_focus_position(payload: Dict[str, Any], read: Any) -> None:
+    """给明日关注里不在三张面板的票补 60 日位置。
+
+    面板免费只给前 5，模型从题材 members 选的票大多不在里面，页面上就少了
+    60日涨幅与距60日高点两项。这里按代码取日线现算，已有的一律不覆盖。
+    """
+    pos = payload.setdefault("focus_pos", {})
+    focus = (read or {}).get("focus") or {}
+    if not focus:
+        return
+    codes = _name_code_map(payload)
+    missing = 0
+
+    def merge(name: str, code: str, keep: set) -> None:
+        """取日线，把缺的补上。keep 里的字段不覆盖——面板那份是源站原值。"""
+        nonlocal missing
+        hit = _kline_60(code)
+        if not hit:
+            missing += 1
+            return
+        cur = dict(pos.get(name) or {})
+        for key, val in hit.items():
+            if key not in keep and val:
+                cur[key] = val
+        pos[name] = cur
+
+    # 面板票的 60 日两项是源站原值，只补今日涨幅，不重算。
+    for block in (payload.get("filter") or {}).values():
+        for row in block.get("rows") or []:
+            name = str(row.get("name") or "").replace(" ", "")
+            code = str(row.get("code") or "").strip()
+            if name and len(code) == 6 and not (pos.get(name) or {}).get("today"):
+                merge(name, code, {"gain60", "from_high"})
+
+    # 模型选的票三项都缺，全补。
+    for bucket in focus.values():
+        for item in bucket or []:
+            for st in item.get("stocks") or []:
+                name = str(st.get("name") or "").replace(" ", "")
+                if not name:
+                    continue
+                cur = pos.get(name) or {}
+                if all(cur.get(k) for k in ("today", "gain60", "from_high")):
+                    continue
+                code = codes.get(name)
+                if not code:
+                    continue
+                merge(name, code, set())
+
+    if missing:
+        print(f"focus_pos: {missing} 只未取到日线", file=sys.stderr)
+
+
 def _payload_codes(payload: Dict[str, Any]) -> List[str]:
     """Every ticker the brief can name, collected once.
 
@@ -2271,6 +2401,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     # 只在 build_model_input 里算过一次，--no-llm 时根本不会算，所以这里落一份。
     if not payload.get("theme_watch"):
         payload["theme_watch"] = _theme_watch(payload)
+    _fill_focus_position(payload, summary)
     html = render_html(payload, summary, page_url)
 
     out_dir = Path(args.out_dir)
