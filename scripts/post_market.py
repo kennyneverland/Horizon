@@ -49,6 +49,7 @@ from mainline_matrix import build as build_matrix  # noqa: E402
 from src.processing import eastmoney  # noqa: E402
 from lianban_extra import (  # noqa: E402
     _prev_value,
+    _strength_sorted,
     collect_extra,
     mcp_review,
     parse_signals,
@@ -384,14 +385,14 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 【明日关注，分三类】
 第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
 
-- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 2 到 3 条，每条 1 到 3 只。优选蓄势当日为空时，这一类给空数组，不要凑。
-- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股只能从该题材的 members 里取，members 为空表示当日没有逐只明细，这条题材就只写 signal、stocks 给空数组，不许从面板、别的题材或龙虎榜凑一只填进去。给 2 到 3 条题材，每条 0 到 3 只。
-- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」「主线强攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 2 到 3 条题材，每条 2 到 3 只。监管异动（异常波动公告提醒）不在活跃候选之内：那份名单只说明交易所已经盯上它，不是「今天刚动」的证据，不要拿它补票，也不要在正文里把这些票写成活跃或明日方向。
+- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 3 条题材，把 5 只票按 sector 分到 3 条里（2/2/1 或 3/1/1）；票池只有 5 只，凑不满 3 只就少写，绝对不许为了凑数编一只进来。优选蓄势当日为空时，这一类给空数组，不要凑。
+- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股优先从「主线强攻」面板的前 5 只里取——那 5 只是主线资金聚集处的最强个体，用它们的 sector／themes 对上题材，对上就放进来；5 只不够填满 3 只时，再从该题材的 members 里补；仍不够就少写，stocks 可以是 0 到 3 只，不许从「优选蓄势」「放量上攻」或龙虎榜凑一只填进去。members 为空表示当日没有逐只明细，这条题材就只写 signal。给 3 条题材，每条 3 只。
+- 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。「主线强攻」那 5 只归主线类，不要拿到活跃里来。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 3 条题材，每条 3 只。监管异动（异常波动公告提醒）不在活跃候选之内：那份名单只说明交易所已经盯上它，不是「今天刚动」的证据，不要拿它补票，也不要在正文里把这些票写成活跃或明日方向。
 
 三条纪律：
 1. 三类不重复。蓄势与另两类的边界是"还没涨 vs 已经在动"；主线与活跃的边界是"有连续性 vs 只有一天"。同一只票出现在两类里，等于这一块没做。
 2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数或龙虎榜净额——组头和标签会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
-3. 名字不许造。蓄势只能来自优选蓄势前 5；主线只能来自对应题材的 members；活跃只能来自对应题材的 members、两张面板的 rows，或 lhb 里 theme／themes／sector 对得上的票；监管异动名单不在此列。
+3. 名字不许造。蓄势只能来自优选蓄势前 5；主线来自「主线强攻」前 5 加对应题材的 members；活跃只能来自对应题材的 members、「放量上攻」的 rows，或 lhb 里 theme／themes／sector 对得上的票；监管异动名单不在此列。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -428,14 +429,14 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
   "主线": [
    {{"theme": "题材名，必须与 theme_watch 里的一致",
     "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
-    "stocks": [{{"name": "个股名，必须来自该题材 members",
+    "stocks": [{{"name": "个股名，优先「主线强攻」前 5，不够再取该题材 members",
                "tag": "连板高度 · 子题材，如 3连板 · 光刻机；不超过 14 字",
                "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
   ],
   "活跃": [
    {{"theme": "题材名，必须与 theme_watch 里的一致；龙虎榜兜底那条写 龙虎榜净买入",
     "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
-    "stocks": [{{"name": "个股名，来自该题材 members、两张面板的 rows，或 lhb 里 theme／sector 对得上的票",
+    "stocks": [{{"name": "个股名，来自该题材 members、放量上攻的 rows，或 lhb 里 theme／sector 对得上的票",
                "tag": "连板高度 · 子题材；来自龙虎榜的写 龙虎榜；不超过 14 字",
                "note": "它在题材里的角色与位置，不超过 36 字"}}]}}
   ]
@@ -1382,7 +1383,12 @@ def _load_ai_conf(path: Path) -> Dict[str, Any]:
     return doc.get("ai") or {}
 
 
-def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts: bool = False) -> Dict[str, Any]:
+def collect(
+    no_browser: bool = False,
+    fetch_concepts: bool = True,
+    save_concepts: bool = False,
+    date: str = "",
+) -> Dict[str, Any]:
     """Fetch the public sources and parse them into one payload.
 
     Each source is allowed to fail on its own: a page that will not load costs
@@ -1422,7 +1428,7 @@ def collect(no_browser: bool = False, fetch_concepts: bool = True, save_concepts
         payload["errors"].append(f"regulatory: {exc}")
     if not no_browser:
         try:
-            payload["extra"] = collect_extra()
+            payload["extra"] = collect_extra(date=date)
         except Exception as exc:  # noqa: BLE001
             payload["errors"].append(f"browser: {exc}")
     # 个股题材归属：先查本地索引，索引里没有的票现抓（限速 ~2.3s/只），
@@ -1834,6 +1840,9 @@ def _strength_lines(payload: Dict[str, Any]) -> List[str]:
     rows = extra.get("strength_em")
     if rows is None:
         rows = extra.get("strength") or []
+    # 与页面同一个排序：推送里也是涨得最多的一条排在最前，不然同一天两份
+    # 文字顺序不一样，读者会以为是两套数。
+    rows = _strength_sorted(rows)
     items = [f"{r['name']} {r['pct']}" for r in rows if r.get("name")]
     return _rows(items, 4)
 
@@ -2117,6 +2126,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         no_browser=args.no_browser,
         fetch_concepts=not args.no_fetch_concepts,
         save_concepts=args.save_concepts,
+        date=args.date or "",
     )
     matrix = payload["matrix"]
     kpi = payload["kpi"]
