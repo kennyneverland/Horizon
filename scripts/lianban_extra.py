@@ -21,6 +21,7 @@ import re
 import sys
 import urllib.request
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlencode
 
 try:  # httpx 由 workflow 装上；缺失时退回 urllib，不让整篇因为一个可选块崩掉
     import httpx
@@ -285,6 +286,7 @@ def parse_overseas(page: str) -> List[Dict[str, Any]]:
 
 
 _EM_ULIST = "https://push2.eastmoney.com/api/qt/ulist.np/get"
+_EM_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 # 东财 ulist：f3 是涨跌幅×100，f12 是代码（不含市场号）
 _EM_ASIA = (("恒指", "100.HSI"), ("恒科", "124.HSTECH"), ("日经", "100.N225"), ("韩国", "100.KS11"))
 _SINA_HQ = "https://hq.sinajs.cn/list="
@@ -317,14 +319,69 @@ def _pct(value: float) -> str:
     return f"{value:+.2f}%"
 
 
-def fetch_overseas() -> List[Dict[str, Any]]:
-    """外盘参考：亚太走东财 ulist，前夜美股与期指走新浪 hq。
+def _asia_on(date: str) -> List[Dict[str, Any]]:
+    """按目标日期取亚太四个指数的收盘涨跌幅。
+
+    重跑历史日期时实时接口对不上：那天早收盘了，ulist 返回的 f3 是空的，整组
+    被过滤掉，页面上就只剩美股。这里改走 K 线，beg=end=当天，只取 f51（日期）
+    与 f59（涨跌幅）。拿不到那天的就跳过，宁缺不错。
+    """
+    day = date.replace("-", "")
+    items: List[Dict[str, Any]] = []
+    for name, secid in _EM_ASIA:
+        query = urlencode(
+            {
+                "secid": secid,
+                "klt": 101,
+                "fqt": 1,
+                "beg": day,
+                "end": day,
+                "fields1": "f1,f2,f3",
+                "fields2": "f51,f59",
+            }
+        )
+        try:
+            raw = _overseas_get(
+                f"{_EM_KLINE}?{query}",
+                headers={"User-Agent": UA, "Referer": "https://quote.eastmoney.com/"},
+            )
+            klines = (json.loads(raw).get("data") or {}).get("klines") or []
+        except Exception as exc:  # noqa: BLE001 - 少一个指数不该拖垮整块
+            print(f"overseas({name}@{date}) failed: {exc}", file=sys.stderr)
+            continue
+        if not klines:
+            continue
+        parts = str(klines[-1]).split(",")
+        if len(parts) < 2 or not parts[0].startswith(date):
+            continue
+        try:
+            value = float(parts[1])
+        except ValueError:
+            continue
+        items.append({"name": name, "pct": _pct(value), "up": value >= 0})
+    return items
+
+
+def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
+    """外盘参考：亚太走东财，前夜美股与期指走新浪 hq。
 
     原先是解析连板网当天页面的 DOM（见 parse_overseas），但连板网报价更新滞后，
     晚报 21:40 出稿时可能还是下午的旧值；页面一改版整块还会直接丢失。东财与新浪
     都是稳定接口，也不占连板网的浏览配额。取不到就返回空，宁缺不错。
+
+    传了 date（重跑历史某天）就按那天的收盘取亚太——实时接口在休市日拿不到
+    数值；没传就取实时。美股与期指没有按日期的历史接口，始终是跑的时候的最新值。
     """
     groups: List[Dict[str, Any]] = []
+
+    if date:
+        try:
+            items = _asia_on(date)
+            if items:
+                groups.append({"label": "亚太", "items": items})
+        except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
+            print(f"overseas(asia) failed: {exc}", file=sys.stderr)
+        return groups + _us_overseas()
 
     try:
         secids = ",".join(code for _, code in _EM_ASIA)
@@ -343,6 +400,15 @@ def fetch_overseas() -> List[Dict[str, Any]]:
     except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
         print(f"overseas(asia) failed: {exc}", file=sys.stderr)
 
+    return groups + _us_overseas()
+
+
+def _us_overseas() -> List[Dict[str, Any]]:
+    """前夜美股与期指：新浪 hq 的实时值。
+
+    新浪没有按日期查历史的接口，所以这一组始终是跑的时候的最新报价；重跑
+    历史某天时，亚太按那天收盘取，美股仍是当下值，两者时点不同。
+    """
     try:
         codes = [c for _, c in _SINA_US] + [c for _, c in _SINA_FUT]
         raw = _overseas_get(
@@ -370,11 +436,10 @@ def fetch_overseas() -> List[Dict[str, Any]]:
             value = (last / prev - 1) * 100
             items.append({"name": name, "pct": _pct(value), "up": value >= 0})
         if items:
-            groups.append({"label": "美股", "items": items})
+            return [{"label": "美股", "items": items}]
     except Exception as exc:  # noqa: BLE001
         print(f"overseas(us) failed: {exc}", file=sys.stderr)
-
-    return groups
+    return []
 
 
 def parse_panel(page: str) -> List[Dict[str, str]]:
@@ -577,7 +642,7 @@ def market_breadth(timeout: float = 30.0) -> Dict[str, Any]:
     }
 
 
-def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
+def collect_extra(timeout_ms: int = 60000, date: str = "") -> Dict[str, Any]:
     """Everything the pages carry that is not in a JSON feed.
 
     Two independent halves: market.html is static and parsed over plain HTTP;
@@ -597,7 +662,7 @@ def collect_extra(timeout_ms: int = 60000) -> Dict[str, Any]:
     strength = parse_strength(page)
     flows = parse_flows(page)
     panel = parse_panel(page)
-    overseas = fetch_overseas()
+    overseas = fetch_overseas(date)
     if not strength and not flows:
         out["error"] = "rendered page had neither block"
         return out
@@ -801,12 +866,10 @@ def main(argv: Optional[List[str]] = None) -> int:
 # it asks for two blocks of HTML and places them.
 
 EXTRA_CSS = """
-.stg{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
+.stg{display:grid;grid-template-columns:repeat(2,1fr);gap:9px 16px}
 .st-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px}
 .st-h span{color:#2b3440;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .st-h b{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
-.st-bar{height:4px;background:#eff0f1;border-radius:2px;margin-top:5px;overflow:hidden}
-.st-bar i{display:block;height:100%;background:#159957;border-radius:2px}
 .zjg{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 18px}
 .zc .zh{font-size:12px;color:#8a94a6;margin-bottom:2px}
 .zr{display:flex;align-items:baseline;gap:6px;padding:5px 0;border-bottom:1px solid #f4f6f8;font-size:13px}
@@ -815,9 +878,9 @@ EXTRA_CSS = """
 .zp{width:46px;text-align:right;font-size:11px;color:#98a2b3;font-variant-numeric:tabular-nums}
 .quote{border-left:3px solid #d9dee7;padding:2px 0 2px 14px;color:#4c5866;font-size:15px}
 .sgs{display:flex;flex-direction:column;gap:8px;margin:0 0 6px}
-.sg{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;background:#f7f8fa;border-radius:8px}
+.sg{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:10px 12px;background:#f7f8fa;border-radius:8px}
 .sgc{flex:0 0 auto;font-size:12.5px;line-height:1.6;padding:1px 8px;border-radius:10px;background:#eceff3;color:#2b3440;white-space:nowrap}
-.sgt{flex:1;min-width:0;font-size:13.5px;line-height:1.7;color:#4c5866}
+.sgt{width:100%;font-size:13.5px;line-height:1.7;color:#4c5866}
 .chg{font-size:12.5px;color:#8a94a6;margin:0 0 12px;line-height:1.9}
 .chg b{font-weight:600}
 .det{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 16px}
@@ -898,6 +961,29 @@ def _panel_html(payload: Dict[str, Any]) -> str:
     return html
 
 
+def _strength_sorted(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """主线强度：按涨跌幅从高到低排。
+
+    这块有两条数据源：东财概念板块（strength_em）和连板网强度榜（strength），
+    各自的原始顺序不同，统一在这里按涨跌幅重排，页面与推送才读同一份次序。
+    不再画条长：排序已经表达了强弱，数字已经表达了幅度，条长只是把同一件事
+    再编码一遍，读者还得先学一遍刻度才能读。
+    """
+    parsed: List[tuple] = []
+    for r in rows or []:
+        raw = str(r.get("pct") or "")
+        raw = raw.replace("%", "").replace("+", "").replace("−", "-").strip()
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            continue
+        parsed.append((value, r))
+    if not parsed:
+        return []
+    parsed.sort(key=lambda p: -p[0])
+    return [dict(r) for _, r in parsed]
+
+
 def _strength_html(payload: Dict[str, Any]) -> str:
     """主线强度：单独成块，跟在「主线追踪」后面，不掺进资金面板。"""
     # 东财那份由 post_market 算好后挂在 strength_em 上，页面与推送共用；没跑到
@@ -906,18 +992,18 @@ def _strength_html(payload: Dict[str, Any]) -> str:
     strength = extra.get("strength_em")
     if strength is None:
         strength = extra.get("strength") or []
+    strength = _strength_sorted(strength)
     if not strength:
         return ""
     chips = "".join(
         "<div class='st'>"
         f"<div class='st-h'><span>{_esc(x['name'])}</span>"
         f"<b class='{_pct_class(x['pct'])}'>{_esc(x['pct'])}</b></div>"
-        f"<div class='st-bar'><i style='width:{max(2, min(100, int(x['bar'])))}%'></i></div>"
         "</div>"
         for x in strength
     )
     return (
-        "<h2>主线强度</h2><p class='hint'>概念板块当日涨跌幅 · 条长按幅度归一</p>"
+        "<h2>主线强度</h2><p class='hint'>板块今日涨跌幅，从上到下由强到弱</p>"
         f"<div class='stg'>{chips}</div>"
     )
 
@@ -948,17 +1034,17 @@ def _funds_html(payload: Dict[str, Any]) -> str:
     flows = extra.get("flows") or {}
     out = [_panel_html(payload)]
 
+    strength = _strength_sorted(strength)
     if strength:
         chips = "".join(
             "<div class='st'>"
             f"<div class='st-h'><span>{_esc(x['name'])}</span>"
             f"<b class='{_pct_class(x['pct'])}'>{_esc(x['pct'])}</b></div>"
-            f"<div class='st-bar'><i style='width:{max(2, min(100, int(x['bar'])))}%'></i></div>"
             "</div>"
             for x in strength
         )
         out.append(
-            "<h2>主线强度</h2><p class='hint'>资金强度排名 · 条长=相对强度</p>"
+            "<h2>主线强度</h2><p class='hint'>板块今日涨跌幅，从上到下由强到弱</p>"
             f"<div class='stg'>{chips}</div>"
         )
 
@@ -979,6 +1065,14 @@ def _funds_html(payload: Dict[str, Any]) -> str:
     return "".join(out)
 
 
+_BRAND_RE = re.compile(r"连板网|lianban\.net", re.IGNORECASE)
+
+
+def _scrub(text: Any) -> str:
+    """页面上不出现来源站名：抓来的正文与标签统一换成「第三方信源」。"""
+    return _BRAND_RE.sub("第三方信源", str(text if text is not None else ""))
+
+
 def _signals_html(payload: Dict[str, Any]) -> str:
     """今日信号面：连板网按历史形态自动触发的状态提示。
 
@@ -989,8 +1083,8 @@ def _signals_html(payload: Dict[str, Any]) -> str:
     if not rows:
         return ""
     items = "".join(
-        f"<div class='sg'><span class='sgc'>{_esc(str(r.get('chip') or ''))}</span>"
-        f"<span class='sgt'>{_esc(str(r.get('text') or ''))}</span></div>"
+        f"<div class='sg'><span class='sgc'>{_esc(_scrub(r.get('chip')))}</span>"
+        f"<span class='sgt'>{_esc(_scrub(r.get('text')))}</span></div>"
         for r in rows
         if r.get("chip") and r.get("text")
     )
@@ -999,7 +1093,6 @@ def _signals_html(payload: Dict[str, Any]) -> str:
     return (
         "<h2>今日信号面</h2>"
         f"<div class='sgs'>{items}</div>"
-        "<p class='hint'>连板网按历史形态自动触发，非本页判断</p>"
     )
 
 
@@ -1019,15 +1112,12 @@ def _review_html(payload: Dict[str, Any]) -> str:
     body = text.strip()
     if len(body) > 600:
         body = body[:600].rstrip() + "…"
-    page = doc.get("page") or ""
-    link = f"<a href='{_esc(page)}'>查看原文</a>" if page else ""
     # .quote 没有 white-space，段落间的空行会被 HTML 折成空格，两段会连成一坨，
     # 所以换行要显式转成 <br>。
     body_html = _esc(body).replace("\n\n", "<br><br>").replace("\n", "<br>")
     return (
         "<h2>第三方复盘</h2>"
         f"<div class='quote'>{body_html}</div>"
-        f"<p class='hint'>第三方信源原文摘录，非本页判断{' · ' + link if link else ''}</p>"
     )
 
 
@@ -1061,7 +1151,7 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
         )
         rows.append(f"<div class='ovr'><span class='ovl'>{_esc(label)}</span>{chips}</div>")
     return (
-        "<h2>外盘参考</h2><p class='hint'>当日亚太与前夜美股 · 东财 / 新浪报价</p>"
+        "<h2>外盘参考</h2><p class='hint'>当日亚太与前夜美股</p>"
         f"<div class='ovg'>{''.join(rows)}</div>"
     )
 
