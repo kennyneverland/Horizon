@@ -162,15 +162,30 @@ def upload_oss(path: Path, key_prefix: str = "horizon/") -> str:
 
     # 必须用三级域名（虚拟主机）寻址：path-style 的 oss-cn-beijing.aliyuncs.com/桶/key
     # 会被 OSS 拒成 SecondLevelDomainForbidden（403），早报第一次跑就会挂在这里。
-    req = urllib.request.Request(
-        f"https://{bucket}.{host}/{urllib.parse.quote(key)}",
-        data=body,
-        headers=headers,
-        method="PUT",
-    )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        if resp.status not in (200, 201):
-            raise RuntimeError(f"OSS 返回 {resp.status}")
+    url = f"https://{bucket}.{host}/{urllib.parse.quote(key)}"
+    # GitHub 托管 runner 到华北2 的跨境带宽很低：1.5 MB 的图 60s 写不完就报
+    # "The write operation timed out"，所以超时放宽到 OSS_TIMEOUT（默认 240s）并重试三次。
+    timeout = int(os.environ.get("OSS_TIMEOUT", "240"))
+    for attempt in range(1, 4):
+        started = time.time()
+        try:
+            req = urllib.request.Request(url, data=body, headers=headers, method="PUT")
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                if resp.status not in (200, 201):
+                    raise RuntimeError(f"OSS 返回 {resp.status}")
+            print(
+                f"upload: {key} {len(body) / 1024:.0f} KB in "
+                f"{time.time() - started:.1f}s (attempt {attempt})"
+            )
+            break
+        except Exception as exc:  # noqa: BLE001 - 慢链路要重试
+            print(
+                f"upload retry {attempt}/3: {key} {len(body) / 1024:.0f} KB failed after "
+                f"{time.time() - started:.1f}s: {type(exc).__name__}: {exc}"
+            )
+            if attempt == 3:
+                raise
+            time.sleep(5 * attempt)
     if public_base:
         return public_base.rstrip("/") + "/" + urllib.parse.quote(key)
     return f"https://{bucket}.{host}/{urllib.parse.quote(key)}"
