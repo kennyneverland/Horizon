@@ -800,6 +800,50 @@ def _panel_html(payload: Dict[str, Any]) -> str:
     return html
 
 
+def _strength_html(payload: Dict[str, Any]) -> str:
+    """主线强度：单独成块，跟在「主线追踪」后面，不掺进资金面板。"""
+    # 东财那份由 post_market 算好后挂在 strength_em 上，页面与推送共用；没跑到
+    # 那一步（单测、或接口没通）才回退连板网抓下来的强度榜。
+    extra = payload.get("extra") or {}
+    strength = extra.get("strength_em")
+    if strength is None:
+        strength = extra.get("strength") or []
+    if not strength:
+        return ""
+    chips = "".join(
+        "<div class='st'>"
+        f"<div class='st-h'><span>{_esc(x['name'])}</span>"
+        f"<b class='{_pct_class(x['pct'])}'>{_esc(x['pct'])}</b></div>"
+        f"<div class='st-bar'><i style='width:{max(2, min(100, int(x['bar'])))}%'></i></div>"
+        "</div>"
+        for x in strength
+    )
+    return (
+        "<h2>主线强度</h2><p class='hint'>概念板块当日涨跌幅 · 条长按幅度归一</p>"
+        f"<div class='stg'>{chips}</div>"
+    )
+
+
+def _flows_html(payload: Dict[str, Any]) -> str:
+    """主力资金：四组板块与个股净额，收盘定格。"""
+    flows = (payload.get("extra") or {}).get("flows") or {}
+    if not flows:
+        return ""
+    cols = []
+    for label, rows in flows.items():
+        body = "".join(
+            f"<div class='zr'><span class='zn'>{_esc(r['name'])}</span>"
+            f"<b class='{_pct_class(r['amount'])}'>{_esc(r['amount'])}</b>"
+            f"<span class='zp'>{_esc(r['pct'])}</span></div>"
+            for r in rows
+        )
+        cols.append(f"<div class='zc'><div class='zh'>{_esc(label)}</div>{body}</div>")
+    return (
+        "<h2>主力资金动向</h2><p class='hint'>板块与个股主力净额 · 收盘定格</p>"
+        f"<div class='zjg'>{''.join(cols)}</div>"
+    )
+
+
 def _funds_html(payload: Dict[str, Any]) -> str:
     extra = payload.get("extra") or {}
     strength = extra.get("strength") or []
@@ -864,8 +908,9 @@ def _signals_html(payload: Dict[str, Any]) -> str:
 def _review_html(payload: Dict[str, Any]) -> str:
     """复盘正文一块，信号面与外盘由 render_sections 单独给出。
 
-    页面顺序是复盘 → 今日信号面 → 明日关注 → 外盘参考。三块来自三次不同抓取，
-    拼在一起就再也拆不开，所以这里只出正文，位置交给页面决定。
+    页面顺序是盘面 → 外盘 → 信号面 → 研判 → 第三方复盘 → 对比 → 明细数据，
+    几块来自不同抓取，拼在一起就再也拆不开，所以这里只出正文，位置交给页面
+    决定。标题与推文的「第三方复盘」统一叫法，不在这里另起一个名字。
     """
     doc = payload.get("lianban") or {}
     text = (doc.get("ai_review") or "").strip()
@@ -882,9 +927,9 @@ def _review_html(payload: Dict[str, Any]) -> str:
     # 所以换行要显式转成 <br>。
     body_html = _esc(body).replace("\n\n", "<br><br>").replace("\n", "<br>")
     return (
-        "<h2>连板网复盘</h2>"
+        "<h2>第三方复盘</h2>"
         f"<div class='quote'>{body_html}</div>"
-        f"<p class='hint'>连板网原文摘录，非本页判断{' · ' + link if link else ''}</p>"
+        f"<p class='hint'>第三方信源原文摘录，非本页判断{' · ' + link if link else ''}</p>"
     )
 
 
@@ -893,16 +938,32 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
     groups = (payload.get("extra") or {}).get("overseas") or []
     if not groups:
         return ""
+    # 读者先关心今天亚洲怎么走（当日），再看昨夜美股（前夜），所以亚太排前面，
+    # 标签也把时点写明，免得把隔夜的跌幅当成今天亚太的。
+    _ORDER = (("亚太", "当日亚太"), ("美股", "前夜美股"))
+
+    def _key(group: Dict[str, Any]) -> int:
+        label = str(group.get("label") or "").split(" · ")[0]
+        for i, (word, _) in enumerate(_ORDER):
+            if word in label:
+                return i
+        return len(_ORDER)
+
     rows = []
-    for group in groups:
+    for group in sorted(groups, key=_key):
+        label = str(group.get("label") or "").split(" · ")[0]
+        for word, shown in _ORDER:
+            if word in label:
+                label = shown
+                break
         chips = "".join(
             f"<span class='chip'><i>{_esc(x['name'])}</i>"
             f"<b class='{'up' if x['up'] else 'down'}'>{_esc(x['pct'])}</b></span>"
             for x in group["items"]
         )
-        rows.append(f"<div class='ovr'><span class='ovl'>{_esc(group['label'])}</span>{chips}</div>")
+        rows.append(f"<div class='ovr'><span class='ovl'>{_esc(label)}</span>{chips}</div>")
     return (
-        "<h2>外盘参考</h2><p class='hint'>隔夜美股与亚太收盘 · 报价时间见连板网明细</p>"
+        "<h2>外盘参考</h2><p class='hint'>当日亚太与前夜美股 · 报价时间见连板网明细</p>"
         f"<div class='ovg'>{''.join(rows)}</div>"
     )
 
@@ -910,10 +971,20 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
 def render_sections(payload: Dict[str, Any]) -> Dict[str, str]:
     """``{"funds", "review", "signals", "overseas"}`` — empty when a source is missing."""
     try:
-        funds = _funds_html(payload)
+        panel = _panel_html(payload)
     except Exception as exc:  # noqa: BLE001
-        print(f"funds render failed: {exc}", file=sys.stderr)
-        funds = ""
+        print(f"panel render failed: {exc}", file=sys.stderr)
+        panel = ""
+    try:
+        strength = _strength_html(payload)
+    except Exception as exc:  # noqa: BLE001
+        print(f"strength render failed: {exc}", file=sys.stderr)
+        strength = ""
+    try:
+        flows = _flows_html(payload)
+    except Exception as exc:  # noqa: BLE001
+        print(f"flows render failed: {exc}", file=sys.stderr)
+        flows = ""
     try:
         review = _review_html(payload)
     except Exception as exc:  # noqa: BLE001
@@ -929,7 +1000,14 @@ def render_sections(payload: Dict[str, Any]) -> Dict[str, str]:
     except Exception as exc:  # noqa: BLE001
         print(f"overseas render failed: {exc}", file=sys.stderr)
         overseas = ""
-    return {"funds": funds, "review": review, "signals": signals, "overseas": overseas}
+    return {
+        "panel": panel,
+        "strength": strength,
+        "flows": flows,
+        "review": review,
+        "signals": signals,
+        "overseas": overseas,
+    }
 
 
 if __name__ == "__main__":

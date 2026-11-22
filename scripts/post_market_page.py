@@ -78,10 +78,30 @@ def _poem_text(raw: Any) -> str:
 
 
 def _poem_from(raw: Any) -> str:
-    """出处保留《诗名》与作者，只去掉模型爱加的前缀破折号和外层引号。"""
+    """出处只留《诗名》：作者与年份各有自己的字段，这里不许混进来。"""
+    text = str(raw or "").strip().strip("「」“”\"'")
+    text = re.sub(r"^[-—–~·\s]+", "", text)
+    # 老回复把「《登高》· 杜甫」写在同一项里，作者交给 _poem_by，这里只取题名。
+    text = text.split("·")[0].split("，")[0].strip()
+    hit = re.search(r"《([^》]{1,20})》?", text)
+    if hit:
+        return f"《{hit.group(1)}》"
+    text = text.strip("《》").strip()
+    return f"《{text}》" if text else ""
+
+
+def _poem_year(raw: Any) -> str:
+    """创作年份：只要四位数字，补一个「年」；拿不准就是空，不猜。"""
+    hit = re.search(r"(\d{3,4})", str(raw or ""))
+    return f"{hit.group(1)}年" if hit else ""
+
+
+def _poem_by(raw: Any) -> str:
+    """诗人（朝代）：半角括号统一成全角。"""
     text = str(raw or "").strip().strip("「」“”\"'")
     text = re.sub(r"^[-—–~\s]+", "", text)
-    return text[:40]
+    text = text.replace("(", "（").replace(")", "）")
+    return text[:20]
 
 
 def _dissent_view(dis: Any) -> Dict[str, Any]:
@@ -181,8 +201,10 @@ a{color:#a1521a;text-decoration:none}
 .read{border-left:3px solid #c97a33;padding:2px 0 2px 14px}
 .read p:last-child{margin-bottom:0}
 .read .verdict{font-size:19px;line-height:1.5;font-weight:600;color:#22313f;margin:0 0 14px}
-.read .poem{text-align:center;font-size:16.5px;line-height:1.8;letter-spacing:.16em;color:#8b6a4a;font-weight:500;margin:0 0 10px}
-.read .poem-from{text-align:center;font-size:12.5px;letter-spacing:.06em;color:#a08a72;margin:0 0 16px}
+.read.poem-block{margin:0 0 18px}
+.read.verdict-block{margin:0 0 20px}
+.read .poem{text-align:center;font-size:19px;line-height:1.6;letter-spacing:.1em;color:#a8663a;font-weight:600;margin:0 0 8px}
+.read .poem-from{text-align:center;font-size:13px;line-height:1.75;letter-spacing:.04em;color:#a8663a;margin:0 0 2px}
 .read h3{margin:16px 0 6px;font-size:15px;font-weight:600;color:#a1521a;letter-spacing:.2px}
 .read h3:first-of-type{margin-top:0}
 .read .tag{margin-right:6px}
@@ -265,7 +287,7 @@ footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
   font-size:12px;line-height:1.8;color:#98a2b3}
 footer a{color:#98a2b3;text-decoration:underline}
 @media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}.reg{grid-template-columns:1fr}}
-@media (prefers-color-scheme:dark){main h2,.read h3{color:#e8a765}.read .verdict{color:#f2e6d8}.read .poem{color:#c9a882}.read .poem-from{color:#a89a86}a{color:#e8a765}
+@media (prefers-color-scheme:dark){main h2,.read h3{color:#e8a765}.read .verdict{color:#f2e6d8}.read .poem{color:#e0a878}.read .poem-from{color:#e0a878}a{color:#e8a765}
   body{background:#14171c;color:#c3cad6}
   .stat{background:#14171c}.stat b,.line-h b,td.nm b,.drv b,.line-n b{color:#e6ebf2}
   th{background:#1a1f26;color:#8a94a6}
@@ -807,19 +829,39 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         read = {"headline": "", "sections": [{"h": "", "p": p} for p in read.split("\n") if p.strip()]}
     read = read or {}
     next_day = _next_day_block(payload, read)
-    summary_html = ""
+    # 开篇诗句与定性各自成块，才能插到「盘面」之前：诗句字号与定性同级、只靠
+    # 颜色区分；出处三行是小字同色，读者一眼看出是标注而不是第二句诗。
+    poem_html = ""
+    poem = _poem_text(read.get("poem"))
+    if poem:
+        src = _poem_from(read.get("poem_from"))
+        ann = [
+            f"——{src}" if src else "",
+            _poem_year(read.get("poem_year")),
+            _poem_by(read.get("poem_by")),
+        ]
+        ann = [x for x in ann if x]
+        from_html = (
+            "<p class='poem-from'>" + "<br>".join(_esc(x) for x in ann) + "</p>"
+            if ann
+            else ""
+        )
+        poem_html = (
+            "<div class='read poem-block'>"
+            f"<p class='poem'>「{_esc(poem)}」</p>{from_html}</div>"
+        )
+    verdict_html = ""
+    if read.get("headline"):
+        verdict_html = (
+            f"<div class='read verdict-block'><p class='verdict'>"
+            f"{_esc(read['headline'])}</p></div>"
+        )
+
+    insight_html = ""
+    dissent_html = ""
     focus_html = ""
     if read.get("sections"):
         parts = []
-        poem = _poem_text(read.get("poem"))
-        if poem:
-            # 诗句居中放在开篇定性之前；模型偶尔自带引号，这里统一由模板补。
-            parts.append(f"<p class='poem'>「{_esc(poem)}」</p>")
-            src = _poem_from(read.get("poem_from"))
-            if src:
-                parts.append(f"<p class='poem-from'>——{_esc(src)}</p>")
-        if read.get("headline"):
-            parts.append(f"<p class='verdict'>{_esc(read['headline'])}</p>")
         sections = list(read["sections"])
         watch = read.get("watchlist") or []
         # 模型偶尔仍按老契约把「重点关注个股」写成第六段；有结构化名单时以名单为准
@@ -829,6 +871,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             if sec.get("h"):
                 parts.append(f"<h3>{_esc(sec['h'])}</h3>")
             parts.append(f"<p>{_esc(sec['p'])}</p>")
+        insight_html = f"<h2>盘后洞察</h2><div class='read'>{''.join(parts)}</div>"
         focus = read.get("focus") or {}
         if focus:
             focus_html = _focus_html(
@@ -843,8 +886,10 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
                 )
         dis = _dissent_view(read.get("dissent"))
         if dis["checks"] or dis["summary"]:
-            parts.append(_dissent_html(dis))
-        summary_html = f"<h2>盘后洞察</h2><div class='read'>{''.join(parts)}</div>"
+            block = _dissent_html(dis)
+            if block:
+                # 对比块从盘后洞察里拆出来，紧跟「第三方复盘」之后单独成段。
+                dissent_html = f"<div class='read'>{block}</div>"
 
     top = [l for l in lines if l.get("today", 0) > 0]
     if top:
@@ -860,7 +905,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 
     # The model's headline already states the call; printing the script's lede
     # above it would say the same thing twice in the first screenful.
-    lede_html = "" if summary_html else f'<p class="lede">{_esc(lede)}</p>'
+    lede_html = "" if read.get("headline") else f'<p class="lede">{_esc(lede)}</p>'
 
     mood = kpi.get("emotion_phase") or ""
     degree = day.get("degree")
@@ -895,22 +940,26 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
-<h2 class="project-tagline">盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃</h2>
 </header>
 <main>
+{poem_html}
+{verdict_html}
 {lede_html}
-{summary_html}
 <h2>盘面</h2>
 <div class="stats">{stat_html}</div>
-{extra['funds']}
+{extra['panel']}
+{extra['overseas']}
+{extra['signals']}
+{insight_html}
+{extra['review']}
+{dissent_html}
+{extra['flows']}
 {lines_section}
+{extra['strength']}
 {_lhb_html(payload)}
 {_regulatory_html(payload)}
-{extra['review']}
-{extra['signals']}
 {focus_html}
 {pick_section}
-{extra['overseas']}
 <footer>
 数据来源：<a href="https://lianban.net/mainline.html">第三方信源 · 主线追踪</a>、
 <a href="https://lianban.net/filter.html">一键筛选</a>、

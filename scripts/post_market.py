@@ -399,15 +399,17 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - 禁止买卖建议、目标价、仓位、点位、任何荐股语气。
 - 禁止"综上所述""值得关注""后市可期""静待方向选择"这类空话。
 - 禁止复述页面上已有的表格。
-- poem 是开篇引子：必须是同一首诗里**相连的两句**，10 到 28 字，只给诗句本身，不加作者、不加书名号、不加解释。不许从两首诗里各取一句拼起来。poem_from 给出处，格式固定为《诗名》· 作者，例如 《登高》· 杜甫。
-- 选句的依据是你自己写的那四段：从盘面总结、重点信号、变动归因、趋势展望里体现的涨跌结构、资金去向、情绪阶段、市场宽度中，找出当天的内在气质，再按这个气质去找相符的两句——诗句要和这四段的判断站在一起，不能与你自己写的盘面结论相反。退潮、普涨、分化、缩量各有各的句子，不要用放之四海皆可的励志句。优先用现成的真实诗句，一个字都不许改；实在找不到气质相符的，就自己写两句七言——每句七个字、两句共十四字，两句要押同一个韵、意思连贯，仍须贴合上面四段的判断，不要写成通用励志句。自创时 poem_from 固定写 《无题》· 周鼎，不许署别的名字，也不许写成「佚名」。
+- poem 是开篇引子：必须是同一首诗里**相连的两句**，10 到 28 字，只给诗句本身，不加作者、不加书名号、不加解释。不许从两首诗里各取一句拼起来。出处拆成三项：poem_from 是《诗名》（带书名号）、poem_year 是创作年份（四位数字，拿不准就留空，绝对不许猜或编）、poem_by 是「诗人（朝代）」，例如 杜甫（唐）。
+- 选句的依据是你自己写的那四段：从盘面总结、重点信号、变动归因、趋势展望里体现的涨跌结构、资金去向、情绪阶段、市场宽度中，找出当天的内在气质，再按这个气质去找相符的两句——诗句要和这四段的判断站在一起，不能与你自己写的盘面结论相反。退潮、普涨、分化、缩量各有各的句子，不要用放之四海皆可的励志句。优先用现成的真实诗句，一个字都不许改；实在找不到气质相符的，就自己写两句七言——每句七个字、两句共十四字，两句要押同一个韵、意思连贯，仍须贴合上面四段的判断，不要写成通用励志句。自创时 poem_from 固定写 《无题》、poem_by 固定写 周鼎（今）、poem_year 留空，不许署别的名字，也不许写成「佚名」。
 - 禁止编造样本量、命中率、历史概率与形态统计；除了 next_day_base_rate 与 pct_rank_60d，任何统计数字都不许出现在正文里。
 - 输入里没有的东西就写"数据未提供"，不要用推测补齐，也不要把"没有这个消息"写成"没有催化"。
 
 【输出格式】
 只输出一个 JSON 对象，不要 markdown 代码块，不要任何解释文字：
 {{"poem": "同一首诗中相连的两句，10 到 28 字，必须真实存在、能查到，只给诗句本身",
- "poem_from": "《诗名》· 作者名，例如 《登高》· 杜甫；自己写的固定填 《无题》· 周鼎",
+ "poem_from": "只给书名号里的题名，例如 《登高》；自己写的固定填 《无题》",
+ "poem_year": "这首诗的创作年份，四位数字，例如 767；拿不准就留空字符串，不要猜",
+ "poem_by": "诗人（朝代），例如 杜甫（唐）；自己写的固定填 周鼎（今）",
  "headline": "一句话定性，不超过 18 字，必须是判断而不是描述",
  "sections": [
   {{"h": "盘面总结", "p": "70-110 字"}},
@@ -1182,6 +1184,8 @@ def _parse_read(text: str) -> Dict[str, Any]:
             return {
                 "poem": str(doc.get("poem") or "").strip(),
                 "poem_from": str(doc.get("poem_from") or "").strip(),
+                "poem_year": str(doc.get("poem_year") or "").strip(),
+                "poem_by": str(doc.get("poem_by") or "").strip(),
                 "headline": str(doc.get("headline") or "").strip(),
                 "sections": sections,
                 "watchlist": watch,
@@ -1474,7 +1478,6 @@ def _head(level: int, icon: str, text: str) -> str:
     return f"{marks} {icon} {text}" if icon else f"{marks} {text}"
 
 
-# 页面 header 的第二行。推文补上同一句，两边标题下的引导语才不是两套说法。
 def _clean_poem(raw: Any) -> str:
     """模型偶尔自带题名、引号或作者署名，统一剥掉，只留诗句本身。"""
     text = str(raw or "").strip()
@@ -1487,13 +1490,30 @@ def _clean_poem(raw: Any) -> str:
 
 
 def _clean_poem_from(raw: Any) -> str:
-    """出处保留《诗名》与作者，只去掉模型爱加的前缀破折号和外层引号。"""
+    """出处只留《诗名》：作者与年份各有自己的字段，这里不许混进来。"""
+    text = str(raw or "").strip().strip("「」“”\"'")
+    text = re.sub(r"^[-—–~·\s]+", "", text)
+    # 老回复把「《登高》· 杜甫」写在同一项里，作者交给 poem_by，这里只取题名。
+    text = text.split("·")[0].split("，")[0].strip()
+    hit = re.search(r"《([^》]{1,20})》?", text)
+    if hit:
+        return f"《{hit.group(1)}》"
+    text = text.strip("《》").strip()
+    return f"《{text}》" if text else ""
+
+
+def _clean_poem_year(raw: Any) -> str:
+    """创作年份：只要四位数字，补一个「年」；拿不准就是空，不猜。"""
+    hit = re.search(r"(\d{3,4})", str(raw or ""))
+    return f"{hit.group(1)}年" if hit else ""
+
+
+def _clean_poem_by(raw: Any) -> str:
+    """诗人（朝代）：半角括号统一成全角，和页面同一副样子。"""
     text = str(raw or "").strip().strip("「」“”\"'")
     text = re.sub(r"^[-—–~\s]+", "", text)
-    return text[:40]
-
-
-_TAGLINE = "盘面总结 · 重点信号 · 变动归因 · 趋势展望 · 蓄势 / 主线 / 活跃"
+    text = text.replace("(", "（").replace(")", "）")
+    return text[:20]
 
 
 def _focus_markdown(
@@ -1501,8 +1521,9 @@ def _focus_markdown(
 ) -> List[str]:
     """明日关注的 Markdown 行，不含大标题。
 
-    位置由调用方决定：data_markdown 把它挂在「今日信号面」之后，读者看完今日
-    盘面再看明日关注。每类只留标题、题材、个股，不解释票池怎么来的。
+    位置由调用方决定：data_markdown 把它挂在「与第三方复盘结论对比」之后，
+    读者看完今日与别人的判断，再读明天要盯的题材。每类只留标题、题材、个股，
+    不解释票池怎么来的。
     """
     focus = read.get("focus") or {}
     if not any(focus.get(b) for b in ("主线", "活跃", "蓄势")):
@@ -1564,57 +1585,58 @@ def _focus_markdown(
     return out
 
 
-def _read_markdown(
-    read: Dict[str, Any], note: str = "", payload: Optional[Dict[str, Any]] = None
-) -> str:
-    """The push body: the same read the page renders, as Markdown.
+def _poem_markdown(read: Dict[str, Any]) -> str:
+    """诗句块：诗句写成引用块里的二级标题，出处三行跟在下面。
 
-    Server酱 renders Markdown only — no HTML and no CSS — so no colour can be
-    set from here, and an inline ``<font color>`` would arrive as literal text.
-    What survives both the light and the dark WeChat webview is structure:
-    heading levels, blockquotes and horizontal rules carry the hierarchy, and
-    the icons sit on section heads where they work as anchors. Nothing in the
-    body depends on a background colour to stay legible, so neither theme can
-    swallow a line.
-
-    The counts, the 60-day position and the dragon-tiger net amount are read
-    from the payload, never from the model's prose: a figure the model retypes
-    is a figure it can get wrong, and the page already holds the right one.
+    微信只渲染 Markdown，字号只能靠标题级别、颜色只能靠容器：把 ``##`` 放进
+    引用块，字号就和 headline 同级，底色仍是引用块的灰蓝——「一样大、不一样
+    颜色」在这里只有这样能同时成立。出处用正文大小、同一个引用块，读者一眼
+    看出是标注而不是第二句诗。
     """
-    if not read:
-        return f"> 🌡️ {note}" if note else ""
-    payload = payload or {}
-
-    out: List[str] = [_TAGLINE]
     poem = _clean_poem(read.get("poem"))
-    if poem:
-        # 微信只渲染 Markdown，没有居中；引用块是唯一能让诗句单独成行、
-        # 不并进正文的办法。网页那边是真居中。出处另起一行，同一个引用块内。
-        src = _clean_poem_from(read.get("poem_from"))
-        block = f"> 「{poem}」"
-        if src:
-            block += f"\n>\n> ——{src}"
-        out.append(block)
-    headline = str(read.get("headline") or "").strip()
-    if headline:
-        out.append(f"## {headline}")
-    # The stats line stays a blockquote under the verdict: grey, indented and
-    # visibly a footnote, so it never competes with the call above it.
-    if note:
-        out.append(f"> 🌡️ {note}")
+    if not poem:
+        return ""
+    lines = [f"> ## 「{poem}」"]
+    ann: List[str] = []
+    src = _clean_poem_from(read.get("poem_from"))
+    if src:
+        ann.append(f"——{src}")
+    year = _clean_poem_year(read.get("poem_year"))
+    if year:
+        ann.append(year)
+    by = _clean_poem_by(read.get("poem_by"))
+    if by:
+        ann.append(by)
+    for item in ann:
+        lines.append(">")
+        lines.append(f"> {item}")
+    return "\n".join(lines)
+
+
+def _read_sections_markdown(read: Dict[str, Any]) -> List[str]:
+    """四段研判：每段一条分隔线加三级标题，排在数字板块之后。"""
+    out: List[str] = []
     for sec in read.get("sections") or []:
         if not isinstance(sec, dict):
             continue
         head = str(sec.get("h") or "").strip()
         body = str(sec.get("p") or "").strip()
+        if not head and not body:
+            continue
+        parts = ["---"]
         if head:
-            out.append("---")
-            out.append(_head(3, _SECTION_ICONS.get(head, ""), head))
+            parts.append(_head(3, _SECTION_ICONS.get(head, ""), head))
         if body:
             items = _split_numbered(body)
             # One blank-line-joined block per section: keeping the numbered
             # items on adjacent lines lets Markdown render them as one list.
-            out.append("\n".join(items) if len(items) > 1 else body)
+            parts.append("\n".join(items) if len(items) > 1 else body)
+        out.append("\n\n".join(parts))
+    return out
+
+
+def _dissent_markdown(read: Dict[str, Any], payload: Optional[Dict[str, Any]]) -> List[str]:
+    """与第三方复盘结论对比：紧接在「第三方复盘」之后，两段连着读才成对照。"""
     dis = _dissent_view(read.get("dissent"))
     # 代码侧兜底：lianban 的复盘没过当日校验时 ai_review 已被清空，模型手里
     # 根本没有第三方内容，它写出来的「分歧」就是对着空气反驳。这一节由数据
@@ -1623,18 +1645,18 @@ def _read_markdown(
         dis = {"checks": [], "summary": ""}
     # 结语不上推文：逐条核对已经说清同异，一句总结只是重复，还常写成无法
     # 核对的判断。summary 只用于日志里的长度诊断。
-    if dis["checks"]:
-        out.append("---")
-        out.append(_head(3, "⚖️", "与第三方复盘结论对比"))
-        for c in dis["checks"]:
-            bits = [f"**{c['verdict']}**"] if c.get("verdict") else []
-            if c.get("claim"):
-                bits.append(c["claim"])
-            line = " · ".join(bits)
-            if c.get("basis"):
-                line += f" — {c['basis']}"
-            out.append(f"- {line}")
-    return "\n\n".join(out)
+    if not dis["checks"]:
+        return []
+    parts = ["---", _head(3, "⚖️", "与第三方复盘结论对比")]
+    for c in dis["checks"]:
+        bits = [f"**{c['verdict']}**"] if c.get("verdict") else []
+        if c.get("claim"):
+            bits.append(c["claim"])
+        line = " · ".join(bits)
+        if c.get("basis"):
+            line += f" — {c['basis']}"
+        parts.append(f"- {line}")
+    return ["\n\n".join(parts)]
 
 
 def _card_short(read: Dict[str, Any], note: str = "", limit: int = 48) -> str:
@@ -1751,11 +1773,14 @@ def _concept_match(theme: str, boards: List[Dict[str, Any]]):
     return hit, hit["name"]
 
 
-def _strength_lines(payload: Dict[str, Any]) -> List[str]:
-    """主线强度：主线在概念板块里的当日涨跌幅，涨幅在前、跌幅在后。
+def _concept_strength(payload: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]:
+    """主线在东财概念板块里的当日涨跌幅，条长按涨跌幅绝对值归一。
 
-    数据源是东财概念板块，与 kpi、龙虎榜同一套行情。连板网的 #s-strength
-    不再使用——它的板块集合和它自己的主线趋势对不上，也没有公开算法。
+    数据源是东财概念板块，与 kpi、龙虎榜同一套行情。连板网的 #s-strength 不再
+    使用——它的板块集合和它自己的主线趋势对不上，也没有公开算法。
+
+    返回值分三种：``None`` 接口没通（调用方回退连板网那份），``[]`` 接口通了但
+    一条主线都没对上板块（故障与匹配问题要分开看日志），否则是按涨幅降序的行。
     """
     lines = (payload.get("matrix") or {}).get("lines") or []
     themes = [
@@ -1768,19 +1793,49 @@ def _strength_lines(payload: Dict[str, Any]) -> List[str]:
     try:
         boards = eastmoney.concept_flow()
     except Exception as exc:  # noqa: BLE001 - 缺一块，不是整份晚报失败
-        print(f"strength: concept boards failed: {exc}", file=sys.stderr)
-        return []
-    rows = []
+        print(f"strength: 东财概念板块失败，回退连板网: {exc}", file=sys.stderr)
+        return None
+    rows: List[Dict[str, Any]] = []
+    used: set = set()
     for theme in themes:
         hit, matched = _concept_match(theme, boards)
         if hit is None:
-            print(f"strength: {theme} 未匹配到概念板块", file=sys.stderr)
+            print(f"strength: {theme} 未匹配到东财概念板块", file=sys.stderr)
             continue
-        rows.append((theme, hit["pct"], matched))
+        # 同一条线在 matrix 里会有带括号和不带括号两条（AI应用 / AI应用(AI视频)），
+        # 落到同一个板块时只留先出现的那条，不把同一个数字印两遍。
+        if matched in used:
+            continue
+        used.add(matched)
+        rows.append({"name": theme, "value": float(hit["pct"]), "matched": matched})
     if not rows:
+        print("strength: 东财概念板块 0 行，本块留空", file=sys.stderr)
         return []
-    rows.sort(key=lambda x: -x[1])
-    return _rows([f"{t} {p:+.1f}%" for t, p, _ in rows], 4)
+    rows.sort(key=lambda r: -r["value"])
+    # 一行汇总写进日志：周一核对东财与连板网的差异时，grep 一次就能看到每条主线
+    # 落到了哪个板块、取的是多少。
+    print(
+        "strength: " + " · ".join(f"{r['name']}→{r['matched']} {r['value']:+.1f}%" for r in rows),
+        file=sys.stderr,
+    )
+    top = max(abs(r["value"]) for r in rows) or 1.0
+    for r in rows:
+        # 条长按涨跌幅绝对值归一：同一天里跌得最狠的那条满格，剩下的按比例缩。
+        # 涨跌幅和条长是两个维度，颜色分涨跌、长度分幅度，读者不用换算。
+        r["bar"] = max(2, min(100, int(round(abs(r["value"]) / top * 100))))
+        r["pct"] = f"{r['value']:+.1f}%"
+        del r["value"]
+    return rows
+
+
+def _strength_lines(payload: Dict[str, Any]) -> List[str]:
+    """主线强度：页面与推送读同一份行，不在这里另算一遍。"""
+    extra = payload.get("extra") or {}
+    rows = extra.get("strength_em")
+    if rows is None:
+        rows = extra.get("strength") or []
+    items = [f"{r['name']} {r['pct']}" for r in rows if r.get("name")]
+    return _rows(items, 4)
 
 
 def _flow_lines(payload: Dict[str, Any]) -> List[str]:
@@ -1917,12 +1972,32 @@ def _signal_lines(payload: Dict[str, Any]) -> List[str]:
 
 
 def _overseas_lines(payload: Dict[str, Any]) -> List[str]:
+    """外盘：当日亚太在上、前夜美股在下，标签把时点写在脸上。
+
+    读者先关心今天亚洲怎么走（当日），再看昨夜美股（前夜），所以亚太排前面；
+    标签也把时点写明，免得把隔夜的跌幅当成今天亚太的。
+    """
     groups = (payload.get("extra") or {}).get("overseas") or []
-    out = []
-    for g in groups:
+    order = (("亚太", "当日亚太"), ("美股", "前夜美股"))
+
+    def _key(group: Dict[str, Any]) -> int:
+        label = str(group.get("label") or "").split(" · ")[0]
+        for i, (word, _) in enumerate(order):
+            if word in label:
+                return i
+        return len(order)
+
+    out: List[str] = []
+    for g in sorted(groups, key=_key):
         items = [f"{x['name']} {x['pct']}" for x in (g.get("items") or []) if x.get("name")]
-        if items:
-            out.append(f"**{str(g.get('label') or '').split(' · ')[0]}** " + " · ".join(items))
+        if not items:
+            continue
+        label = str(g.get("label") or "").split(" · ")[0]
+        for word, shown in order:
+            if word in label:
+                label = shown
+                break
+        out.append(f"**{label}** " + " · ".join(items))
     return out
 
 
@@ -1948,43 +2023,71 @@ def _pack(lines: List[str]) -> List[str]:
 
 
 def data_markdown(
-    payload: Dict[str, Any], focus_lines: Optional[List[str]] = None
+    payload: Dict[str, Any],
+    focus_lines: Optional[List[str]] = None,
+    read: Optional[Dict[str, Any]] = None,
+    note: str = "",
 ) -> str:
-    """页面上的数字板块，按页面顺序排成 Markdown。
+    """整条推文正文：研判与数字板块按读者实际读下去的顺序拼成一份 Markdown。
 
-    研判是主角，这里是支撑：所以整段只用 ``##`` 标题分节，不再逐个加图标，
-    视觉上比上面的研判低一层。明日关注不在研判里，挂在「今日信号面」之后：
-    读者先看完今日盘面，再读明天要盯的题材。
+    诗句 → 定性 → 温度 → 盘面 → 外盘参考 → 今日信号面 → 四段研判 → 第三方
+    复盘 → 与第三方复盘结论对比 → 主力资金 → 主线追踪 → 主线强度 → 龙虎榜 →
+    监管异动 → 明日关注 → 选股参考。
+
+    开篇只放当天最硬的三个事实，研判紧跟其后；第三方复盘与逐条对比连着放；
+    资金、主线、龙虎榜、监管属于明细佐证，靠后放，读者要查再往下翻；选股参考
+    收在最后，先看我们的判断，再看别人的候选池，两套口径不会混在一起。
     """
-    sections: List[tuple] = []
+    read = read or {}
+    chunks: List[str] = []
 
-    def add(title: str, lines: List[str]) -> None:
+    poem = _poem_markdown(read)
+    if poem:
+        chunks.append(poem)
+    headline = str(read.get("headline") or "").strip()
+    if headline:
+        chunks.append(f"## {headline}")
+    # The stats line stays a blockquote under the verdict: grey, indented and
+    # visibly a footnote, so it never competes with the call above it.
+    if note:
+        chunks.append(f"> 🌡️ {note}")
+
+    def sec(title: str, lines: List[str]) -> None:
         if lines:
-            sections.append((title, _pack(lines)))
+            chunks.append(f"## {title}\n\n" + "\n\n".join(_pack(lines)))
 
-    add("盘面", _kpi_lines(payload))
-    # 资金先于主线：先看钱往哪去，再看哪条线在走。主线追踪与主线强度同属主线
-    # 一段，前后相接；当日主线已由主线追踪覆盖，不再重复。
-    add("主力资金", _flow_lines(payload))
-    add("主线追踪", _matrix_lines(payload))
-    add("主线强度", _strength_lines(payload))
-    add("龙虎榜 · 题材归属", _lhb_lines(payload))
-    add("监管异动", _regulatory_lines(payload))
-    add("第三方复盘", _review_lines(payload))
-    add("今日信号面", _signal_lines(payload))
+    # 开篇只留三样当天的硬事实：盘面、外盘、信号面。它们回答「今天怎么样」，
+    # 读者看完这一段就知道要不要往下读。
+    mark = len(chunks)
+    sec("盘面", _kpi_lines(payload))
+    sec("外盘参考", _overseas_lines(payload))
+    sec("今日信号面", _signal_lines(payload))
+    if len(chunks) > mark:
+        chunks.insert(mark, "---")
+
+    # 研判四段接在后面：先看事实，再听解释。
+    for block in _read_sections_markdown(read):
+        chunks.append(block)
+    # 第三方复盘与逐条对比连着放，中间不插任何东西，两段才成对照。
+    sec("第三方复盘", _review_lines(payload))
+    for block in _dissent_markdown(read, payload):
+        chunks.append(block)
+
+    # 明细数据靠后：资金、主线、龙虎榜、监管是佐证，读者要查再往下翻。资金先于
+    # 主线——先看钱往哪去，再看哪条线在走；主线追踪与主线强度前后相接。
+    mark = len(chunks)
+    sec("主力资金", _flow_lines(payload))
+    sec("主线追踪", _matrix_lines(payload))
+    sec("主线强度", _strength_lines(payload))
+    sec("龙虎榜 · 题材归属", _lhb_lines(payload))
+    sec("监管异动", _regulatory_lines(payload))
+    if len(chunks) > mark:
+        chunks.insert(mark, "---")
+
     if focus_lines:
-        sections.append(("明日关注", _pack(focus_lines)))
-    # 选股参考是第三方信源的面板，排在明日关注之后：读者先看我们的判断，再看
-    # 别人的候选池，两边的口径不会混在一起。
-    add("第三方信源选股参考", _pick_lines(payload))
-    add("外盘参考", _overseas_lines(payload))
-    if not sections:
-        return ""
-    out: List[str] = ["---"]
-    for title, lines in sections:
-        out.append(f"## {title}")
-        out.extend(lines)
-    return "\n\n".join(out)
+        sec("明日关注", _pack(focus_lines))
+    sec("第三方信源选股参考", _pick_lines(payload))
+    return "\n\n".join(chunks)
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -2022,6 +2125,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("no date from any source; aborting", file=sys.stderr)
         return 2
     payload["date"] = date
+    # 主线强度只算一次：页面和推送都读 extra["strength_em"]，两边的名字、涨跌幅
+    # 和条长才是同一份数。接口没通时返回 None，保留连板网抓下来的那份兜底。
+    _strength = _concept_strength(payload)
+    if _strength is not None:
+        payload.setdefault("extra", {})["strength_em"] = _strength
     # 今日信号面只存在于 days/<date>.html，而且那块要等页面自己的脚本跑完才
     # 出现（直接 HTTP 抓回来的是 6 KB 空壳）。date 是上面几个源合出来的，
     # 所以放在这里抓：进 collect() 的时候还不知道该抓哪一天。
@@ -2200,14 +2308,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         + (f"｜总龙头 {lead}" if lead else "")
         + "）"
     )
-    desp = "\n\n".join(
-        part
-        for part in [
-            _read_markdown(summary, note, payload),
-            # 页面上的数字板块：推文里此前只有研判，读者要跳出去才看得到盘面与矩阵。
-            data_markdown(payload, _focus_markdown(summary, payload)),
-        ]
-        if part
+    # 研判与数字板块在同一次拼接里排序：顺序写死在 data_markdown 里，推文和
+    # 页面才不会各排一套。
+    desp = data_markdown(
+        payload, _focus_markdown(summary, payload), read=summary, note=note
     )
     # dissent 空着不报错、也不占版面，事后只能靠日志判断是「模型认为一致」
     # 还是「模型根本没拿到那份复盘」。两个长度一起打，一眼能分清。
