@@ -138,29 +138,40 @@ def _dissent_view(dis: Any) -> Dict[str, Any]:
 
 
 def _dissent_html(dis: Dict[str, Any]) -> str:
-    """逐条核对渲染成清单：verdict 用色区分，claim 是它说的，basis 是我们的数据。"""
-    rows = []
+    """逐条核对按「异 / 同」分组，每条上面是它说的、下面是我们查到的。
+
+    原先是三列并排：标记、它说、我们查到，后两列各分到一半宽度，长句子在
+    窄栏里读一半就断。分组之后每条独占整行宽度，先看它说了什么、再看数据
+    怎么说，同与异的对照反而更清楚。
+    """
+    groups: Dict[str, list] = {"diff": [], "same": []}
     for c in dis.get("checks") or []:
         verdict = c.get("verdict") or ""
         # 契约写的是「同／异／它没说」，但模型会写「不同」「未覆盖」这类变体；
-        # 按关键词判而不是按首字，避免「不同」被染成"同"的绿色。
+        # 按关键词判而不是按首字，避免「不同」被归到「同」。
         if "异" in verdict or "不同" in verdict:
-            cls = "dv-diff"
-        elif "没说" in verdict or "未提" in verdict or "未覆盖" in verdict:
-            cls = "dv-miss"
+            groups["diff"].append(c)
         else:
-            cls = "dv-same"
-        rows.append(
-            f"<li><span class='dv {cls}'>{_esc(verdict)}</span>"
-            f"<span class='dc'>{_esc(c.get('claim') or '')}</span>"
-            f"<span class='db'>{_esc(c.get('basis') or '')}</span></li>"
+            groups["same"].append(c)
+    blocks = []
+    for key, label in (("diff", "异"), ("same", "同")):
+        rows = groups[key]
+        if not rows:
+            continue
+        items = "".join(
+            f"<div class='ditem'><p class='dc'>{_esc(c.get('claim') or '')}</p>"
+            f"<p class='db'>{_esc(c.get('basis') or '')}</p></div>"
+            for c in rows
+        )
+        blocks.append(
+            f"<div class='dgroup'><p class='dgh dgh-{key}'>{label}</p>{items}</div>"
         )
     # 结语不再渲染：读者要的是逐条核对，一句总结只是把清单又概括一遍，
     # 而且容易写成「它缺乏数据支撑」这类无法核对的话。summary 仍留在
     # _dissent_view 的返回里，只给日志看长度，不上页面。
-    if not rows:
+    if not blocks:
         return ""
-    return f"<h3>与第三方复盘结论对比</h3><ul class='dissent'>{''.join(rows)}</ul>"
+    return f"<h3>与第三方复盘结论对比</h3><div class='dissent'>{''.join(blocks)}</div>"
 
 
 def _pct_class(raw: str) -> str:
@@ -208,15 +219,17 @@ a{color:#a1521a;text-decoration:none}
 .read h3{margin:16px 0 6px;font-size:15px;font-weight:600;color:#a1521a;letter-spacing:.2px}
 .read h3:first-of-type{margin-top:0}
 .read .tag{margin-right:6px}
-.read ul.dissent{list-style:none;margin:6px 0 0;padding:0}
-.read ul.dissent li{display:flex;gap:8px;align-items:baseline;padding:5px 0;border-bottom:1px solid #f0f2f4;font-size:13px;line-height:1.65}
-.read ul.dissent li:last-child{border-bottom:0}
-.read .dv{flex:0 0 auto;font-size:11.5px;padding:1px 7px;border-radius:9px;background:#eceff3;color:#2b3440;white-space:nowrap}
-.read .dv-diff{background:#fbe9e7;color:#b3402c}
-.read .dv-miss{background:#eef1f6;color:#5a6473}
-.read .dv-same{background:#e8f2ea;color:#2f6b3f}
-.read .dc{flex:0 0 auto;max-width:38%;color:#22313f}
-.read .db{flex:1;min-width:0;color:#6b7684}
+.read .dissent{margin:6px 0 0}
+.read .dgroup{margin:0 0 10px}
+.read .dgroup:last-child{margin-bottom:0}
+.read .dgh{font-size:12px;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:6px}
+.read .dgh::before{content:"";width:3px;height:11px;border-radius:2px;background:currentColor}
+.read .dgh-diff{color:#b3402c}
+.read .dgh-same{color:#2f6b3f}
+.read .ditem{padding:7px 0;border-bottom:1px solid #f0f2f4}
+.read .ditem:last-child{border-bottom:0}
+.read .dc{font-size:13px;line-height:1.65;color:#4c5866;margin:0}
+.read .db{font-size:13px;line-height:1.65;color:#22313f;margin:3px 0 0}
 .read .dsum{margin:8px 0 0;font-size:13.5px;color:#4c5866}
 .wl{margin:0 0 18px}
 .wl-h{display:flex;align-items:baseline;gap:8px;margin:16px 0 4px}
@@ -232,9 +245,14 @@ a{color:#a1521a;text-decoration:none}
 .wl-n{display:block;margin-top:3px;font-size:13.5px;color:#8a94a6;line-height:1.65}
 .tc{margin:0 0 4px}
 .tc .wl-u li{padding:10px 0}
-.focus h3{margin:14px 0 3px;font-size:16px;font-weight:600;color:#22313f;line-height:1.4}
-.focus h3 .tag{margin-left:8px;vertical-align:1px}
-.focus .wl{margin:0 0 12px}
+.focus h3{margin:16px 0 4px;font-size:17px;font-weight:700;color:#22313f;line-height:1.35;
+  padding-left:9px;border-left:3px solid #f37021}
+.focus h3 .tag{margin-left:8px;vertical-align:1px;font-weight:500}
+.focus .wl{margin:0 0 14px}
+.focus .wl-g{padding-left:12px}
+.focus .wl-u{padding-left:12px}
+.focus .wl-u li{padding:8px 0}
+.focus .wl-u .nm{font-size:14.5px;font-weight:600}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e9ebec;
   border:1px solid #e9ebec;border-radius:8px;overflow:hidden}
 .stat{background:#fff;padding:12px 4px;text-align:center}
@@ -283,9 +301,6 @@ td.nm .sub{display:block;font-size:11px;color:#8a94a6;white-space:nowrap;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .reg .sub{display:block;font-size:11px;color:#8a94a6;
   font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
-  font-size:12px;line-height:1.8;color:#98a2b3}
-footer a{color:#98a2b3;text-decoration:underline}
 @media (max-width:360px){body{font-size:16px}.project-name{font-size:22px}.stat b{font-size:18px}.reg{grid-template-columns:1fr}}
 @media (prefers-color-scheme:dark){main h2,.read h3{color:#e8a765}.read .verdict{color:#f2e6d8}.read .poem{color:#e0a878}.read .poem-from{color:#e0a878}a{color:#e8a765}
   body{background:#14171c;color:#c3cad6}
@@ -499,8 +514,7 @@ def _lhb_html(payload: Dict[str, Any]) -> str:
         )
     return (
         "<h2>龙虎榜 · 题材归属</h2>"
-        "<p class='hint'>净买额前 15；题材由本地题材索引倒查，"
-        "与当日题材同名即归位，未收录的票照实标出</p>"
+        "<p class='hint'>净买额前 15</p>"
         "<table><colgroup><col><col style='width:66px'><col style='width:78px'></colgroup>"
         "<thead><tr><th>个股 / 所属题材</th><th>涨跌</th><th>净额</th></tr></thead>"
         "<tbody>" + "".join(rows) + "</tbody></table>"
@@ -531,8 +545,7 @@ def _regulatory_html(payload: Dict[str, Any]) -> str:
         )
     return (
         "<h2>监管异动 · 异常波动提醒</h2>"
-        f"<p class='hint'>共 {len(items)} 只，按今年连板数排序；"
-        "仅作风险提示，不进入明日候选，也不参与「活跃」判定</p>"
+        f"<p class='hint'>共 {len(items)} 只，按今年连板数排序</p>"
         "<ul class='reg'>" + "".join(chips) + "</ul>"
     )
 
@@ -798,13 +811,13 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
                 f"<td class='num {_pct_class(r['from_high60'])}'>{_esc(r['from_high60'])}</td>"
                 "</tr>"
             )
-        total = block.get("total")
-        hint = f"共 {total} 只，免费可见前 5" if total else "前 5 只"
+        # 副标题只留筛选口径：总只数和「免费可见前 5」都是数据源的取数边界，
+        # 不是读者要判断的东西，去掉之后标题下面直接接这一档怎么筛的。
         why = block.get("why") or ""
         pick_blocks.append(
             f"<h2>{_esc(label)}</h2>"
-            f"<p class='hint'>{_esc(hint)}{('｜' + _esc(why)) if why else ''}</p>"
-            "<table><colgroup><col style='width:26px'><col>"
+            + (f"<p class='hint'>{_esc(why)}</p>" if why else "")
+            + "<table><colgroup><col style='width:26px'><col>"
             "<col style='width:74px'><col style='width:64px'></colgroup>"
             "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距高点</th></tr></thead>"
             "<tbody>" + "".join(body) + "</tbody></table>"
@@ -937,7 +950,10 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <meta property="og:type" content="article">
 <meta name="theme-color" content="#7a3b1e">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}</style></head><body>
+<style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}
+footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
+  font-size:12px;line-height:1.8;color:#98a2b3}
+</style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
 </header>
@@ -961,12 +977,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 {focus_html}
 {pick_section}
 <footer>
-数据来源：<a href="https://lianban.net/mainline.html">第三方信源 · 主线追踪</a>、
-<a href="https://lianban.net/filter.html">一键筛选</a>、
-<a href="https://lianban.net/today.html">当日复盘</a>、
-<a href="https://lianban.net/lhb.html">龙虎榜</a>。
-行情与题材数据版权归第三方信源，依 CC BY 4.0 署名引用。<br>
-本页由 Horizon 自动生成，涨停家数只说明资金当天在买什么，不构成任何投资建议。
+本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。
 </footer>
 </main>
 {next_day}</body></html>"""

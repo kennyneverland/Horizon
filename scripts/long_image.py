@@ -417,8 +417,8 @@ def push_image(targets: str, title: str, image_urls, link: str = "", banners_pat
         return False
     urls = [image_urls] if isinstance(image_urls, str) else list(image_urls)
     desc = "\n\n".join(f"![长图]({u})" for u in urls)
-    if link:
-        desc += f"\n\n[网页版]({link})"
+    # 不再在长图下面挂「网页版」链接：读者要的是这张图，多一行蓝字只是把
+    # 注意力从图上带走。link 参数保留，调用方不用改。
     banners = _load_banners(banners_path) if banners_path else []
     print(f"push: {len(ends)} endpoints, {len(banners)} banners")
     delivered = 0
