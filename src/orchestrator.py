@@ -1,6 +1,8 @@
 """Main orchestrator coordinating the entire workflow."""
 
 import asyncio
+import json
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -87,6 +89,27 @@ def _deduplication_url_key(url: str) -> tuple[str, str, str, str, Optional[int],
         path,
         "&".join(query_parts),
     )
+
+
+def _digest_card_desc(summary: str, limit: int = 100) -> str:
+    """早报没有单句定性，卡片描述取正文里信息量最大的第一段。
+
+    「从 453 条内容中筛选出 33 条」这种计数句对读者没有信息量，跳过；
+    往下取隔夜外围那一行，那里有具体指数与个股幅度，转发时一眼能看出
+    今天该关注什么。
+    """
+    for raw in (summary or "").splitlines():
+        line = raw.strip().lstrip(">").strip()
+        if not line or line.startswith(("#", "---", "|")):
+            continue
+        plain = re.sub(r"[*_`\[\]()]|「|」", "", line)
+        plain = re.sub(r"\s+", " ", plain).strip()
+        if not plain:
+            continue
+        if re.match(r"^从\s*\d+\s*条内容中筛选出\s*\d+\s*条", plain):
+            continue
+        return plain[:limit]
+    return ""
 
 
 @dataclass
@@ -353,13 +376,19 @@ class HorizonOrchestrator:
                     dest_path = safe_output_path(posts_dir, post_filename)
 
                     # Add Jekyll front matter
+                    card_desc = _digest_card_desc(summary)
                     front_matter = (
                         "---\n"
                         "layout: default\n"
                         f"title: \"Horizon Summary: {today} ({lang.upper()})\"\n"
                         f"date: {today}\n"
                         f"lang: {lang}\n"
-                        "---\n\n"
+                        + (
+                            f"description: {json.dumps(card_desc, ensure_ascii=False)}\n"
+                            if card_desc
+                            else ""
+                        )
+                        + "---\n\n"
                     )
 
                     # Strip leading H1 header to avoid duplication with Jekyll title
