@@ -20,9 +20,12 @@ import json
 import re
 import sys
 import urllib.request
-
-import httpx
 from typing import Any, Dict, List, Optional
+
+try:  # httpx 由 workflow 装上；缺失时退回 urllib，不让整篇因为一个可选块崩掉
+    import httpx
+except ImportError:  # pragma: no cover - 只在依赖没装时走到
+    httpx = None
 
 TODAY_URL = "https://lianban.net/today.html"
 MARKET_URL = "https://lianban.net/market.html"
@@ -291,14 +294,23 @@ _SINA_FUT = (("纳指期", "hf_NQ"), ("标普期", "hf_ES"))
 
 
 def _overseas_get(url: str, headers: Optional[Dict[str, str]] = None, timeout: float = 20.0) -> str:
-    """东财会掐掉 urllib 的 TLS 指纹（RemoteDisconnected），httpx 才放行。
+    """东财会掐掉 urllib 的默认指纹（RemoteDisconnected），httpx 才放行。
 
-    仓库里 src/processing/eastmoney.py 走的也是 httpx，这里保持一致。
+    workflow 里装了 httpx；万一环境里没有，退回 urllib 尽力取一次。取不到由
+    调用方按「宁缺不错」处理，不让整篇因为一个可选块崩掉。
     """
-    with httpx.Client(timeout=timeout, headers=headers or {"User-Agent": UA}) as client:
-        resp = client.get(url)
-        resp.raise_for_status()
-        return resp.text
+    hdrs = headers or {"User-Agent": UA}
+    if httpx is not None:
+        with httpx.Client(timeout=timeout, headers=hdrs) as client:
+            resp = client.get(url)
+            resp.raise_for_status()
+            return resp.text
+    request = urllib.request.Request(url, headers=hdrs)
+    with urllib.request.urlopen(request, timeout=timeout) as resp:
+        body = resp.read()
+        if resp.headers.get("Content-Encoding") == "gzip":
+            body = gzip.decompress(body)
+    return body.decode("utf-8", "replace")
 
 
 def _pct(value: float) -> str:
