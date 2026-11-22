@@ -201,7 +201,7 @@ a{color:#a1521a;text-decoration:none}
 .read{border-left:3px solid #c97a33;padding:2px 0 2px 14px}
 .read p:last-child{margin-bottom:0}
 .read .verdict{font-size:19px;line-height:1.5;font-weight:600;color:#22313f;margin:0 0 14px}
-.read.poem-block{margin:0 0 18px}
+.read.poem-block{margin:0 0 18px;border-left:0;padding-left:0}
 .read.verdict-block{margin:0 0 20px}
 .read .poem{text-align:center;font-size:19px;line-height:1.6;letter-spacing:.1em;color:#a8663a;font-weight:600;margin:0 0 8px}
 .read .poem-from{text-align:center;font-size:13px;line-height:1.75;letter-spacing:.04em;color:#a8663a;margin:0 0 2px}
