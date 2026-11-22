@@ -951,8 +951,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
 <meta name="theme-color" content="#7a3b1e">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}
-footer{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
-  font-size:12px;line-height:1.8;color:#98a2b3}
+footer{{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
+  font-size:12px;line-height:1.8;color:#98a2b3}}
 </style></head><body>
 <header class="page-header">
 <h1 class="project-name">Kenny's Horizon {_esc(date)} 盘后洞察晚报</h1>
