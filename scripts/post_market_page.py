@@ -866,14 +866,30 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     degree = day.get("degree")
     mood_text = f"{mood} {degree}°" if degree is not None else mood
 
+    # 微信转发卡片只展示描述的前一小段，所以把当天的定性放到最前面，
+    # 后面接一句数据；没有 headline 时退回 lede，不留空描述。
+    card_head = str((read or {}).get("headline") or "").strip() if isinstance(read, dict) else ""
+    card_desc = "｜".join([x for x in (card_head, lede) if x]).strip()[:110]
+    # 封面图放在站点公共的 assets/ 下，和早报封面同目录：post-market/ 这个
+    # 目录是运行时才生成的，main 分支上并不存在，放那里要先手工建目录。
+    cover_url = (
+        page_url.split("/post-market/")[0] + "/assets/cover.png"
+        if "/post-market/" in page_url
+        else ""
+    )
+
     return f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Kenny's Horizon {_esc(date)} 盘后洞察晚报 | Kenny's Horizon</title>
-<meta name="description" content="{_esc(lede)}">
+<meta name="description" content="{_esc(card_desc)}">
 <meta property="og:title" content="Horizon 盘后洞察晚报：{_esc(date)}">
-<meta property="og:description" content="{_esc(lede)}">
+<meta property="og:description" content="{_esc(card_desc)}">
 <meta property="og:url" content="{_esc(page_url)}">
+<meta property="og:image" content="{_esc(cover_url)}">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
+<meta property="og:type" content="article">
 <meta name="theme-color" content="#7a3b1e">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}</style></head><body>
