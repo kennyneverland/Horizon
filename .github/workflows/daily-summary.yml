@@ -92,15 +92,15 @@ jobs:
       # 这一步只多发一条纯图消息，两条都落在微信里，可分别转发。
       - name: Push long image
         env:
-          SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
           OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
           OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
         run: |
           set -euo pipefail
-          if [ -z "${OSS_ENDPOINT:-}" ] || [ -z "${SENDKEY:-}" ]; then
-            echo "OSS 或 SENDKEY 未配置，跳过长图推送"
+          if [ -z "${OSS_ENDPOINT:-}" ] || [ -z "${HORIZON_WEBHOOK_URL:-}" ]; then
+            echo "OSS 或 HORIZON_WEBHOOK_URL 未配置，跳过长图推送"
             exit 0
           fi
           pip install --disable-pip-version-check -q playwright
@@ -110,4 +110,5 @@ jobs:
             --url "https://kennyneverland.github.io/Horizon/${Y}/${M}/${D}/summary-zh.html" \
             --title "${M#0}月${D#0}日 早报长图" \
             --marker "${Y}-${M}-${D}" \
-            --key-prefix "horizon/morning/"
+            --key-prefix "horizon/morning/" \
+            --banners data/webhook_banners.json

@@ -123,19 +123,20 @@ jobs:
       - name: Push long image
         if: steps.fresh.outputs.ok == 'true'
         env:
-          SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
           OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
           OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
         run: |
           set -euo pipefail
-          if [ -z "${OSS_ENDPOINT:-}" ] || [ -z "${SENDKEY:-}" ]; then
-            echo "OSS 或 SENDKEY 未配置，跳过长图推送"
+          if [ -z "${OSS_ENDPOINT:-}" ] || [ -z "${HORIZON_WEBHOOK_URL:-}" ]; then
+            echo "OSS 或 HORIZON_WEBHOOK_URL 未配置，跳过长图推送"
             exit 0
           fi
           python scripts/long_image.py \
             --url "https://kennyneverland.github.io/Horizon/post-market/${TARGET}.html" \
             --title "${TARGET} 晚报长图" \
             --marker "${TARGET}" \
-            --key-prefix "horizon/evening/"
+            --key-prefix "horizon/evening/" \
+            --banners data/webhook_banners.json
