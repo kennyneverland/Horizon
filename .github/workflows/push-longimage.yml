@@ -1,0 +1,61 @@
+name: Push Long Image
+
+# 手动把某一期页面拍成长图、传 OSS、按 HORIZON_WEBHOOK_URL 逐人推送。
+# 只做推送这一件事：不重新生成内容、不重跑抓取、不碰站点。
+# 收件人与文字版同一份名单：第 1 条本人，第 2 条朋友（自动带问候语）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: '页面地址'
+        required: true
+      title:
+        description: '消息标题（超过 32 字会被截断）'
+        required: true
+      marker:
+        description: '页面里必须出现的字样，防拍到上一期'
+        required: false
+        default: ''
+      prefix:
+        description: 'OSS 目录前缀'
+        required: false
+        default: 'horizon/manual/'
+
+jobs:
+  push:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Playwright
+        run: |
+          pip install --disable-pip-version-check -q playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Shoot, upload and push
+        env:
+          HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
+          OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HORIZON_WEBHOOK_URL:-}" ]; then
+            echo "HORIZON_WEBHOOK_URL 未配置，退出"
+            exit 1
+          fi
+          python scripts/long_image.py \
+            --url "${{ inputs.url }}" \
+            --title "${{ inputs.title }}" \
+            --marker "${{ inputs.marker }}" \
+            --key-prefix "${{ inputs.prefix }}" \
+            --banners data/webhook_banners.json
