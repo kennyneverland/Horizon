@@ -117,3 +117,25 @@ jobs:
           commit_message: "📊 Post-market brief: ${{ env.DATE }}"
           publish_branch: gh-pages
           enable_jekyll: true
+
+      # 长图版：页面已经部署完再拍，拍到的就是这一期；文字版推送在 Python 里，
+      # 这里只多发一条纯图消息。浏览器上一步已装好，不再重复下载。
+      - name: Push long image
+        if: steps.fresh.outputs.ok == 'true'
+        env:
+          SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
+          OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${OSS_ENDPOINT:-}" ] || [ -z "${SENDKEY:-}" ]; then
+            echo "OSS 或 SENDKEY 未配置，跳过长图推送"
+            exit 0
+          fi
+          python scripts/long_image.py \
+            --url "https://kennyneverland.github.io/Horizon/post-market/${TARGET}.html" \
+            --title "${TARGET} 晚报长图" \
+            --marker "${TARGET}" \
+            --key-prefix "horizon/evening/"
