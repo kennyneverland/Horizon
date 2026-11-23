@@ -565,7 +565,8 @@ class DailySummarizer:
         lines: list[str] = []
         if indices_line:
             lines.append(indices_line)
-        # 08:00 这一跑正压在东证与韩交所开盘上，所以这行是全天唯一当日的数据。
+        # 09:30 这一跑，东京与首尔已交易一个半小时、台北半小时、香港刚开盘，
+        # 所以这行给的是各市场今日的开盘价，是全天唯一当日的数据。
         if asia:
             tape = " ｜ ".join(
                 f"{_escape_markdown(row['name'])} {row['last']:,.2f} {row['pct']:+.2f}%"
