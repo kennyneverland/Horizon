@@ -17,7 +17,7 @@ jobs:
   daily-summary:
     runs-on: ubuntu-24.04
     # A normal run takes about 25 minutes; this bounds one that hangs.
-    timeout-minutes: 75
+    timeout-minutes: 120
     permissions:
       contents: write  # Needed to commit changes
 
@@ -89,6 +89,36 @@ jobs:
       - name: Set current date as environment variable
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
+      # 早报页面是 Jekyll 从 docs/_posts/*.md 渲染出来的，runner 里没有渲染后的
+      # HTML，长图脚本那道"远端 HTML 必须与本地逐字节一致"的闸对早报一直失效，
+      # 只能退回 marker；而 marker 是当天日期，早上那一版同样含这串，Pages 的
+      # CDN 缓存没过期时就会立刻放行、拍到上一版（2026-11-23 下午那次就是这样：
+      # 部署 08:16:10 完成，08:23:46 就"就绪"，拍到的仍是早上那版）。
+      # 给这一期的 front matter 打一个只属于本次运行的 build 标记，长图用它当
+      # marker：旧页面不含这串，等不到就不拍，宁可这一步红，也不推旧图。
+      - name: Stamp summary build marker
+        run: |
+          set -euo pipefail
+          BUILD="$(date -u +%Y%m%dT%H%M%SZ)"
+          echo "BUILD=$BUILD" >> "$GITHUB_ENV"
+          python3 - "$BUILD" <<'PY'
+          import pathlib, sys
+          build = sys.argv[1]
+          stamped = 0
+          for path in sorted(pathlib.Path("docs/_posts").glob("*-summary-zh.md")):
+              text = path.read_text(encoding="utf-8")
+              if not text.startswith("---\n"):
+                  continue
+              head = text.split("\n---", 1)[0]
+              if "build:" in head:
+                  continue
+              path.write_text("---\n" + f"build: {build}\n" + text[4:], encoding="utf-8")
+              stamped += 1
+          print(f"build marker {build} stamped on {stamped} summary file(s)")
+          if stamped == 0:
+              raise SystemExit("no summary markdown found under docs/_posts")
+          PY
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -125,6 +155,7 @@ jobs:
           python scripts/long_image.py \
             --url "https://kennyneverland.github.io/Horizon/${Y}/${M}/${D}/summary-zh.html" \
             --title "Kenny's Horizon ${WD}新闻早报长图-${M#0}月${D#0}日" \
-            --marker "${Y}-${M}-${D}" \
+            --marker "name=\"horizon-build\" content=\"${BUILD}\"" \
+            --wait 780 \
             --key-prefix "horizon/morning/" \
             --banners data/webhook_banners.json
