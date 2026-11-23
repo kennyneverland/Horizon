@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ site.lang | default: "en-US" }}">
-  <head><meta name="AIGC" content='{"Label":"1","ContentProducer":"001191110000802100433B10002","ProduceID":"369716489411119_1795405743_d6e57d71c0a7ae06a4ecfae3499ee436","ReservedCode1":"2a30b7f49c313d109b9fdb5de12b245333583ae06f491c098620ccb15f50f275","ContentPropagator":"001191110000802100433B10002","PropagateID":"369716489411119_1795405743_d6e57d71c0a7ae06a4ecfae3499ee436","ReservedCode2":"2a30b7f49c313d109b9fdb5de12b245333583ae06f491c098620ccb15f50f275"}'>
+  <head>
     <meta charset="UTF-8">
     {%- if page.lang == "zh" and page.date %}
     <title>{{ site.title }}</title>
@@ -17,8 +17,8 @@
     <meta property="og:image:width" content="600">
     <meta property="og:image:height" content="600">
     {%- endif %}
-    
-    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
