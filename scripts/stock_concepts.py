@@ -65,7 +65,12 @@ UA = (
 )
 SPACING = 2.2
 COOLDOWN = 30.0
-ATTEMPTS = 3
+# Two attempts, not three: a page that times out twice in one run is not coming
+# back inside that run, and the cost of giving up is a ticker rendered as
+# unattributed — which the page already handles. Three attempts at a 20s socket
+# timeout meant one dead handshake could burn 72s of the brief; run #21 lost
+# four of them in a row.
+ATTEMPTS = 2
 # The disclosure is the useful part and the page is verbose; ~110 characters
 # keeps the business link ("封装光刻机冷却系统配套") and drops the boilerplate tail.
 DESC_LIMIT = 110
@@ -149,7 +154,9 @@ def fetch_page(code: str) -> str:
         f"{BASE}/{code}/concept.html",
         headers={"User-Agent": UA, "Accept-Encoding": "gzip"},
     )
-    with urllib.request.urlopen(request, timeout=20) as response:
+    # The F10 concept page is a few KB; 10s is generous for it and keeps a
+    # hung TLS handshake from spending 20s per attempt.
+    with urllib.request.urlopen(request, timeout=10) as response:
         raw = response.read()
         if response.headers.get("Content-Encoding") == "gzip":
             raw = gzip.decompress(raw)
