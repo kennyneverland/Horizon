@@ -67,6 +67,27 @@ _REFERENCE_DETAILS_RE = re.compile(
 )
 
 
+_WEEKDAYS_CN = ("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+
+
+def _weekday_cn(date: str) -> str:
+    """``2026-11-23`` → ``周一``；解析不了返回空串，标题退化成不带星期。"""
+    try:
+        day = datetime.strptime(str(date)[:10], "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return ""
+    return _WEEKDAYS_CN[day.weekday()]
+
+
+def _month_day_cn(date: str) -> str:
+    """``2026-11-23`` → ``11月23日``；解析不了就原样返回。"""
+    try:
+        day = datetime.strptime(str(date)[:10], "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return str(date)
+    return f"{day.month}月{day.day}日"
+
+
 def _truncate(value: str, limit: int, split: str) -> str:
     """Truncate a string to at most *limit* characters by splitting on *split*.
 
@@ -631,7 +652,9 @@ class WebhookNotifier:
             {
                 **base_vars,
                 "message_title": (
-                    f"Kenny's Horizon 新闻精选早报 {date}" if lang == "zh" else f"Horizon {date} Daily"
+                    f"Kenny's Horizon {_weekday_cn(date)}新闻早报-{_month_day_cn(date)}"
+                    if lang == "zh"
+                    else f"Horizon {date} Daily"
                 ),
                 "message_kind": "summary",
                 "summary": summary,
