@@ -191,7 +191,6 @@ def _render_theme_annotation(themes: list, brief_doc: object = None) -> str:
         blocks.append("\n".join(lines))
     if not blocks:
         return ""
-    blocks.append("*本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。*")
     return "\n\n".join(blocks)
 
 
@@ -247,7 +246,7 @@ LABELS = {
         ),
     },
     "zh": {
-        "header": "Kenny's Horizon 每日精选新闻速递",
+        "header": "Kenny's Horizon 开市新闻精选早报",
         "source": "来源",
         "background": "背景",
         "discussion": "社区讨论",
@@ -430,7 +429,7 @@ class DailySummarizer:
             profile_name = _escape_markdown(group.name)
             if language == "zh":
                 profile_name = _pangu(profile_name)
-            toc_entries = [f"**{profile_name}**"]
+            toc_entries = [f"**{profile_name}**（标题汇总如下，详情下滑阅读）"]
             for view_item in group.items:
                 title = _escape_markdown(view_item.title)
                 if language == "zh":
@@ -440,12 +439,7 @@ class DailySummarizer:
                     f"\u2b50\ufe0f {view_item.score}/10"
                 )
             toc_sections.append("\n".join(toc_entries))
-            section_title = (
-                f"{profile_name}（标题汇总如下，详情下滑阅读）"
-                if language == "zh"
-                else profile_name
-            )
-            body_sections.append(f"## {section_title}\n\n")
+            body_sections.append(f"## {profile_name}\n\n")
             body_sections.extend(
                 self._format_item(
                     view_item.item,
@@ -472,6 +466,8 @@ class DailySummarizer:
                 logger.warning("Next-day brief unavailable: %s", exc)
         nextday = await self._next_day_block(items, date) if language == "zh" else ""
         body = header + premarket + calendar + toc + "".join(body_sections) + nextday
+        if language == "zh":
+            body += "\n\n---\n\n*本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。*\n"
         # 读者不需要看数据来源署名：题材成员已经内嵌在「今日建议关注题材」里，
         # 页脚再挂一行只会把正文挤长。
         text = normalize_language(body, language)
