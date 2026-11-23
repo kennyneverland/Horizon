@@ -2,8 +2,8 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # GitHub scheduled workflows use UTC. 00:00 UTC is 08:00 Asia/Shanghai.
-    - cron: '0 0 * * *'
+    # GitHub scheduled workflows use UTC. 01:10 UTC is 09:10 Asia/Shanghai.
+    - cron: '10 1 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 # The daily run and the docs deploy both force-push to gh-pages, so they share
@@ -108,7 +108,7 @@ jobs:
           Y=$(date +%Y); M=$(date +%m); D=$(date +%d)
           python scripts/long_image.py \
             --url "https://kennyneverland.github.io/Horizon/${Y}/${M}/${D}/summary-zh.html" \
-            --title "${M#0}月${D#0}日 早报长图" \
+            --title "Kenny's Horizon 开市新闻精选早报 · ${M#0}月${D#0}日" \
             --marker "${Y}-${M}-${D}" \
             --key-prefix "horizon/morning/" \
             --banners data/webhook_banners.json
