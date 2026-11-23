@@ -17,11 +17,7 @@ from ..processing import next_day
 from ..processing.asia_open import fetch_asia_open
 from ..processing.overnight import fetch_overnight
 from ..processing.premarket import fetch_premarket
-from ..processing.digest_rules import (
-    TECH_CHILD_IDS,
-    TECH_PARENT_TITLE,
-    nest_tech_sections,
-)
+from ..processing import opening
 
 logger = logging.getLogger(__name__)
 
@@ -309,6 +305,7 @@ LABELS = {
         "overnight_asof": "美东 {date} 收盘",
         "calendar": "今日日历",
         "asia_open": "亚太今日开盘",
+        "opening_title": "开盘异动",
         "premarket_note": "隔夜情绪参考，非题材推荐",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
@@ -448,6 +445,7 @@ class DailySummarizer:
         date: str,
         total_fetched: int,
         language: str = "en",
+        opening_snapshot: Optional[Dict] = None,
     ) -> str:
         """Generate daily summary in Markdown format.
 
@@ -491,7 +489,16 @@ class DailySummarizer:
             profile_name = _escape_markdown(group.name)
             if language == "zh":
                 profile_name = _pangu(profile_name)
-            toc_entries = [f"**{profile_name}**（标题汇总如下，详情下滑阅读）"]
+            # 板块名用 span 挂样式：字号要压过下面的数字列表，同时保持与正文
+            # 板块标题同色。profile_name 已经过 _escape_markdown，这里不能再转义，
+            # 否则 span 的尖括号会被写成 \<。
+            # 板块名之后必须空一行：列表紧贴段落时，渲染器会把「1. …」当成
+            # 正文而不是有序列表，几条标题就挤在同一行里。
+            toc_entries = [
+                f'<span class="toc-group">{profile_name}</span>'
+                "（标题汇总如下，详情下滑阅读）",
+                "",
+            ]
             for view_item in group.items:
                 title = _escape_markdown(view_item.title)
                 if language == "zh":
@@ -506,7 +513,7 @@ class DailySummarizer:
                 entries = self._morning_news_entries(items, labels, brief)
                 if entries:
                     toc_sections.append(
-                        "\n".join([f"**{labels['morning_news']}**", *entries])
+                        "\n".join([f"**{labels['morning_news']}**", "", *entries])
                     )
                     morning_placed = True
             body_sections.append(f"## {profile_name}\n\n")
@@ -527,10 +534,13 @@ class DailySummarizer:
         if language == "zh" and not morning_placed:
             entries = self._morning_news_entries(items, labels, brief)
             if entries:
-                toc_sections.append("\n".join([f"**{labels['morning_news']}**", *entries]))
+                toc_sections.append(
+                    "\n".join([f"**{labels['morning_news']}**", "", *entries])
+                )
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
         premarket = await self._overnight_block(labels, brief) if language == "zh" else ""
+        opening_block = await self._opening_block(labels, date, opening_snapshot) if language == "zh" else ""
         calendar = self._calendar_block(labels, brief) if language == "zh" else ""
         # 晚报只读一次：三类桶和「市场载体」都要用，分两处各拉一遍没必要。
         self._brief_doc = None
@@ -540,26 +550,26 @@ class DailySummarizer:
             except Exception as exc:  # noqa: BLE001 - 拿不到晚报不该拖垮早报
                 logger.warning("Next-day brief unavailable: %s", exc)
         nextday = await self._next_day_block(items, date) if language == "zh" else ""
-        body = header + premarket + calendar + toc + "".join(body_sections) + nextday
+        # 前缀辅助内容（今日日历、开盘异动、今日建议关注题材）连续排在新闻正文
+        # 之前，与五个板块之间用一条分隔线断开：它们回答「今天要注意什么」，
+        # 板块回答「发生了什么」，读者先扫前者再进正文。
+        aux = "\n\n".join(
+            block.rstrip() for block in (calendar, opening_block, nextday) if block.strip()
+        )
+        body = (
+            header + premarket
+            + (aux + "\n\n---\n\n" if aux else "")
+            + toc + "".join(body_sections)
+        )
         if language == "zh":
             body += "\n\n---\n\n*本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。*\n"
         # 读者不需要看数据来源署名：题材成员已经内嵌在「今日建议关注题材」里，
         # 页脚再挂一行只会把正文挤长。
         text = normalize_language(body, language)
-        # The three technology groups render as one section with sub-headings
-        # rather than as peers of 财经新闻 and 中国股市.
-        child_names = set()
-        for profile_id in TECH_CHILD_IDS:
-            name = _escape_markdown(self.profile_name(profile_id, language))
-            if language == "zh":
-                name = _pangu(name)
-            child_names.add(name)
-        parent_title = _escape_markdown(
-            TECH_PARENT_TITLE.get(language, TECH_PARENT_TITLE["en"])
-        )
-        if language == "zh":
-            parent_title = _pangu(parent_title)
-        return nest_tech_sections(text, child_names, parent_title)
+        # 五个板块平级。科技三组过去被折成「其他科技行业动态」下的三级标题，
+        # 于是同一层目录里出现了两种颜色和字号（二级蓝、三级绿）；现在都走
+        # 二级标题，板块名一致放大，板块之间靠样式拉开间距。
+        return text
 
     async def _next_day_block(self, items: List[ContentItem], date: str) -> str:
         """昨晚晚报的三类判断，与今早的新闻覆盖交叉成一张坐标。
@@ -680,6 +690,31 @@ class DailySummarizer:
             lines.append(f"{labels['asia_open']}：{tape}")
         return "\n\n".join(lines) + "\n\n---\n\n"
 
+    async def _opening_block(
+        self, labels: dict, date: str, snapshot: Optional[Dict] = None
+    ) -> str:
+        """开盘五分钟：封板、炸板，与上一交易日同口径对比。
+
+        早报 09:35 触发，晚到开盘已经有形状，早到形状还是新闻。块是可选的：
+        任何一个源不通就整块不印，日志留一行诊断，第二天能查是哪个源断的。
+
+        ``snapshot`` 是 orchestrator 在流程开头就抓好的那一份。不自己再抓一次：
+        炸板池会随盘中推移继续变长，晚抓的炸板数偏高。
+        """
+        if snapshot is not None:
+            block = opening.render_block(snapshot, labels)
+            return f"{block}\n" if block else ""
+        compact = str(date or "").replace("-", "")
+        if len(compact) != 8:
+            return ""
+        try:
+            data = await opening.fetch_opening(compact)
+        except Exception as exc:  # noqa: BLE001 - 少一块不该让早报失败
+            logger.warning("Opening block unavailable: %s", exc)
+            return ""
+        block = opening.render_block(data, labels)
+        return f"{block}\n" if block else ""
+
     def _calendar_block(self, labels: dict, brief: Optional[dict] = None) -> str:
         """Today's scheduled events, printed under the overnight tape.
 
@@ -701,10 +736,11 @@ class DailySummarizer:
         # Full-width brackets keep the macro line out of the Markdown escaper.
         if events:
             events = events.replace("(", "（").replace(")", "）")
-        lines: list[str] = []
+        # 前缀辅助块，层级低于五个新闻板块：标题用三级，宏观另起一行。
         # 那天没有三星宏观时，标题也要留下：否则下面三类股票就是没头没尾的一串代码。
-        title = f"**「{labels['calendar']}」**"
-        lines.append(f"{title} {_escape_markdown(events)}" if events else title)
+        lines: list[str] = [f"### {labels['calendar']}"]
+        if events:
+            lines.append(_escape_markdown(events))
         grouped: dict[str, list] = {}
         for row in calendar:
             grouped.setdefault(str(row.get("tag") or ""), []).append(row)
@@ -720,7 +756,7 @@ class DailySummarizer:
                     cell += f"（{_escape_markdown(note)}）"
                 cells.append(cell)
             lines.append(f"**{_escape_markdown(tag)}**：{'、'.join(cells)}")
-        return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
+        return "\n\n".join(lines) + "\n\n"
 
     def _morning_news_entries(
         self, items: List[ContentItem], labels: dict, brief: Optional[dict] = None
