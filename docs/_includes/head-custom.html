@@ -9,5 +9,37 @@
 .rss-icon:hover{opacity:1;color:#f26522}
 .rss-icon svg{width:0.9em;height:0.9em;display:inline-block}
 @media(prefers-color-scheme:dark){body{background:#1a1726!important;color:#e8e4f0!important}}
+/* 早报板块标题：五个板块统一为二级标题，字号比主题默认再大一档，并在上方留出更宽的空白。 */
+.main-content h2{margin-top:2.8em;margin-bottom:.7em;padding-bottom:.35em;font-size:1.85em;border-bottom:2px solid rgba(21,87,153,.22)}
+/* 标题汇总里的板块名：与正文板块标题同色，字号压过其下的数字列表，板块与条目一眼分得开。 */
+.main-content .toc-group{font-size:1.45em;font-weight:700;line-height:1.4;color:#1F3A5F;margin-right:.15em}
+/* 目录里每个板块的条目列表：与下一个板块之间留出空隙。 */
+.main-content ol{margin:.4em 0 2.2em;padding-left:1.6em}
+@media(max-width:640px){.main-content h2{margin-top:2.2em;font-size:1.5em}.main-content .toc-group{font-size:1.25em}}
+/* 早报配色：全篇不用绿色。主标题取爱马仕橙的深色版（白底 5.18:1），
+   板块标题用深藏蓝（11.48:1），条目标题用石板灰（10.60:1），链接用琥珀（5.02:1）。
+   深色模式换成同色系的浅色版：浅橙 8.74:1、浅蓝 9.59:1、近白 14.71:1。 */
+.main-content h1{color:#C2410C}
+.main-content h2{color:#1F3A5F;border-bottom-color:rgba(31,58,95,.22)}
+.main-content h3,.main-content h4,.main-content h5,.main-content h6{color:#33404D}
+.main-content a{color:#B45309}
+.main-content a:hover{color:#8A2E0B}
+.page-header{background-color:#8A2E0B;background-image:linear-gradient(120deg,#8A2E0B,#C2410C)}
+@media(prefers-color-scheme:dark){
+.main-content h1{color:#FFA05C}
+.main-content h2{color:#9CC3EE;border-bottom-color:rgba(156,195,238,.28)}
+.main-content h3,.main-content h4,.main-content h5,.main-content h6{color:#EDE9F5}
+.main-content a{color:#FFB877}
+.main-content a:hover{color:#FFD3A6}
+.main-content .toc-group{color:#9CC3EE}
+.page-header{background-color:#5A1E06;background-image:linear-gradient(120deg,#3A1404,#5A1E06)}
+.main-content hr{border-top-color:rgba(232,228,240,.18)}
+.main-content blockquote{border-left-color:rgba(232,228,240,.28);color:#B9B3C6}
+}
+/* 前缀辅助块（今日日历、开盘异动、今日建议关注题材）：层级低于五个新闻板块。
+   板块名是 1.85em 深藏蓝加下边框，这里压到接近正文档、去掉边框、换成浅一档的
+   蓝灰（白底 4.81:1，深色模式 6.6:1），读者一眼能分出「先看什么」和「正文从哪开始」。 */
+.main-content h3{margin-top:1.7em;margin-bottom:.45em;padding-bottom:0;font-size:1.12em;font-weight:600;letter-spacing:.02em;color:#587590;border-bottom:0}
+@media(prefers-color-scheme:dark){.main-content h3{color:#8FA9C4}}
 </style>
 <script src="{{ '/assets/js/horizon.js' | relative_url }}" defer></script>
