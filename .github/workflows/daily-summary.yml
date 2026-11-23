@@ -2,9 +2,9 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # GitHub scheduled workflows use UTC. 01:30 UTC is 09:30 Asia/Shanghai —
-    # the Hong Kong open, with Tokyo, Seoul and Taipei already trading.
-    - cron: '30 1 * * *'
+    # GitHub scheduled workflows use UTC. 01:35 UTC is 09:35 Asia/Shanghai —
+    # five minutes into the session, so the opening block has a shape to report.
+    - cron: '35 1 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 # The daily run and the docs deploy both force-push to gh-pages, so they share
@@ -46,6 +46,16 @@ jobs:
           key: member-profiles-${{ github.run_id }}
           restore-keys: |
             member-profiles-
+      # 开盘异动的昨日对比读这份存档：每次跑完把当日快照写回 data/opening，
+      # 下一次读最新的那份。runner 每次都是全新的，只有 cache 能把它带过 run。
+      - name: Restore opening snapshots
+        uses: actions/cache@v4
+        with:
+          path: data/opening
+          key: opening-${{ github.run_id }}
+          restore-keys: |
+            opening-
+
       - name: Prepare GitHub Actions config
         run: cp data/config.github.json data/config.json
 
