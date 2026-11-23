@@ -436,7 +436,7 @@ def _concept_index() -> Dict[str, Any]:
 def _concept_deadline(budget_s: float) -> float:
     """One clock for the whole process, not one per call.
 
-    Three calls each carrying their own 240s would still add up to twelve
+    Three calls each carrying their own 420s would still add up to twenty-one
     minutes on a bad night. The first call starts the clock; the rest inherit
     it, so the concept work is capped once for the run.
     """
@@ -450,7 +450,7 @@ def attach_concepts(
     payload: Dict[str, Any],
     fetch_missing: bool = True,
     save: bool = False,
-    budget_s: float = 240.0,
+    budget_s: float = 420.0,
 ) -> Dict[str, Dict[str, Any]]:
     """Ticker -> the themes it belongs to, read from the shipped index.
 
