@@ -108,7 +108,7 @@ jobs:
           Y=$(date +%Y); M=$(date +%m); D=$(date +%d)
           python scripts/long_image.py \
             --url "https://kennyneverland.github.io/Horizon/${Y}/${M}/${D}/summary-zh.html" \
-            --title "Kenny's Horizon 开市新闻精选早报 · ${M#0}月${D#0}日" \
+            --title "Kenny's Horizon 新闻精选早报 · ${M#0}月${D#0}日" \
             --marker "${Y}-${M}-${D}" \
             --key-prefix "horizon/morning/" \
             --banners data/webhook_banners.json
