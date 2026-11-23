@@ -26,7 +26,9 @@ concurrency:
 jobs:
   brief:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # The step below carries its own 18-minute ceiling; this one only has to be
+    # large enough that the step is always the thing that gives up first.
+    timeout-minutes: 40
     permissions:
       contents: write
 
@@ -81,12 +83,23 @@ jobs:
       # continue-on-error: a failed WeChat push used to return 1 here, which
       # skipped the deploy step below and left the page unpublished (run 4,
       # 2026-11-19). The page is the deliverable; the push is a convenience.
+      # 18 minutes is this step's own ceiling, not the job's. Run #21 sat inside
+      # it for 21.5 minutes; the 25-minute job cap would have killed the run two
+      # minutes later, deploy included, and nothing would have been published.
+      # With the ceiling here the step dies alone, continue-on-error lets the
+      # deploy below run, and a page that was already written still goes out.
       - name: Build the brief
         if: steps.fresh.outputs.ok == 'true'
         continue-on-error: true
+        timeout-minutes: 18
         env:
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
+          # Without this, python block-buffers stdout under the runner's capture,
+          # so every progress line (concepts, page, read, push) lands with one
+          # exit timestamp. That is why run #21's log is 21 minutes of silence
+          # instead of a record of where the time went.
+          PYTHONUNBUFFERED: "1"
         run: python scripts/post_market.py --out-dir docs/post-market --date "$TARGET"
         # continue-on-error above keeps a dead build from blocking the deploy of a
       # page that does exist — but it also reports green when no page was written
@@ -143,3 +156,19 @@ jobs:
             --marker "${TARGET}" \
             --key-prefix "horizon/evening/" \
             --banners data/webhook_banners.json
+
+      # The build step tolerates a dead push so it cannot block the page, and
+      # that tolerance also made every push failure invisible: page shipped,
+      # WeChat silent, run green. post_market.py drops .push-failed on a failed
+      # push; this step is what turns it into a red run — deliberately last, so
+      # the page and the long image are already out by the time it fails.
+      - name: Check the WeChat push landed
+        if: steps.fresh.outputs.ok == 'true'
+        run: |
+          set -euo pipefail
+          if [ -f .push-failed ]; then
+            echo "::error::WeChat push failed — the page is published, nobody was notified"
+            cat .push-failed
+            exit 1
+          fi
+          echo "push: delivered"
