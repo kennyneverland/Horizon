@@ -246,7 +246,7 @@ LABELS = {
         ),
     },
     "zh": {
-        "header": "Kenny's Horizon 开市新闻精选早报",
+        "header": "Kenny's Horizon 新闻精选早报",
         "source": "来源",
         "background": "背景",
         "discussion": "社区讨论",
