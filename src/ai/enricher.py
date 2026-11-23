@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import re
 from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, TypeVar
@@ -123,6 +124,18 @@ def _off_topic_business(profile: str) -> bool:
 
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
+
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _looks_english(text: str) -> bool:
+    """Whether a string carries clearly more Latin letters than CJK characters."""
+    if not text:
+        return False
+    cjk = len(_CJK_RE.findall(text))
+    latin = len(re.findall(r"[A-Za-z]", text))
+    return latin > cjk * 2
+
 
 class ToolRequest(BaseModel):
     block_id: str
@@ -283,7 +296,8 @@ class ContentEnricher:
                     "\n\nYour previous response did not satisfy the output contract. "
                     f"Validation error: {exc}. Return only a corrected JSON object."
                 )
-        raise ValueError(error_message) from validation_error
+        detail = " ".join(str(validation_error).split()) if validation_error else "no response"
+        raise ValueError(f"{error_message}: {detail}") from validation_error
 
     async def enrich_batch(self, items: list[ContentItem]) -> EnrichmentBatchResult:
         semaphore = asyncio.Semaphore(self.concurrency)
@@ -298,12 +312,20 @@ class ContentEnricher:
                     raise
                 except Exception as exc:
                     logger.error("Error enriching item %s: %s", item.id, exc)
-                    if self._apply_analysis_fallback(item):
+                    if await self._apply_analysis_fallback(item):
                         logger.warning(
                             "Kept item %s with its analysis summary only; the "
                             "enriched blocks are missing for this run",
                             item.id,
                         )
+                        try:
+                            await self._refresh_themes(item)
+                        except Exception as theme_exc:
+                            logger.warning(
+                                "Theme refresh after fallback failed for %s: %s",
+                                item.id,
+                                theme_exc,
+                            )
                         return item.id, None
                     return item.id, exc
                 finally:
@@ -523,13 +545,18 @@ class ContentEnricher:
         if cleared:
             logger.warning("Negative themes without members: %d", cleared)
 
-    def _apply_analysis_fallback(self, item: ContentItem) -> bool:
+    async def _apply_analysis_fallback(self, item: ContentItem) -> bool:
         """Keep a failed item in the digest using its first-pass analysis.
 
         The daily summary only renders items that carry an artifact for the
         language, so a single enrichment failure used to drop the story from
         the digest entirely. Reusing the analysis summary keeps the item, just
         without the background and impact blocks.
+
+        The analysis pass writes in the source language, so an English item
+        that failed enrichment used to land in the Chinese digest as English
+        text. One short translation call keeps the item readable; any failure
+        leaves the original text in place.
         """
         processing = item.processing
         analysis = processing.analysis if processing else None
@@ -539,21 +566,64 @@ class ContentEnricher:
         for language in self.languages:
             if language in processing.artifacts:
                 continue
+            title, body = await self._localized_fallback_text(
+                item.title, summary, language
+            )
             processing.artifacts[language] = ContentArtifact(
                 language=language,
-                title=normalize_language(item.title, language),
+                title=title,
                 blocks=[
                     ContentBlock(
                         id="summary",
                         type="section",
                         title="",
-                        content=summary,
+                        content=body,
                         primary=True,
                     )
                 ],
                 sources=[],
             )
         return True
+
+    async def _localized_fallback_text(
+        self, title: str, summary: str, language: str
+    ) -> tuple[str, str]:
+        """Localize a fallback title and summary into the digest language."""
+        title = normalize_language(title, language)
+        summary = normalize_language(summary, language)
+        if language.lower() != "zh":
+            return title, summary
+        translate_title = _looks_english(title)
+        translate_summary = _looks_english(summary)
+        if not translate_title and not translate_summary:
+            return title, summary
+        try:
+            response = await self._complete(
+                system=(
+                    "Translate the supplied news headline and summary into "
+                    "Simplified Chinese. Keep company names, tickers, figures "
+                    "and units exactly as written in the source. Return JSON "
+                    'only: {"title": "...", "summary": "..."}'
+                ),
+                user=json.dumps(
+                    {"title": title, "summary": summary}, ensure_ascii=False
+                ),
+                temperature=0,
+            )
+            parsed = parse_json_response(response) or {}
+            new_title = str(parsed.get("title") or "").strip()
+            new_summary = str(parsed.get("summary") or "").strip()
+            if translate_title and new_title:
+                title = new_title
+            if translate_summary and new_summary:
+                summary = new_summary
+        except AIProviderUnavailableError:
+            raise
+        except Exception as exc:
+            logger.warning(
+                "Fallback translation failed for %s: %s", title[:40], exc
+            )
+        return normalize_language(title, language), summary
 
     async def _enrich_item(self, item: ContentItem) -> None:
         if not item.processing or not item.processing.analysis:
@@ -565,28 +635,48 @@ class ContentEnricher:
         sources = self._sources_from_tool_results(tool_results)
 
         artifacts = {}
+        # The digest renders the first configured language; a failure on a
+        # secondary language must not throw away a good primary artifact, and
+        # the primary failing must not throw away a good secondary one.
+        primary_language = self.languages[0] if self.languages else None
+        primary_error: Optional[Exception] = None
         for language in self.languages:
-            generated = await self._generate_artifact(
-                item, profile, language, tool_results
-            )
-            self._expand_request_source_refs(generated.blocks, tool_results)
-            self._validate_blocks(generated.blocks, profile, tool_results)
-            generated.title = normalize_language(generated.title, language)
-            for block in generated.blocks:
-                block.title = normalize_language(block.title, language)
-                block.content = normalize_language(block.content, language)
-            referenced = {
-                source_id
-                for block in generated.blocks
-                for source_id in block.source_refs
-            }
-            artifacts[language] = ContentArtifact(
-                language=language,
-                title=generated.title,
-                blocks=generated.blocks,
-                sources=[source for source in sources.values() if source.id in referenced],
-            )
+            try:
+                generated = await self._generate_artifact(
+                    item, profile, language, tool_results
+                )
+                self._expand_request_source_refs(generated.blocks, tool_results)
+                self._validate_blocks(generated.blocks, profile, tool_results)
+                generated.title = normalize_language(generated.title, language)
+                for block in generated.blocks:
+                    block.title = normalize_language(block.title, language)
+                    block.content = normalize_language(block.content, language)
+                referenced = {
+                    source_id
+                    for block in generated.blocks
+                    for source_id in block.source_refs
+                }
+                artifacts[language] = ContentArtifact(
+                    language=language,
+                    title=generated.title,
+                    blocks=generated.blocks,
+                    sources=[source for source in sources.values() if source.id in referenced],
+                )
+            except AIProviderUnavailableError:
+                raise
+            except Exception as exc:
+                if language == primary_language:
+                    primary_error = exc
+                else:
+                    logger.warning(
+                        "Enrichment failed for language %s on %s: %s",
+                        language,
+                        item.id,
+                        exc,
+                    )
         item.processing.artifacts.update(artifacts)
+        if primary_error is not None:
+            raise primary_error
         await self._refresh_themes(item)
 
     async def _refresh_themes(self, item: ContentItem) -> None:
@@ -820,10 +910,15 @@ class ContentEnricher:
                 block.id for block in base_blocks if not block.optional
             }
             allowed_base_ids = {block.id for block in base_blocks}
+            configured_ids = {block.id for block in configured_blocks}
 
             def validate_required_blocks(generated: GeneratedArtifact) -> None:
                 generated_ids = [block.id for block in generated.blocks]
-                unknown = set(generated_ids) - allowed_base_ids
+                # A block a tool already filled is dropped further down
+                # instead of failing the item. Rejecting it here made the two
+                # checks disagree, so a model that repeated a tool-backed
+                # block lost the whole item.
+                unknown = set(generated_ids) - configured_ids
                 if unknown:
                     raise ValueError(
                         "unknown blocks: " + ", ".join(sorted(unknown))
@@ -848,7 +943,6 @@ class ContentEnricher:
             )
             title = generated.title.strip()
             allowed_ids = {block.id for block in base_blocks}
-            configured_ids = {block.id for block in configured_blocks}
             for generated_block in generated.blocks:
                 if generated_block.id not in allowed_ids:
                     if generated_block.id in configured_ids:
