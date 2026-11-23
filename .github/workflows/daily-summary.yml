@@ -107,9 +107,14 @@ jobs:
           pip install --disable-pip-version-check -q playwright
           python -m playwright install --with-deps chromium
           Y=$(date +%Y); M=$(date +%m); D=$(date +%d)
+          # 通知标题里的星期跟着当天走：1=周一 … 7=周日。
+          case $(date +%u) in
+            1) WD=周一;; 2) WD=周二;; 3) WD=周三;; 4) WD=周四;;
+            5) WD=周五;; 6) WD=周六;; *) WD=周日;;
+          esac
           python scripts/long_image.py \
             --url "https://kennyneverland.github.io/Horizon/${Y}/${M}/${D}/summary-zh.html" \
-            --title "Kenny's Horizon 新闻精选早报 · ${M#0}月${D#0}日" \
+            --title "Kenny's Horizon ${WD}新闻早报长图-${M#0}月${D#0}日" \
             --marker "${Y}-${M}-${D}" \
             --key-prefix "horizon/morning/" \
             --banners data/webhook_banners.json
