@@ -5,19 +5,19 @@ TOPIC_DEDUP_SYSTEM = """You are a news deduplication assistant. Identify groups 
 Rules:
 - Group items ONLY if they report on the identical event (same product release, same incident, same announcement)
 - Items about the same product but different events are NOT duplicates ("Gemma 4 released" vs "Gemma 4 jailbroken")
-- One digest carries at most two items on a single event, and those two must read from different angles (for example the policy text itself vs the sector reaction, or the earnings release vs the supply-chain consequence)
-- An offering is one angle, not several: IPO pricing, amount raised and valuation describe the same transaction and belong in one group. Aftermarket trading (first-day move, grey-market quote) is a different angle and may stay as the second item
-- Two headlines that give different totals for the same transaction are the same angle, not two angles; group them
-- When one event has three or more items, leave the two most distinct angles out of every group and fold each remaining item into the group of the item it most resembles
-- Err on the side of keeping items separate when unsure"""
+- One digest carries exactly ONE item per event. Keep the highest-scored one and group every other item on that event with it, regardless of angle
+- Different angles are not separate events: the policy text, the market reaction, the sector read-through and the company statement are four angles of one event and belong in one group
+- Two headlines that give different totals, different players or different wording for the same transaction are the same event, not two events; group them
+- Only split when the two items describe genuinely different events, not different framings of one event
+- Err on the side of merging items that describe the same event"""
 
 TOPIC_DEDUP_USER = """The following news items have already been sorted by importance score (descending). Identify which items are duplicates of each other.
 
 {items}
 
-Return a JSON object listing only the groups that contain duplicates (2+ items). Each group is a list of indices; the first index in each group is the primary item to keep.
+Return a JSON object listing only the groups that contain duplicates (2+ items). Each group is a list of indices; the first index in each group is the primary item to keep, and it must be the highest-scored item in that group.
 
-Two items on the same event that genuinely differ in angle (policy text vs market reaction, company statement vs supply-chain impact) must not share a group; a third item on that event joins the group of the one it most resembles.
+Every item on the same event belongs in the same group. Do not keep a second item on that event out because it takes a different angle — the digest shows one item per event.
 
 Respond with valid JSON only:
 {{
