@@ -34,6 +34,7 @@ from .scrapers.google_news import GoogleNewsScraper
 from .scrapers.insightintochina import InsightIntoChinaScraper
 from .ai.client import AIClient, create_ai_client
 from .ai.errors import AIProviderUnavailableError
+from .processing import opening
 from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
 from .ai.enricher import ContentEnricher, EnrichmentBatchResult
@@ -314,6 +315,19 @@ class HorizonOrchestrator:
             self.email_manager.check_subscriptions(self.storage)
 
         try:
+            # 0. 开盘异动按 09:40 读，而任务是 09:35 触发的。
+            # 这里只起一个任务让它睡到 09:40 再抓，抓新闻、打分照常并行；等到
+            # 组装摘要时才 await 它，那时早就回来了。串行等这五分钟会把推送整体
+            # 再推后五分钟，而这五分钟本来就有别的事在做。
+            self._opening_task = None
+            try:
+                compact = datetime.now(timezone.utc).strftime("%Y%m%d")
+                self._opening_task = asyncio.create_task(
+                    opening.fetch_opening(compact, at=(9, 40), store=opening.STORE)
+                )
+            except Exception:  # noqa: BLE001 - 开盘块可选，opening 内部已记日志
+                self._opening_task = None
+
             # 1. Determine time window
             since = self._determine_time_window(force_hours)
             self.console.print(
@@ -503,6 +517,13 @@ class HorizonOrchestrator:
 
             # 7. Generate and save daily summaries for each configured language
             today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            # 开盘异动：走到这里已经是 09:50 以后，09:40 那份早回来了。
+            opening_snapshot = None
+            if getattr(self, "_opening_task", None) is not None:
+                try:
+                    opening_snapshot = await self._opening_task
+                except Exception:  # noqa: BLE001 - 少一块不该让早报失败
+                    opening_snapshot = None
             for lang in self.config.ai.languages:
                 language_items = [
                     item for item in important_items
@@ -512,7 +533,13 @@ class HorizonOrchestrator:
                     profile_names=self.profiles.names,
                     profile_order=self.config.digest.profile_order,
                 )
-                summary = await summarizer.generate_summary(language_items, today, len(all_items), language=lang)
+                summary = await summarizer.generate_summary(
+                    language_items,
+                    today,
+                    len(all_items),
+                    language=lang,
+                    opening_snapshot=opening_snapshot,
+                )
 
                 # Save to data/summaries/
                 summary_path = self.storage.save_daily_summary(today, summary, language=lang)
