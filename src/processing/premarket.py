@@ -6,9 +6,9 @@ calendar. Only the calendar is printed by the digest now — the tape moved to
 Sina, which answers on weekends and carries no browse quota.
 
 Timing matters more than parsing here. The page starts refreshing at 06:00
-Beijing and is not finalised until 09:25, while the digest runs at 08:00 and
+Beijing and is not finalised until 09:25, while the digest runs at 09:30 and
 also runs on weekends. Unlocks, ex-rights dates and macro prints are published
-days ahead, so they are whole at 08:00; the morning headlines and the exchange
+days ahead, so they are whole by then; the morning headlines and the exchange
 alerts keep changing until 09:25, and neither is printed here: the alerts are
 the evening brief's block, read at 19:10 once the page has settled. Every
 fetch is still checked against the snapshot date on the page: on a Saturday
