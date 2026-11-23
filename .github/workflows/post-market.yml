@@ -41,6 +41,25 @@ jobs:
         with:
           python-version: "3.12"
 
+      # The concept index ships in the repo but nothing ever wrote it back, so
+      # every run began from the same cold cache and re-fetched the same hundred
+      # odd tickers from the site. That is why run #22 had to give up on 82 of
+      # 156: the list is rebuilt from zero every night. The cache carries what
+      # --save-concepts wrote last time, so from the second night on the fetch
+      # list holds only the tickers that are genuinely new. Keyed by run id,
+      # restored by prefix: each run saves its own state and inherits the newest.
+      - name: Restore the concept index
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/stock_concepts.json.gz.b64
+            data/stock_concepts.json.gz.b64.p2
+            data/stock_concepts.json.gz.b64.p3
+            data/stock_concepts.json.gz.b64.p4
+          key: stock-concepts-${{ github.run_id }}
+          restore-keys: |
+            stock-concepts-
+
       # 主线强度 and 主力资金动向 have no JSON endpoint: the only way to read them
       # is to let the page's own script run. Everything else in the brief is
       # stdlib except the overseas tape, which needs httpx — Eastmoney drops
@@ -100,7 +119,11 @@ jobs:
           # exit timestamp. That is why run #21's log is 21 minutes of silence
           # instead of a record of where the time went.
           PYTHONUNBUFFERED: "1"
-        run: python scripts/post_market.py --out-dir docs/post-market --date "$TARGET"
+        # --save-concepts writes what this run fetched back into the index the
+        # cache step above restored, so tomorrow's list is shorter by exactly
+        # what today learned.
+        run: |
+          python scripts/post_market.py --out-dir docs/post-market --date "$TARGET" --save-concepts
         # continue-on-error above keeps a dead build from blocking the deploy of a
       # page that does exist — but it also reports green when no page was written
       # at all: run #9 showed every step success while the deploy was skipped for
