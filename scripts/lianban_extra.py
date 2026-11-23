@@ -289,6 +289,12 @@ _EM_ULIST = "https://push2.eastmoney.com/api/qt/ulist.np/get"
 _EM_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 # 东财 ulist：f3 是涨跌幅×100，f12 是代码（不含市场号）
 _EM_ASIA = (("恒指", "100.HSI"), ("恒科", "124.HSTECH"), ("日经", "100.N225"), ("韩国", "100.KS11"))
+# 重跑历史那天走 K 线，台湾也一起取；东财若没有 100.TWII 就只是少这一个指数，
+# 因为 K 线是逐个代码请求，不会连坐其他四个。
+_EM_ASIA_HIST = _EM_ASIA + (("台湾加权", "100.TWII"),)
+# 台交所周报端点：o 开盘、y 昨收、z 最新（收盘后即收盘价）。东财的实时端在部分
+# 网络环境取不到台湾，所以实时这条路以台交所为准。
+_TWSE = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
 _SINA_HQ = "https://hq.sinajs.cn/list="
 _SINA_US = (("道指", "gb_dji"), ("标普", "gb_inx"), ("纳综", "gb_ixic"))
 # hf_ 是外盘期货连续：0 最新、7 昨收，涨跌幅自己算
@@ -319,8 +325,32 @@ def _pct(value: float) -> str:
     return f"{value:+.2f}%"
 
 
+def _twse_asia() -> Optional[Dict[str, Any]]:
+    """台湾加权当日的涨跌幅。
+
+    台交所只回裸 UA：请求带上别站的 Referer 会被判无效、返回空 body，所以这里
+    不能复用东财或新浪的请求头。盘中 z 是最新成交，收盘后就是收盘价；集合竞价
+    前 z 可能还是 ``-``，那就不给这一项，宁缺不错。
+    """
+    try:
+        raw = _overseas_get(
+            f"{_TWSE}?ex_ch=tse_t00.tw&json=1&delay=0",
+            headers={"User-Agent": UA},
+        )
+        row = ((json.loads(raw.strip()).get("msgArray") or [{}])[0]) or {}
+        prev = float(row.get("y") or 0)
+        last = float(row.get("z") or 0)
+    except Exception as exc:  # noqa: BLE001 - 少一个指数不该拖垮整块
+        print(f"overseas(twse) failed: {exc}", file=sys.stderr)
+        return None
+    if prev <= 0 or last <= 0:
+        return None
+    value = (last / prev - 1) * 100
+    return {"name": "台湾加权", "pct": _pct(value), "up": value >= 0}
+
+
 def _asia_on(date: str) -> List[Dict[str, Any]]:
-    """按目标日期取亚太四个指数的收盘涨跌幅。
+    """按目标日期取亚太五个指数（含台湾加权）的收盘涨跌幅。
 
     重跑历史日期时实时接口对不上：那天早收盘了，ulist 返回的 f3 是空的，整组
     被过滤掉，页面上就只剩美股。这里改走 K 线，beg=end=当天，只取 f51（日期）
@@ -328,7 +358,7 @@ def _asia_on(date: str) -> List[Dict[str, Any]]:
     """
     day = date.replace("-", "")
     items: List[Dict[str, Any]] = []
-    for name, secid in _EM_ASIA:
+    for name, secid in _EM_ASIA_HIST:
         query = urlencode(
             {
                 "secid": secid,
@@ -363,7 +393,7 @@ def _asia_on(date: str) -> List[Dict[str, Any]]:
 
 
 def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
-    """外盘参考：亚太走东财，前夜美股与期指走新浪 hq。
+    """外盘参考：亚太走东财（台湾走台交所），前夜美股与期指走新浪 hq。
 
     原先是解析连板网当天页面的 DOM（见 parse_overseas），但连板网报价更新滞后，
     晚报 21:40 出稿时可能还是下午的旧值；页面一改版整块还会直接丢失。东财与新浪
@@ -383,22 +413,26 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
             print(f"overseas(asia) failed: {exc}", file=sys.stderr)
         return groups + _us_overseas()
 
+    items: List[Dict[str, Any]] = []
     try:
         secids = ",".join(code for _, code in _EM_ASIA)
         raw = _overseas_get(f"{_EM_ULIST}?fields=f2,f3,f12,f13,f14&secids={secids}")
         diff = (json.loads(raw).get("data") or {}).get("diff") or []
         by_code = {str(row.get("f12")): row for row in diff}
-        items = []
         for name, code in _EM_ASIA:
             row = by_code.get(code.split(".", 1)[1])
             if not row or row.get("f3") in (None, "-", ""):
                 continue
             value = float(row["f3"]) / 100
             items.append({"name": name, "pct": _pct(value), "up": value >= 0})
-        if items:
-            groups.append({"label": "亚太", "items": items})
     except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
         print(f"overseas(asia) failed: {exc}", file=sys.stderr)
+    # 台湾单独取：东财这一路断了，台交所那一路照样该给出这一格。
+    taiwan = _twse_asia()
+    if taiwan:
+        items.append(taiwan)
+    if items:
+        groups.append({"label": "亚太", "items": items})
 
     return groups + _us_overseas()
 
