@@ -35,6 +35,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -413,8 +414,43 @@ def _payload_codes(payload: Dict[str, Any]) -> List[str]:
     return codes
 
 
+# attach_concepts runs up to three times in one brief: the base payload, the
+# Eastmoney limit-up pool, then the Eastmoney dragon-tiger swap. Every call used
+# to re-read the shipped index from disk, so every call started from the same
+# empty cache and re-fetched the same tickers from the site at 2.2s spacing:
+# run #21's predecessors logged 27 + 45 + 42 live fetches in a single brief, and
+# run #21 itself spent 18.6 minutes in this phase alone against a 4.8-minute
+# norm. One dict per process makes calls two and three cost only what they add.
+_CONCEPT_INDEX: Optional[Dict[str, Any]] = None
+_CONCEPT_DEADLINE: Optional[float] = None
+
+
+def _concept_index() -> Dict[str, Any]:
+    """The shipped index, read once and then mutated in place by every caller."""
+    global _CONCEPT_INDEX
+    if _CONCEPT_INDEX is None:
+        _CONCEPT_INDEX = load_concept_index()
+    return _CONCEPT_INDEX
+
+
+def _concept_deadline(budget_s: float) -> float:
+    """One clock for the whole process, not one per call.
+
+    Three calls each carrying their own 240s would still add up to twelve
+    minutes on a bad night. The first call starts the clock; the rest inherit
+    it, so the concept work is capped once for the run.
+    """
+    global _CONCEPT_DEADLINE
+    if _CONCEPT_DEADLINE is None:
+        _CONCEPT_DEADLINE = time.monotonic() + budget_s
+    return _CONCEPT_DEADLINE
+
+
 def attach_concepts(
-    payload: Dict[str, Any], fetch_missing: bool = True, save: bool = False
+    payload: Dict[str, Any],
+    fetch_missing: bool = True,
+    save: bool = False,
+    budget_s: float = 240.0,
 ) -> Dict[str, Dict[str, Any]]:
     """Ticker -> the themes it belongs to, read from the shipped index.
 
@@ -437,14 +473,22 @@ def attach_concepts(
     codes = _payload_codes(payload)
     if not codes:
         return {}
-    index = load_concept_index()
+    index = _concept_index()
     names = load_theme_names()
     stocks = index.setdefault("stocks", {})
     out: Dict[str, Dict[str, Any]] = {}
     fetched = 0
+    skipped = 0
+    deadline = _concept_deadline(budget_s)
     for code in codes:
         hit = concept_lookup(code, "", index, names)
         if hit.get("source") == "missing" and fetch_missing:
+            # A ticker with no concept page renders as unattributed, which is a
+            # block the page already handles. Spending the whole run's clock on
+            # it is not: run #21 was still inside this loop at minute 21.
+            if time.monotonic() >= deadline:
+                skipped += 1
+                continue
             name, concepts = concept_fetch(code)
             if concepts:
                 stocks[code] = [name, concepts]
@@ -452,6 +496,12 @@ def attach_concepts(
                 hit = concept_lookup(code, "", index, names)
         if hit.get("source") != "missing":
             out[code] = hit
+    if skipped:
+        print(
+            f"concepts: {budget_s:.0f}s budget spent, {skipped}/{len(codes)} ticker(s)"
+            " left unattributed",
+            file=sys.stderr,
+        )
     if fetched:
         print(f"concepts: {fetched}/{len(codes)} fetched live, {len(stocks)} in index")
         if save:
@@ -2468,6 +2518,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     ok = push_webhook(hook, title, desp, short=_card_short(summary, note))
     print(f"push: {'ok' if ok else 'failed'}")
+    # The build step carries continue-on-error so a dead push cannot block the
+    # page, and that tolerance also left every push failure invisible: the page
+    # shipped, WeChat got nothing, and the run still went green. The marker is
+    # what the workflow's last step reads to colour that run red — after the
+    # page is already published, because the page is the deliverable.
+    if not ok:
+        try:
+            Path(".push-failed").write_text(
+                f"{date} {datetime.now(timezone.utc).isoformat()}\n", encoding="utf-8"
+            )
+        except OSError as exc:  # noqa: BLE001 - a marker must not mask the real error
+            print(f"push marker not written: {exc}", file=sys.stderr)
     return 0 if ok else 1
 
 
