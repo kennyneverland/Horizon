@@ -354,7 +354,7 @@ def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = Non
     title = labels.get("title") or "今日建议关注题材"
     fresh_label = labels.get("fresh") or "新苗头"
 
-    lines = [f"## {title}", ""]
+    lines = [f"### {title}", ""]
     order = ["主线", "蓄势", "活跃"]
     grouped: Dict[str, List[Dict[str, Any]]] = {name: [] for name in order}
     for row in rows:
