@@ -64,6 +64,9 @@ class ContentAnalysis(BaseModel):
     reason: str
     summary: str
     tags: List[str] = Field(default_factory=list)
+    # lianban 题材名，由 theme_match 在打分后写入。模型自己写的 tags 不动，
+    # 这两个字段并存：tags 是它读到的关键词，theme_names 是能对上题材表的那几个。
+    theme_names: List[str] = Field(default_factory=list)
 
 
 class ArtifactSource(BaseModel):

@@ -266,6 +266,32 @@ class HorizonOrchestrator:
         """Share one client and account selection across the run's AI stages."""
         return create_ai_client(self.config.ai)
 
+_AUDIO_PROGRAM_MARKERS = (
+    "fm-radio",
+    "fm radio",
+    "fmradio",
+    "播客",
+    "podcast",
+    "音频节目",
+    "音频版",
+    "视频节目",
+    "直播回放",
+)
+
+
+def _is_audio_program(item) -> bool:
+    """True for podcast, radio and video-programme entries.
+
+    These are episodes rather than a single reportable event: the title names a
+    show and a date, so scoring them on "commercial significance" only ever
+    returns a number that means nothing, and one of them took a slot in 中国股市
+    on 2026-11-23 at 7.5. Dropping them before the scoring pass keeps the pool
+    to items that can be cited as a piece of news.
+    """
+    title = str(getattr(item, "title", "") or "").lower().replace(" ", "")
+    return any(marker.replace(" ", "") in title for marker in _AUDIO_PROGRAM_MARKERS)
+
+
     async def run(self, force_hours: Optional[int] = None) -> None:
         """Execute the complete workflow.
 
@@ -317,11 +343,140 @@ class HorizonOrchestrator:
                     f"→ {len(merged_items)} unique items\n"
                 )
 
+            # 播客、电台、视频节目是节目单而不是一条新闻，打分前就剔掉
+            audio_items = [item for item in merged_items if _is_audio_program(item)]
+            if audio_items:
+                merged_items = [
+                    item for item in merged_items if not _is_audio_program(item)
+                ]
+                self.console.print(
+                    f"{self.icons['cleanup']} Dropped {len(audio_items)} "
+                    f"audio/video programme items\n"
+                )
+
             # 4. Analyze with AI
             analyzed_items = await self.analyze_items(merged_items)
             self.console.print(
                 f"{self.icons['ai']} Analyzed {len(analyzed_items)} items with AI\n"
             )
+
+            # 4.5 中国股市板块的题材加权与落标门槛。只对 china-market 生效：
+            # 早报其余板块要的是全球视野，被 A 股当下在炒什么牵着走就成了追热点。
+            #
+            # 加权的两类依据，都是「预期」而不是「兑现」：
+            #   十日主线——该题材所属产业线在过去十个交易日的涨停天数，一天涨停是
+            #     轮动，十天里六天有涨停才是市场真正在付钱的方向；最近两个交易日被
+            #     lianban 标记过热的线不加权，涨停数超标之后常见快速回落。
+            #   信号类型——国家级产业政策、交易所/监管的市场制度调整、产业链涨价，
+            #     都在兑现之前就改变预期；订单、中标、合同与地方规划只是确认已经
+            #     买过的东西，能过传导闸但不进加权。
+            # 两者取较大值而不是相加，一条新闻最多抬 1.0。
+            #
+            # 落标门槛：中国股市板块至少 60% 的条目要能落到 A 股题材，否则这个板块
+            # 与财经要闻就没有区别。落不到的条目不剔除，只扣 0.3，让能落标的排在前面。
+            try:
+                from .processing.ashare_themes import ThemeIndex, matching_text
+                from .processing.conduction import conduction_filter
+                from .processing.theme_weight import (
+                    LANDING_FLOOR,
+                    UNMATCHED_PENALTY,
+                    bonus_for,
+                    describe,
+                    is_confirmation,
+                    load_line_map,
+                    load_weights,
+                    overheated_lines,
+                    signal_bonus,
+                )
+
+                theme_index = ThemeIndex()
+                weights = load_weights()
+                line_map = load_line_map()
+            except Exception as exc:  # noqa: BLE001 - 没有索引就不加权
+                theme_index = None
+                weights = {}
+                line_map = {}
+                self.console.print(f"[yellow]Theme weighting skipped: {exc}[/yellow]")
+
+            if theme_index is not None and theme_index.available:
+                china_items = []
+                for item in analyzed_items:
+                    processing = item.processing
+                    analysis = processing.analysis if processing else None
+                    classification = processing.classification if processing else None
+                    if analysis is None or classification is None:
+                        continue
+                    if classification.profile != "china-market":
+                        continue
+                    text = matching_text(item)
+                    themes = theme_index.match(text)
+                    gated = (
+                        conduction_filter(
+                            [dict(theme) for theme in themes],
+                            text,
+                            str(getattr(item, "id", "")),
+                        )
+                        if themes
+                        else []
+                    )
+                    names = [str(theme["name"]) for theme in gated]
+                    if names:
+                        analysis.theme_names = names
+                    china_items.append((item, text, names))
+
+                landed = sum(1 for _, _, names in china_items if names)
+                total = len(china_items)
+                if total:
+                    rate = landed / total
+                    self.console.print(
+                        f"{self.icons['detail']} 中国股市落标率：{landed}/{total} "
+                        f"= {rate:.0%}"
+                    )
+                    if rate < LANDING_FLOOR:
+                        for item, _, names in china_items:
+                            if names:
+                                continue
+                            analysis = item.processing.analysis
+                            if analysis.score is not None:
+                                analysis.score = max(0.0, analysis.score - UNMATCHED_PENALTY)
+                        self.console.print(
+                            f"      低于 {LANDING_FLOOR:.0%}，未落标条目扣 "
+                            f"{UNMATCHED_PENALTY} 分"
+                        )
+
+                lifted = {"主线": 0, "国家级产业政策": 0, "市场制度": 0, "产业链涨价": 0}
+                hot = 0
+                for item, text, names in china_items:
+                    if not names:
+                        continue
+                    analysis = item.processing.analysis
+                    hot_lines = overheated_lines(names, weights, line_map)
+                    if hot_lines:
+                        hot += 1
+                        self.console.print(
+                            f"      [dim]过热不加权：{'、'.join(hot_lines)} | "
+                            f"{(item.title or '')[:32]}[/dim]"
+                        )
+                    signal, kind = signal_bonus(text)
+                    if signal <= 0 and is_confirmation(text):
+                        # 兑现型：订单、合同、中标、地方规划，主线与信号都不加
+                        continue
+                    mainline = 0.0 if hot_lines else bonus_for(names, weights, line_map)
+                    if signal > mainline:
+                        bonus, label = signal, kind
+                    else:
+                        bonus, label = mainline, ("主线" if mainline else "")
+                    if bonus and analysis.score is not None:
+                        analysis.score = min(10.0, analysis.score + bonus)
+                        lifted[label] = lifted.get(label, 0) + 1
+                summary = "、".join(f"{k} {v} 条" for k, v in lifted.items() if v)
+                self.console.print(
+                    f"{self.icons['detail']} 中国股市加权：{summary or '无'}；"
+                    f"过热跳过 {hot} 条"
+                )
+                persistent = describe(weights)
+                if persistent:
+                    self.console.print(f"      10 日持续主线：{persistent}")
 
             # 5. Filter, deduplicate, and balance the digest
             filtering_result = await self.select_digest_items(
