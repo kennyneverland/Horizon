@@ -138,9 +138,16 @@ def _row(label: str, quote: Dict[str, Any], clock: str) -> Dict[str, Any]:
 
 
 async def _from_eastmoney(
-    client: httpx.AsyncClient, today: str
+    client: httpx.AsyncClient, today: str, session_days: Optional[Dict[str, str]] = None
 ) -> List[Dict[str, Any]]:
-    """``f46`` open, ``f60`` previous close, ``f2`` last, ``f170`` percent."""
+    """``f46`` open, ``f60`` previous close, ``f2`` last, ``f170`` percent.
+
+    ``session_days`` is the gate that keeps a closed market out. Eastmoney stamps
+    its rows with the current time even on a holiday and hands back a quote from
+    the previous session, so ``f86`` alone cannot tell today's open from an old
+    print — on 2026-11-23 (Japan's Labour Thanksgiving, no JPX session) it would
+    have printed 58,434.04 as the Nikkei open, a level from the 11-20 range.
+    """
     response = await client.get(
         EM_URL,
         params={
@@ -160,6 +167,14 @@ async def _from_eastmoney(
         row = by_code.get(secid.split(".", 1)[1])
         if not row:
             continue
+        session = (session_days or {}).get(label)
+        if session and session != today:
+            logger.warning(
+                "Asia open: %s has no session today (Sina quotes %s); Eastmoney row dropped",
+                label,
+                session,
+            )
+            continue
         stamp = _stamp(row.get("f86"))
         if not stamp.startswith(today):
             continue
@@ -172,8 +187,37 @@ async def _from_eastmoney(
     return rows
 
 
+async def _sina_session_days(client: httpx.AsyncClient) -> Dict[str, str]:
+    """Each market's quote date as Sina stamps it, used as the session calendar.
+
+    A closed exchange simply stops updating, so the date stays on the last
+    session (``b_NKY`` read 2026-11-20 all through Japan's 11-23 holiday) —
+    which is exactly the evidence needed to drop a stale Eastmoney row. If this
+    call fails the gate is skipped rather than guessed: losing the cross-check
+    must not cost the whole block.
+    """
+    codes = [code for _, _, code in ASIA] + [code for _, code in HK]
+    try:
+        response = await client.get(SINA_URL + ",".join(codes), headers=SINA_HEADERS)
+        response.raise_for_status()
+        parsed = dict(_SINA_RE.findall(response.content.decode("gbk", "replace")))
+    except Exception as exc:  # noqa: BLE001 - 旁证源，取不到就放弃这层校验
+        logger.warning("Sina session days unavailable: %s", exc)
+        return {}
+    days: Dict[str, str] = {}
+    for label, _, code in ASIA:
+        parts = (parsed.get(code) or "").split(",")
+        if len(parts) > 6 and parts[6].strip():
+            days[label] = parts[6].strip()
+    for label, code in HK:
+        parts = (parsed.get(code) or "").split(",")
+        if len(parts) > 17 and parts[17].strip():
+            days[label] = parts[17].replace("/", "-").strip()
+    return days
+
+
 async def _from_sina(
-    client: httpx.AsyncClient, today: str
+    client: httpx.AsyncClient, today: str, session_days: Optional[Dict[str, str]] = None
 ) -> List[Dict[str, Any]]:
     """``b_NKY`` / ``b_KOSPI``: 1 last, 3 percent, 6 date, 7 clock, 8 open, 9 prev."""
     codes = ",".join(code for _, _, code in ASIA)
@@ -310,10 +354,11 @@ async def fetch_asia_open(today: Optional[str] = None) -> Optional[Dict[str, Any
         timeout=TIMEOUT_SECONDS, follow_redirects=True
     ) as client:
         rows: List[Dict[str, Any]] = []
+        session_days = await _sina_session_days(client)
         for attempt in (1, 2):
             for source, fetch in (("eastmoney", _from_eastmoney), ("sina", _from_sina)):
                 try:
-                    got = await fetch(client, today)
+                    got = await fetch(client, today, session_days)
                 except Exception as exc:  # noqa: BLE001 - the block is optional
                     logger.warning("Asia open via %s failed: %s", source, exc)
                     continue
