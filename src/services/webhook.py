@@ -498,7 +498,7 @@ class WebhookNotifier:
                     "title": {
                         "tag": "plain_text",
                         "content": (
-                            f"Horizon {date} 折叠日报"
+                            f"Kenny's Horizon 开市新闻精选早报 {date} 折叠版"
                             if lang == "zh"
                             else f"Horizon {date} Collapsible Daily"
                         ),
@@ -548,7 +548,7 @@ class WebhookNotifier:
                 {
                     **base_vars,
                     "message_title": (
-                        f"Horizon {date} 折叠日报"
+                        f"Kenny's Horizon 开市新闻精选早报 {date} 折叠版"
                         if lang == "zh"
                         else f"Horizon {date} Collapsible Daily"
                     ),
@@ -631,7 +631,7 @@ class WebhookNotifier:
             {
                 **base_vars,
                 "message_title": (
-                    f"Horizon {date} 日报" if lang == "zh" else f"Horizon {date} Daily"
+                    f"Kenny's Horizon 开市新闻精选早报 {date}" if lang == "zh" else f"Horizon {date} Daily"
                 ),
                 "message_kind": "summary",
                 "summary": summary,
