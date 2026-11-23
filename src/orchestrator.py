@@ -203,6 +203,32 @@ class FetchReport:
         }
 
 
+_AUDIO_PROGRAM_MARKERS = (
+    "fm-radio",
+    "fm radio",
+    "fmradio",
+    "播客",
+    "podcast",
+    "音频节目",
+    "音频版",
+    "视频节目",
+    "直播回放",
+)
+
+
+def _is_audio_program(item) -> bool:
+    """True for podcast, radio and video-programme entries.
+
+    These are episodes rather than a single reportable event: the title names a
+    show and a date, so scoring them on "commercial significance" only ever
+    returns a number that means nothing, and one of them took a slot in 中国股市
+    on 2026-11-23 at 7.5. Dropping them before the scoring pass keeps the pool
+    to items that can be cited as a piece of news.
+    """
+    title = str(getattr(item, "title", "") or "").lower().replace(" ", "")
+    return any(marker.replace(" ", "") in title for marker in _AUDIO_PROGRAM_MARKERS)
+
+
 class HorizonOrchestrator:
     """Orchestrates the complete workflow for content aggregation and analysis."""
 
@@ -265,32 +291,6 @@ class HorizonOrchestrator:
     def ai_client(self) -> AIClient:
         """Share one client and account selection across the run's AI stages."""
         return create_ai_client(self.config.ai)
-
-_AUDIO_PROGRAM_MARKERS = (
-    "fm-radio",
-    "fm radio",
-    "fmradio",
-    "播客",
-    "podcast",
-    "音频节目",
-    "音频版",
-    "视频节目",
-    "直播回放",
-)
-
-
-def _is_audio_program(item) -> bool:
-    """True for podcast, radio and video-programme entries.
-
-    These are episodes rather than a single reportable event: the title names a
-    show and a date, so scoring them on "commercial significance" only ever
-    returns a number that means nothing, and one of them took a slot in 中国股市
-    on 2026-11-23 at 7.5. Dropping them before the scoring pass keeps the pool
-    to items that can be cited as a piece of news.
-    """
-    title = str(getattr(item, "title", "") or "").lower().replace(" ", "")
-    return any(marker.replace(" ", "") in title for marker in _AUDIO_PROGRAM_MARKERS)
-
 
     async def run(self, force_hours: Optional[int] = None) -> None:
         """Execute the complete workflow.
