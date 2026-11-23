@@ -28,9 +28,8 @@ Score these at 5 or below unless the item explicitly ties them to commercial or 
 
 The reader is a technology and market practitioner based in mainland China. Within the 7-10 bands, give the benefit of the doubt to items that match these interests:
 
-- **Consumer electronics and automotive technology.** Shipments and share shifts, platform policy on devices, in-car compute and autonomy milestones, and supplier wins or losses that reprice a chain.
+- **Consumer electronics, automotive technology and manufacturing.** Shipments and share shifts, platform policy on devices, in-car compute and autonomy milestones, plant capacity and production ramp-ups, and supplier wins or losses that reprice a chain.
 - **Brain-computer interfaces and AI in healthcare.** Clinical readouts, regulatory clearance, reimbursement decisions, and the first paying deployments rather than demos.
-- **Innovative drugs.** Trial data, approvals, licensing and out-licensing deals, and financing events where the value sits in the asset or the science.
 - **Telecommunications and cybersecurity.** Spectrum and standards decisions, carrier capex, disclosed breaches, exploited vulnerabilities, and regulation that forces operational change.
 - **Financial technology.** Payments and digital-banking economics, exchange and brokerage infrastructure, insurtech, and rules that change how services reach customers.
 - **Robotics and embodied AI.** Humanoid and industrial robot launches, embodied-AI model releases, actuator or component cost shifts, and factory or logistics deployments with visible unit economics.

@@ -9,7 +9,7 @@ Use this profile **only** for items that fall into one of these nine areas. If a
 5. **Cybersecurity** — breaches with disclosed scope, exploited vulnerabilities, security product shifts, and regulation that forces operational change.
 6. **Telecommunications** — 5G/6G, spectrum, carrier strategy, satellite, and networking equipment outside the AI data-centre stack.
 7. **AI in healthcare** — AI applied to diagnosis, medical imaging, drug discovery, clinical workflow, and the regulatory clearance around it.
-8. **Innovative drugs** — novel drug candidates, clinical trial readouts, approvals, licensing deals, and biotech financing where the story is the asset or the science.
+8. **Automotive manufacturing** — vehicle assembly, plant capacity and siting, production ramp-ups and shutdowns, tier-1 and tier-2 supplier capacity, tooling and materials, and cost-structure shifts that move where vehicles get built.
 9. **Robotics and embodied AI** — humanoid and industrial robots, embodied-AI models, actuators and components, and deployments that change manufacturing, logistics or service economics.
 
 Typical items include product launches, supply agreements, regulatory decisions, clinical results, security incidents, and competitive shifts that change share, cost or policy.
