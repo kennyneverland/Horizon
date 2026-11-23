@@ -4,6 +4,7 @@ import asyncio
 import html
 import logging
 import re
+from datetime import datetime
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 from urllib.parse import quote, urlsplit
@@ -25,6 +26,26 @@ from ..processing.digest_rules import (
 logger = logging.getLogger(__name__)
 
 
+_WEEKDAYS_CN = ("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+_WEEKDAYS_CN_LONG = (
+    "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日",
+)
+# 早报的固定出刊时刻。定时在 09:30 起跑，标题写的就是这个时刻而不是运行时刻，
+# 否则手动重跑一次，标题里的时间就跟着变了。
+DIGEST_CLOCK = "09:30"
+# 早间要闻补充挂在这个板块的新闻之后，作为它的子板块。
+CHINA_MARKET_PROFILE = "china-market"
+
+
+def _weekday_cn(date: str, *, long: bool = False) -> str:
+    """``2026-11-23`` → ``周一``（``long=True`` 时 ``星期一``）；解析不了返回空串。"""
+    try:
+        day = datetime.strptime(str(date)[:10], "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return ""
+    return (_WEEKDAYS_CN_LONG if long else _WEEKDAYS_CN)[day.weekday()]
+
+
 _CJK = r"[\u4e00-\u9fff\u3400-\u4dbf]"
 _ASCII = r"[A-Za-z0-9]"
 _MARKDOWN_SPECIAL = re.compile(r"([\\`*_{}\[\]()<>#!|])")
@@ -37,6 +58,34 @@ def _escape_markdown(value: object) -> str:
     escaped = html.escape(str(value), quote=True)
     escaped = _MARKDOWN_SPECIAL.sub(r"\\\1", escaped)
     return _MARKDOWN_BLOCK_START.sub(r"\1\\\2", escaped)
+
+
+def _pct_value(raw: object) -> float:
+    """``"-16.1%"`` 与 ``-16.1`` 都读成 ``-16.1``：两个源一个给字符串一个给浮点。"""
+    try:
+        return float(str(raw).strip().rstrip("%"))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _title_grams(title: object) -> set[str]:
+    """标题去标点后取相邻两字，用来比「说的是不是同一件事」。"""
+    text = re.sub(r"[^\w\u4e00-\u9fff]+", "", str(title or "")).lower()
+    return {text[i : i + 2] for i in range(len(text) - 1)}
+
+
+def _same_topic(left: object, right: object) -> bool:
+    """短标题的措辞基本被长标题包住时，判为同题。
+
+    「沪深北交易所调整融资保证金比例」有 14 个二元组，其中 11 个出现在
+    「沪深北交易所降低融资保证金比例下限至80%…」里，重合 0.79；而
+    「沪深北交易所优化退市制度」与它只重合 0.45。阈值取 0.6。
+    """
+    first, second = _title_grams(left), _title_grams(right)
+    if len(first) < 4 or len(second) < 4:
+        return False
+    shared = len(first & second)
+    return shared >= 4 and shared / min(len(first), len(second)) >= 0.6
 
 
 def _quote_block(text: str) -> str:
@@ -228,6 +277,7 @@ LABELS = {
         "themes": "Themes",
         "premarket": "Overnight tape",
         "overnight_map": "US movers → A-share themes",
+        "morning_news": "Morning headlines we did not cover",
         "overnight_asof": "US close {date}",
         "calendar": "Today's calendar",
         "asia_open": "Asia open",
@@ -255,9 +305,10 @@ LABELS = {
         "themes": "A股题材",
         "premarket": "隔夜外围",
         "overnight_map": "关键个股 → A股映射",
+        "morning_news": "要闻补充",
         "overnight_asof": "美东 {date} 收盘",
         "calendar": "今日日历",
-        "asia_open": "亚太当日开盘",
+        "asia_open": "亚太今日开盘",
         "premarket_note": "隔夜情绪参考，非题材推荐",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
@@ -414,17 +465,28 @@ class DailySummarizer:
         labels = LABELS.get(language, LABELS["en"])
 
         if not items:
-            return self._generate_empty_summary(date, total_fetched, labels)
+            return self._generate_empty_summary(date, total_fetched, labels, language)
 
-        header = (
-            f"# {labels['header']} - {date}\n\n"
-            f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
-            "---\n\n"
-        )
+        if language == "zh":
+            header = (
+                f"# 新闻早报 {date} {_weekday_cn(date, long=True)} {DIGEST_CLOCK}\n\n"
+                f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
+                "---\n\n"
+            )
+        else:
+            header = (
+                f"# {labels['header']} - {date}\n\n"
+                f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
+                "---\n\n"
+            )
 
         toc_sections = []
         body_sections = []
         view = self.build_view(items, language)
+        # 早盘页一次请求就够：隔夜映射、今早要闻与今日日历共用同一份，重复请求
+        # 只会多撞一次 429。要闻要落进中国股市板块，所以取数得排在正文之前。
+        brief = await fetch_premarket() if language == "zh" else None
+        morning_placed = False
         for group in view.groups:
             profile_name = _escape_markdown(group.name)
             if language == "zh":
@@ -439,6 +501,14 @@ class DailySummarizer:
                     f"\u2b50\ufe0f {view_item.score}/10"
                 )
             toc_sections.append("\n".join(toc_entries))
+            # 要闻补充跟在「中国股市」这份标题汇总之后，属于汇总区，不进正文详情区。
+            if language == "zh" and group.profile_id == CHINA_MARKET_PROFILE:
+                entries = self._morning_news_entries(items, labels, brief)
+                if entries:
+                    toc_sections.append(
+                        "\n".join([f"**{labels['morning_news']}**", *entries])
+                    )
+                    morning_placed = True
             body_sections.append(f"## {profile_name}\n\n")
             body_sections.extend(
                 self._format_item(
@@ -453,10 +523,15 @@ class DailySummarizer:
                 )
                 for view_item in group.items
             )
+        # 中国股市当天没有达标新闻时，没有可挂的汇总段落，退到汇总末尾。
+        if language == "zh" and not morning_placed:
+            entries = self._morning_news_entries(items, labels, brief)
+            if entries:
+                toc_sections.append("\n".join([f"**{labels['morning_news']}**", *entries]))
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
-        premarket = await self._overnight_block(labels) if language == "zh" else ""
-        calendar = await self._calendar_block(labels) if language == "zh" else ""
+        premarket = await self._overnight_block(labels, brief) if language == "zh" else ""
+        calendar = self._calendar_block(labels, brief) if language == "zh" else ""
         # 晚报只读一次：三类桶和「市场载体」都要用，分两处各拉一遍没必要。
         self._brief_doc = None
         if language == "zh":
@@ -517,7 +592,9 @@ class DailySummarizer:
             return ""
         return "\n\n---\n\n" + block
 
-    async def _overnight_block(self, labels: dict) -> str:
+    async def _overnight_block(
+        self, labels: dict, brief: Optional[dict] = None
+    ) -> str:
         """Overnight US tape as backdrop, printed above the table of contents.
 
         Never a pick: across the five sessions to 2026-11-20, none of the
@@ -525,46 +602,74 @@ class DailySummarizer:
         (median rank 575), so the block carries the move and the map and says
         in one line that it is not a recommendation.
 
-        The source answers on weekends as well, so a Saturday digest prints
-        Friday's close and a Monday digest prints that same close again — which
-        is why the line names the session instead of the run date.
+        盘面与映射优先取早盘页：那张表是连板网按当天题材热度自己排的，还带
+        「当日热度第N」——题材当天有没有进热度榜，是它比固定票单多出来的东西。
+        新浪那份是固定票单按涨跌幅排的，只在早盘页取不到（周末、限流）时兜底，
+        另外还负责给出美东收盘日期，早盘页不带这个日期。
         """
-        # 两块取数互不依赖：美股那头断了，亚太开盘也不该跟着消失。
-        brief, asia = await asyncio.gather(
-            fetch_overnight(), fetch_asia_open(), return_exceptions=True
+        # 亚太开盘与新浪互不依赖：一边断了，另一边照常。
+        asia, sina = await asyncio.gather(
+            fetch_asia_open(), fetch_overnight(), return_exceptions=True
         )
-        if isinstance(brief, BaseException):
-            logger.warning("Overnight tape failed: %s", brief)
-            brief = None
         if isinstance(asia, BaseException):
             logger.warning("Asia open tape failed: %s", asia)
             asia = None
+        if isinstance(sina, BaseException):
+            logger.warning("Overnight tape failed: %s", sina)
+            sina = None
+
+        indices = (brief or {}).get("indices") or []
+        mapping = (brief or {}).get("mapping") or []
+        close = (sina or {}).get("close_date") or ""
+        if not indices and sina:
+            indices = sina.get("indices") or []
+        if not mapping and sina:
+            mapping = [
+                {
+                    "us": row["ticker"],
+                    "pct": row["pct"],
+                    "themes": [{"name": name, "rank": 0} for name in row["themes"]],
+                }
+                for row in (sina.get("movers") or [])
+            ]
 
         indices_line = ""
+        if indices:
+            tape = " ｜ ".join(
+                f"{_escape_markdown(row['name'])} {_pct_value(row['pct']):+.2f}%"
+                for row in indices
+            )
+            indices_line = f"{labels['premarket']}：{tape}"
         movers_line = ""
-        close = ""
-        if brief:
-            indices = brief.get("indices") or []
-            if indices:
-                tape = " ｜ ".join(
-                    f"{_escape_markdown(row['name'])} {row['pct']:+.2f}%"
-                    for row in indices
+        if mapping:
+            rows = []
+            for row in mapping:
+                label = f"{_escape_markdown(row['us'])} {_pct_value(row['pct']):+.2f}%"
+                themes = "、".join(
+                    f"{_escape_markdown(theme['name'])}·热度{theme['rank']}"
+                    if theme.get("rank")
+                    else _escape_markdown(theme["name"])
+                    for theme in row["themes"]
                 )
-                indices_line = f"{labels['premarket']}：{tape}"
-            movers = brief.get("movers") or []
-            if movers:
-                rows = []
-                for row in movers:
-                    label = f"{_escape_markdown(row['ticker'])} {row['pct']:+.2f}%"
-                    themes = "·".join(_escape_markdown(name) for name in row["themes"])
-                    rows.append(f"{label}（{themes}）" if themes else label)
-                movers_line = f"{labels['overnight_map']}：" + " ｜ ".join(rows)
-            close = brief.get("close_date") or ""
+                rows.append(f"{label}（{themes}）" if themes else label)
+            movers_line = f"{labels['overnight_map']}：" + " ｜ ".join(rows)
 
-        # 两个指数行挨着放：隔夜看美股，今早看亚太；个股映射随后。
+        # 顺序按时间走：隔夜美股 → 个股映射 → 美东收盘那句注 → 今早亚太开盘。
+        # 亚太压到最后，因为它是这一屏里唯一「正在发生」的数据，紧挨着正文更好找。
         lines: list[str] = []
         if indices_line:
             lines.append(indices_line)
+        if movers_line:
+            lines.append(movers_line)
+
+        if not lines and not asia:
+            return ""
+        note = labels["premarket_note"]
+        if close:
+            note = f"{labels['overnight_asof'].format(date=close)} · {note}"
+        # 这句注解释的是上面那几行美股数据，所以只在有美股行的时候才挂。
+        if lines:
+            lines.append(f"*{note}*")
         # 09:30 这一跑，东京与首尔已交易一个半小时、台北半小时、香港刚开盘，
         # 所以这行给的是各市场今日的开盘价，是全天唯一当日的数据。
         if asia:
@@ -573,28 +678,20 @@ class DailySummarizer:
                 for row in asia["rows"]
             )
             lines.append(f"{labels['asia_open']}：{tape}")
-        if movers_line:
-            lines.append(movers_line)
-
-        if not lines:
-            return ""
-        note = labels["premarket_note"]
-        if close:
-            note = f"{labels['overnight_asof'].format(date=close)} · {note}"
-        lines.append(f"*{note}*")
         return "\n\n".join(lines) + "\n\n---\n\n"
 
-    async def _calendar_block(self, labels: dict) -> str:
+    def _calendar_block(self, labels: dict, brief: Optional[dict] = None) -> str:
         """Today's scheduled events, printed under the overnight tape.
 
         A calendar belongs in the morning: by 19:10 the limit-up board has
         already answered what happened today, and what the reader needs then is
-        tomorrow's list, not today's. The page carries the day's macro prints,
-        unlocks and ex-rights dates from 06:00, so 08:00 sees the whole set. On
-        a weekend the page has no snapshot and the block is skipped, which is
-        right: there is no session to schedule.
+        tomorrow's list, not today's. The calendar page lists the whole day —
+        new listings, ex-rights dates and unlocks, with the amount or the plan
+        attached — and keeps today's group through the session, so a 09:30 run
+        sees the full set. The morning page's own list is not read at all: it
+        carries unlocks only and no amounts.
         """
-        brief = await fetch_premarket()
+        brief = brief or {}
         if not brief:
             return ""
         events = (brief.get("events") or "").strip()
@@ -605,18 +702,63 @@ class DailySummarizer:
         if events:
             events = events.replace("(", "（").replace(")", "）")
         lines: list[str] = []
-        if events:
-            lines.append(f"**「{labels['calendar']}」** {_escape_markdown(events)}")
+        # 那天没有三星宏观时，标题也要留下：否则下面三类股票就是没头没尾的一串代码。
+        title = f"**「{labels['calendar']}」**"
+        lines.append(f"{title} {_escape_markdown(events)}" if events else title)
         grouped: dict[str, list] = {}
         for row in calendar:
             grouped.setdefault(str(row.get("tag") or ""), []).append(row)
-        for tag, rows in grouped.items():
-            names = "、".join(
-                f"{_escape_markdown(row.get('name') or '')} {row.get('code') or ''}".strip()
-                for row in rows
-            )
-            lines.append(f"**{_escape_markdown(tag)}**：{names}")
+        # 当天能不能动手，比谁压力更大更要紧：新股申购要决定打不打，除权除息
+        # 改的是持仓的价格基准，限售解禁只是往后的供给。
+        order = {"新股申购": 0, "除权除息": 1, "限售解禁": 2}
+        for tag in sorted(grouped, key=lambda name: (order.get(name, 9), name)):
+            cells = []
+            for row in grouped[tag]:
+                cell = f"{_escape_markdown(row.get('name') or '')} {row.get('code') or ''}".strip()
+                note = str(row.get("note") or "").strip()
+                if note:
+                    cell += f"（{_escape_markdown(note)}）"
+                cells.append(cell)
+            lines.append(f"**{_escape_markdown(tag)}**：{'、'.join(cells)}")
         return _quote_block("\n\n".join(lines)) + "\n\n---\n\n"
+
+    def _morning_news_entries(
+        self, items: List[ContentItem], labels: dict, brief: Optional[dict] = None
+    ) -> list[str]:
+        """The morning headlines the digest does not already carry, as list rows.
+
+        The 09:25 snapshot is newer than most of the digest's own sources, but
+        it overlaps both with our items and with itself: the site listed
+        「沪深北交易所降低融资保证金比例下限至80%」 next to 「沪深北交易所调整融资
+        保证金比例」 as two separate lines. A headline is kept only when no
+        selected item and no earlier kept headline says the same thing, compared
+        on two-character grams so a reworded version still matches.
+        """
+        news = (brief or {}).get("news") or []
+        if not news:
+            return []
+        existing = [getattr(item, "title", "") for item in items]
+        kept: list[dict] = []
+        for row in news:
+            title = str(row.get("title") or "").strip()
+            if not title:
+                continue
+            if any(_same_topic(title, other) for other in existing):
+                continue
+            if any(_same_topic(title, other["title"]) for other in kept):
+                continue
+            kept.append({**row, "title": title})
+        if not kept:
+            return []
+        rows = []
+        for row in kept:
+            stamp = " ".join(
+                part
+                for part in (_escape_markdown(row.get("time") or ""), _escape_markdown(row.get("tone") or ""))
+                if part
+            )
+            rows.append(f"- **{stamp}** {_escape_markdown(row['title'])}")
+        return rows
 
     def generate_webhook_overview(
         self,
@@ -628,11 +770,13 @@ class DailySummarizer:
         """Generate a compact overview for multi-message webhook delivery."""
         labels = LABELS.get(language, LABELS["en"])
         if not items:
-            return self._generate_empty_summary(date, total_fetched, labels)
+            return self._generate_empty_summary(date, total_fetched, labels, language)
 
         if language == "zh":
+            # 推送正文的第一屏就是这个标题：品牌一行、刊期一行。
             header = (
-                f"# {labels['header']} - {date}\n\n"
+                "# Kenny's Horizon\n\n"
+                f"# 新闻早报 {date} {_weekday_cn(date, long=True)} {DIGEST_CLOCK}\n\n"
                 f"从 {total_fetched} 条内容中筛选出 {len(items)} 条重要资讯。\n\n"
                 "下面会按内容逐条发送详情，你可以只看感兴趣的标题。\n\n"
             )
@@ -820,10 +964,17 @@ class DailySummarizer:
 
         return "\n".join(lines) + "\n\n"
 
-    def _generate_empty_summary(self, date: str, total_fetched: int, labels: dict) -> str:
+    def _generate_empty_summary(
+        self, date: str, total_fetched: int, labels: dict, language: str = "en"
+    ) -> str:
         """Generate summary when no high-scoring items were found."""
+        header = (
+            f"# 新闻早报 {date} {_weekday_cn(date, long=True)} {DIGEST_CLOCK}"
+            if language == "zh"
+            else f"# {labels['header']} - {date}"
+        )
         return (
-            f"# {labels['header']} - {date}\n\n"
+            f"{header}\n\n"
             f"> {labels['empty_analyzed'].format(total=total_fetched)}\n\n"
             + labels["empty_body"]
         )
