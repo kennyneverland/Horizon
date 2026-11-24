@@ -2377,16 +2377,18 @@ _AIRV_BODY = re.compile(r'<div class="aib">(.*?)</div>', re.S)
 _BR_RE = re.compile(r"<br\s*/?>", re.I)
 _DATE_FULL = re.compile(r"(\d{4})\s*[-年]\s*(\d{1,2})\s*[-月]\s*(\d{1,2})")
 _DATE_MD = re.compile(r"(\d{1,2})\s*月\s*(\d{1,2})\s*日")
+# 站点的正文用「只」，早前的页面用过「家」，两种都收。
 _REVIEW_COUNTS = {
-    "limit_up": re.compile(r"涨停\s*(\d+)\s*家"),
-    "limit_down": re.compile(r"跌停\s*(\d+)\s*家"),
-    "lianban": re.compile(r"连板\s*(\d+)\s*家"),
-    "max_board": re.compile(r"最高\s*(\d+)\s*板"),
-    "adv": re.compile(r"上涨\s*(\d+)\s*家"),
-    "dec": re.compile(r"下跌\s*(\d+)\s*家"),
+    "limit_up": re.compile(r"涨停\s*(\d+)\s*[只家]"),
+    "limit_down": re.compile(r"跌停\s*(\d+)\s*[只家]"),
+    "adv": re.compile(r"上涨\s*(\d+)\s*[只家]"),
+    "dec": re.compile(r"下跌\s*(\d+)\s*[只家]"),
 }
-# 「机器人概念67只」这种：题材名 + 当日涨停家数
-_REVIEW_THEME_N = re.compile(r"([\u4e00-\u9fa5A-Za-z]{2,10})\s*(\d+)\s*只")
+# 题材涨停数有两种写法：紧挨着的「机器人概念67只」，和隔了半句的
+# 「机器人开盘成群启动，以19只涨停居题材首位」。两种都要能读到，
+# 否则正文一变写法，校验就一项都命中不了（11-24 就是这样）。
+_REVIEW_THEME_NEAR = re.compile(r"([\u4e00-\u9fa5A-Za-z]{2,10})\s*(\d+)\s*只")
+_REVIEW_THEME_FAR = re.compile(r"([\u4e00-\u9fa5A-Za-z]{2,10})[^。；\n]{0,15}?(\d+)\s*只涨停")
 
 
 def _review_text(page: str) -> str:
@@ -2402,6 +2404,24 @@ def _review_text(page: str) -> str:
     raw = _BR_RE.sub("\n", body.group(1))
     text = _html.unescape(_TAG_RE.sub("", raw))
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def _theme_limit(name: str, limits: Dict[str, Any]) -> Any:
+    """把正文里的题材名对到当日题材块的名字上。
+
+    正文可能写简称（「机器人」对「机器人概念」），也可能因为隔了半句而把
+    描述一起吞进来（「机器人开盘成群启动」），所以从全名开始逐段截前缀去试。
+    """
+    if name in limits:
+        return limits[name]
+    for cut in range(len(name), 1, -1):
+        head = name[:cut]
+        if head in limits:
+            return limits[head]
+        for key, val in limits.items():
+            if key.startswith(head):
+                return val
+    return None
 
 
 def _review_matches_day(
@@ -2443,14 +2463,22 @@ def _review_matches_day(
         for t in themes or []
         if str(t.get("name") or "").strip()
     }
-    for m in _REVIEW_THEME_N.finditer(text):
-        name, num = m.group(1).strip(), int(m.group(2))
-        want = limits.get(name)
-        if want is None:
-            continue
-        checked += 1
-        if int(want) != num:
-            reasons.append(f"{name} 正文{num}只≠当日{want}只")
+    seen = set()
+    for pat in (_REVIEW_THEME_NEAR, _REVIEW_THEME_FAR):
+        for m in pat.finditer(text):
+            name, num = m.group(1).strip(), int(m.group(2))
+            if name in seen:
+                continue
+            # 正文写「机器人」、题材块写「机器人概念」，按前缀认同一个；
+            # 反过来，远距离那条正则可能把描述一起吞进来（「机器人开盘成群
+            # 启动」），所以逐段缩短前缀再试一次。
+            want = _theme_limit(name, limits)
+            if want is None:
+                continue
+            seen.add(name)
+            checked += 1
+            if int(want) != num:
+                reasons.append(f"{name} 正文{num}只≠当日{want}只")
 
     return {"ok": not reasons, "checked": checked, "reasons": reasons}
 
