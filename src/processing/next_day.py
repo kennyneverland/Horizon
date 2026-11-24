@@ -337,22 +337,24 @@ def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = Non
     reading 无新消息 is a call the reader would otherwise never hear about,
     because the digest only prints themes it has a headline for.
 
-    新苗头 is the fourth group and it is not decoration: a digest that only
-    echoed last night's buckets would stop being able to report a new line.
+    Three groups only: 主线 / 蓄势 / 活跃. ``cross`` still returns ``fresh``
+    (the digest's themes that no bucket named) because that is what tells a
+    caller the buckets missed something, but it is not rendered here — the
+    block had grown a fourth heading whose one line was a comma-joined list of
+    a dozen concepts, which reads as a second table of contents rather than as
+    a call, and it sat at the bottom where it looked like an afterthought.
 
     Rendered as a list rather than a Markdown table: Server酱's desp does not
     render tables, so a table reaches WeChat as a wall of pipes plus the
     ``| --- | --- | --- | --- |`` separator row. One line per theme keeps the
-    four fields and survives the renderer.
+    three fields and survives the renderer.
     """
     labels = labels or {}
     rows = result.get("rows") or []
-    fresh = result.get("fresh") or []
-    if not rows and not fresh:
+    if not rows:
         return ""
 
     title = labels.get("title") or "今日建议关注题材"
-    fresh_label = labels.get("fresh") or "新苗头"
 
     lines = [f"### {title}", ""]
     order = ["主线", "蓄势", "活跃"]
@@ -378,7 +380,4 @@ def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = Non
                 parts.append(_cell(stocks))
             lines.append("- " + " — ".join(parts))
         lines.append("")
-    if fresh:
-        lines.append(f"**{fresh_label}：**")
-        lines.append(f"- {_cell('、'.join(fresh))}")
     return "\n".join(lines).rstrip() + "\n"
