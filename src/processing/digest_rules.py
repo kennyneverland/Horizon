@@ -40,6 +40,15 @@ _NO_OVERFLOW_GROUPS = ("ai-hardware", "ai-app")
 # fills other groups first, but may grow to 8 when backlog items are left over.
 _OVERFLOW_CAP_OVERRIDE = {"tech-news": 8}
 
+# 配额是上限，不是目标；但连着两天出现「财经要闻 2/8」「中国股市 6/10」，说明
+# 上限变成了目标的反面——不是没有候选，是候选在别的环节被拿走了。兜底补到
+# limit 为止，两个来源，按优先级：
+#   1. 被跨组去重并进别组的同组条目（它们本身已过阈值，只是主题重复）；
+#   2. 未过阈值、但距离阈值不超过这个余量的同组条目（典型是中国股市里落标被
+#      扣 0.3 分、从 6.2 掉到 5.9 的那一批——扣分本意是排序，不该变成淘汰）。
+# 余量给 0.5：再多就等于把阈值往下调，而阈值是用户定的口径。
+SPARE_MARGIN = 0.5
+
 
 def _score_of(item) -> float:
     analysis = item.processing.analysis if item.processing else None
@@ -179,6 +188,7 @@ async def filter_items_with_cross_group_dedup(
     from ..orchestrator import BalancedDigestResult, FilteringPipelineResult
 
     removed = 0
+    dropped: List = []
     if topic_dedup and deduped:
 
         def _enabled(item) -> bool:
@@ -196,6 +206,11 @@ async def filter_items_with_cross_group_dedup(
         candidates = _trim_for_dedup(orchestrator, candidates)
         merged = await orchestrator.merge_topic_duplicates(candidates, log=log)
         removed = len(candidates) - len(merged)
+        # 被并走的条目留一份：它们的主题和别组重复，但属于本组，配额空着时
+        # 由 _fill_group_quotas 按分数取回。
+        kept_ids = {id(item) for item in merged}
+        dropped = [item for item in candidates if id(item) not in kept_ids]
+        dropped.sort(key=_score_of, reverse=True)
         deduped = untouched + merged
         deduped.sort(key=_score_of, reverse=True)
 
@@ -205,11 +220,28 @@ async def filter_items_with_cross_group_dedup(
             f"→ {len(deduped)} unique items (cross-group)\n"
         )
 
+    # 差一点没过阈值的同组条目：只在配额补不满时才用，见 SPARE_MARGIN。
+    passed_ids = {id(item) for item in deduped} | {id(item) for item in dropped}
+    below: List = []
+    for item in items:
+        if id(item) in passed_ids:
+            continue
+        threshold = _threshold_of(orchestrator, item)
+        if threshold is None:
+            continue
+        if _score_of(item) >= threshold - SPARE_MARGIN:
+            below.append(item)
+    below.sort(key=_score_of, reverse=True)
+
     balanced = (
         orchestrator.apply_balanced_digest(deduped, log=log)
         if apply_balance
         else BalancedDigestResult(items=deduped)
     )
+    if apply_balance:
+        balanced = _fill_group_quotas(
+            orchestrator, balanced, deduped, dropped, below, log=log
+        )
     return FilteringPipelineResult(
         items=balanced.items,
         threshold_count=base.threshold_count,
@@ -231,6 +263,108 @@ def _group_key_for(orchestrator, item) -> str:
             if category in group.categories:
                 return group_key
     return digest.default_group
+
+
+def _group_name(group, key: str) -> str:
+    """Display name of a digest group, whether it is a model or a plain dict."""
+    if group is None:
+        return key
+    name = getattr(group, "name", None)
+    if name:
+        return str(name)
+    if isinstance(group, dict):
+        return str(group.get("name") or key)
+    return key
+
+
+def _threshold_of(orchestrator, item) -> Optional[float]:
+    """The profile's configured threshold, or ``None`` when it has none."""
+    profile_id = (
+        item.processing.classification.profile
+        if item.processing
+        else orchestrator.profiles.default_profile
+    )
+    settings = orchestrator.config.processing.profile_settings.get(profile_id)
+    return settings.threshold if settings is not None else None
+
+
+def _fill_group_quotas(
+    orchestrator, result, pool, dropped, below, *, log: bool = True
+):
+    """把没选满的组补到它的 limit。
+
+    ``pool`` 是去重后已过阈值的全部条目，``dropped`` 是被跨组去重并进别组的
+    同组条目，``below`` 是差一点没过阈值的同组条目。三个来源依次取，每取一条
+    就把该组计数加一，取到 limit 或来源用尽为止；总数不超过 ``digest.max_items``。
+
+    去重本身是对的——同一条新闻不该在五个板块各出现一次——但它不该把某个板块
+    饿死：财经要闻的 13 条候选里有 11 条因为主题和别的组重复被并走，balanced
+    只看剩下 2 条，配额 8 就空着 6 个。这里补回去的是同组条目，不是拿别的组的
+    东西填。
+    """
+    limits = dict(result.group_limits or {})
+    if not limits:
+        return result
+
+    from ..orchestrator import BalancedDigestResult
+
+    digest = orchestrator.config.digest
+    max_items = getattr(digest, "max_items", None)
+    counts = dict(result.group_counts or {})
+    selected = list(result.items)
+    chosen = {id(item) for item in selected}
+
+    short = []
+    for group_key, limit in limits.items():
+        if not limit:
+            continue
+        need = limit - counts.get(group_key, 0)
+        if need > 0:
+            short.append((group_key, need))
+    if not short:
+        return result
+
+    restored = {}
+    for group_key, need in short:
+        if max_items and len(selected) >= max_items:
+            break
+        before = counts.get(group_key, 0)
+        for source in (pool, dropped, below):
+            if need <= 0 or (max_items and len(selected) >= max_items):
+                break
+            for item in source:
+                if need <= 0 or (max_items and len(selected) >= max_items):
+                    break
+                if id(item) in chosen:
+                    continue
+                if _group_key_for(orchestrator, item) != group_key:
+                    continue
+                selected.append(item)
+                chosen.add(id(item))
+                counts[group_key] = counts.get(group_key, 0) + 1
+                need -= 1
+        gained = counts.get(group_key, 0) - before
+        if gained:
+            restored[group_key] = (before, counts.get(group_key, 0))
+
+    if restored and log:
+        groups = getattr(digest, "category_groups", {}) or {}
+        detail = "、".join(
+            f"{_group_name(groups.get(key), key)} {before}→{after}"
+            for key, (before, after) in restored.items()
+        )
+        orchestrator.console.print(
+            f"{orchestrator.icons['balance']} Filled group quotas from the dedup pool: "
+            f"{detail}\n"
+        )
+
+    return BalancedDigestResult(
+        items=selected,
+        enabled=result.enabled,
+        group_counts=counts,
+        group_limits=limits,
+        duplicate_categories=result.duplicate_categories,
+    )
 
 
 def _ensure_priority_slots(orchestrator, pool, selected, log: bool = True):
