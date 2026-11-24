@@ -1,16 +1,53 @@
 name: Mainline Matrix
 
 # lianban settles the day's column after the 15:00 close and states ~16:10 for
-# the screeners; the matrix page only says "收盘后定版". 10:10 UTC is 18:10
-# Asia/Shanghai — roughly two hours of headroom — and still ahead of the 08:00
-# daily run, which reads the previous close.
+# the screeners; the matrix page only says "收盘后定版". 18:10 Asia/Shanghai
+# leaves roughly two hours of headroom and still sits ahead of the 09:02 daily
+# run, which reads the previous close.
+#
+# 准点由 Cloudflare Worker 在 18:10 调 workflow_dispatch 发起；下面的 cron
+# 排在 19:40，只在外部定时器没起来时替补，跑前先由 dispatch_guard.py 确认
+# 今日 artifact 还没上传过。
 on:
   schedule:
-    - cron: '10 10 * * 1-5'
+    - cron: '40 11 * * 1-5'
   workflow_dispatch:
 
 jobs:
+  # 兜底 cron 的去重闸。准点的主路径是 Cloudflare Worker 到点调
+  # workflow_dispatch；下面那条 cron 只在外部定时器没起来时替补，所以触发后
+  # 先问一句今天是不是已经有了。手动 dispatch 一律放行——回补和重跑不能被
+  # 自己挡住。判定逻辑与测试在 scripts/dispatch_guard.py。
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      skip: ${{ steps.chk.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v6
+      # 这一步只回答"该不该跑"，出任何意外都必须放行：闸坏了顶多多推一次，
+      # 闸误判成"跳过"就是当天不出报。脚本还没上传时也走放行分支。
+      - name: Decide whether the fallback cron should run
+        id: chk
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GUARD_WORKFLOW_FILE: mainline-matrix.yml
+          GUARD_ARTIFACT: "mainline-matrix"
+        run: |
+          if [ -f scripts/dispatch_guard.py ]; then
+            python3 scripts/dispatch_guard.py
+          else
+            echo "::warning::scripts/dispatch_guard.py 不存在，跳过去重闸，按放行处理"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
   matrix:
+    needs: guard
+    if: needs.guard.outputs.skip != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

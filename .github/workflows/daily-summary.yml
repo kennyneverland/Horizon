@@ -2,16 +2,19 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # GitHub scheduled workflows use UTC. 01:02 UTC is 09:02 Asia/Shanghai.
-    # The scheduler routinely starts a run 30-60 minutes late (2026-11-24: asked
-    # for 01:35Z, started 02:35Z), so the trigger now sits well ahead of the data
-    # rather than five minutes before the summary. Each block waits for its own
-    # clock: the morning page 09:25, the Asia prints the 09:30 bell, the opening
-    # block 09:40 — and the summary is assembled only after all three have come
-    # back. A run that is still late keeps the pool counts and drops the live
-    # board table instead of labelling a 10:35 move as 09:40 (see opening.py).
-    - cron: '2 1 * * *'
-  workflow_dispatch:      # Allow manual trigger
+    # 兜底 cron，不是主路径。准点由 Cloudflare Worker 在 09:02 Asia/Shanghai
+    # 调 workflow_dispatch 发起；这条排在 10:20，只在外部定时器没起来时替补，
+    # 触发后先由 dispatch_guard.py 探一次当日页面，已经在线上就直接跳过。
+    #
+    # 为什么不能只靠它：GitHub 的 schedule 走低优先级队列，官方文档写明高负载
+    # 期会延迟、负载足够高时排队中的任务还会被丢弃。本仓库 16 个样本 16/16
+    # 延迟超过 15 分钟，早报稳定晚 48~93 分钟，另有 7 次约 24 小时。
+    #
+    # 起跑时刻决定内容：每个块等自己的时钟——早盘页 09:25、亚太 09:30 开盘、
+    # 开盘块 09:40，三块都回来才拼装。起跑晚了这些时点已经过去，那就保留池子
+    # 计数、丢掉实盘板块表，而不是把 10:35 的涨跌当成 09:40 印出去（见 opening.py）。
+    - cron: '20 2 * * *'
+  workflow_dispatch:      # 手动触发；外部定时器也走这条
 
 # The daily run and the docs deploy both force-push to gh-pages, so they share
 # one queue: a second run waits for the first instead of overwriting its output.
@@ -20,7 +23,40 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 兜底 cron 的去重闸。准点的主路径是 Cloudflare Worker 到点调
+  # workflow_dispatch；下面那条 cron 只在外部定时器没起来时替补，所以触发后
+  # 先问一句今天是不是已经有了。手动 dispatch 一律放行——回补和重跑不能被
+  # 自己挡住。判定逻辑与测试在 scripts/dispatch_guard.py。
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      skip: ${{ steps.chk.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v6
+      # 这一步只回答"该不该跑"，出任何意外都必须放行：闸坏了顶多多推一次，
+      # 闸误判成"跳过"就是当天不出报。脚本还没上传时也走放行分支。
+      - name: Decide whether the fallback cron should run
+        id: chk
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GUARD_WORKFLOW_FILE: daily-summary.yml
+          GUARD_PRODUCT_URL: "https://kennyneverland.github.io/Horizon/{ymd}/summary-zh.html"
+        run: |
+          if [ -f scripts/dispatch_guard.py ]; then
+            python3 scripts/dispatch_guard.py
+          else
+            echo "::warning::scripts/dispatch_guard.py 不存在，跳过去重闸，按放行处理"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
   daily-summary:
+    needs: guard
+    if: needs.guard.outputs.skip != 'true'
     runs-on: ubuntu-24.04
     # About 25 minutes of work plus up to 38 minutes waiting for the 09:40
     # opening block; this bounds one that hangs.
