@@ -160,8 +160,10 @@ def render(timeout_ms: int = 60000) -> str:
 
 DAY_URL = "https://lianban.net/days/{date}.html"
 
-# 今日信号面：一条一个 .sgr，左边是彩色标签，右边是说明。说明在页面里就已经
-# 被截断（以 … 结尾），抓下来就是读者看到的长度，没有更长的版本可取。
+# 连板网的「今日信号面」：一条一个 .sgr，左边是彩色标签，右边是说明。说明在
+# 页面里就已经被截断（以 … 结尾），抓下来就是读者看到的长度，没有更长的版本可取。
+# 这块不是当日信号——站点按自己的指标对一段行情给结构判断，不定期更新。抓取只
+# 负责取原文；哪天该不该出，由 post_market.py 的 _select_signals 决定。
 _SIG_RE = re.compile(
     r'<div class="sgr">\s*<i class="wchip[^"]*">(.*?)</i>\s*<em>(.*?)</em>',
     re.S,
@@ -179,10 +181,10 @@ _SIG_FULL_RE = re.compile(
 def render_day(date: str, timeout_ms: int = 60000) -> str:
     """Load ``/days/<date>.html`` and return the settled DOM.
 
-    The 今日信号面 block exists in no JSON feed — not in opendata, not in the
-    MCP payload — and the page builds it after its fingerprint check, so a plain
-    HTTP fetch returns the 6 KB shell with the block absent. Chromium is the
-    only route to it.
+    The signals block (the site titles it 「今日信号面」) exists in no JSON feed
+    — not in opendata, not in the MCP payload — and the page builds it after its
+    fingerprint check, so a plain HTTP fetch returns the 6 KB shell with the
+    block absent. Chromium is the only route to it.
     """
     from playwright.sync_api import sync_playwright  # imported late: optional
 
@@ -1108,10 +1110,11 @@ def _scrub(text: Any) -> str:
 
 
 def _signals_html(payload: Dict[str, Any]) -> str:
-    """今日信号面：连板网按历史形态自动触发的状态提示。
+    """最新大盘信号：连板网按自己的指标对一段行情给出的结构判断。
 
-    每条都是「形态 + 历史统计」，不是本页判断，也不指向个股，所以整块放在
-    复盘正文下面，标注来源。
+    它不是当日信号——站点不定期更新这块内容，改的是内容本身，不是每天按当日
+    K 线重算。所以标题不写「今日」。哪天该不该出由 post_market.py 的
+    _select_signals 决定：没更新的日子 payload 里这一项是空列表，这里返回空串。
     """
     rows = ((payload.get("extra") or {}).get("signals")) or []
     if not rows:
@@ -1125,7 +1128,7 @@ def _signals_html(payload: Dict[str, Any]) -> str:
     if not items:
         return ""
     return (
-        "<h2>今日信号面</h2>"
+        "<h2>最新大盘信号</h2>"
         f"<div class='sgs'>{items}</div>"
     )
 

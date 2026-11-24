@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import gzip
+import hashlib
 import html as _html
 import json
 import os
@@ -1199,6 +1200,8 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
             }
         )
 
+    # extra["signals"] 故意不进这里：它是对一段行情的跨日结构判断，不定期更新，
+    # 和当日盘面不同期。喂给模型只会让它把两段时间混在一起讲。
     return {
         "date": kpi.get("date"),
         "session": {
@@ -2146,88 +2149,161 @@ def _review_lines(payload: Dict[str, Any]) -> List[str]:
     return ["\n>\n".join("> " + p.replace("\n", "\n> ") for p in paras)]
 
 
-# 信号面是「上一交易日收盘」口径，站点却把标题写成「今日信号面」。2026-11-23
-# 就是最坏的一次：11-20 收出创业板 -3.54% 的大阴，触发了「二次破位·建议减仓」，
-# 而 11-23 创业板 +3.08%，同一张晚报里信号面喊清仓、盘后洞察写「冰点切高潮」。
-# 站点自己的页面在同一位置标着「2026-11-20 前瞻今日表现」，等于承认它是隔夜的
-# 前瞻。这里在渲染前做一次方向核对：信号说跌、当日该指数却涨过 1%，这条就不发。
-_SIGNAL_INDEX_WORDS = (
-    ("创业板", "创业板"),
-    ("科创50", "科创50"),
-    ("科创", "科创50"),
-    ("上证50", "上证50"),
-    ("上证", "上证"),
-    ("深证", "深证"),
-    ("北证50", "北证50"),
-    ("大盘", "上证"),
-)
-_SIGNAL_BEARISH = ("破位", "跌势", "大跌", "下跌", "弱势", "防守", "风险", "减仓", "清仓")
-# 涨过 1% 才判冲突：+0.2% 的横盘不足以推翻一条形态信号，+3% 足以。
-_SIGNAL_CONFLICT_RISE = 1.0
-# 涨停 80 家以上再谈「涨停情绪历史低位」就自相矛盾了（11-20 冰点是 28 家，
-# 11-23 高潮期是 146 家）。
-_SIGNAL_CONFLICT_LIMIT_UP = 80
+# 连板网的「今日信号面」不是当日信号。它是站点按自己的指标、对一段行情给出的
+# 结构判断，不定期更新——改的是内容本身，不是每天按当日 K 线重算。2026-11-23 那
+# 次已经查清：标题写「今日」，内容却是 11-20 收出的大阴触发的，站点自己在同一位置
+# 标着「2026-11-20 前瞻今日表现」。
+#
+# 所以不再拿当日盘面去筛它。原先的「信号说跌、当日该指数涨过 1% 就丢」会误杀：
+# 2026-11-24 的 🔵 科创超跌 说的是「超跌反弹区」，正文里带「大跌/下跌」被当成看跌，
+# 又因为科创50 当日 +1.81% 判成矛盾，恰好删在它被验证的那天。
+#
+# 改成按「内容有没有变」决定出不出：
+#
+#   内容变了   -> 当天晚报放一次，并把这一版落成一个新文件
+#   内容没变   -> 整块隐藏，直到站点下次更新
+#   没抓到     -> 不出，也不改动已记录的那一版
+#   回补历史   -> 不出，也不碰状态（「最新」在历史页上没有意义）
+#
+# 每一版存成 data/signals/<日期>_<时刻>.json，旧的从不覆盖：文件名按时间排好，
+# `ls data/signals` 本身就是一份更新履历，不必翻 git log。判定只看最新那个文件
+# ——内容变了就再落一个，没变就继续隐藏。
+#
+# 标题因此叫「最新大盘信号」。这块内容也不进模型输入（见 build_model_input），
+# 免得模型把一段跨日的结构判断当成当日盘面来解读。
+SIGNAL_DIR = Path("data/signals")
 
 
-def _index_moves(payload: Dict[str, Any]) -> Dict[str, float]:
-    """``{指数名: 当日涨跌幅}``，取自同一张页面的指数条，不另找外部源。"""
-    moves: Dict[str, float] = {}
-    for row in ((payload.get("extra") or {}).get("indices")) or []:
-        name = str(row.get("name") or "").strip()
-        raw = str(row.get("pct") or "").replace("%", "").replace("＋", "+").strip()
-        try:
-            moves[name] = float(raw)
-        except ValueError:
-            continue
-    return moves
+def _shanghai_now() -> datetime:
+    return datetime.now(timezone(timedelta(hours=8)))
 
 
-def _drop_stale_signals(
-    rows: List[Dict[str, str]], payload: Dict[str, Any]
-) -> List[Dict[str, str]]:
-    """丢掉与当日盘面方向相反的信号条，其余照发。
+def _shanghai_today() -> str:
+    return _shanghai_now().strftime("%Y-%m-%d")
 
-    失败即放行：指数条没抓到就没有依据判冲突，宁可原样发，也不因为缺数据
-    把整块清空。
+
+def _signal_fingerprint(rows: List[Dict[str, str]]) -> str:
+    """只按内容算指纹：空白差异不算更新，改了字才算。"""
+    norm = [
+        [
+            re.sub(r"\s+", "", str(r.get("chip") or "")),
+            re.sub(r"\s+", "", str(r.get("text") or "")),
+        ]
+        for r in rows
+        if (r.get("chip") or r.get("text"))
+    ]
+    return hashlib.sha256(
+        json.dumps(norm, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
+def _signal_versions() -> List[Path]:
+    """已记录的每一版，按文件名升序。文件名是 <日期>_<时刻>.json，排序即时间序。"""
+    try:
+        return sorted(p for p in SIGNAL_DIR.glob("*.json") if p.is_file())
+    except OSError as exc:  # noqa: BLE001
+        print(f"signals: 版本目录读不出来（{exc}），按首次处理", file=sys.stderr)
+        return []
+
+
+def _load_latest_signal() -> Dict[str, Any]:
+    """读最新那一版。读不出来时返回 {"_broken": True}。
+
+    这里故意不「往前找一版继续比」：上一版是旧的，拿它当基准会把一次真实的更新
+    判成「没变」而整块藏掉。宁可多出一次，也不能把站点新给的判断漏掉——而且这一期
+    会顺手重记一版，下一期就恢复正常了。
     """
-    moves = _index_moves(payload)
-    if not moves:
+    versions = _signal_versions()
+    if not versions:
+        return {}
+    latest = versions[-1]
+    try:
+        doc = json.loads(latest.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:  # noqa: BLE001
         print(
-            f"signals: 当日指数条缺失，{len(rows)} 条未做方向核对",
+            f"signals: {latest.name} 读不出来（{exc}），按「上次不明」处理",
+            file=sys.stderr,
+        )
+        return {"_broken": True}
+    if not isinstance(doc, dict) or not doc.get("fingerprint"):
+        print(f"signals: {latest.name} 结构不对，按「上次不明」处理", file=sys.stderr)
+        return {"_broken": True}
+    doc["_file"] = latest.name
+    return doc
+
+
+def _save_signal_version(rows: List[Dict[str, str]], date: str) -> str:
+    """内容一变就落一个新文件，旧的从不覆盖。返回文件名，写不进去返回空串。"""
+    now = _shanghai_now()
+    state = {
+        "fingerprint": _signal_fingerprint(rows),
+        "shown_on": date,
+        "recorded_at": now.isoformat(timespec="seconds"),
+        "rows": [
+            {"chip": str(r.get("chip") or ""), "text": str(r.get("text") or "")}
+            for r in rows
+        ],
+    }
+    stem = f"{date}_{now.strftime('%H%M%S')}"
+    path = SIGNAL_DIR / f"{stem}.json"
+    n = 2
+    # 同一秒里改两次几乎不可能，但真撞上就加序号，绝不覆盖已经记下的那一版。
+    while path.exists():
+        path = SIGNAL_DIR / f"{stem}_{n}.json"
+        n += 1
+    try:
+        SIGNAL_DIR.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+    except OSError as exc:  # noqa: BLE001 - 存不下就退化成每天出，不影响别的块
+        print(f"signals: 版本写不进去（{exc}），下一期会重出", file=sys.stderr)
+        return ""
+    return path.name
+
+
+def _select_signals(rows: List[Dict[str, str]], date: str) -> List[Dict[str, str]]:
+    """决定这一期出不出这一块，返回要渲染的几条；空列表表示整块不出。"""
+    if not rows:
+        print("signals: 页面上没有这一块，本期不出，状态不变", file=sys.stderr)
+        return []
+    if date != _shanghai_today():
+        print(f"signals: 回补 {date}，不碰状态，本期不出", file=sys.stderr)
+        return []
+    latest = _load_latest_signal()
+    if latest.get("_broken"):
+        name = _save_signal_version(rows, date)
+        print(
+            f"signals: 上一版读不出来，本期照常放出 {len(rows)} 条并重记"
+            f"（{name or '未落盘'}）",
             file=sys.stderr,
         )
         return rows
-    try:
-        limit_up = int((payload.get("kpi") or {}).get("limit_up") or 0)
-    except (TypeError, ValueError):
-        limit_up = 0
-    kept: List[Dict[str, str]] = []
-    for row in rows:
-        chip = str(row.get("chip") or "").strip()
-        text = str(row.get("text") or "").strip()
-        blob = chip + text
-        reason = ""
-        if any(word in blob for word in _SIGNAL_BEARISH):
-            for word, index in _SIGNAL_INDEX_WORDS:
-                if word in blob and moves.get(index, 0.0) >= _SIGNAL_CONFLICT_RISE:
-                    reason = f"{index} 当日 {moves[index]:+.2f}%，信号说的是跌"
-                    break
-            if not reason and "涨停情绪" in blob and "低位" in blob and limit_up >= _SIGNAL_CONFLICT_LIMIT_UP:
-                reason = f"当日涨停 {limit_up} 家，信号说涨停情绪在低位"
-        if reason:
-            print(f"signals: dropped「{chip}」— {reason}", file=sys.stderr)
-        else:
-            kept.append(row)
-    if len(kept) != len(rows):
+    prev = str(latest.get("fingerprint") or "")
+    shown_on = str(latest.get("shown_on") or "")
+    fresh = _signal_fingerprint(rows)
+    if fresh != prev:
+        name = _save_signal_version(rows, date)
         print(
-            f"signals: {len(rows) - len(kept)}/{len(rows)} 条与当日盘面相反，已不渲染",
+            f"signals: 内容变了，本期放出 {len(rows)} 条"
+            f"（{date}，记入 {name or '未落盘'}）",
             file=sys.stderr,
         )
-    return kept
+        return rows
+    if shown_on == date:
+        # 同一天重跑（手动 dispatch 或补跑）：当天已经出过，继续出，
+        # 否则重跑一次就把页面上的这一节弄丢了。
+        print(f"signals: 与上一版相同，但 {date} 已出过，重跑仍出", file=sys.stderr)
+        return rows
+    print(
+        f"signals: 与上一版相同（{shown_on or '无记录'} 出的），本期隐藏",
+        file=sys.stderr,
+    )
+    return []
 
 
 def _signal_lines(payload: Dict[str, Any]) -> List[str]:
-    """今日信号面：形态 + 历史统计，一条一段。
+    """最新大盘信号：形态 + 历史统计，一条一段。
 
     标签自带 🔴/🔵/❄️，那是连板网用来区分「风险 / 机会 / 防守」的唯一标记，
     去掉这三个 emoji 就只剩三行长得一样的话。
@@ -2300,7 +2376,7 @@ def data_markdown(
 ) -> str:
     """整条推文正文：研判与数字板块按读者实际读下去的顺序拼成一份 Markdown。
 
-    诗句 → 定性 → 温度 → 盘面 → 外盘参考 → 今日信号面 → 四段研判 → 第三方
+    诗句 → 定性 → 温度 → 盘面 → 外盘参考 → 最新大盘信号 → 四段研判 → 第三方
     复盘 → 与第三方复盘结论对比 → 主力资金 → 主线追踪 → 主线强度 → 龙虎榜 →
     监管异动 → 明日关注 → 选股参考。
 
@@ -2326,12 +2402,12 @@ def data_markdown(
         if lines:
             chunks.append(f"## {title}\n\n" + "\n\n".join(_pack(lines)))
 
-    # 开篇只留三样当天的硬事实：盘面、外盘、信号面。它们回答「今天怎么样」，
-    # 读者看完这一段就知道要不要往下读。
+    # 开篇只留三样：盘面、外盘、最新大盘信号。前两样回答「今天怎么样」，第三样
+    # 只在站点更新信号那期出现，且它讲的是跨日的结构，不是当日盘面。
     mark = len(chunks)
     sec("盘面", _kpi_lines(payload))
     sec("外盘参考", _overseas_lines(payload))
-    sec("今日信号面", _signal_lines(payload))
+    sec("最新大盘信号", _signal_lines(payload))
     if len(chunks) > mark:
         chunks.insert(mark, "---")
 
@@ -2589,18 +2665,23 @@ def main(argv: Optional[List[str]] = None) -> int:
     _strength = _concept_strength(payload)
     if _strength is not None:
         payload.setdefault("extra", {})["strength_em"] = _strength
-    # 今日信号面只存在于 days/<date>.html，而且那块要等页面自己的脚本跑完才
-    # 出现（直接 HTTP 抓回来的是 6 KB 空壳）。date 是上面几个源合出来的，
-    # 所以放在这里抓：进 collect() 的时候还不知道该抓哪一天。
+    # 信号块只存在于 days/<date>.html，而且那块要等页面自己的脚本跑完才出现
+    # （直接 HTTP 抓回来的是 6 KB 空壳）。date 是上面几个源合出来的，所以放在
+    # 这里抓：进 collect() 的时候还不知道该抓哪一天。
     if not args.no_browser:
         try:
             day_page = render_day(date)
         except Exception as exc:  # noqa: BLE001 - 少一块，不影响别的
             payload["errors"].append(f"signals: {exc}")
         else:
-            payload["extra"]["signals"] = _drop_stale_signals(
-                parse_signals(day_page), payload
-            )
+            # 只在站点更新了这块内容的那一期放出来；没更新就整块不出。
+            try:
+                payload["extra"]["signals"] = _select_signals(
+                    parse_signals(day_page), date
+                )
+            except Exception as exc:  # noqa: BLE001
+                payload["extra"]["signals"] = []
+                payload["errors"].append(f"signals: {exc}")
             # 第三方复盘与信号面同页，同一份 DOM 里取，不再单独打一次 MCP。
             if not args.no_mcp:
                 try:
