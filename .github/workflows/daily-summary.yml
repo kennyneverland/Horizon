@@ -2,9 +2,15 @@ name: Daily Horizon Summary
 
 on:
   schedule:
-    # GitHub scheduled workflows use UTC. 01:35 UTC is 09:35 Asia/Shanghai —
-    # five minutes into the session, so the opening block has a shape to report.
-    - cron: '35 1 * * *'
+    # GitHub scheduled workflows use UTC. 01:02 UTC is 09:02 Asia/Shanghai.
+    # The scheduler routinely starts a run 30-60 minutes late (2026-11-24: asked
+    # for 01:35Z, started 02:35Z), so the trigger now sits well ahead of the data
+    # rather than five minutes before the summary. Each block waits for its own
+    # clock: the morning page 09:25, the Asia prints the 09:30 bell, the opening
+    # block 09:40 — and the summary is assembled only after all three have come
+    # back. A run that is still late keeps the pool counts and drops the live
+    # board table instead of labelling a 10:35 move as 09:40 (see opening.py).
+    - cron: '2 1 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 # The daily run and the docs deploy both force-push to gh-pages, so they share
@@ -16,7 +22,8 @@ concurrency:
 jobs:
   daily-summary:
     runs-on: ubuntu-24.04
-    # A normal run takes about 25 minutes; this bounds one that hangs.
+    # About 25 minutes of work plus up to 38 minutes waiting for the 09:40
+    # opening block; this bounds one that hangs.
     timeout-minutes: 120
     permissions:
       contents: write  # Needed to commit changes
