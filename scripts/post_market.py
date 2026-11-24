@@ -52,7 +52,6 @@ from lianban_extra import (  # noqa: E402
     _prev_value,
     _strength_sorted,
     collect_extra,
-    mcp_review,
     parse_signals,
     render_day,
 )
@@ -189,6 +188,8 @@ def parse_kpi(doc: Dict[str, Any]) -> Dict[str, Any]:
     kpi["_license"] = doc.get("license")
     kpi["_updated_at"] = doc.get("updated_at")
     kpi["_status"] = doc.get("status_label")
+    # 当日题材的涨停家数：用来核第三方复盘正文里自报的数字，不用于展示。
+    kpi["_themes"] = doc.get("themes") or []
     return kpi
 
 
@@ -1132,7 +1133,7 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         g["label"]: {x["name"]: x["pct"] for x in g["items"]}
         for g in (extra.get("overseas") or [])
     }
-    # 双保险：mcp_review 已把没过当日校验的正文清空，这里再按凭证挡一次，
+    # 双保险：parse_day_review 已把没过当日校验的正文清空，这里再按凭证挡一次，
     # 防止别的路径把 ai_review 直接塞进 payload。旧缓存没有 date_verified
     # 字段（None），按可信处理，免得回补历史日期时整段消失。
     lianban = payload.get("lianban") or {}
@@ -2359,6 +2360,148 @@ def data_markdown(
     return "\n\n".join(chunks)
 
 
+# ---------------------------------------------------------------------------
+# 第三方复盘：从当日页面上取，按内容判，不等 status
+#
+# 站点要到 21:30 前后才把 status 标成 final（11-16 至 11-23 五个交易日实测
+# 21:30:06～21:30:15），但正文本身收盘后就写进 days/<date>.html 了：11-24
+# 13:41 盘中抓那一页，#airv 还是空的；11-23 定版后同一位置是 399 字。
+#
+# 既然正文先到、标签后到，就按正文判：页面是当日那一页（render_day 保证），
+# 正文非空、且自报的日期与计数跟当日对得上，就收；为空或对不上，这段整块
+# 不要，晚报其余部分照出。不再等 final——等它等于把整份晚报押到 21:30。
+# ---------------------------------------------------------------------------
+_EMPTY_AIRV = re.compile(r'<div class="airv" id="airv">\s*</div>')
+_AIRV_BLOCK = re.compile(r'<div class="airv" id="airv">(.*?)<div class="aisig"', re.S)
+_AIRV_BODY = re.compile(r'<div class="aib">(.*?)</div>', re.S)
+_BR_RE = re.compile(r"<br\s*/?>", re.I)
+_DATE_FULL = re.compile(r"(\d{4})\s*[-年]\s*(\d{1,2})\s*[-月]\s*(\d{1,2})")
+_DATE_MD = re.compile(r"(\d{1,2})\s*月\s*(\d{1,2})\s*日")
+_REVIEW_COUNTS = {
+    "limit_up": re.compile(r"涨停\s*(\d+)\s*家"),
+    "limit_down": re.compile(r"跌停\s*(\d+)\s*家"),
+    "lianban": re.compile(r"连板\s*(\d+)\s*家"),
+    "max_board": re.compile(r"最高\s*(\d+)\s*板"),
+    "adv": re.compile(r"上涨\s*(\d+)\s*家"),
+    "dec": re.compile(r"下跌\s*(\d+)\s*家"),
+}
+# 「机器人概念67只」这种：题材名 + 当日涨停家数
+_REVIEW_THEME_N = re.compile(r"([\u4e00-\u9fa5A-Za-z]{2,10})\s*(\d+)\s*只")
+
+
+def _review_text(page: str) -> str:
+    """页面里「今日AI复盘」的正文，盘中为空串。"""
+    if _EMPTY_AIRV.search(page):
+        return ""
+    block = _AIRV_BLOCK.search(page)
+    if not block:
+        return ""
+    body = _AIRV_BODY.search(block.group(1))
+    if not body:
+        return ""
+    raw = _BR_RE.sub("\n", body.group(1))
+    text = _html.unescape(_TAG_RE.sub("", raw))
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def _review_matches_day(
+    text: str, date: str, kpi: Dict[str, Any], themes: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """正文里的日期与数字，跟当日对一遍。
+
+    只有能对上的才说明这份正文写的是今天；对不上说明站点把上一日的正文留在
+    了今天的页面上，宁可不要。正文一个可比项都没提时不算冲突——页面本身就是
+    当日那一页，正文非空即当日的。
+    """
+    reasons: List[str] = []
+    checked = 0
+
+    full = _DATE_FULL.search(text)
+    if full:
+        got = f"{int(full.group(1)):04d}-{int(full.group(2)):02d}-{int(full.group(3)):02d}"
+        checked += 1
+        if got != date:
+            reasons.append(f"正文日期={got}")
+    else:
+        for m in _DATE_MD.finditer(text):
+            got = f"{int(m.group(1)):02d}-{int(m.group(2)):02d}"
+            checked += 1
+            if not date.endswith(got):
+                reasons.append(f"正文日期={got}")
+
+    for key, pat in _REVIEW_COUNTS.items():
+        hit = pat.search(text)
+        want = kpi.get(key)
+        if not hit or want is None:
+            continue
+        checked += 1
+        if int(hit.group(1)) != int(want):
+            reasons.append(f"{key} 正文{hit.group(1)}≠当日{want}")
+
+    limits = {
+        str(t.get("name") or "").strip(): t.get("limit_up")
+        for t in themes or []
+        if str(t.get("name") or "").strip()
+    }
+    for m in _REVIEW_THEME_N.finditer(text):
+        name, num = m.group(1).strip(), int(m.group(2))
+        want = limits.get(name)
+        if want is None:
+            continue
+        checked += 1
+        if int(want) != num:
+            reasons.append(f"{name} 正文{num}只≠当日{want}只")
+
+    return {"ok": not reasons, "checked": checked, "reasons": reasons}
+
+
+def parse_day_review(page: str, date: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    """当日页上的「今日AI复盘」，只在内容确实是这一天的才收。
+
+    不收时返回 ai_review 为空、date_verified 为 False：页面与推送都不渲染那
+    一段，模型也拿不到第二意见，其余各块不受影响。
+    """
+    kpi = payload.get("kpi") or {}
+    themes = kpi.get("_themes") or []
+    text = _review_text(page)
+    base = {
+        "status": kpi.get("_status"),
+        "updated_at": kpi.get("_updated_at"),
+        "themes": themes,
+        "ai_review": "",
+        "page": f"{BASE}/days/{date}.html",
+    }
+    if not text:
+        base["date_check"] = {
+            "requested": date, "chars": 0, "checked": 0,
+            "reasons": ["页面里的今日AI复盘为空"],
+        }
+        base["date_verified"] = False
+        print(
+            f"third-party review: date={date} absent — the section stays empty",
+            file=sys.stderr,
+        )
+        return base
+
+    verdict = _review_matches_day(text, date, kpi, themes)
+    base["date_check"] = {"requested": date, "chars": len(text), **verdict}
+    base["date_verified"] = bool(verdict["ok"])
+    if not verdict["ok"]:
+        print(
+            f"third-party review: date={date} rejected — {verdict['reasons']};"
+            " the section stays empty",
+            file=sys.stderr,
+        )
+        return base
+    base["ai_review"] = text
+    print(
+        f"third-party review: date={date} accepted — {len(text)} chars,"
+        f" {verdict['checked']} cross-checks passed",
+        file=sys.stderr,
+    )
+    return base
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Post-close brief: matrix, screens, written read")
     parser.add_argument("--out-dir", default="docs/post-market")
@@ -2405,11 +2548,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     # 所以放在这里抓：进 collect() 的时候还不知道该抓哪一天。
     if not args.no_browser:
         try:
-            payload["extra"]["signals"] = _drop_stale_signals(
-                parse_signals(render_day(date)), payload
-            )
+            day_page = render_day(date)
         except Exception as exc:  # noqa: BLE001 - 少一块，不影响别的
             payload["errors"].append(f"signals: {exc}")
+        else:
+            payload["extra"]["signals"] = _drop_stale_signals(
+                parse_signals(day_page), payload
+            )
+            # 第三方复盘与信号面同页，同一份 DOM 里取，不再单独打一次 MCP。
+            if not args.no_mcp:
+                try:
+                    payload["lianban"] = parse_day_review(day_page, date, payload)
+                except Exception as exc:  # noqa: BLE001
+                    payload["errors"].append(f"third-party review: {exc}")
     # 东财涨停池：lianban 的题材明细面板改版后，这是唯一还能逐只拿到的当日涨停
     # 名单。一次请求换 28 行，比翻十页便宜；拿不到就少一块，不挡整份晚报。
     try:
@@ -2492,31 +2643,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                 "主力净流出（东财）": outflow,
             }
 
-    if not args.no_mcp:
-        try:
-            review = mcp_review(date)
-            payload["lianban"] = review
-            # 这一段是「模型拿去对比的是不是当天」的唯一凭证，跑完必须能在
-            # 日志里看到，而不是等推送出来才发现对错了日子。
-            check = review.get("date_check") or {}
-            if review.get("date_verified"):
-                print(
-                    f"mcp review: date={date} verified"
-                    f" kpi={check.get('kpi_date')}"
-                    f" updated={check.get('updated_at')}"
-                    f" status={check.get('status')}"
-                    f" text_counts={check.get('text_counts_matched')}/3",
-                    file=sys.stderr,
-                )
-            else:
-                print(
-                    f"mcp review: date={date} REJECTED"
-                    f" reasons={check.get('reasons')}"
-                    f" dropped={review.get('rejected')}",
-                    file=sys.stderr,
-                )
-        except Exception as exc:  # noqa: BLE001
-            payload["errors"].append(f"mcp: {exc}")
+    # 第三方复盘不再走 MCP：它要等站点 21:30 标 final 才给正文，而正文其实
+    # 收盘后就写在当日页面上，上面 parse_day_review 已经按内容取过一遍了。
     for err in payload["errors"]:
         print(f"source failed: {err}", file=sys.stderr)
 
