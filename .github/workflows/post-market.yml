@@ -1,15 +1,19 @@
 name: Post Market Brief
 
-# The matrix job records the close; this one reads it. 13:40 UTC is 21:40
-# Asia/Shanghai — ten minutes past lianban's real 定版. The site states
-# 16:00-17:00, but every session measured (11-17 through 11-20) landed at
-# 21:30:1x, so a 19:10 run met yesterday's final and was skipped by the gate
-# below. 21:40 + 8h never crosses a date boundary, so UTC 1-5 is exactly
-# Monday-Friday in Shanghai: no brief on Saturday or Sunday, which have no
-# session to report on anyway.
+# The matrix job records the close; this one reads it. 10:30 UTC is 18:30
+# Asia/Shanghai. The data is on the site by then — the close is in, the
+# limit-up list, the dragon-tiger board and the three screens are all up — and
+# only the "final" stamp lags, to 21:30:0x (11-16 21:30:07, 11-18 21:30:06,
+# 11-19 21:30:15, 11-20 21:30:14, 11-23 21:30:09). So the brief no longer waits
+# for that stamp: post_market.py reads the third-party review straight off the
+# day's own page and keeps it only when the text is there and its own dates and
+# counts agree with today; otherwise that one section is dropped and the rest of
+# the brief ships as usual. 18:30 + 8h never crosses a date boundary, so UTC 1-5
+# is exactly Monday-Friday in Shanghai: no brief on Saturday or Sunday, which
+# have no session to report on anyway.
 on:
   schedule:
-    - cron: '40 13 * * 1-5'
+    - cron: '30 10 * * 1-5'
   workflow_dispatch:
     inputs:
       date:
@@ -27,8 +31,10 @@ jobs:
   brief:
     runs-on: ubuntu-24.04
     # The step below carries its own 18-minute ceiling; this one only has to be
-    # large enough that the step is always the thing that gives up first.
-    timeout-minutes: 40
+    # large enough that the step is always the thing that gives up first. The
+    # build starts at 18:30 and has nothing left to wait for, so the margin is
+    # for runner queueing, not for the site.
+    timeout-minutes: 60
     permissions:
       contents: write
 
@@ -71,16 +77,17 @@ jobs:
           pip install --disable-pip-version-check playwright pydantic httpx
           python -m playwright install --with-deps chromium
 
-      # 21:40 is ten minutes past the finalisation actually observed (21:30 on
-      # the four sessions measured), but "约" is not a guarantee: a day the
-      # pipeline slips would otherwise publish yesterday's numbers under today's
-      # name and push them to WeChat. opendata carries the site's own state, and
-      # only "final" on the target date counts as settled. A weekend dispatch
-      # fails this gate on its own — there is no Saturday or Sunday session.
+      # This gate asks only whether the site has a page for TARGET. It must not
+      # require "final": at 18:30 the site is still mid-session (status=active,
+      # the review body possibly not written yet), and requiring the stamp is
+      # exactly what kept the brief at 21:40. What it still catches is the
+      # dangerous case: a day the pipeline slips would publish yesterday's
+      # numbers under today's name and push them to WeChat. A weekend dispatch
+      # fails it on its own — there is no Saturday or Sunday session.
       #
       # TARGET is what the page will be filed under: today by default, or the
       # date passed to a manual dispatch so a missed evening can be backfilled.
-      - name: Check lianban has settled the target close
+      - name: Check lianban has a page for the target close
         id: fresh
         shell: bash
         run: |
@@ -92,11 +99,12 @@ jobs:
           curl -sf -A 'Mozilla/5.0' https://lianban.net/opendata/latest.json -o latest.json
           STATE=$(python -c "import json;d=json.load(open('latest.json'));k=d.get('kpi') or {};print(k.get('date'),d.get('status'))")
           echo "lianban date/status=$STATE target=$TARGET today=$TODAY"
-          if [ "$STATE" = "$TARGET final" ]; then
+          DATE_PART=${STATE%% *}
+          if [ "$DATE_PART" = "$TARGET" ]; then
             echo "ok=true" >> "$GITHUB_OUTPUT"
           else
             echo "ok=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::lianban reports '$STATE', not '$TARGET final' — the brief is skipped"
+            echo "::warning::lianban's latest page is '$DATE_PART', not '$TARGET' — the brief is skipped"
           fi
 
       # continue-on-error: a failed WeChat push used to return 1 here, which
