@@ -2145,6 +2145,86 @@ def _review_lines(payload: Dict[str, Any]) -> List[str]:
     return ["\n>\n".join("> " + p.replace("\n", "\n> ") for p in paras)]
 
 
+# 信号面是「上一交易日收盘」口径，站点却把标题写成「今日信号面」。2026-11-23
+# 就是最坏的一次：11-20 收出创业板 -3.54% 的大阴，触发了「二次破位·建议减仓」，
+# 而 11-23 创业板 +3.08%，同一张晚报里信号面喊清仓、盘后洞察写「冰点切高潮」。
+# 站点自己的页面在同一位置标着「2026-11-20 前瞻今日表现」，等于承认它是隔夜的
+# 前瞻。这里在渲染前做一次方向核对：信号说跌、当日该指数却涨过 1%，这条就不发。
+_SIGNAL_INDEX_WORDS = (
+    ("创业板", "创业板"),
+    ("科创50", "科创50"),
+    ("科创", "科创50"),
+    ("上证50", "上证50"),
+    ("上证", "上证"),
+    ("深证", "深证"),
+    ("北证50", "北证50"),
+    ("大盘", "上证"),
+)
+_SIGNAL_BEARISH = ("破位", "跌势", "大跌", "下跌", "弱势", "防守", "风险", "减仓", "清仓")
+# 涨过 1% 才判冲突：+0.2% 的横盘不足以推翻一条形态信号，+3% 足以。
+_SIGNAL_CONFLICT_RISE = 1.0
+# 涨停 80 家以上再谈「涨停情绪历史低位」就自相矛盾了（11-20 冰点是 28 家，
+# 11-23 高潮期是 146 家）。
+_SIGNAL_CONFLICT_LIMIT_UP = 80
+
+
+def _index_moves(payload: Dict[str, Any]) -> Dict[str, float]:
+    """``{指数名: 当日涨跌幅}``，取自同一张页面的指数条，不另找外部源。"""
+    moves: Dict[str, float] = {}
+    for row in ((payload.get("extra") or {}).get("indices")) or []:
+        name = str(row.get("name") or "").strip()
+        raw = str(row.get("pct") or "").replace("%", "").replace("＋", "+").strip()
+        try:
+            moves[name] = float(raw)
+        except ValueError:
+            continue
+    return moves
+
+
+def _drop_stale_signals(
+    rows: List[Dict[str, str]], payload: Dict[str, Any]
+) -> List[Dict[str, str]]:
+    """丢掉与当日盘面方向相反的信号条，其余照发。
+
+    失败即放行：指数条没抓到就没有依据判冲突，宁可原样发，也不因为缺数据
+    把整块清空。
+    """
+    moves = _index_moves(payload)
+    if not moves:
+        print(
+            f"signals: 当日指数条缺失，{len(rows)} 条未做方向核对",
+            file=sys.stderr,
+        )
+        return rows
+    try:
+        limit_up = int((payload.get("kpi") or {}).get("limit_up") or 0)
+    except (TypeError, ValueError):
+        limit_up = 0
+    kept: List[Dict[str, str]] = []
+    for row in rows:
+        chip = str(row.get("chip") or "").strip()
+        text = str(row.get("text") or "").strip()
+        blob = chip + text
+        reason = ""
+        if any(word in blob for word in _SIGNAL_BEARISH):
+            for word, index in _SIGNAL_INDEX_WORDS:
+                if word in blob and moves.get(index, 0.0) >= _SIGNAL_CONFLICT_RISE:
+                    reason = f"{index} 当日 {moves[index]:+.2f}%，信号说的是跌"
+                    break
+            if not reason and "涨停情绪" in blob and "低位" in blob and limit_up >= _SIGNAL_CONFLICT_LIMIT_UP:
+                reason = f"当日涨停 {limit_up} 家，信号说涨停情绪在低位"
+        if reason:
+            print(f"signals: dropped「{chip}」— {reason}", file=sys.stderr)
+        else:
+            kept.append(row)
+    if len(kept) != len(rows):
+        print(
+            f"signals: {len(rows) - len(kept)}/{len(rows)} 条与当日盘面相反，已不渲染",
+            file=sys.stderr,
+        )
+    return kept
+
+
 def _signal_lines(payload: Dict[str, Any]) -> List[str]:
     """今日信号面：形态 + 历史统计，一条一段。
 
@@ -2325,7 +2405,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     # 所以放在这里抓：进 collect() 的时候还不知道该抓哪一天。
     if not args.no_browser:
         try:
-            payload["extra"]["signals"] = parse_signals(render_day(date))
+            payload["extra"]["signals"] = _drop_stale_signals(
+                parse_signals(render_day(date)), payload
+            )
         except Exception as exc:  # noqa: BLE001 - 少一块，不影响别的
             payload["errors"].append(f"signals: {exc}")
     # 东财涨停池：lianban 的题材明细面板改版后，这是唯一还能逐只拿到的当日涨停
