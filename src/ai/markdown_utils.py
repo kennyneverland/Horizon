@@ -33,6 +33,12 @@ _ITEM_HEADING_RE = re.compile(
     re.MULTILINE,
 )
 _TOC_SECTION_RE = re.compile(r"^\*\*(?P<name>[^*\n]+)\*\*[ \t]*$", re.MULTILINE)
+# 网页端给板块名挂样式的行内 HTML。微信/Server酱 的 Markdown 渲染器不认行内
+# HTML，会把整段标签当正文印出来——2026-11-24 的推送就是这样把
+# 「<span class="toc-group">财经要闻</span>（标题汇总如下…」原样发给了读者。
+_TOC_GROUP_SPAN_RE = re.compile(
+    r'<span\s+class="toc-group">(.*?)</span>', re.IGNORECASE | re.DOTALL
+)
 _SOURCE_LINE_RE = re.compile(
     r"(?:\d{1,2}月\d{1,2}日\s*\d{1,2}:\d{2})"
     r"|(?:[A-Z][a-z]{2}\s+\d{1,2},\s+\d{1,2}:\d{2})"
@@ -210,8 +216,22 @@ def clean_app_summary_markdown(value: str) -> str:
     as rank-badged single lines with the article link restored and the title
     bolded, group labels become headings, and body paragraphs become blockquotes
     so they render in the brighter body colour.
+
+    Group labels arrive in two shapes: the plain ``**名称**`` a renderer-agnostic
+    caller emits, and the ``<span class="toc-group">名称</span>`` the web page
+    needs to size the label above its entries. The span is unwrapped here first,
+    so both shapes reach ``_promote_toc_sections`` as ``**名称**`` and end up as
+    the same ``###`` heading. Leaving it alone is not neutral: a chat renderer
+    prints the tag as text, and the reader sees ``<span class="toc-group">``
+    where a section title should be.
     """
     value = _ANCHOR_ID_RE.sub("", value)
+    # 换行是必需的：网页上「<span>板块名</span>（标题汇总如下…）」是同一行，
+    # 而 _TOC_SECTION_RE 要求整行只有 **名称** 才升级成 ###。不拆行的话板块名
+    # 停在加粗，和正文小标题混在一起，读者分不清章节从哪开始。
+    value = _TOC_GROUP_SPAN_RE.sub(
+        lambda match: f"**{_strip_html_tags(match.group(1))}**\n", value
+    )
     value = _convert_details_to_markdown(value)
     url_by_title = _collect_item_urls(value)
     value = _TOC_ENTRY_RE.sub(
