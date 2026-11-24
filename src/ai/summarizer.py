@@ -14,9 +14,9 @@ from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
 from ..processing import next_day
-from ..processing.asia_open import fetch_asia_open
+from ..processing.asia_open import OPEN_BELL as ASIA_OPEN_BELL, fetch_asia_open
 from ..processing.overnight import fetch_overnight
-from ..processing.premarket import fetch_premarket
+from ..processing.premarket import PAGE_READY as PREMARKET_READY, fetch_premarket
 from ..processing import opening
 
 logger = logging.getLogger(__name__)
@@ -483,7 +483,8 @@ class DailySummarizer:
         view = self.build_view(items, language)
         # 早盘页一次请求就够：隔夜映射、今早要闻与今日日历共用同一份，重复请求
         # 只会多撞一次 429。要闻要落进中国股市板块，所以取数得排在正文之前。
-        brief = await fetch_premarket() if language == "zh" else None
+        # 09:02 起跑，早盘页 09:25 才定稿：等到定稿再读，别拿半份快照。
+        brief = await fetch_premarket(at=PREMARKET_READY) if language == "zh" else None
         morning_placed = False
         for group in view.groups:
             profile_name = _escape_markdown(group.name)
@@ -618,8 +619,9 @@ class DailySummarizer:
         另外还负责给出美东收盘日期，早盘页不带这个日期。
         """
         # 亚太开盘与新浪互不依赖：一边断了，另一边照常。
+        # 港股 09:30 开盘：早报 09:02 起跑，不等到这一刻就会印成「（未开盘）」。
         asia, sina = await asyncio.gather(
-            fetch_asia_open(), fetch_overnight(), return_exceptions=True
+            fetch_asia_open(at=ASIA_OPEN_BELL), fetch_overnight(), return_exceptions=True
         )
         if isinstance(asia, BaseException):
             logger.warning("Asia open tape failed: %s", asia)
@@ -708,7 +710,8 @@ class DailySummarizer:
         if len(compact) != 8:
             return ""
         try:
-            data = await opening.fetch_opening(compact)
+            # snapshot 缺席（任务创建失败）时才走这里，同样按 09:40 读。
+            data = await opening.fetch_opening(compact, at=(9, 40))
         except Exception as exc:  # noqa: BLE001 - 少一块不该让早报失败
             logger.warning("Opening block unavailable: %s", exc)
             return ""
