@@ -2429,25 +2429,31 @@ def _review_matches_day(
 ) -> Dict[str, Any]:
     """正文里的日期与数字，跟当日对一遍。
 
-    只有能对上的才说明这份正文写的是今天；对不上说明站点把上一日的正文留在
-    了今天的页面上，宁可不要。正文一个可比项都没提时不算冲突——页面本身就是
-    当日那一页，正文非空即当日的。
+    这里要挡的只有一件事：站点把上一日的正文留在今天的页面上。所以判定分两档：
+
+    - **日期写错了**（正文写 11月23日、页面是 11-24）→ 直接不收，没有余地。
+    - **数字对不上** → 只有当「一项都对不上」时才不收。正文写的是收盘后某一刻
+      的数、KPI 后来又更新过，单项差几个数很常见；只要还有一项能对上，就说明
+      这份正文写的是今天，收。一项可比项都没提到时也不收不了——页面本身就是
+      当日那一页，正文非空即当日的。
     """
-    reasons: List[str] = []
+    agrees: List[str] = []
+    conflicts: List[str] = []
     checked = 0
+    date_wrong = ""
 
     full = _DATE_FULL.search(text)
     if full:
         got = f"{int(full.group(1)):04d}-{int(full.group(2)):02d}-{int(full.group(3)):02d}"
         checked += 1
         if got != date:
-            reasons.append(f"正文日期={got}")
+            date_wrong = f"正文日期={got}"
     else:
         for m in _DATE_MD.finditer(text):
             got = f"{int(m.group(1)):02d}-{int(m.group(2)):02d}"
             checked += 1
             if not date.endswith(got):
-                reasons.append(f"正文日期={got}")
+                date_wrong = f"正文日期={got}"
 
     for key, pat in _REVIEW_COUNTS.items():
         hit = pat.search(text)
@@ -2455,8 +2461,10 @@ def _review_matches_day(
         if not hit or want is None:
             continue
         checked += 1
-        if int(hit.group(1)) != int(want):
-            reasons.append(f"{key} 正文{hit.group(1)}≠当日{want}")
+        if int(hit.group(1)) == int(want):
+            agrees.append(f"{key}={want}")
+        else:
+            conflicts.append(f"{key} 正文{hit.group(1)}≠当日{want}")
 
     limits = {
         str(t.get("name") or "").strip(): t.get("limit_up")
@@ -2477,10 +2485,20 @@ def _review_matches_day(
                 continue
             seen.add(name)
             checked += 1
-            if int(want) != num:
-                reasons.append(f"{name} 正文{num}只≠当日{want}只")
+            if int(want) == num:
+                agrees.append(f"{name}={want}")
+            else:
+                conflicts.append(f"{name} 正文{num}只≠当日{want}只")
 
-    return {"ok": not reasons, "checked": checked, "reasons": reasons}
+    ok = not date_wrong and (not conflicts or bool(agrees))
+    return {
+        "ok": ok,
+        "checked": checked,
+        "agrees": agrees,
+        "conflicts": conflicts,
+        "date_wrong": date_wrong,
+        "reasons": ([date_wrong] if date_wrong else []) + conflicts,
+    }
 
 
 def parse_day_review(page: str, date: str, payload: Dict[str, Any]) -> Dict[str, Any]:
