@@ -520,6 +520,13 @@ class HorizonOrchestrator:
             # 开盘异动：走到这里已经是 09:50 以后，09:40 那份早回来了。
             opening_snapshot = None
             if getattr(self, "_opening_task", None) is not None:
+                # 09:02 起跑、09:40 取数，这里可能要等到十点前。先说一声：日志
+                # 静默十几分钟很容易被当成卡死（2026-11-23 晚报就这样被手动
+                # 取消过一次），而这一段恰恰是在按设计等数据。
+                if not self._opening_task.done():
+                    self.console.print(
+                        f"{self.icons['date']} Waiting for the 09:40 opening block…\n"
+                    )
                 try:
                     opening_snapshot = await self._opening_task
                 except Exception:  # noqa: BLE001 - 少一块不该让早报失败
