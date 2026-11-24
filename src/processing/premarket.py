@@ -13,15 +13,19 @@ three-star macro prints. The morning page carries a calendar of its own, but
 only unlocks and without the amounts, so it is not read for that any more.
 
 Timing matters more than parsing here. The morning page starts refreshing at
-06:00 Beijing and is not finalised until 09:25, while the digest runs at 09:30
-and also runs on weekends. The calendar page is published days ahead and keeps
-today's group through the session, so a 09:30 run sees the whole day. The
-morning snapshot is checked against its own date instead: on a Saturday it
-still carries Friday's, and a stale tape or headline list is worse than none.
+06:00 Beijing and is not finalised until 09:25, while the digest now starts at
+09:02 — early enough that the news work can finish before the page is done. The
+read therefore waits for 09:25 rather than taking whatever the page holds at
+that moment, which would be a half-built snapshot with today's date on it. The
+calendar page is published days ahead and keeps today's group through the
+session, so it needs no wait. The morning snapshot is checked against its own
+date instead: on a Saturday it still carries Friday's, and a stale tape or
+headline list is worse than none.
 """
 
 from __future__ import annotations
 
+import asyncio
 import html
 import logging
 import re
@@ -34,6 +38,12 @@ logger = logging.getLogger(__name__)
 
 PREMARKET_URL = "https://lianban.net/zaopan.html"
 TIMEOUT_SECONDS = 20.0
+# 早盘页 06:00 开始刷新、09:25 定稿；早报 09:02 就起来了，新闻处理快的日子会在
+# 定稿前走到这里。等它定稿再读，否则拿到的是当天日期、但只填了一半的快照。
+PAGE_READY = (9, 25)
+# 等待上限：超过说明这次运行本来就晚了（GitHub 调度经常迟 30-60 分钟），
+# 再等没有意义，直接读当前页面，让后面的日期校验去判断它是不是当天那一份。
+MAX_WAIT_SECONDS = 3600
 SITE_ROOT = "https://lianban.net"
 # The page stamps its snapshot in Beijing time; the digest's own date is UTC.
 CST = timezone(timedelta(hours=8))
@@ -198,14 +208,38 @@ def parse(page: str) -> Dict[str, Any]:
     return brief
 
 
+async def _wait_until(hour: int, minute: int) -> None:
+    """Sleep to the page's finalisation time, or read now if that has passed."""
+    now = datetime.now(CST)
+    target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    wait = (target - now).total_seconds()
+    if 0 < wait <= MAX_WAIT_SECONDS:
+        logger.warning("Pre-market brief waits %.0fs for %02d:%02d", wait, hour, minute)
+        await asyncio.sleep(wait)
+    elif wait > MAX_WAIT_SECONDS:
+        logger.warning(
+            "Pre-market brief: %02d:%02d is %.0fs away, past the %.0fs cap; reading now",
+            hour, minute, wait, MAX_WAIT_SECONDS,
+        )
+
+
 async def fetch_premarket(
-    url: str = PREMARKET_URL, expect_date: Optional[str] = None
+    url: str = PREMARKET_URL,
+    expect_date: Optional[str] = None,
+    at: Optional[tuple[int, int]] = None,
 ) -> Optional[Dict[str, Any]]:
     """Two GETs per run; any failure drops only the block that source fed.
 
     A retry spends another request against an endpoint that already answers 429
     when asked too often, and a missing block is not worth a blocked digest.
+
+    ``at`` delays the read to the page's finalisation time. ``None`` reads
+    immediately, which is what a caller that is already past 09:25 wants and
+    what any other entry point (the MCP server, a manual probe) still gets.
     """
+    if at is not None:
+        await _wait_until(*at)
+    # 日期在等待之后再取：跨零点的调用拿到的是读页面那一刻的日期。
     today = expect_date or datetime.now(CST).strftime("%Y-%m-%d")
     brief: Optional[Dict[str, Any]] = None
     day: Optional[Dict[str, Any]] = None

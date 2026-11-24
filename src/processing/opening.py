@@ -1,10 +1,10 @@
 """The first ten minutes: sealed, broken, and how that compares with yesterday.
 
-The digest is triggered at 09:35 but this block describes the tape at 09:40, so
-the five minutes in between are spent on the news rather than on waiting: the
-fetch is scheduled as a task that sleeps until 09:40 and the rest of the run
+The digest is triggered at 09:02 but this block describes the tape at 09:40, so
+the thirty-eight minutes in between are spent on the news rather than on idling:
+the fetch is scheduled as a task that sleeps until 09:40 and the rest of the run
 proceeds alongside it. Nothing downstream waits for it until the summary is
-actually assembled, which is twenty-odd minutes later.
+actually assembled, which is half an hour later.
 
 Three things are reported and two compared:
 
@@ -58,9 +58,9 @@ EM_ZB_URL = "https://push2ex.eastmoney.com/getTopicZBPool"
 EM_UT = "7eea3edcaed734bea9cbfc24409ed989"
 
 CST = timezone(timedelta(hours=8))
-# The cut, in HHMMSS. The digest fires at 09:35 and this block reads 09:40, so a
-# name whose first seal lands at or before 09:40:00 belongs to the window being
-# described; anything later happened after this snapshot was taken.
+# The cut, in HHMMSS. The digest now fires at 09:02 and this block reads 09:40,
+# so a name whose first seal lands at or before 09:40:00 belongs to the window
+# being described; anything later happened after this snapshot was taken.
 CUT = 94000
 CUT_LABEL = "09:40"
 # 09:30:00 — sealed before this means the auction did it, which reads differently
@@ -75,8 +75,19 @@ POOL_PAGE = 400
 # way to a baseline.
 STORE = Path("data/opening")
 # A wait longer than this means the clock is not where it should be; take the
-# reading rather than stall the run.
-MAX_WAIT_SECONDS = 1800
+# reading rather than stall the run. The trigger is 09:02 and this block reads
+# 09:40, so the cap has to cover 38 minutes of waiting — 1800s was sized for the
+# old 09:35 trigger and would have skipped the wait entirely, reading 09:02
+# instead of 09:40 and printing the auction window as if it were the first ten
+# minutes.
+MAX_WAIT_SECONDS = 3600
+# GitHub's scheduler routinely starts a run 30-60 minutes late (2026-11-24: asked
+# for 01:35Z, started 02:35Z). The pool counts survive that — ``fbt`` is a fixed
+# timestamp, so ``fbt <= 09:40`` still means the same thing at 10:35 — but the
+# industry table is a live snapshot: printing a 10:35 move under a "（09:40）"
+# heading is the kind of quiet lie this block must not tell. Past this much
+# lateness the board line is dropped and the counts print alone.
+LATE_BOARDS_SECONDS = 900
 
 
 def _fbt(row: Dict[str, Any]) -> Optional[int]:
@@ -84,14 +95,30 @@ def _fbt(row: Dict[str, Any]) -> Optional[int]:
     return value if isinstance(value, int) else None
 
 
-async def _wait_until(hour: int, minute: int) -> None:
-    """Sleep to the reading time. The run is triggered earlier than this on purpose."""
+async def _wait_until(hour: int, minute: int) -> float:
+    """Sleep to the reading time; return how many seconds late the clock already is.
+
+    The run is triggered well before this on purpose. A positive return means the
+    wait happened and the read is on time; a negative one means the target had
+    already passed when the run started — GitHub's scheduler can start an hour
+    late — and the caller decides which parts of the block still hold at that
+    point. WARNING rather than INFO: this is the line that says whether the block
+    describes 09:40 or the moment the runner finally woke up.
+    """
     now = datetime.now(CST)
     target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
     wait = (target - now).total_seconds()
     if 0 < wait <= MAX_WAIT_SECONDS:
-        logger.info("Opening block waits %.0fs for %02d:%02d", wait, hour, minute)
+        logger.warning("Opening block waits %.0fs for %02d:%02d", wait, hour, minute)
         await asyncio.sleep(wait)
+        return 0.0
+    if wait > MAX_WAIT_SECONDS:
+        logger.warning(
+            "Opening block: %02d:%02d is %.0fs away, past the %.0fs cap; reading now",
+            hour, minute, wait, MAX_WAIT_SECONDS,
+        )
+        return 0.0
+    return -wait
 
 
 def _store_path(store: Path, date: str) -> Path:
@@ -272,13 +299,14 @@ async def fetch_opening(
     """One run, up to five GETs. Returns ``None`` when nothing usable came back.
 
     ``date`` is YYYYMMDD in Beijing time. ``at`` delays the read to a fixed clock
-    time — the digest fires at 09:35 and this block describes 09:40. ``store``
+    time — the digest fires at 09:02 and this block describes 09:40. ``store``
     enables the archive: yesterday comes from the newest file, and today's counts
     are written back for tomorrow. A weekend or holiday returns no pool, which is
     not a failure: the block simply does not print.
     """
+    late = 0.0
     if at is not None:
-        await _wait_until(*at)
+        late = await _wait_until(*at)
     started = datetime.now()
     async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, follow_redirects=True) as client:
         boards_task = _get(client, THS_URL, {}, HEADERS)
@@ -293,6 +321,15 @@ async def fetch_opening(
             prev = await _previous_day(client, date)
 
     boards = parse_boards(boards_resp.content) if boards_resp is not None else []
+    # A late run still counts seals correctly, but its board table is a live
+    # reading. Drop it rather than relabel it: a missing line reads as "no data",
+    # a 10:35 move under a 09:40 heading reads as a fact.
+    if late > LATE_BOARDS_SECONDS and boards:
+        logger.warning(
+            "Opening block read %.0fs after %s; board moves are a live snapshot, dropped",
+            late, CUT_LABEL,
+        )
+        boards = []
     if today is None and not boards:
         logger.warning("Opening block unavailable: no pool and no boards")
         return None
@@ -306,6 +343,7 @@ async def fetch_opening(
         "today": today,
         "prev": prev,
         "window": CUT_LABEL,
+        "late": round(late, 1),
         "elapsed": round((datetime.now() - started).total_seconds(), 2),
         "sources": {
             "boards": bool(boards),
@@ -314,14 +352,15 @@ async def fetch_opening(
             "prev": prev is not None,
         },
     }
-    logger.info(
-        "Opening block: boards=%s pool=%s broken=%s prev=%s prev_from=%s today_sealed_open=%s elapsed=%ss",
+    logger.warning(
+        "Opening block: boards=%s pool=%s broken=%s prev=%s prev_from=%s today_sealed_open=%s late=%ss elapsed=%ss",
         bool(boards),
         sealed is not None,
         broken is not None,
         prev is not None,
         ("archive" if (prev or {}).get("from_archive") else "eastmoney") if prev else "none",
         (today or {}).get("sealed_open"),
+        result["late"],
         result["elapsed"],
     )
     return result

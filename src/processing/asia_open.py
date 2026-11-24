@@ -1,10 +1,13 @@
-"""Asia-Pacific prints for the 09:30 digest.
+"""Asia-Pacific prints for the 09:30 bell.
 
-The 09:30 Beijing run lands as Hong Kong rings in. Tokyo and Seoul opened at
-08:00 Beijing (09:00 local), Taiwan at 09:00, Hong Kong at 09:30 — so the block
-carries each market's *opening* print rather than the latest one. A "当日开盘"
-row showing whatever level the tape happened to hold when the digest was built
-would be a different number from what its own label promises.
+The digest now starts at 09:02, before any of these markets have rung in, so the
+read waits for Hong Kong's 09:30 rather than taking whatever the tape holds when
+the news work happens to finish. Tokyo and Seoul opened at 08:00 Beijing (09:00
+local), Taiwan at 09:00, Hong Kong at 09:30 — so the block carries each market's
+*opening* print rather than the latest one. A "当日开盘" row showing whatever
+level the tape happened to hold when the digest was built would be a different
+number from what its own label promises. The opening print is a fixed value once
+the bell rings, which is why a run that is late still reads correctly here.
 
 Eastmoney is the source: ``f46`` is the day's open and ``f60`` the previous
 close, so the percent is the open measured against yesterday's close. Sina's
@@ -45,9 +48,9 @@ ASIA = (
     ("韩国KOSPI", "100.KS11", "b_KOSPI"),
 )
 
-# Hong Kong rings in at 09:30, the same minute this run starts, so the opening
-# print is normally there by the time the digest is built. A run that reaches
-# this line early still gets a row: the previous close, labelled as such.
+# Hong Kong rings in at 09:30, which is what OPEN_BELL below waits for. A run
+# that reads before the bell — a manual dispatch, or one that slipped past the
+# wait — still gets a row: the previous close, labelled as such.
 HK = (("恒生指数", "rt_hkHSI"), ("恒生科技", "rt_hkHSTECH"))
 
 # Taiwan rings in at 09:00 like Tokyo and Seoul, but Sina's b_TWSE feed still
@@ -69,8 +72,12 @@ TWSE_HEADERS = {"User-Agent": UA}
 
 _SINA_RE = re.compile(r'var hq_str_(\w+)="([^"]*)";')
 
-# The run starts at 09:30 and reaches this block after the AI passes, so the
-# Hong Kong bell has usually rung; one wait covers the case where it has not.
+# 早报 09:02 触发，比港股开盘早 28 分钟；新闻处理快的日子会在这里撞上还没开盘
+# 的港股，拿到昨收并标「（未开盘）」。等 09:30 再读，行上就是当日的开盘价。
+OPEN_BELL = (9, 30)
+# 等待上限：超过说明这次运行本来就晚了，再等没有意义。
+MAX_WAIT_SECONDS = 3600
+# 取不到时的重试间隔（源偶发空 body 时用）。
 RETRY_SECONDS = 15.0
 
 
@@ -340,7 +347,24 @@ async def _from_twse(
     ]
 
 
-async def fetch_asia_open(today: Optional[str] = None) -> Optional[Dict[str, Any]]:
+async def _wait_until(hour: int, minute: int) -> None:
+    """Sleep to the opening bell, or read now if it has already rung."""
+    now = datetime.now(BEIJING)
+    target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    wait = (target - now).total_seconds()
+    if 0 < wait <= MAX_WAIT_SECONDS:
+        logger.warning("Asia open waits %.0fs for %02d:%02d", wait, hour, minute)
+        await asyncio.sleep(wait)
+    elif wait > MAX_WAIT_SECONDS:
+        logger.warning(
+            "Asia open: %02d:%02d is %.0fs away, past the %.0fs cap; reading now",
+            hour, minute, wait, MAX_WAIT_SECONDS,
+        )
+
+
+async def fetch_asia_open(
+    today: Optional[str] = None, at: Optional[tuple[int, int]] = None
+) -> Optional[Dict[str, Any]]:
     """Tokyo, Seoul, Taiwan and Hong Kong prints for today's session, or ``None``.
 
     Eastmoney then Sina for the two 09:00 exchanges; Taiwan is read from its own
@@ -349,6 +373,9 @@ async def fetch_asia_open(today: Optional[str] = None) -> Optional[Dict[str, Any
     it — and a source that answers with a print dated before today is treated as
     not having opened yet, not as a quote.
     """
+    if at is not None:
+        await _wait_until(*at)
+    # 日期在等待之后再取：等待可能跨到第二天（手动触发）。
     today = today or _today_beijing()
     async with httpx.AsyncClient(
         timeout=TIMEOUT_SECONDS, follow_redirects=True
