@@ -36,6 +36,9 @@ _STAR_RE = re.compile(
 )
 _LINK_RE = re.compile(r"<a[^>]*>([^<]+)</a>")
 _TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+# 同一份数据的另一个口径：核心 PCE 与 PCE 来自同一份报告，只是去不去食品能源。
+# 判断「是不是同一份数据」时先抹掉这些修饰，检索时也只发一个更通用的 query。
+_VARIANT_RE = re.compile(r"核心|初值|终值|修正值?|季调|年化|环比|同比")
 
 # 09:00 是分界线：更早的事件在前一日早报里已经出现过。
 CUTOFF = "09:00"
@@ -58,6 +61,11 @@ def _name_ok(name: str) -> bool:
     if len(parts) >= 2 and parts[-1] and parts[-1] in parts[0]:
         return False
     return len(name) >= 4
+
+
+def _canonical(name: str) -> str:
+    """去掉「核心」「初值」这类口径修饰，用来判断两个事件是不是同一份数据。"""
+    return _VARIANT_RE.sub("", name).replace(" ", "").strip()
 
 
 def parse(page: str, day: str, cutoff: str = CUTOFF) -> List[Dict[str, Any]]:
@@ -111,20 +119,27 @@ async def fetch_events(client, day: str, cutoff: str = CUTOFF) -> List[Dict[str,
 def to_queries(
     events: List[Dict[str, Any]], max_queries: int = MAX_QUERIES
 ) -> List[GoogleNewsConfig]:
-    """事件 → Google News query。
+    """事件 → Google News query，同一份数据的多个口径只发一个。
 
-    名称原样用，不改写成站点没有的说法；检索窗口由抓取器按早报的 since 自己算，
-    这里只管「搜什么」。
+    核心 PCE 与 PCE 来自同一份报告，标题里都带「PCE」：分成两个 query 搜，
+    召回的报道高度重叠，去重那一步要多处理一倍条目，边际收益很低。所以先按
+    抹掉口径修饰后的名字归并，再用更通用的那个名字去搜——它同时能命中核心
+    口径的报道，反过来则不行。
     """
     out: List[GoogleNewsConfig] = []
-    for event in events[:max_queries]:
+    seen: set[str] = set()
+    for event in events:
         name = str(event.get("name") or "").strip()
         if not name:
             continue
+        key = _canonical(name)
+        if not key or key in seen:
+            continue
+        seen.add(key)
         out.append(
             GoogleNewsConfig(
                 enabled=True,
-                query=name,
+                query=key,
                 language="zh-CN",
                 country="CN",
                 ceid="CN:zh-Hans",
@@ -133,4 +148,6 @@ def to_queries(
                 profile="finance-news",
             )
         )
+        if len(out) >= max_queries:
+            break
     return out
