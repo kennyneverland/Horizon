@@ -31,6 +31,7 @@ except ImportError:  # pragma: no cover - 只在依赖没装时走到
 
 TODAY_URL = "https://lianban.net/today.html"
 MARKET_URL = "https://lianban.net/market.html"
+QX_URL = "https://lianban.net/qingxu.html"
 MCP_URL = "https://lianban.net/mcp"
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -80,6 +81,17 @@ _MK_DATA_RE = re.compile(
     r'<script type="application/json" class="mk-data">(.*?)</script>', re.S
 )
 _ZH_RE = re.compile(r'<div class="zh">(.*?)</div>')
+# 情绪页的表格全部服务端渲染，一次 GET 拿全。表头是唯一稳定的定位依据：按序号
+# 取的话，站点往中间插一张表就整体错位，而且错得看不出来。
+_TABLE_RE = re.compile(r"<table[^>]*>(.*?)</table>", re.S)
+_TR_RE = re.compile(r"<tr[^>]*>(.*?)</tr>", re.S)
+_CELL_RE = re.compile(r"<t([hd])[^>]*>(.*?)</t\1>", re.S)
+# 题材健康度：<h4>最健康题材（…）</h4><div class="items">
+#   <span class="item">银行 <b style="color:var(--up)">71.0%</b> <i>上升期 · 42只</i></span>…
+_H4_ITEMS_RE = re.compile(r'<h4>(.*?)</h4>\s*<div class="items">(.*?)</div>', re.S)
+_THEME_ITEM_RE = re.compile(
+    r'<span class="item">(.*?)<b[^>]*>(.*?)</b>\s*<i>(.*?)</i></span>', re.S
+)
 # 当日主线卡: <div class="zxc"><div class="r1"><b>光刻机（胶）</b>
 #   <span class="n mono zxn" data-m="zxm0" ...>涨停11家 ▾</span>
 #   <span class="ld" data-stk="603030" data-nm="全筑股份">龙头 全筑股份<i class="mono">3连板</i></span>
@@ -689,6 +701,95 @@ def parse_themes(page: str) -> List[Dict[str, Any]]:
     return out
 
 
+def _tables(page: str) -> List[List[List[str]]]:
+    """把页面里的每张表拆成「行 × 单元格」，第一行是表头。"""
+    out: List[List[List[str]]] = []
+    for body in _TABLE_RE.findall(page):
+        rows: List[List[str]] = []
+        for tr in _TR_RE.findall(body):
+            cells = [_clean(m.group(2)) for m in _CELL_RE.finditer(tr)]
+            if cells:
+                rows.append(cells)
+        if len(rows) >= 2:
+            out.append(rows)
+    return out
+
+
+def parse_emotion(page: str) -> Dict[str, Any]:
+    """情绪页的三张历史表：连板晋级率、阶段持续天数、阶段转移矩阵。
+
+    这三块都是站点按固定样本期算好的基准率（晋级率 2020-01-03 起 1663 个交易日，
+    情绪库 2022-08-26 起 1018 个），不随当日行情变，所以只解析、不加工、不推算。
+
+    同景矩阵故意不取：它的档位取决于「连续第几天」，而那个数字站点是按渲染出来
+    的柱数算的——2026-11-25 报「连续第 6 天」，可 11-23 是高潮期 100°（自家晚报
+    存档可查），真实是第 1 天。档位一错，结论会从「大概率修复」翻成「大概率继续
+    冰点」，所以这一整块不进晚报，等连续天数能自己算准了再说。
+    """
+    out: Dict[str, Any] = {}
+    for rows in _tables(page):
+        head = rows[0]
+        first = head[0]
+        if first.startswith("晋级路径"):
+            out["relay_promotion"] = [
+                {"path": r[0], "samples": r[1], "rate": r[2]}
+                for r in rows[1:]
+                if len(r) >= 3
+            ]
+        elif first.startswith("信号日阶段"):
+            out["relay_by_phase"] = [
+                {"phase": r[0], "next_1to2": r[1], "next_2to3": r[2]}
+                for r in rows[1:]
+                if len(r) >= 3
+            ]
+        elif "平均持续" in head:
+            out["phase_duration"] = [
+                {"phase": r[0], "spells": r[1], "mean": r[2], "longest": r[3], "share": r[4]}
+                for r in rows[1:]
+                if len(r) >= 5
+            ]
+        elif first.startswith("今日"):
+            out["phase_transition"] = {
+                "next_phases": head[1:],
+                "rows": [
+                    {"from": r[0], "freq": r[1:]} for r in rows[1:] if len(r) >= 2
+                ],
+            }
+    return out
+
+
+def emotion_stats(timeout: float = 30.0) -> Dict[str, Any]:
+    """情绪页的基准率。取不到就抛，由 collect_extra 单独降级——不影响当日数据。"""
+    request = urllib.request.Request(
+        QX_URL, headers={"User-Agent": UA, "Accept-Encoding": "gzip"}
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        body = response.read()
+        if response.headers.get("Content-Encoding") == "gzip":
+            body = gzip.decompress(body)
+    return parse_emotion(body.decode("utf-8", "replace"))
+
+
+def _theme_health(page: str) -> Dict[str, List[Dict[str, str]]]:
+    """题材级的上升期占比：最健康与最弱各六条。
+
+    这是「趋势底座」，不是「当日脉冲」——主线强度看的是板块今天涨多少，这里看
+    的是板块成员还有多少站在长期均线上方。两套分类体系不同（这里用申万三级），
+    不能和主线强度并排排名，只作独立佐证。
+    """
+    out: Dict[str, List[Dict[str, str]]] = {}
+    for title, body in _H4_ITEMS_RE.findall(page):
+        title = _clean(title)
+        key = "strong" if "最健康" in title else ("weak" if "最弱" in title else "")
+        if not key:
+            continue
+        out[key] = [
+            {"name": _clean(n), "pct": _clean(p), "note": _clean(note)}
+            for n, p, note in _THEME_ITEM_RE.findall(body)
+        ]
+    return out
+
+
 def market_breadth(timeout: float = 30.0) -> Dict[str, Any]:
     """Sixty sessions of breadth, so today's numbers arrive with a distribution.
 
@@ -753,6 +854,7 @@ def market_breadth(timeout: float = 30.0) -> Dict[str, Any]:
             "stage4": _pct_rank(series("stage4"), today.get("stage4")),
         },
         "recent5": recent,
+        "themes_health": _theme_health(page),
     }
 
 
@@ -780,6 +882,14 @@ def collect_extra(timeout_ms: int = 60000, date: str = "") -> Dict[str, Any]:
     if not strength and not flows:
         out["error"] = "rendered page had neither block"
         return out
+    forecast = parse_forecast(page)
+    try:
+        # 晋级率、阶段持续、阶段转移与「次日推演」同属一类：都是站点按历史样本
+        # 算好的基准率。并进同一块，post_market 那边 next_day_base_rate 原样透传，
+        # 不必为多三个键去改那个 139KB 的文件。
+        forecast.update(emotion_stats())
+    except Exception as exc:  # noqa: BLE001 - 少一块基准率，当日数据照出
+        out["emotion_error"] = f"{type(exc).__name__}: {exc}"
     out.update(
         {
             "strength": strength,
@@ -787,7 +897,7 @@ def collect_extra(timeout_ms: int = 60000, date: str = "") -> Dict[str, Any]:
             "panel": panel,
             "overseas": overseas,
             "indices": parse_indices(page),
-            "forecast": parse_forecast(page),
+            "forecast": forecast,
             "theme_members": parse_themes(page),
         }
     )
