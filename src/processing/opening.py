@@ -14,11 +14,19 @@ Three things are reported and two compared:
 * the same two counts for the previous trading day.
 
 The comparison reads its own archive first. Every run writes its snapshot to
-``data/opening/YYYY-MM-DD.json``, and the next run compares against the newest
+``data/opening/YYYYMMDD.json``, and the next run compares against the newest
 file older than today. That keeps both sides of the comparison produced by the
 same code at the same hour, which no third-party history can promise. 东方财富's
 dated pools are still read when the archive has nothing — the first day, or a
 gap — so the block is never blank for want of a baseline.
+
+The archive is not trusted blindly. Only mornings whose pool came back write a
+file, so a failed read leaves a hole and the newest file can be two trading days
+back; its counts would then print under 「上一交易日同期」 as if they were
+yesterday's. 2026-11-25 is that case: the 09:40 read timed out, nothing was
+written, and 11-26 would have compared against 11-24. The dated pools answer
+"which day was the last trading day" directly, so the archive is checked against
+them, and a mismatch drops the comparison instead of printing it.
 
 Two details decide whether the comparison means anything. ``fbt``, the time a
 name first sealed, does not change after the fact, so counting either side by
@@ -88,6 +96,13 @@ MAX_WAIT_SECONDS = 3600
 # heading is the kind of quiet lie this block must not tell. Past this much
 # lateness the board line is dropped and the counts print alone.
 LATE_BOARDS_SECONDS = 900
+# 09:40 那一次读数是整块的地基，而涨停池和炸板池各只发一次请求：一次瞬时超时
+# 就把整块打掉（2026-11-25 两个池子同时 20s 超时，页面少了一整节）。重试不会
+# 改变口径 —— ``_counts()`` 判的是 ``fbt <= 09:40:00`` 这个固定时间戳，晚十几秒
+# 再读，09:40 之前封板的还是同一批。实时性敏感的只有同花顺板块表，它另有
+# ``LATE_BOARDS_SECONDS`` 保护。所以只补池子，间隔也压在一分钟内。
+POOL_RETRIES = 3
+POOL_RETRY_DELAYS = (5.0, 10.0)
 
 
 def _fbt(row: Dict[str, Any]) -> Optional[int]:
@@ -217,27 +232,46 @@ def parse_boards(content: bytes) -> List[Dict[str, str]]:
     return out
 
 
-async def _pool(client: httpx.AsyncClient, url: str, date: str) -> Optional[List[Dict[str, Any]]]:
-    response = await _get(
-        client,
-        url,
-        {
-            "ut": EM_UT,
-            "dpt": "wz.ztzt",
-            "Pageindex": "0",
-            "pagesize": str(POOL_PAGE),
-            "sort": "fbt:asc",
-            "date": date,
-        },
-        EM_HEADERS,
-    )
-    if response is None:
-        return None
-    try:
-        data = response.json().get("data") or {}
-    except Exception:  # noqa: BLE001
-        return None
-    return data.get("pool") or []
+async def _pool(
+    client: httpx.AsyncClient,
+    url: str,
+    date: str,
+    *,
+    retries: int = 1,
+) -> Optional[List[Dict[str, Any]]]:
+    """One day's pool; ``None`` means the source did not answer.
+
+    ``retries`` is raised only for the 09:40 read. A walk back through the calendar
+    keeps the default of one attempt: a missing past day is the normal answer there,
+    and retrying it would multiply the cost of every weekend.
+    """
+    params = {
+        "ut": EM_UT,
+        "dpt": "wz.ztzt",
+        "Pageindex": "0",
+        "pagesize": str(POOL_PAGE),
+        "sort": "fbt:asc",
+        "date": date,
+    }
+    attempts = max(1, retries)
+    for attempt in range(1, attempts + 1):
+        response = await _get(client, url, params, EM_HEADERS)
+        if response is not None:
+            try:
+                data = response.json().get("data") or {}
+            except Exception:  # noqa: BLE001 - a garbled body is a failed read
+                data = {}
+            if data:
+                return data.get("pool") or []
+        if attempt >= attempts:
+            return None
+        delay = POOL_RETRY_DELAYS[min(attempt - 1, len(POOL_RETRY_DELAYS) - 1)]
+        logger.warning(
+            "Opening block pool retry in %.0fs (%s, %d/%d)",
+            delay, url.rsplit("/", 1)[-1], attempt + 1, attempts,
+        )
+        await asyncio.sleep(delay)
+    return None
 
 
 def _counts(sealed: List[Dict[str, Any]], broken: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -290,13 +324,51 @@ async def _previous_day(client: httpx.AsyncClient, date: str) -> Optional[Dict[s
     return None
 
 
+async def _verified_previous(
+    client: httpx.AsyncClient,
+    date: str,
+    archived: Optional[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    """The previous trading day's counts, or ``None`` when that cannot be pinned.
+
+    The archive only holds days whose pool came back, so a failed morning leaves a
+    hole: the newest file older than today can be two trading days back, and its
+    numbers would print under 「上一交易日同期」 as if they were yesterday's. The
+    dated pools say which day was really the last trading day, so they are asked
+    every run and the archive is checked against them.
+
+    A mismatch is not repaired by printing the older file, and not repaired by
+    switching to the newer one either: both would be a number the reader cannot
+    trace. The comparison is dropped and the counts print alone.
+    """
+    truth = await _previous_day(client, date)
+    if archived is None:
+        # 首次运行或存档损坏：dated pool 就是基线，这是原来就有的兜底。
+        return truth
+    if truth is None:
+        logger.warning(
+            "Opening block baseline unverified (archive %s, dated pool unavailable); "
+            "comparison dropped",
+            archived.get("date"),
+        )
+        return None
+    if archived.get("date") != truth["date"]:
+        logger.warning(
+            "Opening block baseline gap: archive has %s, last trading day is %s; "
+            "comparison dropped",
+            archived.get("date"), truth["date"],
+        )
+        return None
+    return archived
+
+
 async def fetch_opening(
     date: str,
     *,
     at: Optional[tuple[int, int]] = None,
     store: Optional[Path] = None,
 ) -> Optional[Dict[str, Any]]:
-    """One run, up to five GETs. Returns ``None`` when nothing usable came back.
+    """One run, a handful of GETs. Returns ``None`` when nothing usable came back.
 
     ``date`` is YYYYMMDD in Beijing time. ``at`` delays the read to a fixed clock
     time — the digest fires at 09:02 and this block describes 09:40. ``store``
@@ -310,15 +382,19 @@ async def fetch_opening(
     started = datetime.now()
     async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, follow_redirects=True) as client:
         boards_task = _get(client, THS_URL, {}, HEADERS)
-        sealed_task = _pool(client, EM_ZT_URL, date)
-        broken_task = _pool(client, EM_ZB_URL, date)
+        sealed_task = _pool(client, EM_ZT_URL, date, retries=POOL_RETRIES)
+        broken_task = _pool(client, EM_ZB_URL, date, retries=POOL_RETRIES)
         boards_resp, sealed, broken = await asyncio.gather(
             boards_task, sealed_task, broken_task
         )
         today = _counts(sealed or [], broken or []) if sealed else None
-        prev = load_previous(date, store) if store else None
-        if prev is None:
-            prev = await _previous_day(client, date)
+        # 炸板池没通时 ``_counts`` 会算出 0，再配上同比就成了「炸板 0 只，-13」
+        # 这种假话。把未知写成 None，让 render_block 整行不印。
+        if today is not None and broken is None:
+            today["broken_open"] = None
+        prev = await _verified_previous(
+            client, date, load_previous(date, store) if store else None
+        )
 
     boards = parse_boards(boards_resp.content) if boards_resp is not None else []
     # A late run still counts seals correctly, but its board table is a live
@@ -411,13 +487,15 @@ def render_block(data: Optional[Dict[str, Any]], labels: Optional[Dict[str, str]
         text += f"，上一交易日同期 {prev_sealed} 只" + (f"，{d}" if d else "")
     lines.append(text)
 
+    # 炸板池没取到的那天，这一行整行不印：0 会被读成「今天没人炸板」。
     broken = today.get("broken_open")
-    prev_broken = prev.get("broken_open")
-    text = f"**炸板** {broken} 只"
-    if prev_broken is not None:
-        d = _delta(broken, prev_broken)
-        text += f"，上一交易日同期 {prev_broken} 只" + (f"，{d}" if d else "")
-    lines.append(text)
+    if broken is not None:
+        prev_broken = prev.get("broken_open")
+        text = f"**炸板** {broken} 只"
+        if prev_broken is not None:
+            d = _delta(broken, prev_broken)
+            text += f"，上一交易日同期 {prev_broken} 只" + (f"，{d}" if d else "")
+        lines.append(text)
 
     heights = today.get("heights") or {}
     top = today.get("top_boards") or []
