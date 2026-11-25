@@ -19,6 +19,7 @@ import gzip
 import json
 import re
 import sys
+import time
 import urllib.request
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
@@ -299,8 +300,12 @@ _EM_ASIA_HIST = _EM_ASIA + (("台湾加权", "100.TWII"),)
 _TWSE = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
 _SINA_HQ = "https://hq.sinajs.cn/list="
 _SINA_US = (("道指", "gb_dji"), ("标普", "gb_inx"), ("纳综", "gb_ixic"))
-# hf_ 是外盘期货连续：0 最新、7 昨收，涨跌幅自己算
-_SINA_FUT = (("纳指期", "hf_NQ"), ("标普期", "hf_ES"))
+# hf_ 是外盘期货连续：0 最新、6 报价时间（北京时间）、7 昨收，涨跌幅自己算。
+# 道指期与另外两只同口径；2026-11-25 之前没接，外盘那一行因此缺了道指的期货面。
+_SINA_FUT = (("纳指期", "hf_NQ"), ("标普期", "hf_ES"), ("道指期", "hf_YM"))
+# 台交所那一路偶尔整段不回（2026-11-20、11-25 各掉过一次），多问一次比少一格便宜。
+TWSE_ATTEMPTS = 2
+TWSE_RETRY_SECONDS = 3.0
 
 
 def _overseas_get(url: str, headers: Optional[Dict[str, str]] = None, timeout: float = 20.0) -> str:
@@ -333,22 +338,71 @@ def _twse_asia() -> Optional[Dict[str, Any]]:
     台交所只回裸 UA：请求带上别站的 Referer 会被判无效、返回空 body，所以这里
     不能复用东财或新浪的请求头。盘中 z 是最新成交，收盘后就是收盘价；集合竞价
     前 z 可能还是 ``-``，那就不给这一项，宁缺不错。
+
+    这个端点偶尔整段不回（2026-11-20、11-25 各掉过一次），取不到就再问一次：
+    它没有限流，多问一次的成本远低于整格消失。
+    """
+    for attempt in range(1, TWSE_ATTEMPTS + 1):
+        try:
+            raw = _overseas_get(
+                f"{_TWSE}?ex_ch=tse_t00.tw&json=1&delay=0",
+                headers={"User-Agent": UA},
+            )
+        except Exception as exc:  # noqa: BLE001 - 少一个指数不该拖垮整块
+            print(
+                f"overseas(twse) failed ({attempt}/{TWSE_ATTEMPTS}): {exc}",
+                file=sys.stderr,
+            )
+            if attempt < TWSE_ATTEMPTS:
+                time.sleep(TWSE_RETRY_SECONDS)
+            continue
+        try:
+            payload = json.loads(raw.strip())
+        except Exception as exc:  # noqa: BLE001 - 回了一坨非 JSON，值得再问一次
+            print(
+                f"overseas(twse) bad body ({attempt}/{TWSE_ATTEMPTS}): {exc}",
+                file=sys.stderr,
+            )
+            if attempt < TWSE_ATTEMPTS:
+                time.sleep(TWSE_RETRY_SECONDS)
+            continue
+        row = ((payload.get("msgArray") or [{}])[0]) or {}
+        try:
+            prev = float(str(row.get("y") or "").strip())
+            last = float(str(row.get("z") or "").strip())
+        except ValueError:
+            # 集合竞价前 z 是 "-"：那不是网络失败，再问也是空，直接放弃这一格。
+            return None
+        if prev <= 0 or last <= 0:
+            return None
+        value = (last / prev - 1) * 100
+        return {"name": "台湾加权", "pct": _pct(value), "up": value >= 0}
+    return None
+
+
+def _em_single_pct(secid: str) -> Optional[float]:
+    """单只指数的涨跌幅，批量接口少回一行时的补取。
+
+    走的是同一个 ulist 端点、同一个 ``f3`` 字段，只是把 ``secids`` 收成一个——
+    不换 ``stock/get``：那条路没在跑这套脚本的机器上验证过，换接口等于再引入一个
+    未知数，而 ulist 这一路 2026-11-25 是通的（批量回了恒指、恒科、日经三行）。
+    ``f3`` 是 "-" 就认这一格没有，不拿别的字段硬凑——宁缺不错。
     """
     try:
         raw = _overseas_get(
-            f"{_TWSE}?ex_ch=tse_t00.tw&json=1&delay=0",
+            f"{_EM_ULIST}?fields=f2,f3,f12,f13,f14&secids={secid}",
             headers={"User-Agent": UA},
         )
-        row = ((json.loads(raw.strip()).get("msgArray") or [{}])[0]) or {}
-        prev = float(row.get("y") or 0)
-        last = float(row.get("z") or 0)
+        diff = (json.loads(raw).get("data") or {}).get("diff") or []
+        if not diff:
+            return None
+        value = diff[0].get("f3")
+        if value in (None, "-", ""):
+            return None
+        return float(value) / 100
     except Exception as exc:  # noqa: BLE001 - 少一个指数不该拖垮整块
-        print(f"overseas(twse) failed: {exc}", file=sys.stderr)
+        print(f"overseas({secid}) failed: {exc}", file=sys.stderr)
         return None
-    if prev <= 0 or last <= 0:
-        return None
-    value = (last / prev - 1) * 100
-    return {"name": "台湾加权", "pct": _pct(value), "up": value >= 0}
 
 
 def _asia_on(date: str) -> List[Dict[str, Any]]:
@@ -416,19 +470,28 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
         return groups + _us_overseas()
 
     items: List[Dict[str, Any]] = []
+    by_code: Dict[str, Dict[str, Any]] = {}
     try:
         secids = ",".join(code for _, code in _EM_ASIA)
         raw = _overseas_get(f"{_EM_ULIST}?fields=f2,f3,f12,f13,f14&secids={secids}")
         diff = (json.loads(raw).get("data") or {}).get("diff") or []
         by_code = {str(row.get("f12")): row for row in diff}
-        for name, code in _EM_ASIA:
-            row = by_code.get(code.split(".", 1)[1])
-            if not row or row.get("f3") in (None, "-", ""):
-                continue
-            value = float(row["f3"]) / 100
-            items.append({"name": name, "pct": _pct(value), "up": value >= 0})
-    except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
+    except Exception as exc:  # noqa: BLE001 - 整批断了就逐只补，别让亚太整块消失
         print(f"overseas(asia) failed: {exc}", file=sys.stderr)
+    for name, code in _EM_ASIA:
+        row = by_code.get(code.split(".", 1)[1])
+        value: Optional[float] = None
+        if row and row.get("f3") not in (None, "-", ""):
+            try:
+                value = float(row["f3"]) / 100
+            except (TypeError, ValueError):
+                value = None
+        if value is None:
+            # 批量偶尔少回一行：2026-11-25 韩国 KOSPI -6.16% 就这样整格丢掉了。
+            value = _em_single_pct(code)
+        if value is None:
+            continue
+        items.append({"name": name, "pct": _pct(value), "up": value >= 0})
     # 台湾单独取：东财这一路断了，台交所那一路照样该给出这一格。
     taiwan = _twse_asia()
     if taiwan:
@@ -440,10 +503,12 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
 
 
 def _us_overseas() -> List[Dict[str, Any]]:
-    """前夜美股与期指：新浪 hq 的实时值。
+    """前夜美股与今日期指：新浪 hq 的实时值。
 
-    新浪没有按日期查历史的接口，所以这一组始终是跑的时候的最新报价；重跑
-    历史某天时，亚太按那天收盘取，美股仍是当下值，两者时点不同。
+    这两组时点差一整个交易日：道指／标普／纳综是上一交易日的收盘，期指是出稿
+    那一刻的实时盘。所以拆成两组返回，期指那组连报价时间一起写进标签
+    （「今日期指目前涨跌（18:30）」）——混在一行，读者会把今天的期指跌幅当成
+    隔夜美股。新浪没有按日期查历史的接口，重跑历史某天时这两组仍是当下值。
     """
     try:
         codes = [c for _, c in _SINA_US] + [c for _, c in _SINA_FUT]
@@ -452,13 +517,15 @@ def _us_overseas() -> List[Dict[str, Any]]:
             headers={"Referer": "https://finance.sina.com.cn", "User-Agent": UA},
         )
         rows = dict(re.findall(r'var hq_str_(\w+)="([^"]*)";', raw))
-        items = []
+        cash: List[Dict[str, Any]] = []
         for name, code in _SINA_US:
             parts = (rows.get(code) or "").split(",")
             if len(parts) < 3 or not parts[2]:
                 continue
             value = float(parts[2])
-            items.append({"name": name, "pct": _pct(value), "up": value >= 0})
+            cash.append({"name": name, "pct": _pct(value), "up": value >= 0})
+        fut: List[Dict[str, Any]] = []
+        stamp = ""
         for name, code in _SINA_FUT:
             parts = (rows.get(code) or "").split(",")
             if len(parts) < 8:
@@ -470,9 +537,20 @@ def _us_overseas() -> List[Dict[str, Any]]:
             if prev <= 0:
                 continue
             value = (last / prev - 1) * 100
-            items.append({"name": name, "pct": _pct(value), "up": value >= 0})
-        if items:
-            return [{"label": "美股", "items": items}]
+            fut.append({"name": name, "pct": _pct(value), "up": value >= 0})
+            # 6 是报价时间（北京时间 HH:MM:SS）；三只取最新的那一只写进标签。
+            shown = parts[6] if len(parts) > 6 else ""
+            if re.fullmatch(r"\d{2}:\d{2}:\d{2}", shown or ""):
+                stamp = max(stamp, shown)
+        groups: List[Dict[str, Any]] = []
+        if cash:
+            groups.append({"label": "美股", "items": cash})
+        if fut:
+            # 标签直接写成最终显示名并带上报价时间：post_market 那边的推送渲染只
+            # 认得「亚太／美股」两个短名，其余原样输出，所以时点必须在这里写死。
+            shown = f"今日期指目前涨跌（{stamp[:5]}）" if stamp else "今日期指目前涨跌"
+            groups.append({"label": shown, "items": fut})
+        return groups
     except Exception as exc:  # noqa: BLE001
         print(f"overseas(us) failed: {exc}", file=sys.stderr)
     return []
@@ -1158,37 +1236,56 @@ def _review_html(payload: Dict[str, Any]) -> str:
     )
 
 
+# 外盘三组的显示名与顺序。期指是出稿那一刻的实时盘，和「前夜美股」差一整个
+# 交易日，所以单独一行放在最后，标签里必须带报价时间。
+_OVERSEAS_ORDER = (
+    ("亚太", "当日亚太"),
+    ("美股", "前夜美股"),
+    ("期指", "今日期指目前涨跌"),
+)
+
+
+def overseas_order(group: Dict[str, Any]) -> int:
+    """排序用：亚太 → 前夜美股 → 今日期指，认不出的排最后。"""
+    label = str(group.get("label") or "").split(" · ")[0]
+    for i, (word, _) in enumerate(_OVERSEAS_ORDER):
+        if word in label:
+            return i
+    return len(_OVERSEAS_ORDER)
+
+
+def overseas_label(group: Dict[str, Any]) -> str:
+    """显示名：只有「亚太／美股」两个短名需要翻成带时点的说法，其余原样返回。
+
+    期指那组的标签在 _us_overseas 里就写成了「今日期指目前涨跌（18:30）」，
+    这里不能再套一层，否则时间会被吃掉。
+    """
+    label = str(group.get("label") or "").split(" · ")[0]
+    for word, shown in _OVERSEAS_ORDER:
+        if label == word:
+            return shown
+    return label
+
+
 def _overseas_html(payload: Dict[str, Any]) -> str:
     """隔夜美股与亚太：不解释今天，只交代明天开盘前的外部底色。"""
     groups = (payload.get("extra") or {}).get("overseas") or []
     if not groups:
         return ""
-    # 读者先关心今天亚洲怎么走（当日），再看昨夜美股（前夜），所以亚太排前面，
-    # 标签也把时点写明，免得把隔夜的跌幅当成今天亚太的。
-    _ORDER = (("亚太", "当日亚太"), ("美股", "前夜美股"))
-
-    def _key(group: Dict[str, Any]) -> int:
-        label = str(group.get("label") or "").split(" · ")[0]
-        for i, (word, _) in enumerate(_ORDER):
-            if word in label:
-                return i
-        return len(_ORDER)
-
+    # 读者先关心今天亚洲怎么走（当日），再看昨夜美股（前夜），最后才是此刻的期指；
+    # 标签把时点写在脸上，免得把隔夜的跌幅当成今天亚太的。
     rows = []
-    for group in sorted(groups, key=_key):
-        label = str(group.get("label") or "").split(" · ")[0]
-        for word, shown in _ORDER:
-            if word in label:
-                label = shown
-                break
+    for group in sorted(groups, key=overseas_order):
         chips = "".join(
             f"<span class='chip'><i>{_esc(x['name'])}</i>"
             f"<b class='{'up' if x['up'] else 'down'}'>{_esc(x['pct'])}</b></span>"
             for x in group["items"]
         )
-        rows.append(f"<div class='ovr'><span class='ovl'>{_esc(label)}</span>{chips}</div>")
+        rows.append(
+            f"<div class='ovr'><span class='ovl'>{_esc(overseas_label(group))}</span>{chips}</div>"
+        )
     return (
-        "<h2>外盘参考</h2><p class='hint'>当日亚太与前夜美股</p>"
+        "<h2>外盘参考</h2><p class='hint'>当日亚太 · 前夜美股 · 今日期指</p>"
         f"<div class='ovg'>{''.join(rows)}</div>"
     )
 
