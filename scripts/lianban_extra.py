@@ -770,23 +770,44 @@ def emotion_stats(timeout: float = 30.0) -> Dict[str, Any]:
     return parse_emotion(body.decode("utf-8", "replace"))
 
 
-def _theme_health(page: str) -> Dict[str, List[Dict[str, str]]]:
+def _theme_health(page: str) -> Dict[str, Any]:
     """题材级的上升期占比：最健康与最弱各六条。
 
     这是「趋势底座」，不是「当日脉冲」——主线强度看的是板块今天涨多少，这里看
     的是板块成员还有多少站在长期均线上方。两套分类体系不同（这里用申万三级），
     不能和主线强度并排排名，只作独立佐证。
+
+    字段写成 ``uptrend_share`` 而不是 ``pct``：``71.0%`` 放在 ``pct`` 里会被模型
+    读成涨跌幅，而它是「成员中处于上升期的比例」。同一块里再放一句 ``_what``，
+    是因为提示词里没有这段说明（那段在 post_market.py，太大不适合频繁覆盖），
+    数据自己带着口径，模型才不会拿它跟主线强度比大小。
     """
-    out: Dict[str, List[Dict[str, str]]] = {}
+    out: Dict[str, Any] = {
+        "_what": (
+            "题材级趋势底座：该题材成员中处于上升期（价格在长期均线上方且均线上行）"
+            "的比例，只收成员≥8 的题材。这是趋势结构，不是涨跌幅——与「主线强度」"
+            "（板块当日涨跌幅）不是同一套口径，两者不可并排排名，只能互为佐证。"
+            "分类用申万三级，与本站题材索引不同源。"
+        )
+    }
     for title, body in _H4_ITEMS_RE.findall(page):
         title = _clean(title)
         key = "strong" if "最健康" in title else ("weak" if "最弱" in title else "")
         if not key:
             continue
-        out[key] = [
-            {"name": _clean(n), "pct": _clean(p), "note": _clean(note)}
-            for n, p, note in _THEME_ITEM_RE.findall(body)
-        ]
+        rows = []
+        for n, pct, note in _THEME_ITEM_RE.findall(body):
+            note = _clean(note)
+            # 原注是「上升期 · 42只」，成员数单独成字段，别和比例挤在一个串里。
+            members = note.split("·")[-1].strip() if "·" in note else ""
+            rows.append(
+                {
+                    "name": _clean(n),
+                    "uptrend_share": _clean(pct),
+                    "members": members,
+                }
+            )
+        out[key] = rows
     return out
 
 
