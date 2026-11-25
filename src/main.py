@@ -4,8 +4,11 @@ import argparse
 import asyncio
 import shlex
 import sys
+from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import httpx
 from dotenv import load_dotenv
 from rich.console import Console
 
@@ -13,9 +16,10 @@ from ._cli import add_data_dir_arguments, add_log_level_argument
 from .console_icons import get_icons
 from .logging_config import configure_logging
 from .storage.manager import ConfigError, StorageManager
-from .orchestrator import HorizonOrchestrator
+from .orchestrator import BalancedDigestResult, HorizonOrchestrator
 from .collection_window import collection_hours
 from .models import AIProvider
+from .processing.lianban_calendar import fetch_events, to_queries
 from .processing.mainline import refresh as refresh_mainline
 from .processing.source_cap import apply_balanced_digest_with_cap, load_per_source_limit
 from .processing.theme_index_refresh import is_refresh_day, refresh_theme_index
@@ -35,6 +39,9 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
     def __init__(self, *args, per_source_limit=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.per_source_limit = per_source_limit
+        # 日历事件只在本次运行注入一次：重复注入会重复检索同一批 query。
+        self._calendar_injected = False
+        self._event_queries: set[str] = set()
 
     def apply_balanced_digest(self, items, *, log: bool = True):
         return apply_balanced_digest_with_cap(
@@ -44,6 +51,62 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
             limit=self.per_source_limit,
             log=log,
         )
+
+    async def fetch_all_sources(self, since):
+        """抓取前先补日历事件 query，抓完再给事件条目打标。
+
+        连板网日历里的三星事件本身不进正文——读者要的是数据落地后市场怎么读，
+        检索回来的报道才进财经要闻。取不到就跳过，抓取照常进行。
+        """
+        if not self._calendar_injected:
+            self._calendar_injected = True
+            await self._inject_calendar_queries()
+        items = await super().fetch_all_sources(since)
+        for item in items:
+            query = (item.metadata or {}).get("gn_query")
+            if query and query in self._event_queries:
+                item.metadata["event_driven"] = True
+        return items
+
+    async def _inject_calendar_queries(self) -> None:
+        """把前一日 09:00 之后的三星事件变成 Google News 检索 query。
+
+        09:00 之前的事件，前一日早报已经覆盖过，再搜一次是重复；名称残缺的
+        条目检索不出东西，由 lianban_calendar 一并跳过。
+        """
+        sources = self.config.sources.google_news
+        if not sources or not sources.enabled:
+            return
+        # 用北京时间的「昨天」：早报 09:02 起跑，要的是前一日盘后到今早落地的事件。
+        yesterday = (
+            datetime.now(timezone(timedelta(hours=8))) - timedelta(days=1)
+        ).strftime("%Y-%m-%d")
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                events = await fetch_events(client, yesterday)
+        except Exception as exc:  # noqa: BLE001 - 少一份日历，不能拖垮抓取
+            self.console.print(f"[yellow]日历事件注入失败：{exc}[/yellow]")
+            return
+        existing = {query.query for query in sources.queries}
+        for query in to_queries(events):
+            if query.query in existing:
+                continue
+            sources.queries.append(query)
+            self._event_queries.add(query.query)
+            self.console.print(f"[dim]日历事件进检索：{yesterday} {query.query}[/dim]")
+
+    def _apply_balanced_digest_base(self, items, *, log: bool = True):
+        """配额分配后再做一次稳定重排：日历事件检索回来的条目提到同组最前。
+
+        分数不动，页面上不会出现虚高的星级；``sorted`` 是稳定的，其余条目
+        保持原来的评分顺序。
+        """
+        result = super()._apply_balanced_digest_base(items, log=log)
+        picked = sorted(
+            result.items,
+            key=lambda item: not bool((item.metadata or {}).get("event_driven")),
+        )
+        return replace(result, items=picked)
 
 
 def print_banner():
