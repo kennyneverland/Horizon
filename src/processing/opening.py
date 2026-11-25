@@ -507,4 +507,3 @@ def render_block(data: Optional[Dict[str, Any]], labels: Optional[Dict[str, str]
         lines.append(f"**连板** 最高 {today.get('max_board')} 板")
     lines.append("")
     return "\n".join(lines).rstrip() + "\n"
-
