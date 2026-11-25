@@ -758,6 +758,29 @@ def parse_emotion(page: str) -> Dict[str, Any]:
     return out
 
 
+def _narrow_transition(transition: Dict[str, Any], phase: str) -> Dict[str, Any]:
+    """把 6×6 的转移矩阵收成当日那一行。
+
+    整张表进提示词，模型得自己从六行里挑一行；挑错的代价是整段趋势展望的基准率
+    全错，而它本来就有当日阶段，没必要留这个口子。``phase`` 取自当日 KPI 的
+    「情绪周期」格，与矩阵行名同为「冰点期」这种写法。
+
+    对不上（阶段为空、或站点改了行名）就原样返回整张表：宁可多给六行，也不能
+    因为一次改名就把这块整个丢掉。
+    """
+    rows = transition.get("rows") or []
+    phases = transition.get("next_phases") or []
+    if not phase or not rows or not phases:
+        return transition
+    hit = next((r for r in rows if str(r.get("from") or "").strip() == phase), None)
+    if not hit:
+        return transition
+    return {
+        "phase": phase,
+        "next": dict(zip(phases, hit.get("freq") or [])),
+    }
+
+
 def emotion_stats(timeout: float = 30.0) -> Dict[str, Any]:
     """情绪页的基准率。取不到就抛，由 collect_extra 单独降级——不影响当日数据。"""
     request = urllib.request.Request(
@@ -904,11 +927,20 @@ def collect_extra(timeout_ms: int = 60000, date: str = "") -> Dict[str, Any]:
         out["error"] = "rendered page had neither block"
         return out
     forecast = parse_forecast(page)
+    # 当日阶段就在盘面那格里，取出来给转移矩阵选行用；取不到就传空，函数会保留整表。
+    phase = next(
+        (x["value"] for x in panel if x["label"].replace(" ", "") == "情绪周期"), ""
+    )
     try:
         # 晋级率、阶段持续、阶段转移与「次日推演」同属一类：都是站点按历史样本
         # 算好的基准率。并进同一块，post_market 那边 next_day_base_rate 原样透传，
         # 不必为多三个键去改那个 139KB 的文件。
-        forecast.update(emotion_stats())
+        emotion = emotion_stats()
+        if emotion.get("phase_transition"):
+            emotion["phase_transition"] = _narrow_transition(
+                emotion["phase_transition"], phase
+            )
+        forecast.update(emotion)
     except Exception as exc:  # noqa: BLE001 - 少一块基准率，当日数据照出
         out["emotion_error"] = f"{type(exc).__name__}: {exc}"
     out.update(
