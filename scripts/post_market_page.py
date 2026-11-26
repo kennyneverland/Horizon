@@ -16,7 +16,7 @@ import json
 import re
 from typing import Any, Dict, List
 
-from lianban_extra import EXTRA_CSS, render_sections
+from lianban_extra import EXTRA_CSS, high_position, render_sections
 
 
 def _esc(value: Any) -> str:
@@ -36,7 +36,7 @@ _FIELD_WORDS = [
     ("recent5", "近5日"),
     ("limit_up", "涨停家数"),
     ("above_ma20", "站上20日线"),
-    ("from_high", "距60日高点"),
+    ("from_high", "60日高点"),
     ("gain60", "60日涨幅"),
     ("vol_ud", "量比"),
     ("streak", "连续天数"),
@@ -448,7 +448,7 @@ def _focus_html(
                 if hit.get("gain60"):
                     bits.append(f"60日 {hit['gain60']}")
                 if hit.get("from_high"):
-                    bits.append(f"距60日高点 {hit['from_high']}")
+                    bits.append(high_position(hit["from_high"]))
                 if st.get("note"):
                     bits.append(st["note"])
                 tag = f"<span class='tag'>{_esc(st['tag'])}</span>" if st.get("tag") else ""
@@ -616,7 +616,7 @@ def _tomorrow_html(items: List[Dict[str, Any]], pos: Dict[str, Dict[str, Any]]) 
         if hit.get("gain60"):
             bits.append(f"60日 {hit['gain60']}")
         if hit.get("from_high"):
-            bits.append(f"距60日高点 {hit['from_high']}")
+            bits.append(high_position(hit["from_high"]))
         if item.get("note"):
             bits.append(item["note"])
         note = f"<span class='wl-n'>{_esc(' · '.join(bits))}</span>" if bits else ""
@@ -822,7 +822,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
                 f"<td class='nm'><b>{_esc(r['name'])}</b>"
                 f"<span class='sub'>{_esc(sub)}</span></td>"
                 f"<td class='num {_pct_class(r['gain60'])}'>{_esc(r['gain60'])}</td>"
-                f"<td class='num {_pct_class(r['from_high60'])}'>{_esc(r['from_high60'])}</td>"
+                f"<td class='num {_pct_class(r['from_high60'])}'>{_esc(high_position(r['from_high60'], long=False))}</td>"
                 "</tr>"
             )
         # 副标题只留筛选口径：总只数和「免费可见前 5」都是数据源的取数边界，
@@ -833,7 +833,7 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             + (f"<p class='hint'>{_esc(why)}</p>" if why else "")
             + "<table><colgroup><col style='width:26px'><col>"
             "<col style='width:82px'><col style='width:88px'></colgroup>"
-            "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>距60日高点</th></tr></thead>"
+            "<thead><tr><th>#</th><th>个股 / 题材</th><th>60日涨幅</th><th>60日高点</th></tr></thead>"
             "<tbody>" + "".join(body) + "</tbody></table>"
         )
 

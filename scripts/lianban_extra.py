@@ -137,8 +137,41 @@ def _prev_value(value: str, delta: str) -> str:
         return ""
     prev = float(vm.group(0)) - float(dm.group(0))
     unit = re.sub(r"[-+]?\d+(?:\.\d+)?", "", str(value)).strip()
-    num = str(int(prev)) if abs(prev - round(prev)) < 1e-9 else f"{prev:.1f}"
+    # 浮点减法会把 69.1 - 6.1 算成 62.99999999999999，int() 截断就印成「昨 62%」。
+    # 整数档要四舍五入，不许截断。
+    num = str(round(prev)) if abs(prev - round(prev)) < 1e-9 else f"{prev:.1f}"
     return f"{num}{unit}"
+
+
+def pct_text(value: Any) -> str:
+    """涨跌幅统一成一位小数；零附近不印「-0.0%」。
+
+    板块涨跌幅算出来常常是 -0.04 这种，按 :+.1f 印就是「-0.0%」，读者会当成
+    跌了。绝对值不到 0.05 一律写 0.0%，不带符号。
+    """
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return str(value or "")
+    if abs(num) < 0.05:
+        return "0.0%"
+    return f"{num:+.1f}%"
+
+
+def high_position(raw: Any, *, long: bool = True) -> str:
+    """60 日高点位置：正值是突破，负值是距离。
+
+    第三方信源那两列没标口径，正值其实是「高于 60 日高点」的突破幅度。
+    印成「距60日高点 +6.8%」读起来像还差 6.8% 才到高点，正好反了。正值
+    改说「新高」，负值仍说「距高点」。``long=False`` 给表格单元格用，列头
+    已经交代了口径，格子里只留「新高 +6.8%」或「-1.1%」。
+    """
+    text = str(raw if raw is not None else "").strip()
+    if not text:
+        return ""
+    if text.startswith("+"):
+        return f"新高 {text}"
+    return f"距高点 {text}" if long else text
 
 
 def render(timeout_ms: int = 60000) -> str:
@@ -1258,7 +1291,14 @@ def _strength_sorted(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     if not parsed:
         return []
     parsed.sort(key=lambda p: -p[0])
-    return [dict(r) for _, r in parsed]
+    out: List[Dict[str, Any]] = []
+    for value, row in parsed:
+        item = dict(row)
+        # 两条数据源的原始写法不同（-0.0% / -0.04%），统一在这里格式化一次，
+        # 页面与推送读同一份字符串。
+        item["pct"] = pct_text(value)
+        out.append(item)
+    return out
 
 
 def _strength_html(payload: Dict[str, Any]) -> str:

@@ -53,7 +53,9 @@ from lianban_extra import (  # noqa: E402
     _prev_value,
     _strength_sorted,
     collect_extra,
+    high_position,
     parse_signals,
+    pct_text,
     render_day,
 )
 from post_market_page import (  # noqa: E402
@@ -238,8 +240,12 @@ def parse_alerts(page: str) -> Dict[str, Any]:
     exchange flagged an abnormal move, which is the opposite of a reason to buy
     tomorrow; the list is parsed and printed as-is and never enters
     ``theme_watch``, ``candidates`` or the model's input, so it cannot leak into
-    the 活跃 bucket. Sorting is the site's: the names with the most limit-ups
-    this year come first, which is also the order a reader wants them in.
+    the 活跃 bucket.
+
+    排序要自己做。站点那份把当天最扎眼的一只（通常是跌停或严重异常波动）
+    置顶，后面才是按连板数降序——2026-11-26 首行华东重机 9 板，后面
+    26/22/17/14…，标题写「按今年连板数排序」就成了假话。这里按板数重排，
+    同板数保持站点原序，没有板数的排最后。
     """
     stamp = _ZAOPAN_SNAPSHOT_RE.search(page)
     items: List[Dict[str, Any]] = []
@@ -254,7 +260,15 @@ def parse_alerts(page: str) -> Dict[str, Any]:
                 "boards": int(hit.group(1)) if hit else None,
             }
         )
-    return {"snapshot": stamp.group(1) if stamp else "", "items": items}
+    ordered = sorted(items, key=lambda x: -(x.get("boards") or 0))
+    if ordered != items:
+        print(
+            "regulatory: 站点顺序不是按板数降序（首行 "
+            f"{(items[0].get('name') if items else '')} {items[0].get('boards') if items else ''}板），"
+            "已按今年连板数重排",
+            file=sys.stderr,
+        )
+    return {"snapshot": stamp.group(1) if stamp else "", "items": ordered}
 
 
 _EM_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
@@ -385,6 +399,181 @@ def _fill_focus_position(payload: Dict[str, Any], read: Any) -> None:
 
     if missing:
         print(f"focus_pos: {missing} 只未取到日线", file=sys.stderr)
+
+
+_PCT_2PLUS_RE = re.compile(r"(\d+\.\d{2,})%")
+# 活跃块的 tag 形如「食品安全 · 龙虎榜」，把来源那半截去掉只剩题材。
+_LHB_TAG_RE = re.compile(r"龙虎榜")
+
+
+def _round_review_pct(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """第三方复盘的百分数统一到一位小数。
+
+    它的正文是照登的，不改判断，但同一份报告里同一个数会出现两种精度——
+    2026-11-26 写「炸板率 30.8511%」，别处写 30.9%，读者会当成两个数。
+    这里只收精度、不动口径：两位以上小数的百分数四舍五入到一位，改了什么
+    逐条写进日志，方便回头核对原文。
+    """
+    text = str(doc.get("ai_review") or "")
+    if not text:
+        return doc
+    hits: List[str] = []
+
+    def repl(match: "re.Match[str]") -> str:
+        before = match.group(0)
+        after = f"{float(match.group(1)):.1f}%"
+        if before != after:
+            hits.append(f"{before}→{after}")
+        return after
+
+    fixed = _PCT_2PLUS_RE.sub(repl, text)
+    if not hits:
+        return doc
+    print("review: 百分数精度统一 " + " · ".join(hits), file=sys.stderr)
+    out = dict(doc)
+    out["ai_review"] = fixed
+    return out
+
+
+def _reconcile_flow_pct(payload: Dict[str, Any]) -> None:
+    """主力净额表与龙虎榜里同一只票的涨跌幅必须是一个数。
+
+    两块都来自第三方信源，但是两个页面：一块是 today.html 的个股净额表，
+    一块是 lhb.html 的龙虎榜。2026-11-26 盛合晶微在净额表里 +18.35%、在
+    龙虎榜里 +18.9%，差 0.55 个百分点，读者会当成两个数。龙虎榜是交易所
+    披露口径，以它为准；差超过 0.3 个点就改，改了什么写进日志。
+    """
+    chg_of: Dict[str, str] = {}
+    for item in (payload.get("lhb") or {}).get("items") or []:
+        name = str(item.get("name") or "").replace(" ", "")
+        chg = str(item.get("chg") or "").strip()
+        if name and chg:
+            chg_of[name] = chg
+    if not chg_of:
+        return
+    flows = (payload.get("extra") or {}).get("flows") or {}
+    fixed: List[str] = []
+    for label, rows in flows.items():
+        if "个股" not in str(label):
+            continue
+        for row in rows or []:
+            name = str(row.get("name") or "").replace(" ", "")
+            ref = chg_of.get(name)
+            if not ref:
+                continue
+            cur, want = _num(row.get("pct")), _num(ref)
+            if cur is None or want is None or abs(cur - want) <= 0.3:
+                continue
+            fixed.append(f"{name} {row.get('pct')}→{ref}")
+            row["pct"] = ref
+    if fixed:
+        print(
+            "flow pct 与龙虎榜不一致，已按龙虎榜统一：" + " · ".join(fixed),
+            file=sys.stderr,
+        )
+
+
+def _theme_tokens(text: Any) -> List[str]:
+    """题材名拆成可匹配的词，括号里的别名也拆出来。"""
+    return [t for t in re.split(r"[^\w\u4e00-\u9fff]+", str(text or "")) if len(t) >= 2]
+
+
+def _theme_match(theme: Any, labels: Any) -> bool:
+    """题材名能不能对上这组标签（sector／themes／今日题材／原始概念）。
+
+    传进来单个字符串也按一个标签处理——直接迭代字符串会退化成逐字匹配。
+    """
+    tokens = _theme_tokens(theme)
+    if not tokens:
+        return False
+    if isinstance(labels, str):
+        labels = [labels]
+    for raw in labels or []:
+        label = str(raw or "").replace(" ", "")
+        # 单字标签会撞上任何含这个字的题材名（「业」就在「商业航天」里），
+        # 传进来的如果是字符串还会被逐字迭代，所以先挡掉。
+        if len(label) < 2:
+            continue
+        for token in tokens:
+            if token in label or label in token:
+                return True
+    return False
+
+
+def _prune_focus_lhb(focus: Dict[str, Any], payload: Dict[str, Any]) -> None:
+    """活跃里从龙虎榜来的票，题材对不上就剔掉。
+
+    2026-11-26「商业航天 4 家涨停」下面挂的是东方海洋（食品安全）和冰山冷热
+    （体育产业）：模型从 lhb 那一路取票，为了把题材填满，把对不上的票也塞了
+    进去，tag 自己写着「食品安全 · 龙虎榜」，跟组头打架。提示词里「对不上就
+    不许塞」这条模型没照做，这里按题材索引兜一层。
+
+    只在有证据时剔：sector、themes、今日题材、原始概念一个都查不到就留着
+    （fail-open）——宁可留一只存疑的票，也不因为索引没覆盖就删掉对的票。
+    """
+    rows = focus.get("活跃") or []
+    if not rows:
+        return
+    pos = _filter_pos(payload)
+    concepts = payload.get("concepts") or {}
+    codes = _name_code_map(payload)
+    members: Dict[str, set] = {}
+    for card in (payload.get("extra") or {}).get("theme_members") or []:
+        theme = str(card.get("theme") or "")
+        if theme:
+            members[theme] = {
+                str(m.get("name") or "").replace(" ", "")
+                for m in card.get("members") or []
+            }
+    dropped: List[str] = []
+    kept_items: List[Dict[str, Any]] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            continue
+        theme = str(item.get("theme") or "")
+        kept: List[Dict[str, Any]] = []
+        for stock in item.get("stocks") or []:
+            if not isinstance(stock, dict):
+                continue
+            name = str(stock.get("name") or "").replace(" ", "")
+            tag = str(stock.get("tag") or "")
+            if "龙虎榜" not in tag or name in (members.get(theme) or set()):
+                kept.append(stock)
+                continue
+            hit = pos.get(name) or {}
+            cone = concepts.get(codes.get(name) or "") or {}
+            labels = (
+                [hit.get("sector")]
+                + list(cone.get("themes") or [])
+                + list(cone.get("today_themes") or [])
+                + list(cone.get("concepts") or [])
+            )
+            labels = [x for x in labels if x]
+            # tag 是模型自己写的归属（「食品安全 · 龙虎榜」），它跟组头打架就已经
+            # 是自相矛盾，不必等索引。索引命中则优先信索引——索引没覆盖的票，
+            # 常常是 tag 写窄了而不是写错了。
+            tag_theme = _LHB_TAG_RE.sub("", tag).strip(" ·/、")
+            if labels and _theme_match(theme, labels):
+                kept.append(stock)
+                continue
+            if tag_theme and _theme_match(theme, tag_theme):
+                kept.append(stock)
+                continue
+            if not labels and not tag_theme:
+                kept.append(stock)
+                continue
+            reason = "、".join(str(x) for x in (labels or [tag_theme])[:2])
+            dropped.append(f"{theme}/{name}（{reason}）")
+        if kept:
+            entry = dict(item)
+            entry["stocks"] = kept
+            kept_items.append(entry)
+    focus["活跃"] = kept_items
+    if dropped:
+        print(
+            "focus: 龙虎榜票题材对不上，已剔除 " + " · ".join(dropped),
+            file=sys.stderr,
+        )
 
 
 def _payload_codes(payload: Dict[str, Any]) -> List[str]:
@@ -555,11 +744,12 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是第三方信源的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
-- members[].board 是连板高度（3连板／3天2板／首板），sub 是第三方信源的子题材标签，source 标明来源：limit_up 当日涨停股、panel 三张免费面板里归位到该题材的票（未必涨停，是「主线里结构就绪、还没走」的那类）、eastmoney 当日涨停股（第三方信源题材明细改版后不再提供逐只名单，这一路来自东财涨停池，按同花顺概念／行业板块归位）、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。eastmoney 这一路的 sub 是它的概念或行业标签，不是第三方信源的子题材，亲疏自己判断。members 的排列顺序就是取用优先级：panel（面板里归位到该题材、通常还没涨停）→ eastmoney（当日涨停池）→ related → candidate → leader。明日关注优先用排在前面的：要的是「结构就绪、还没走」，不是已经封板的结果。board 有值说明它今天已经涨停，3 连板及以上必须在 signal 或 tag 里写明位置偏高，不许当成低位机会；board 为空才是没封板的。
+- members[].board 是连板高度（3连板／3天2板／首板），sub 是第三方信源的子题材标签，source 标明来源：limit_up 当日涨停股、panel 三张免费候选表里归位到该题材的票（未必涨停，是「主线里结构就绪、还没走」的那类）、eastmoney 当日涨停股（第三方信源题材明细改版后不再提供逐只名单，这一路来自东财涨停池，按同花顺概念／行业板块归位）、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。eastmoney 这一路的 sub 是它的概念或行业标签，不是第三方信源的子题材，亲疏自己判断。members 的排列顺序就是取用优先级：panel（候选表里归位到该题材、通常还没涨停）→ eastmoney（当日涨停池）→ related → candidate → leader。明日关注优先用排在前面的：要的是「结构就绪、还没走」，不是已经封板的结果。board 有值说明它今天已经涨停，3 连板及以上必须在 signal 或 tag 里写明位置偏高，不许当成低位机会；board 为空才是没封板的。
 - gain60 与 from_high 只有出现在三张模板前 5 的个股才有；为 null 表示没有这个数，不是 0，也不要替它估。
-- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张面板里的板块标签，theme 是它在当日题材明细里所属的题材。themes 是本地题材索引倒查出的归属——索引取自同花顺 F10 概念页，已与第三方信源题材库做归一化精确对齐，覆盖范围比面板宽得多，归位优先用它；concepts 是同花顺原始概念名，why 是公司自己披露的业务关联原文，可以用来交代它凭什么算这个题材，但只能引用原文意思，不要替公司补话。today_themes 是把 themes 按名称归一化对回当日题材口径的结果——只做去括号同名匹配，对上的可以直接归位；对不上不代表不属于，例如「光刻胶」对不上「光刻机（胶）」但它就是那条线，这种情况你自己判断。四者都空才表示归属未知。
+- lhb 是龙虎榜净买额前 15，net 是买入前五合计减卖出前五合计，正=席位端净流入；上榜原因只说明它为什么被披露（涨幅／跌幅／换手／振幅偏离），不说明题材；seat 是买一席位。席位数据只反映过去一日的行为，不预示次日方向。sector 是它在三张候选表里的板块标签，theme 是它在当日题材明细里所属的题材。themes 是本地题材索引倒查出的归属——索引取自同花顺 F10 概念页，已与第三方信源题材库做归一化精确对齐，覆盖范围比候选表宽得多，归位优先用它；concepts 是同花顺原始概念名，why 是公司自己披露的业务关联原文，可以用来交代它凭什么算这个题材，但只能引用原文意思，不要替公司补话。today_themes 是把 themes 按名称归一化对回当日题材口径的结果——只做去括号同名匹配，对上的可以直接归位；对不上不代表不属于，例如「光刻胶」对不上「光刻机（胶）」但它就是那条线，这种情况你自己判断。四者都空才表示归属未知。
 - candidates 按模板名分组：candidates[模板名] = {{why, total, rows}}。rows 是当日入选的前 5 只（name／sector／mainline／gain60／from_high／above_ma20／vol_ud／themes）。sector 是这只票的题材归属标签，直接用，不要改写成别的名字；themes 是同一套索引倒查出的题材名，sector 为空或只是一个宽泛标签（次新股、高股息、国企改革这类）时用它；mainline 为「🔥主线」表示它本身就在当日主线板块内；above_ma20 是它站上 20 日线的幅度，vol_ud 是涨跌量比。total 是这只模板当天一共选了多少只（免费只显示前 5），why 是第三方信源自己写的模板口径，照它理解，不要改写。三张模板的分工：主线强攻＝主线资金聚集处的最强个体，通常已经在涨；优选蓄势＝收敛度质量口径过滤后的蓄势股，未涨停但结构就绪，是明日候选的主要来源；放量上攻＝涨时放量、跌时缩量的吸筹形态。
 
+- 分位的说法要守住档位：pct_rank_60d 落在 20 到 80 之间，只能写「中性区间」或直接报分位，不许用「极端」「极值」「历史高位」「冰点」这类定性；只有 ≥90 或 ≤10 才能说极端。一句话里只许对一个指标下定性——「涨跌比 33%（40 分位）」与「新低 2551 只（93.3 分位）」必须分开写，不许合并成「均处极端区间」。
 - 判断主线用第三方信源自己的口径，不另立标准：{rule}（这条是第三方信源的原文口径，引用它来判断，不要换成更宽的「连续两天」或更严的「五天」。）
 
 【四段，各回答一个问题】
@@ -571,14 +761,15 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 【明日关注，分三类】
 第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
 
-- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的面板补。sector 相同的票合成一条题材，给 3 条题材，把 5 只票按 sector 分到 3 条里（2/2/1 或 3/1/1）；票池只有 5 只，凑不满 3 只就少写，绝对不许为了凑数编一只进来。优选蓄势当日为空时，这一类给空数组，不要凑。
-- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股优先从「主线强攻」面板的前 5 只里取——那 5 只是主线资金聚集处的最强个体，用它们的 sector／themes 对上题材，对上就放进来；5 只不够填满 3 只时，再从该题材的 members 里补；仍不够就少写，stocks 可以是 0 到 3 只，不许从「优选蓄势」「放量上攻」或龙虎榜凑一只填进去。members 为空表示当日没有逐只明细，这条题材就只写 signal。给 3 条题材，每条 3 只。
+- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的候选表补。sector 相同的票合成一条题材，给 3 条题材，把 5 只票按 sector 分到 3 条里（2/2/1 或 3/1/1）；票池只有 5 只，凑不满 3 只就少写，绝对不许为了凑数编一只进来。优选蓄势当日为空时，这一类给空数组，不要凑。
+- 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股优先从「主线强攻」候选表的前 5 只里取——那 5 只是主线资金聚集处的最强个体，用它们的 sector／themes 对上题材，对上就放进来；5 只不够填满 3 只时，再从该题材的 members 里补；仍不够就少写，stocks 可以是 0 到 3 只，不许从「优选蓄势」「放量上攻」或龙虎榜凑一只填进去。members 为空表示当日没有逐只明细，这条题材就只写 signal。给 3 条题材，每条 3 只。
 - 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。「主线强攻」那 5 只归主线类，不要拿到活跃里来。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 3 条题材，每条 3 只。监管异动（异常波动公告提醒）不在活跃候选之内：那份名单只说明交易所已经盯上它，不是「今天刚动」的证据，不要拿它补票，也不要在正文里把这些票写成活跃或明日方向。
 
 三条纪律：
 1. 三类不重复。蓄势与另两类的边界是"还没涨 vs 已经在动"；主线与活跃的边界是"有连续性 vs 只有一天"。同一只票出现在两类里，等于这一块没做。
 2. 数字由页面回填。note 里不要复述 gain60、from_high、above_ma20、vol_ud，也不要写涨停家数或龙虎榜净额——组头和标签会显示。note 只写它在题材里的角色和明天为什么值得看，不超过 36 字。
 3. 名字不许造。蓄势只能来自优选蓄势前 5；主线来自「主线强攻」前 5 加对应题材的 members；活跃只能来自对应题材的 members、「放量上攻」的 rows，或 lhb 里 theme／themes／sector 对得上的票；监管异动名单不在此列。
+4. 定性不许换行业。个股的行业／题材只能写输入里出现过的词：sector 写的是「智能家居」就写智能家居，themes 里没有「面板」就不许写成面板龙头。三张候选表在输入里叫 candidates，正文里不要出现「面板」二字，也不要把它当成某个行业。
 
 【硬性禁止】
 - 禁止罗列数字。数字只能作为比较出现："从 3 家到 11 家"可以，单独一句"涨停 11 家"不可以。
@@ -606,7 +797,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
  ],
  "focus": {{
   "蓄势": [
-   {{"theme": "该票在面板里的 sector 题材标签；与当日题材同义时写成 sector（对应当日题材 X）",
+   {{"theme": "该票在候选表里的 sector 题材标签；与当日题材同义时写成 sector（对应当日题材 X）",
     "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
     "stocks": [{{"name": "个股名，只能来自优选蓄势前 5",
                "tag": "它在题材里的角色，如 收敛最紧的一档；不超过 14 字",
@@ -635,7 +826,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
   ],
   "summary": "一句话：分歧在哪、或我们补了什么它没说的，不超过 60 字"}}}}
 
-focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每条题材 1 到 3 只个股，全篇合计不超过 20 只；题材名不许自造；同一只票只出现在一类里；三类都不要把 members 原样罗列。
+focus 的硬性要求：三类各 2 到 3 条题材（蓄势可为空），每条题材 1 到 3 只个股，全篇合计不超过 20 只；题材名不许自造；同一只票只出现在一类里；三类都不要把 members 原样罗列。活跃里从龙虎榜来的票，题材对不上就不许放进该题材，宁可这条题材少写——代码会按题材索引复核，对不上的票会被直接删掉。
 
 dissent 的硬性要求：
 1. checks 摘 2 到 4 条，覆盖 third_party_review 的主要主张；它只写了一段就摘 1 条，不许为凑数编它没说过的话。
@@ -643,7 +834,8 @@ dissent 的硬性要求：
 3. verdict 写「异」的，basis 必须给出与它相反的那条数据；只是读法不同、数据同向的，不许判「异」。
 4. 不许把 next_day_base_rate 当成 third_party_review 的观点：它没有次日推演，基准率是统计频率，不是它的判断。
 5. summary 不许只写「与第三方信源复盘判断一致」；就算结论一致，也要写清是用哪几项数据核过的。它没覆盖而今天数据里明显的（例如某条产业线的十日趋势在转向），写进 summary。
-6. claim 与 basis 用中文业务语言写，不许出现 industry_lines、theme_watch、limit_up、board、lhb、flows、relay、recent5、peak_10d、delta_1d、delta_3d、streak、pct_rank_60d 这类字段名或代码标识；读者看的是晚报，不是数据结构。"""
+6. claim 与 basis 用中文业务语言写，不许出现 industry_lines、theme_watch、limit_up、board、lhb、flows、relay、recent5、peak_10d、delta_1d、delta_3d、streak、pct_rank_60d 这类字段名或代码标识；读者看的是晚报，不是数据结构。
+7. 一个指标一句定性。分位在 20 到 80 之间只能写「中性区间」或直接报分位，不许写「极端」「极值」；只有 ≥90 或 ≤10 才能说极端。两个指标不许合并成一句「均处极端区间」——分位不同的必须分开写，各自定性。"""
 
 
 def _panel_map(payload: Dict[str, Any]) -> Dict[str, Dict[str, str]]:
@@ -1450,7 +1642,9 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
             "检查 max_tokens 与 focus/dissent 的字数上限",
             file=sys.stderr,
         )
-    return _parse_read(str(text or ""))
+    read = _parse_read(str(text or ""))
+    _prune_focus_lhb(read, payload)
+    return read
 
 
 def _post_card(
@@ -1768,7 +1962,7 @@ def _focus_markdown(
                 if hit.get("gain60"):
                     bits.append(f"60日 {hit['gain60']}")
                 if hit.get("from_high"):
-                    bits.append(f"距高点 {hit['from_high']}")
+                    bits.append(high_position(hit["from_high"]))
                 board = board_map.get(key) or {}
                 if bucket == "活跃" and board.get("net"):
                     bits.append(f"龙虎榜 {board['net']}")
@@ -2017,7 +2211,7 @@ def _concept_strength(payload: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]
         # 条长按涨跌幅绝对值归一：同一天里跌得最狠的那条满格，剩下的按比例缩。
         # 涨跌幅和条长是两个维度，颜色分涨跌、长度分幅度，读者不用换算。
         r["bar"] = max(2, min(100, int(round(abs(r["value"]) / top * 100))))
-        r["pct"] = f"{r['value']:+.1f}%"
+        r["pct"] = pct_text(r["value"])
         del r["value"]
     return rows
 
@@ -2111,7 +2305,7 @@ def _pick_lines(payload: Dict[str, Any], limit: int = 4) -> List[str]:
         out.append(head)
         for r in rows[:limit]:
             bits = _join([str(r.get("sector") or ""), f"60日 {r.get('gain60')}" if r.get("gain60") else "",
-                          f"距高点 {r.get('from_high60')}" if r.get("from_high60") else ""])
+                          high_position(r.get("from_high60"))])
             out.append(f"- **{r.get('name')}**" + (f" {bits}" if bits else ""))
     return out
 
@@ -2689,7 +2883,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             # 第三方复盘与信号面同页，同一份 DOM 里取，不再单独打一次 MCP。
             if not args.no_mcp:
                 try:
-                    payload["lianban"] = parse_day_review(day_page, date, payload)
+                    payload["lianban"] = _round_review_pct(
+                        parse_day_review(day_page, date, payload)
+                    )
                 except Exception as exc:  # noqa: BLE001
                     payload["errors"].append(f"third-party review: {exc}")
     # 东财涨停池：lianban 的题材明细面板改版后，这是唯一还能逐只拿到的当日涨停
@@ -2776,6 +2972,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # 第三方复盘不再走 MCP：它要等站点 21:30 标 final 才给正文，而正文其实
     # 收盘后就写在当日页面上，上面 parse_day_review 已经按内容取过一遍了。
+    # 两块页面都到齐了才能对账：个股净额表在 extra.flows，龙虎榜在 payload.lhb。
+    _reconcile_flow_pct(payload)
+
     for err in payload["errors"]:
         print(f"source failed: {err}", file=sys.stderr)
 
