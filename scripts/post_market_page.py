@@ -552,6 +552,50 @@ def _regulatory_html(payload: Dict[str, Any]) -> str:
     )
 
 
+
+def _renqi_html(payload: Dict[str, Any]) -> str:
+    """今日人气榜：两源自建，排在页面最末。
+
+    与「主线追踪」共用同一套 ul.lines / li.line 样式，标题也是同一个 h2，
+    所以它看起来就是原有板块之一，不需要新增 CSS。
+    """
+    doc = payload.get("renqi") or {}
+    rows = doc.get("rows") or []
+    if not rows:
+        return ""
+    items = []
+    for r in rows:
+        concepts = [str(x) for x in (r.get("concepts") or []) if x]
+        sub_bits = [str(r.get("code") or "")] + concepts
+        if r.get("tag"):
+            sub_bits.append(str(r["tag"]))
+        src = " / ".join(
+            x for x in [
+                f"同花顺{r['ths']}" if r.get("ths") else "",
+                f"东财{r['em']}" if r.get("em") else "",
+            ] if x
+        )
+        if src:
+            sub_bits.append(src)
+        sub = " · ".join(x for x in sub_bits if x)
+        items.append(
+            "<li class='line'>"
+            f"<div class='line-h'><b>{_esc(r.get('rank'))} {_esc(r.get('name'))}</b>"
+            f"<span class='{_pct_class(r.get('pct') or '')}'>{_esc(r.get('pct') or '')}</span></div>"
+            f"<div class='line-n'>{_esc(sub)}</div>"
+            f"<div class='line-n'>连续上榜 <b>{r.get('streak', 1)}</b> 天 · "
+            f"近30日 <b>{r.get('d30', 1)}</b> 次 · 近1年 <b>{r.get('d365', 1)}</b> 次</div>"
+            "</li>"
+        )
+    hint = (
+        "自建榜单，来源：同花顺人气日榜、东方财富人气榜；先按同时上榜的来源数排序，"
+        "来源数相同时按平均名次。与连板网综合人气榜口径不同——它另含开盘啦一列。"
+    )
+    return (
+        f"<h2>今日人气榜</h2><p class='hint'>{_esc(hint)}</p>"
+        f"<ul class='lines'>{''.join(items)}</ul>"
+    )
+
 def _filter_pos(payload: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     """个股 → 它出现在哪张筛选面板、位置多少。
 
@@ -841,6 +885,8 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         f"<h2>第三方信源选股参考</h2>{''.join(pick_blocks)}" if pick_blocks else ""
     )
 
+    renqi_section = _renqi_html(payload)
+
     # 当日主线与主线追踪读的是同一份产业线数据，只保留主线追踪；没有主线时
     # 连标题一起省掉，不留一个空段落。
     lines_section = (
@@ -990,6 +1036,7 @@ footer{{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
 {_regulatory_html(payload)}
 {focus_html}
 {pick_section}
+{renqi_section}
 <footer>
 本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。
 </footer>

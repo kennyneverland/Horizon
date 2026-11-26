@@ -58,6 +58,7 @@ from lianban_extra import (  # noqa: E402
     pct_text,
     render_day,
 )
+from renqi import collect as collect_renqi, push_lines as renqi_push_lines  # noqa: E402
 from post_market_page import (  # noqa: E402
     _dissent_view,
     _filter_pos,
@@ -2576,7 +2577,7 @@ def data_markdown(
 
     诗句 → 定性 → 温度 → 盘面 → 外盘参考 → 最新大盘信号 → 四段研判 → 第三方
     复盘 → 与第三方复盘结论对比 → 主力资金 → 主线追踪 → 主线强度 → 龙虎榜 →
-    监管异动 → 明日关注 → 选股参考。
+    监管异动 → 明日关注 → 选股参考 → 今日人气榜。
 
     开篇只放当天最硬的三个事实，研判紧跟其后；第三方复盘与逐条对比连着放；
     资金、主线、龙虎榜、监管属于明细佐证，靠后放，读者要查再往下翻；选股参考
@@ -2631,6 +2632,8 @@ def data_markdown(
     if focus_lines:
         sec("明日关注", _pack(focus_lines))
     sec("第三方信源选股参考", _pick_lines(payload))
+    # 人气榜收在最末：它是「今天谁被看得最多」，不是判断，放在判断之后。
+    sec("今日人气榜", renqi_push_lines(payload.get("renqi") or {}))
     return "\n\n".join(chunks)
 
 
@@ -2992,6 +2995,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not payload.get("theme_watch"):
         payload["theme_watch"] = _theme_watch(payload)
     _fill_focus_position(payload, summary)
+    # 今日人气榜：同花顺 + 东方财富两源自建，不依赖连板网（它那份要登录）。
+    # 放在模型调用之后、渲染之前——它不进模型输入，取不到就少一块，不挡整份。
+    try:
+        payload["renqi"] = collect_renqi(date)
+    except Exception as exc:  # noqa: BLE001
+        payload.setdefault("errors", []).append(f"renqi: {exc}")
+        payload["renqi"] = {}
     html = render_html(payload, summary, page_url)
 
     out_dir = Path(args.out_dir)
