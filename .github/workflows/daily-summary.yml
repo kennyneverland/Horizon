@@ -98,6 +98,15 @@ jobs:
           key: opening-${{ github.run_id }}
           restore-keys: |
             opening-
+      # 日历三星每天只保留「今天及以后」，次日再抓前一天已经翻篇，所以当天落盘、
+      # 次日读档。和开盘快照一样，runner 每次都是全新的，只有 cache 能带过 run。
+      - name: Restore calendar archive
+        uses: actions/cache@v4
+        with:
+          path: data/calendar
+          key: calendar-${{ github.run_id }}
+          restore-keys: |
+            calendar-
 
       - name: Prepare GitHub Actions config
         run: cp data/config.github.json data/config.json
