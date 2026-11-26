@@ -210,7 +210,7 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          if [ -z "$(git status --porcelain data/signals 2>/dev/null)" ]; then
+          if [ -z "$(git status --porcelain data/signals data/renqi 2>/dev/null)" ]; then
             echo "signals: 内容没变，没有新版本要记"
             exit 0
           fi
@@ -223,7 +223,7 @@ jobs:
             # --mixed 让索引对齐远端，再只暂存 data/signals，其余改动一个不碰。
             git fetch -q --depth=1 origin main
             git reset -q --mixed FETCH_HEAD
-            git add data/signals
+            git add data/signals data/renqi
             if git diff --cached --quiet; then
               echo "signals: 远端已包含这一版，无需再提交"
               exit 0
