@@ -12,8 +12,10 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import re
+from pathlib import Path
 from typing import Any, Dict, List
 
 from ..models import GoogleNewsConfig
@@ -45,6 +47,45 @@ CUTOFF = "09:00"
 # 一天三星通常 2-3 条；上限设 4，避免某天异常多时把抓取时间拖长。
 MAX_QUERIES = 4
 RESULTS_PER_QUERY = 5
+# 日历页只保留「今天及以后」：次日再抓，前一天那一整块已经不在了。所以当天跑的
+# 时候先把今天的三星落盘，次日读这份存档。runner 每次都是全新的，靠 workflow 里
+# 的 actions/cache 把它带过 run。
+CALENDAR_DIR = Path("data/calendar")
+
+
+def save_events(events: List[Dict[str, Any]], day: str, root: Path = CALENDAR_DIR) -> bool:
+    """把某天的三星落盘，供次日早报读。写不进去只丢一天，不抛。"""
+    if not events:
+        return False
+    try:
+        root = Path(root)
+        root.mkdir(parents=True, exist_ok=True)
+        (root / f"{day}.json").write_text(
+            json.dumps({"date": day, "events": events}, ensure_ascii=False, indent=1),
+            encoding="utf-8",
+        )
+        return True
+    except Exception as exc:  # noqa: BLE001 - 落盘失败只影响明天
+        logger.warning("日历落盘失败（%s）：%s", day, exc)
+        return False
+
+
+def load_events(day: str, root: Path = CALENDAR_DIR) -> List[Dict[str, Any]]:
+    """读某天的三星存档。没有就是没有，不猜、不拿别的日子顶。"""
+    path = Path(root) / f"{day}.json"
+    if not path.exists():
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001 - 坏档按没有处理
+        logger.warning("日历存档读不出（%s）：%s", day, exc)
+        return []
+    events = payload.get("events") if isinstance(payload, dict) else None
+    return [
+        event
+        for event in events or []
+        if isinstance(event, dict) and event.get("name")
+    ]
 
 
 def _clean(raw: str) -> str:
@@ -105,12 +146,17 @@ def parse(page: str, day: str, cutoff: str = CUTOFF) -> List[Dict[str, Any]]:
     return out
 
 
+async def fetch_page(client) -> str:
+    """抓一次日历页。当天落盘和昨日兜底共用同一份，不重复请求。"""
+    resp = await client.get(CALENDAR_URL, headers={"User-Agent": UA})
+    resp.raise_for_status()
+    return resp.text
+
+
 async def fetch_events(client, day: str, cutoff: str = CUTOFF) -> List[Dict[str, Any]]:
     """抓日历页并解析。取不到就返回空，早报照常出。"""
     try:
-        resp = await client.get(CALENDAR_URL, headers={"User-Agent": UA})
-        resp.raise_for_status()
-        return parse(resp.text, day, cutoff)
+        return parse(await fetch_page(client), day, cutoff)
     except Exception as exc:  # noqa: BLE001 - 少一份日历，不能拖垮早报
         logger.warning("连板网日历取不到（%s）：%s", day, exc)
         return []
