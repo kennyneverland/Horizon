@@ -19,7 +19,15 @@ from .storage.manager import ConfigError, StorageManager
 from .orchestrator import BalancedDigestResult, HorizonOrchestrator
 from .collection_window import collection_hours
 from .models import AIProvider
-from .processing.lianban_calendar import fetch_events, to_queries
+from .processing import ashare_brief
+from .processing.lianban_calendar import (
+    fetch_page,
+    load_events,
+    parse,
+    save_events,
+    to_queries,
+)
+from .processing.premarket import fetch_premarket
 from .processing.mainline import refresh as refresh_mainline
 from .processing.source_cap import apply_balanced_digest_with_cap, load_per_source_limit
 from .processing.theme_index_refresh import is_refresh_day, refresh_theme_index
@@ -42,6 +50,8 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
         # 日历事件只在本次运行注入一次：重复注入会重复检索同一批 query。
         self._calendar_injected = False
         self._event_queries: set[str] = set()
+        # 早盘快讯转出来的 query，命中条目打 brief_driven，同样提到组内最前。
+        self._brief_queries: set[str] = set()
 
     def apply_balanced_digest(self, items, *, log: bool = True):
         return apply_balanced_digest_with_cap(
@@ -53,23 +63,33 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
         )
 
     async def fetch_all_sources(self, since):
-        """抓取前先补日历事件 query，抓完再给事件条目打标。
+        """抓取前先补两类 query，抓完再给命中条目打标。
 
-        连板网日历里的三星事件本身不进正文——读者要的是数据落地后市场怎么读，
-        检索回来的报道才进财经要闻。取不到就跳过，抓取照常进行。
+        两类都不进正文：三星事件要的是「数据落地后市场怎么读」，早盘快讯要的是
+        「这条快讯背后有没有一篇完整报道」。检索回来的报道才进板块。任何一个源
+        取不到都跳过，抓取照常进行。
         """
         if not self._calendar_injected:
             self._calendar_injected = True
             await self._inject_calendar_queries()
+            await self._inject_brief_queries()
         items = await super().fetch_all_sources(since)
         for item in items:
             query = (item.metadata or {}).get("gn_query")
-            if query and query in self._event_queries:
+            if not query:
+                continue
+            if query in self._event_queries:
                 item.metadata["event_driven"] = True
+            elif query in self._brief_queries:
+                item.metadata["brief_driven"] = True
         return items
 
     async def _inject_calendar_queries(self) -> None:
         """把前一日 09:00 之后的三星事件变成 Google News 检索 query。
+
+        日历页只保留「今天及以后」——次日再抓，前一天那一整块已经不在了。所以
+        当天跑的时候先把今天的三星落盘，次日读存档；存档没有（首次上线那天）
+        才退回页面，页面里若还留着昨天也能用上。
 
         09:00 之前的事件，前一日早报已经覆盖过，再搜一次是重复；名称残缺的
         条目检索不出东西，由 lianban_calendar 一并跳过。
@@ -77,15 +97,28 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
         sources = self.config.sources.google_news
         if not sources or not sources.enabled:
             return
-        # 用北京时间的「昨天」：早报 09:02 起跑，要的是前一日盘后到今早落地的事件。
-        yesterday = (
-            datetime.now(timezone(timedelta(hours=8))) - timedelta(days=1)
-        ).strftime("%Y-%m-%d")
+        # 北京时间的「今天」和「昨天」：早报 09:02 起跑，要的是前一日盘后到今早
+        # 落地的事件，而落盘的是今天这一整天的三星。
+        now = datetime.now(timezone(timedelta(hours=8)))
+        today = now.strftime("%Y-%m-%d")
+        yesterday = (now - timedelta(days=1)).strftime("%Y-%m-%d")
+        page = ""
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                events = await fetch_events(client, yesterday)
+                page = await fetch_page(client)
         except Exception as exc:  # noqa: BLE001 - 少一份日历，不能拖垮抓取
-            self.console.print(f"[yellow]日历事件注入失败：{exc}[/yellow]")
+            self.console.print(f"[yellow]日历页抓取失败：{exc}[/yellow]")
+        if page:
+            today_events = parse(page, today)
+            if today_events and save_events(today_events, today):
+                self.console.print(
+                    f"[dim]日历落盘：{today} {len(today_events)} 条[/dim]"
+                )
+        events = load_events(yesterday)
+        if not events and page:
+            events = parse(page, yesterday)
+        if not events:
+            self.console.print(f"[dim]日历无昨日事件（{yesterday}），跳过注入[/dim]")
             return
         existing = {query.query for query in sources.queries}
         for query in to_queries(events):
@@ -95,8 +128,38 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
             self._event_queries.add(query.query)
             self.console.print(f"[dim]日历事件进检索：{yesterday} {query.query}[/dim]")
 
+    async def _inject_brief_queries(self) -> None:
+        """早盘快讯 → 检索 query。
+
+        09:25 定稿的那份快讯，绝大多数是单行、没有正文的短消息：信息是真的，但
+        AI 评分上不去、也落不到题材词上，最后只能挤在「要闻补充」小字块里。拿
+        标题去检索，把它补成一篇可评分的完整报道，才有资格进中国股市板块。
+
+        这里读的是此刻页面上的快讯（不等 09:25 定稿）：早报 09:40 要出，等不起。
+        定稿那份由 summarizer 自己再读一次，两处互不影响。
+        """
+        sources = self.config.sources.google_news
+        if not sources or not sources.enabled:
+            return
+        try:
+            brief = await fetch_premarket()
+        except Exception as exc:  # noqa: BLE001 - 快讯拿不到不影响主流程
+            self.console.print(f"[yellow]早盘快讯读取失败：{exc}[/yellow]")
+            return
+        news = (brief or {}).get("news") or []
+        if not news:
+            self.console.print("[dim]早盘快讯为空，跳过注入[/dim]")
+            return
+        existing = {query.query for query in sources.queries}
+        for query in ashare_brief.to_queries(news):
+            if query.query in existing:
+                continue
+            sources.queries.append(query)
+            self._brief_queries.add(query.query)
+            self.console.print(f"[dim]快讯进检索：{query.query}[/dim]")
+
     def _apply_balanced_digest_base(self, items, *, log: bool = True):
-        """配额分配后再做一次稳定重排：日历事件检索回来的条目提到同组最前。
+        """配额分配后再做一次稳定重排：事件与快讯检索回来的条目提到同组最前。
 
         分数不动，页面上不会出现虚高的星级；``sorted`` 是稳定的，其余条目
         保持原来的评分顺序。
@@ -104,7 +167,10 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
         result = super()._apply_balanced_digest_base(items, log=log)
         picked = sorted(
             result.items,
-            key=lambda item: not bool((item.metadata or {}).get("event_driven")),
+            key=lambda item: not (
+                (item.metadata or {}).get("event_driven")
+                or (item.metadata or {}).get("brief_driven")
+            ),
         )
         return replace(result, items=picked)
 
