@@ -21,6 +21,9 @@ from __future__ import annotations
 import gzip
 import json
 import re
+import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional
@@ -40,15 +43,35 @@ CLIST_URL = "https://push2.eastmoney.com/api/qt/clist/get"
 _POOL_SORT = {"ZT": "fbt:asc", "DT": "fund:asc", "ZB": "fbt:asc"}
 
 
-def _get(url: str, timeout: float = TIMEOUT) -> str:
-    request = urllib.request.Request(
-        url, headers={"User-Agent": UA, "Accept-Encoding": "gzip"}
-    )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        body = response.read()
-        if response.headers.get("Content-Encoding") == "gzip":
-            body = gzip.decompress(body)
-    return body.decode("utf-8", "replace")
+def _get(url: str, timeout: float = TIMEOUT, retries: int = 1) -> str:
+    """一次 GET；超时或连接类错误退避 1.5 秒再试一次。
+
+    runner 在境外，东财偶尔整段慢——2026-11-26 那份晚报 kpi 与 lhb 一起
+    "The read operation timed out"，整块退回连板网口径。失败一次就放弃太脆，
+    所以给一次重试；4xx 是参数错，重试没有意义，直接抛。
+    """
+    last: Optional[BaseException] = None
+    for attempt in range(retries + 1):
+        request = urllib.request.Request(
+            url, headers={"User-Agent": UA, "Accept-Encoding": "gzip"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body = response.read()
+                if response.headers.get("Content-Encoding") == "gzip":
+                    body = gzip.decompress(body)
+            return body.decode("utf-8", "replace")
+        except urllib.error.HTTPError as exc:
+            if 400 <= exc.code < 500:
+                raise
+            last = exc
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            last = exc
+        if attempt < retries:
+            print(f"eastmoney: {last} — 第 {attempt + 1} 次重试", file=sys.stderr)
+            time.sleep(1.5)
+    assert last is not None
+    raise last
 
 
 def _get_json(url: str, timeout: float = TIMEOUT) -> Dict[str, Any]:
@@ -132,26 +155,19 @@ def lhb(date: str, limit: int = 15) -> Dict[str, Any]:
     would hold fewer than fifteen names. The seat name lives in a second report,
     fetched once for the whole day rather than once per stock.
     """
+    # 两个报表都只取用得上的列。``columns=ALL`` 一份 82 KB、一份 214 KB；
+    # 收窄后 12 KB 与 2 KB。境外 runner 上，省的是往返里的传输与解析时间。
     rows = _report(
         "RPT_DAILYBILLBOARD_DETAILSNEW",
         {
-            "columns": "ALL",
+            "columns": "SECURITY_CODE,SECURITY_NAME_ABBR,CHANGE_RATE,"
+                       "BILLBOARD_NET_AMT,EXPLANATION",
             "filter": f"(TRADE_DATE='{date}')",
             "sortColumns": "BILLBOARD_NET_AMT",
             "sortTypes": "-1",
-            "pageSize": "500",
+            "pageSize": "60",
         },
     )
-    seats: Dict[str, str] = {}
-    for row in _report(
-        "RPT_BILLBOARD_DAILYDETAILSBUY",
-        {"columns": "ALL", "filter": f"(TRADE_DATE='{date}')", "pageSize": "2000"},
-        timeout=25.0,
-    ):
-        code = str(row.get("SECURITY_CODE") or "")
-        name = str(row.get("OPERATEDEPT_NAME") or "").strip()
-        if code and name and code not in seats:
-            seats[code] = name
 
     seen = set()
     items: List[Dict[str, Any]] = []
@@ -168,12 +184,53 @@ def lhb(date: str, limit: int = 15) -> Dict[str, Any]:
                 "chg": _signed(row.get("CHANGE_RATE")),
                 "net": _amount(net),
                 "reason": str(row.get("EXPLANATION") or "").strip(),
-                "seat": seats.get(code, ""),
+                "seat": "",
             }
         )
         if len(items) >= limit:
             break
+
+    seats = _seats(date, [x["code"] for x in items])
+    for item in items:
+        item["seat"] = seats.get(item["code"], "")
     return {"header": f"净买额前 {len(items)}", "items": items}
+
+
+def _seats(date: str, codes: List[str]) -> Dict[str, str]:
+    """买一席位：只查上榜那十几只，失败就当没有席位。
+
+    席位是附加信息——没有它，榜单照样能看；所以这里任何异常都不往上抛，
+    只写一行日志。先按代码过滤（2 KB），过滤语法不被接受时退回全量两列
+    （36 KB），仍不行就留空。
+    """
+    if not codes:
+        return {}
+    quoted = ",".join(f'"{c}"' for c in codes)
+    for flt, size in (
+        (f"(TRADE_DATE='{date}')(SECURITY_CODE in ({quoted}))", "200"),
+        (f"(TRADE_DATE='{date}')", "2000"),
+    ):
+        try:
+            rows = _report(
+                "RPT_BILLBOARD_DAILYDETAILSBUY",
+                {
+                    "columns": "SECURITY_CODE,OPERATEDEPT_NAME",
+                    "filter": flt,
+                    "pageSize": size,
+                },
+            )
+        except Exception as exc:  # noqa: BLE001 - 席位缺失不影响榜单
+            print(f"eastmoney lhb seats: {exc}", file=sys.stderr)
+            continue
+        out: Dict[str, str] = {}
+        for row in rows:
+            code = str(row.get("SECURITY_CODE") or "")
+            name = str(row.get("OPERATEDEPT_NAME") or "").strip()
+            if code and name and code not in out:
+                out[code] = name
+        if out:
+            return out
+    return {}
 
 
 def _signed(value: Any) -> str:
