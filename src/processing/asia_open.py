@@ -20,9 +20,12 @@ Two gates keep the row honest:
 * The session date must be today. A Saturday run, or a run before the bell,
   sees the previous session's close, and printing that under "today's open"
   would be wrong.
-* If the opening print is missing but a live one exists, the row falls back to
-  the live print and the label carries the time it was read (``日经225（08:23
-  取数）``), so the reader can tell the two apart.
+* A row prints the opening print and nothing else. When a market has no opening
+  print for today's session — before its bell, on a holiday, or because the
+  source answered without an open field — the row is dropped and the log names
+  the market that went missing. A live print under a "今日开盘" header is a
+  different number from what the label promises, and this block never wants one:
+  it reports where each market opened, not where it stands now.
 """
 
 from __future__ import annotations
@@ -49,8 +52,8 @@ ASIA = (
 )
 
 # Hong Kong rings in at 09:30, which is what OPEN_BELL below waits for. A run
-# that reads before the bell — a manual dispatch, or one that slipped past the
-# wait — still gets a row: the previous close, labelled as such.
+# that reads before the bell gets no Hong Kong row at all: the open field is a
+# zero until the bell, and yesterday's close is not today's open.
 HK = (("恒生指数", "rt_hkHSI"), ("恒生科技", "rt_hkHSTECH"))
 
 # Taiwan rings in at 09:00 like Tokyo and Seoul, but Sina's b_TWSE feed still
@@ -73,7 +76,7 @@ TWSE_HEADERS = {"User-Agent": UA}
 _SINA_RE = re.compile(r'var hq_str_(\w+)="([^"]*)";')
 
 # 早报 09:02 触发，比港股开盘早 28 分钟；新闻处理快的日子会在这里撞上还没开盘
-# 的港股，拿到昨收并标「（未开盘）」。等 09:30 再读，行上就是当日的开盘价。
+# 的港股，那一格当日没有开盘价就不出这一行。等 09:30 再读，行上就是当日的开盘价。
 OPEN_BELL = (9, 30)
 # 等待上限：超过说明这次运行本来就晚了，再等没有意义。
 MAX_WAIT_SECONDS = 3600
@@ -115,39 +118,31 @@ def _scaled(value: Any, decimals: Optional[int] = None) -> Optional[float]:
 def _quote(
     open_raw: Any,
     prev_raw: Any,
-    last_raw: Any,
-    pct_raw: Any,
     decimals: Optional[int] = None,
 ) -> Optional[Dict[str, Any]]:
-    """Open print if there is one, otherwise the live print.
+    """The opening print measured against yesterday's close, or ``None``.
 
-    ``price`` is what the row prints; ``mode`` says which of the two it is, so
-    the caller can attach a read time only to the fallback.
+    No live fallback on purpose: the header promises today's open, and a print
+    read at 09:40 is not the number the bell produced. A market without an
+    opening print gets no row rather than a number that misreads the label.
     """
     open_price = _scaled(open_raw, decimals)
     prev = _scaled(prev_raw, decimals)
-    if open_price and prev and open_price > 0 and prev > 0:
-        return {"price": open_price, "pct": (open_price / prev - 1) * 100, "mode": "open"}
-    last = _scaled(last_raw, decimals)
-    pct = _scaled(pct_raw, decimals)
-    if last and last > 0:
-        return {"price": last, "pct": pct if pct is not None else 0.0, "mode": "last"}
-    return None
+    if not open_price or not prev or open_price <= 0 or prev <= 0:
+        return None
+    return {"price": open_price, "pct": (open_price / prev - 1) * 100, "mode": "open"}
 
 
-def _row(label: str, quote: Dict[str, Any], clock: str) -> Dict[str, Any]:
+def _row(label: str, quote: Dict[str, Any]) -> Dict[str, Any]:
     """``last`` keeps its name so the renderer needs no change; it is the price
-    this row prints, which is the opening print whenever one exists."""
-    name = label
-    if quote["mode"] == "last" and clock:
-        name = f"{label}（{clock} 取数）"
-    return {"name": name, "last": quote["price"], "pct": quote["pct"], "mode": quote["mode"]}
+    this row prints, which is always that market's opening print."""
+    return {"name": label, "last": quote["price"], "pct": quote["pct"], "mode": "open"}
 
 
 async def _from_eastmoney(
     client: httpx.AsyncClient, today: str, session_days: Optional[Dict[str, str]] = None
 ) -> List[Dict[str, Any]]:
-    """``f46`` open, ``f60`` previous close, ``f2`` last, ``f170`` percent.
+    """``f46`` open, ``f60`` previous close, ``f86`` the quote stamp.
 
     ``session_days`` is the gate that keeps a closed market out. Eastmoney stamps
     its rows with the current time even on a holiday and hands back a quote from
@@ -158,7 +153,7 @@ async def _from_eastmoney(
     response = await client.get(
         EM_URL,
         params={
-            "fields": "f2,f12,f46,f60,f86,f170",
+            "fields": "f12,f46,f60,f86",
             "secids": ",".join(secid for _, secid, _ in ASIA),
         },
         headers=EM_HEADERS,
@@ -185,12 +180,11 @@ async def _from_eastmoney(
         stamp = _stamp(row.get("f86"))
         if not stamp.startswith(today):
             continue
-        quote = _quote(
-            row.get("f46"), row.get("f60"), row.get("f2"), row.get("f170"), decimals=2
-        )
+        quote = _quote(row.get("f46"), row.get("f60"), decimals=2)
         if not quote:
+            logger.warning("Asia open: %s has no opening print on Eastmoney", label)
             continue
-        rows.append(_row(label, quote, stamp[11:]))
+        rows.append(_row(label, quote))
     return rows
 
 
@@ -226,7 +220,7 @@ async def _sina_session_days(client: httpx.AsyncClient) -> Dict[str, str]:
 async def _from_sina(
     client: httpx.AsyncClient, today: str, session_days: Optional[Dict[str, str]] = None
 ) -> List[Dict[str, Any]]:
-    """``b_NKY`` / ``b_KOSPI``: 1 last, 3 percent, 6 date, 7 clock, 8 open, 9 prev."""
+    """``b_NKY`` / ``b_KOSPI``: 6 date, 8 open, 9 prev."""
     codes = ",".join(code for _, _, code in ASIA)
     response = await client.get(SINA_URL + codes, headers=SINA_HEADERS)
     response.raise_for_status()
@@ -236,21 +230,23 @@ async def _from_sina(
         parts = (parsed.get(code) or "").split(",")
         if len(parts) < 12 or parts[6].strip() != today:
             continue
-        quote = _quote(parts[8], parts[9], parts[1], parts[3])
+        quote = _quote(parts[8], parts[9])
         if not quote:
+            logger.warning("Asia open: %s has no opening print on Sina", label)
             continue
-        rows.append(_row(label, quote, (parts[7] or "")[:5]))
+        rows.append(_row(label, quote))
     return rows
 
 
 async def _from_sina_hk(
     client: httpx.AsyncClient, today: str
 ) -> List[Dict[str, Any]]:
-    """``rt_hkHSI`` / ``rt_hkHSTECH``: 2 open, 3 prev, 6 last, 8 pct, 17 date.
+    """``rt_hkHSI`` / ``rt_hkHSTECH``: 2 open, 3 prev, 17 date.
 
     Unlike the ``b_*`` feeds these carry the session date as ``YYYY/MM/DD``.
     An opening print only exists once the 09:30 bell has rung; before that the
-    row is the previous close, and the label says so.
+    open field is a zero, and a zero open is no row at all — the previous close
+    under a "今日开盘" header is the mix-up this block exists to avoid.
     """
     codes = ",".join(code for _, code in HK)
     response = await client.get(SINA_URL + codes, headers=SINA_HEADERS)
@@ -266,45 +262,24 @@ async def _from_sina_hk(
         if not day or not prev or prev <= 0:
             continue
         open_price = _num(parts[2])
-        last = _num(parts[6])
-        pct = _num(parts[8])
-        if day == today and open_price and open_price > 0:
-            rows.append(
-                {
-                    "name": label,
-                    "last": open_price,
-                    "pct": (open_price / prev - 1) * 100,
-                    "mode": "open",
-                }
-            )
-        elif day == today:
-            # Before the bell the "last" field is a zero or the previous close;
-            # printing the previous close under a "(未开盘)" label is the honest
-            # reading, and the percent is the last session's move.
-            rows.append(
-                {
-                    "name": f"{label}（未开盘）",
-                    "last": prev,
-                    "pct": pct if pct is not None else 0.0,
-                    "mode": "live",
-                }
-            )
-        else:
-            rows.append(
-                {
-                    "name": f"{label}（{day[5:]} 收盘）",
-                    "last": last or prev,
-                    "pct": pct if pct is not None else 0.0,
-                    "mode": "prev",
-                }
-            )
+        if day != today or not open_price or open_price <= 0:
+            logger.warning("Asia open: %s has no opening print for %s", label, today)
+            continue
+        rows.append(
+            {
+                "name": label,
+                "last": open_price,
+                "pct": (open_price / prev - 1) * 100,
+                "mode": "open",
+            }
+        )
     return rows
 
 
 async def _from_twse(
     client: httpx.AsyncClient, today: str
 ) -> List[Dict[str, Any]]:
-    """Taiwan's own quote: ``o`` open, ``y`` previous close, ``z`` last, ``d`` date."""
+    """Taiwan's own quote: ``o`` open, ``y`` previous close, ``d`` date."""
     response = await client.get(
         TWSE_URL,
         params={"ex_ch": "tse_t00.tw", "json": "1", "delay": "0"},
@@ -324,25 +299,15 @@ async def _from_twse(
     if not prev or prev <= 0:
         return []
     open_price = _num(row.get("o"))
-    last = _num(row.get("z"))
-    if day == today and open_price and open_price > 0:
-        return [
-            {
-                "name": TWSE_LABEL,
-                "last": open_price,
-                "pct": (open_price / prev - 1) * 100,
-                "mode": "open",
-            }
-        ]
-    if not last or last <= 0:
+    if day != today or not open_price or open_price <= 0:
+        logger.warning("Asia open: %s has no opening print for %s", TWSE_LABEL, today)
         return []
-    name = TWSE_LABEL if day == today else f"{TWSE_LABEL}（{day[5:]} 收盘）"
     return [
         {
-            "name": name,
-            "last": last,
-            "pct": (last / prev - 1) * 100,
-            "mode": "live" if day == today else "prev",
+            "name": TWSE_LABEL,
+            "last": open_price,
+            "pct": (open_price / prev - 1) * 100,
+            "mode": "open",
         }
     ]
 
