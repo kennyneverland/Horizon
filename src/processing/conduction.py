@@ -58,7 +58,13 @@ _COMMODITY = re.compile(r"黄金|金价|贵金属|金矿|白银|银价")
 # Domestic-only context: a Chinese market story without a named issuer still
 # belongs to the A-share tape.
 _DOMESTIC = re.compile(
-    r"国内|我国|中国|中方|央行|交易所|银行间|财政部|商务部|沪深两市"
+    r"国内|我国|中国|中方|央行|交易所|银行间|财政部|商务部|沪深两市|"
+    # 外媒报道中国的稿子标题与正文都是英文，只认中文会把它们全部误杀：
+    # 2026-11-27 SCMP 的「China pushes brain-computer interface…」就是这样
+    # 被判成落不到 A 股，而同一天中文源里的同一件事照常入榜。
+    r"\bChina\b|\bChinese\b|\bBeijing\b|\bShanghai\b|\bShenzhen\b|"
+    r"\bGuangdong\b|\bPBOC\b|\bNDRC\b|\bMIIT\b|\bCAC\b|\bCSRC\b",
+    re.IGNORECASE,
 )
 
 # An industry segment A shares actually cover.
@@ -69,7 +75,12 @@ _SEGMENT = re.compile(
     r"算力|数据中心|IDC|机柜|连接器|先进制程|炼油|炼化|成品油|原油|"
     # New-energy segments: without these the ten-day weight could never fire on
     # 光伏 or 储能, which are lines the page tracks every session.
-    r"光伏|电池片|组件|硅料|逆变器|储能|锂电|电解液|正极|负极|隔膜|风电"
+    r"光伏|电池片|组件|硅料|逆变器|储能|锂电|电解液|正极|负极|隔膜|风电|"
+    # 医药这条线原先整条缺失：_SEGMENT 里全是制造环节，海外医疗新闻即使点名
+    # 了 A 股有的题材（脑机接口、医疗器械都在 797 个题材目录里）也一律被判成
+    # 落不到 A 股。2026-11-27 Neuralink 获 FDA 批准那条就是这样丢的标的。
+    # 只补这四个词，不放开「临床」「药」这类泛词。
+    r"脑机接口|医疗器械|创新药|生物医药"
 )
 
 # The hop that turns a foreign event into an A-share order: capacity, supply,
@@ -79,7 +90,10 @@ _BRIDGE = re.compile(
     r"导入|验证|外溢|转单|上调|下调|报价|"
     # Policy-side supply changes: an export rule that squeezes a segment is a
     # bridge to the same segment in A shares, not a shared noun.
-    r"限制|管制|禁令|制裁|关税|封锁|挤压"
+    r"限制|管制|禁令|制裁|关税|封锁|挤压|"
+    # 医药的两跳桥不是产能与订单，是审批节点：获批、进入临床、拿到注册证，
+    # 才是海外进展能落到国内同环节公司的那个动作。
+    r"获批|批准|临床|上市许可|注册证|适应症"
 )
 
 
