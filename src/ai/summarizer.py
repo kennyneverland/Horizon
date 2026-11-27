@@ -32,6 +32,10 @@ DIGEST_CLOCK = "09:30"
 # 早间要闻补充挂在这个板块的新闻之后，作为它的子板块。
 CHINA_MARKET_PROFILE = "china-market"
 
+# 解禁规模印成「0.0亿元」等于没说：那天的金额小到四舍五入成零，读者拿不到任何
+# 信息，却要多读一对括号。只在金额确实为零时丢掉，别的数字照常保留。
+_ZERO_NOTE = re.compile(r"^0+(?:\.0+)?\s*亿元?$")
+
 
 def _weekday_cn(date: str, *, long: bool = False) -> str:
     """``2026-11-23`` → ``周一``（``long=True`` 时 ``星期一``）；解析不了返回空串。"""
@@ -278,6 +282,7 @@ LABELS = {
         "calendar": "Today's calendar",
         "asia_open": "Asia open",
         "premarket_note": "Backdrop only; the map is not a recommendation",
+        "overnight_closed": "US market closed yesterday for {reason}",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
         "empty_analyzed": "Analyzed {total} items, but none met the importance threshold.",
         "empty_body": (
@@ -307,6 +312,7 @@ LABELS = {
         "asia_open": "亚太今日开盘",
         "opening_title": "开盘异动",
         "premarket_note": "隔夜情绪参考，非题材推荐",
+        "overnight_closed": "昨夜美股因{reason}休市",
         "selected_items": "从 {total} 条内容中筛选出 {selected} 条重要资讯。",
         "empty_analyzed": "已分析 {total} 条内容，但没有达到重要性阈值的条目。",
         "empty_body": (
@@ -630,20 +636,29 @@ class DailySummarizer:
             logger.warning("Overnight tape failed: %s", sina)
             sina = None
 
-        indices = (brief or {}).get("indices") or []
-        mapping = (brief or {}).get("mapping") or []
-        close = (sina or {}).get("close_date") or ""
-        if not indices and sina:
-            indices = sina.get("indices") or []
-        if not mapping and sina:
-            mapping = [
-                {
-                    "us": row["ticker"],
-                    "pct": row["pct"],
-                    "themes": [{"name": name, "rank": 0} for name in row["themes"]],
-                }
-                for row in (sina.get("movers") or [])
-            ]
+        # 昨夜休市时，前一交易日的涨跌对今早没有任何增量信息：把它印出来再加
+        # 一句「美东 11-25 收盘」，读者要先做一次日期换算才知道这条已经隔了一天。
+        # 只报原因，不报数。
+        holiday = (sina or {}).get("holiday") or {}
+        if holiday:
+            indices: list = []
+            mapping: list = []
+            close = ""
+        else:
+            indices = (brief or {}).get("indices") or []
+            mapping = (brief or {}).get("mapping") or []
+            close = (sina or {}).get("close_date") or ""
+            if not indices and sina:
+                indices = sina.get("indices") or []
+            if not mapping and sina:
+                mapping = [
+                    {
+                        "us": row["ticker"],
+                        "pct": row["pct"],
+                        "themes": [{"name": name, "rank": 0} for name in row["themes"]],
+                    }
+                    for row in (sina.get("movers") or [])
+                ]
 
         indices_line = ""
         if indices:
@@ -669,6 +684,10 @@ class DailySummarizer:
         # 顺序按时间走：隔夜美股 → 个股映射 → 美东收盘那句注 → 今早亚太开盘。
         # 亚太压到最后，因为它是这一屏里唯一「正在发生」的数据，紧挨着正文更好找。
         lines: list[str] = []
+        if holiday:
+            reason = holiday.get("zh") or holiday.get("en") or ""
+            if reason:
+                lines.append(labels["overnight_closed"].format(reason=reason))
         if indices_line:
             lines.append(indices_line)
         if movers_line:
@@ -680,7 +699,7 @@ class DailySummarizer:
         if close:
             note = f"{labels['overnight_asof'].format(date=close)} · {note}"
         # 这句注解释的是上面那几行美股数据，所以只在有美股行的时候才挂。
-        if lines:
+        if indices_line or movers_line:
             lines.append(f"*{note}*")
         # 09:30 这一跑，东京与首尔已交易一个半小时、台北半小时、香港刚开盘，
         # 所以这行给的是各市场今日的开盘价，是全天唯一当日的数据。
@@ -755,7 +774,7 @@ class DailySummarizer:
             for row in grouped[tag]:
                 cell = f"{_escape_markdown(row.get('name') or '')} {row.get('code') or ''}".strip()
                 note = str(row.get("note") or "").strip()
-                if note:
+                if note and not _ZERO_NOTE.match(note):
                     cell += f"（{_escape_markdown(note)}）"
                 cells.append(cell)
             lines.append(f"**{_escape_markdown(tag)}**：{'、'.join(cells)}")
