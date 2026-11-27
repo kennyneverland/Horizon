@@ -59,9 +59,12 @@ from lianban_extra import (  # noqa: E402
     render_day,
 )
 from renqi import collect as collect_renqi, push_lines as renqi_push_lines  # noqa: E402
+from catalysts import collect as collect_catalysts  # noqa: E402
+from catalysts import push_lines as catalyst_push_lines  # noqa: E402
 from post_market_page import (  # noqa: E402
     _dissent_view,
     _filter_pos,
+    _is_bond,
     _lhb_map,
     _loose,
     _theme_meta,
@@ -726,7 +729,7 @@ ROTATION_RULE = (
 # are three different bets, and a flat list makes the reader sort them himself.
 SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，不是数据播报。
 
-你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、龙虎榜、外盘、第三方信源自己的次日推演与复盘正文。
+你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、龙虎榜、外盘、当日盘中的政策与产业快讯（catalysts）、第三方信源自己的次日推演与复盘正文。
 
 读者明天要据此做判断。所以四段各回答一个问题：先给结论，再给依据。
 
@@ -743,6 +746,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
   · phase_transition 已收成当日那一行：phase 是今日阶段（带「期」），next 是历史上同阶段次日落到六个去向各自的频率（键不带「期」）。「·」表示该去向样本不足，不是 0%；整组是频率分布，不是明日去向的预测。万一拿到的是 next_phases 加 rows 的整表，说明当日阶段与站点行名没对上，按盘面情绪阶段自己对行，不要默认取第一行。
 - third_party_review 是第三方信源自己写的复盘正文，已核对为当日定版，写的是它的判断而不是数据，通常只有两三段（情绪与资金归因、重点游资），不一定给方向结论。你的任务不是表态同意不同意，而是拿手里的数据逐条检验它：把它的主张摘出来，用 industry_lines 的 recent5／peak_10d／delta_1d／delta_3d／streak、breadth_history 的 pct_rank_60d、flows 的板块资金、relay、lhb 的净额、theme_watch 的涨停家数与连板高度去核，判「同／异／它没说」。它为空表示今天没有可取的第二意见，dissent.checks 与 dissent.summary 都留空。
 - 题材级（today_themes）与产业线级（industry_lines）是两套口径，数量不可相加、不可互相换算。today_themes 的条目若带 fallback=industry_lines，表示页面当日题材块尚未发布，这里给的是当日产业线（与 industry_lines 是同一批数字的另一种视角），不要重复计数，也不要为它们编造驱动逻辑或龙头。
+- catalysts 是当日 09:15–15:05 的政策与产业快讯，按发布时间排列，最多 8 条；boards 是正文里点到名的板块与它当日涨幅，空数组表示正文没点任何板块名。它是线索，不是证据：一条消息出现在这里，不等于它造成了当天的涨跌。提到它只能写「12:22 国常会…」，不许写成「国常会带动…」「受消息刺激…」。
 - 涨停家数只说明资金今天在买什么，不能证明某条新闻驱动了它。
 - theme_watch 是「每条当日题材 + 它的个股池」。detail_available=true 表示 members 就是第三方信源的逐只涨停明细（题材与个股同源）；false 表示该题材没有逐只明细，members 是按子题材标签关联来的候选，要按 sub 与题材的关系挑，不要全用。
 - members[].board 是连板高度（3连板／3天2板／首板），sub 是第三方信源的子题材标签，source 标明来源：limit_up 当日涨停股、panel 三张免费候选表里归位到该题材的票（未必涨停，是「主线里结构就绪、还没走」的那类）、eastmoney 当日涨停股（第三方信源题材明细改版后不再提供逐只名单，这一路来自东财涨停池，按同花顺概念／行业板块归位）、related 其他题材里子题材相关的涨停股、candidate 三张模板里的非涨停股、leader 题材龙头。eastmoney 这一路的 sub 是它的概念或行业标签，不是第三方信源的子题材，亲疏自己判断。members 的排列顺序就是取用优先级：panel（候选表里归位到该题材、通常还没涨停）→ eastmoney（当日涨停池）→ related → candidate → leader。明日关注优先用排在前面的：要的是「结构就绪、还没走」，不是已经封板的结果。board 有值说明它今天已经涨停，3 连板及以上必须在 signal 或 tag 里写明位置偏高，不许当成低位机会；board 为空才是没封板的。
@@ -756,7 +760,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 【四段，各回答一个问题】
 1. 盘面总结：今天是什么市（冰点／退潮／分歧／修复／主升，选一个并说明强度）。必须用"指数分化"和"宽度分位"各一条证据，并指出至少一处互相矛盾的信号——例如涨停高度集中在一条线，但成交额创 60 日新低、新低家数创新高。
 2. 重点信号：给 3 个今天最值得记住的异常，每个都要带"相对于什么"（60 日分位、昨日值、或与其他指数/板块的背离）。能挂上已有历史基准的就挂——next_day_base_rate 的样本量与频率、pct_rank_60d 的分位；挂不上的只描述异常本身，不要替它编历史统计。这一段是替读者划重点，不要把所有指标都念一遍。
-3. 盘面变动归因：钱从哪来、到哪去。用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。一条线涨停变多、另一条线变少，只能说明钱的分布变了；除非板块资金流也指向同一方向，否则直说"这一步无法证实"，不要写成资金迁移。
+3. 盘面变动归因：先消息面、再资金面。消息面只写 catalysts 里当日真有的那几条，带发布时间，并说明它指向哪条线（boards 对上的板块与涨幅）；对不上任何板块的就直说"对不上当日板块"。这是当天可能的原因，不是已证的因果，不许写成"因为 A 所以 B"。资金面再用成交额相对 20 日均、各线 delta_1d、板块资金流判断今天是缩量撤退、存量搬家还是增量入场，并说清跌的是哪一类（小盘／双创／主板）。两段并列陈述，不要用消息面去解释资金面。一条线涨停变多、另一条线变少，只能说明钱的分布变了；除非板块资金流也指向同一方向，否则直说"这一步无法证实"，不要写成资金迁移。catalysts 为空就只写资金面，不要用"今日无催化"顶替。
 4. 趋势展望：先给出第三方信源的基准率（next_day_base_rate），再明确说同意还是不同意、为什么；然后给两个"如果……则……；否则……"的观察点，必须明天能从同一份数据里读到。
 
 【明日关注，分三类】
@@ -1461,6 +1465,19 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         "next_day_base_rate": extra.get("forecast") or {},
         "lhb": {"header": lhb_raw.get("header") or "", "items": lhb_rows},
         "third_party_review": third_party,
+        # 盘中的政策与产业快讯：只给时间、原文、正文点到名的板块与当日涨幅。
+        # 模型据此写「消息面」那半段；空数组表示今天确实没抓到，不是没有催化。
+        "catalysts": [
+            {
+                "time": it.get("time"),
+                "text": it.get("text"),
+                "boards": [
+                    {"name": b.get("name"), "pct": b.get("pct")}
+                    for b in (it.get("boards") or [])
+                ],
+            }
+            for it in ((payload.get("catalysts") or {}).get("items") or [])
+        ],
     }
 
 
@@ -2162,6 +2179,20 @@ def _concept_match(theme: str, boards: List[Dict[str, Any]]):
     return hit, hit["name"]
 
 
+def _prev_trade_date(payload: Dict[str, Any], date: str) -> str:
+    """矩阵表头里的上一交易日。
+
+    matrix.dates 是站点那十天热力矩阵的表头，新→旧排列，本身就是交易日历。
+    取严格早于 date 的最大一个：矩阵偶尔滞后一个交易日，直接拿 dates[1] 会取到
+    今天自己。拿不到就返回空串，调用方据此不印「较昨日」。
+    """
+    dates = [
+        d for d in ((payload.get("matrix") or {}).get("dates") or [])
+        if d and d < date
+    ]
+    return max(dates) if dates else ""
+
+
 def _concept_strength(payload: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]:
     """主线在东财概念板块里的当日涨跌幅，条长按涨跌幅绝对值归一。
 
@@ -2315,7 +2346,13 @@ def _lhb_lines(payload: Dict[str, Any], limit: int = 8) -> List[str]:
     items = (payload.get("lhb") or {}).get("items") or []
     concepts = payload.get("concepts") or {}
     out = []
-    for it in items[:limit]:
+    for it in items:
+        if len(out) >= limit:
+            break
+        # 转债与可交换债不上个股龙虎榜的逻辑：读者拿它对不上题材，涨跌幅口径也
+        # 不同。先滤掉再取前 8，不能让一只转债占掉一个位置。
+        if _is_bond(it.get("code")):
+            continue
         theme = ""
         for t in ((concepts.get(it.get("code") or "") or {}).get("themes") or [])[:1]:
             theme = t
@@ -2601,10 +2638,11 @@ def data_markdown(
         if lines:
             chunks.append(f"## {title}\n\n" + "\n\n".join(_pack(lines)))
 
-    # 开篇只留三样：盘面、外盘、最新大盘信号。前两样回答「今天怎么样」，第三样
-    # 只在站点更新信号那期出现，且它讲的是跨日的结构，不是当日盘面。
+    # 开篇只留四样：盘面、今日催化、外盘、最新大盘信号。盘面回答「今天怎么样」，
+    # 催化紧跟着回答「盘中出了什么事」，外盘与信号讲的是跨日的结构。
     mark = len(chunks)
     sec("盘面", _kpi_lines(payload))
+    sec("今日催化", catalyst_push_lines(payload.get("catalysts")))
     sec("外盘参考", _overseas_lines(payload))
     sec("最新大盘信号", _signal_lines(payload))
     if len(chunks) > mark:
@@ -2866,6 +2904,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     _strength = _concept_strength(payload)
     if _strength is not None:
         payload.setdefault("extra", {})["strength_em"] = _strength
+    # 今日催化：盘中 09:15–15:05 的政策与产业快讯，命中板块的挂当日涨幅。
+    # 必须排在 llm_read 之前——第三段「盘面变动归因」要先说消息面，模型拿不到
+    # 这份消息就只能写资金面。板块涨幅用刚算好的主线强度，与页面同一份数。
+    # 只并排时间与数据，不写因果；取不到就整块不印，不挡整份晚报。
+    try:
+        _extra = payload.get("extra") or {}
+        payload["catalysts"] = collect_catalysts(
+            date, _extra.get("strength_em") or _extra.get("strength") or []
+        )
+    except Exception as exc:  # noqa: BLE001
+        payload.setdefault("errors", []).append(f"catalysts: {exc}")
+        payload["catalysts"] = {}
     # 信号块只存在于 days/<date>.html，而且那块要等页面自己的脚本跑完才出现
     # （直接 HTTP 抓回来的是 6 KB 空壳）。date 是上面几个源合出来的，所以放在
     # 这里抓：进 collect() 的时候还不知道该抓哪一天。
@@ -2935,6 +2985,17 @@ def main(argv: Optional[List[str]] = None) -> int:
         kpi_block.setdefault("date", date)
         kpi_block["_breadth_source"] = "eastmoney"
         payload["kpi"] = kpi_block
+
+    # 「较昨日」那一行原来是源站卡片原文，六个数字换成东财之后它就与今日值对不上：
+    # 11-27 印连板 24，同一行写「+15（昨 14）」，14+15=29。这里按东财把上一交易日
+    # 的六个数字取回来，交给页面的 _panel_fix 重算。取不到就清空 sub、整行不印——
+    # 宁可不印，不印对不上的。
+    try:
+        prev_date = _prev_trade_date(payload, date)
+        payload["breadth_prev"] = eastmoney.kpi(prev_date) if prev_date else {}
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"eastmoney kpi(prev): {exc}")
+        payload["breadth_prev"] = {}
 
     # 龙虎榜同理：东财两个报表给名称、涨跌幅、净额、上榜原因与买一席位，与连板网
     # 引的是同一批交易所披露。取不到就留着连板网那份，不因为换源把这块弄没。
@@ -3011,7 +3072,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     # index.html is the same bytes rather than a redirect: WeChat opens the
     # link in a webview where an extra hop is one more thing to fail.
     (out_dir / "index.html").write_text(html, encoding="utf-8")
-    print(f"page: {day_path} ({len(html)} B)")
+    # len(html) 是字符数，不是文件大小：11-27 页面 56,421 B，日志写成 46,180 B。
+    print(f"page: {day_path} ({len(html.encode('utf-8'))} B)")
 
     if args.no_push:
         print("push skipped (--no-push)")
