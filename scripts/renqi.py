@@ -7,8 +7,8 @@
 签名参数（2026-11-26 实测返回 1020 参数出错），公开入口取不到，不值得为它
 引入一个随时会坏的依赖。
 
-因此本榜与连板网那份**不是同一份数据**：少了开盘啦一列，第 10 名附近会不同。
-页面上必须写明这一点，读者才不会被两个「人气榜」弄混。
+因此本榜与连板网那份不是同一份数据：少了开盘啦一列，第 10 名附近会不同。
+这个差异是内部设计取舍，不写进页面和推送——读者只需要知道榜单来源与排序规则。
 
 历史落在一个文件里（data/renqi/history.jsonl），每天一行，用来算：
   · 连续上榜天数
@@ -46,6 +46,8 @@ PER_SOURCE = 50
 TOP_N = 10
 
 HISTORY_PATH = Path("data/renqi/history.jsonl")
+# 连续上榜／近30日／近1年这三项，历史不足这些交易日时恒等于 1，印出来是废话。
+HISTORY_MIN_DAYS = 5
 
 # 连续天数的判定：历史里缺一天就断。周末与假期本来就没有交易日，所以只有
 # 相邻两条记录相隔超过 5 个日历日，才当成「那天没跑、连续记录已断」，不去猜
@@ -313,7 +315,15 @@ def collect(day: str = "", path: Path = HISTORY_PATH, top: int = TOP_N,
         print(f"renqi source failed: {line}", file=sys.stderr)
     print(f"renqi: {len(rows)} 只 · 来源 {'+'.join(record['sources']) or '无'} · "
           f"历史 {len(history) + 1} 天 · {day}", file=sys.stderr)
-    return {"date": day, "rows": rows, "sources": record["sources"], "errors": errors}
+    # 历史天数跟着结果走：页面据此决定「连续上榜／近30日／近1年」那行要不要印。
+    # 只有一两天历史时，这三项恒等于 1，印出来是废话。
+    return {
+        "date": day,
+        "rows": rows,
+        "sources": record["sources"],
+        "history_days": len(history) + 1,
+        "errors": errors,
+    }
 
 
 def push_lines(doc: Dict[str, Any], limit: int = TOP_N) -> List[str]:
@@ -321,15 +331,19 @@ def push_lines(doc: Dict[str, Any], limit: int = TOP_N) -> List[str]:
     rows = (doc or {}).get("rows") or []
     if not rows:
         return []
-    out = ["*自建 · 同花顺 + 东方财富；与连板网综合榜口径不同（少开盘啦一列）*"]
+    # 只交代榜单怎么来的；跟别家榜单的口径差异是内部设计，读者不需要看。
+    out = ["*自建榜单 · 同花顺 + 东方财富*"]
+    # 历史不足 5 个交易日时，连续与累计三项恒等于 1，没有信息量，不印。
+    enough = int(doc.get("history_days") or 0) >= HISTORY_MIN_DAYS
     for r in rows[:limit]:
         bits = [r.get("pct") or ""]
-        if r.get("streak"):
-            bits.append(f"连续{r['streak']}天")
-        if r.get("d30"):
-            bits.append(f"30日{r['d30']}次")
-        if r.get("d365"):
-            bits.append(f"1年{r['d365']}次")
+        if enough:
+            if r.get("streak"):
+                bits.append(f"连续{r['streak']}天")
+            if r.get("d30"):
+                bits.append(f"30日{r['d30']}次")
+            if r.get("d365"):
+                bits.append(f"1年{r['d365']}次")
         tail = " · ".join(x for x in bits if x)
         out.append(f"{r.get('rank')}. **{r.get('name')}** {r.get('code')}" + (f" {tail}" if tail else ""))
     return out
