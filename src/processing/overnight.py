@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -109,6 +109,102 @@ def _close_date(stamp: str) -> str:
     return f"{moment.month}-{moment.day:02d}"
 
 
+CST = timezone(timedelta(hours=8))
+
+# NYSE 的常规休市日按规则算，不维护年表：固定日期 + 第 n 个周几 + 复活节前的
+# 周五。临时休市（国葬、飓风）不在其中，那时 _us_holiday 返回 None，块照原样
+# 打印数据并标注交易日——查不到原因就不编一个。
+_HOLIDAY_NAMES = {
+    "new_year": {"zh": "元旦", "en": "New Year's Day"},
+    "mlk": {"zh": "马丁·路德·金纪念日", "en": "Martin Luther King Jr. Day"},
+    "presidents": {"zh": "总统日", "en": "Presidents' Day"},
+    "good_friday": {"zh": "耶稣受难日", "en": "Good Friday"},
+    "memorial": {"zh": "阵亡将士纪念日", "en": "Memorial Day"},
+    "juneteenth": {"zh": "六月节", "en": "Juneteenth"},
+    "independence": {"zh": "独立日", "en": "Independence Day"},
+    "labor": {"zh": "劳动节", "en": "Labor Day"},
+    "thanksgiving": {"zh": "感恩节", "en": "Thanksgiving Day"},
+    "christmas": {"zh": "圣诞节", "en": "Christmas Day"},
+}
+
+
+def _nth_weekday(year: int, month: int, weekday: int, n: int) -> date:
+    """某月第 n 个星期 weekday（0=周一）。"""
+    first = date(year, month, 1)
+    offset = (weekday - first.weekday()) % 7
+    return first + timedelta(days=offset + 7 * (n - 1))
+
+
+def _last_weekday(year: int, month: int, weekday: int) -> date:
+    """某月最后一个星期 weekday。"""
+    nxt = date(year + (month == 12), month % 12 + 1, 1)
+    last = nxt - timedelta(days=1)
+    return last - timedelta(days=(last.weekday() - weekday) % 7)
+
+
+def _easter(year: int) -> date:
+    """Anonymous Gregorian algorithm。"""
+    a = year % 19
+    b, c = divmod(year, 100)
+    d, e = divmod(b, 4)
+    f = (b + 8) // 25
+    g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30
+    i, k = divmod(c, 4)
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = (a + 11 * h + 22 * l) // 451
+    month, day = divmod(h + l - 7 * m + 114, 31)
+    return date(year, month, day + 1)
+
+
+def _observed(day: date) -> date:
+    """周六的假日提前到周五，周日的推后到周一。"""
+    if day.weekday() == 5:
+        return day - timedelta(days=1)
+    if day.weekday() == 6:
+        return day + timedelta(days=1)
+    return day
+
+
+def _holiday_table(year: int) -> Dict[date, str]:
+    return {
+        _observed(date(year, 1, 1)): "new_year",
+        _nth_weekday(year, 1, 0, 3): "mlk",
+        _nth_weekday(year, 2, 0, 3): "presidents",
+        _easter(year) - timedelta(days=2): "good_friday",
+        _last_weekday(year, 5, 0): "memorial",
+        _observed(date(year, 6, 19)): "juneteenth",
+        _observed(date(year, 7, 4)): "independence",
+        _nth_weekday(year, 9, 0, 1): "labor",
+        _nth_weekday(year, 11, 3, 4): "thanksgiving",
+        _observed(date(year, 12, 25)): "christmas",
+    }
+
+
+def _us_holiday(day: date) -> Optional[Dict[str, str]]:
+    """美东某日是常规休市日时返回节日名（中英各一份），否则 None。
+
+    查前后三年：元旦落在周六时会提前到上一年的 12/31，那张表挂在前一年。
+    """
+    for year in (day.year - 1, day.year, day.year + 1):
+        key = _holiday_table(year).get(day)
+        if key:
+            return _HOLIDAY_NAMES[key]
+    return None
+
+
+def last_night_holiday(today: date) -> Optional[Dict[str, str]]:
+    """昨夜美股是不是因节日休市。
+
+    今晨对应的美东日期就是北京日期减一天。周末不开市属于周期性安排，
+    不在这条判断里——那种情况沿用原行为，打印数据并标注交易日。
+    """
+    day = today - timedelta(days=1)
+    if day.weekday() >= 5:
+        return None
+    return _us_holiday(day)
+
+
 async def fetch_overnight(url: str = SINA_URL) -> Optional[Dict[str, Any]]:
     """One GET per run; any failure returns None and the digest drops the block."""
     codes = [code for _, code in INDICES] + [code for code, _, _ in MOVERS]
@@ -139,17 +235,20 @@ async def fetch_overnight(url: str = SINA_URL) -> Optional[Dict[str, Any]]:
     movers.sort(key=lambda mover: abs(mover["pct"]), reverse=True)
 
     stamp = next((rows[code]["stamp"] for _, code in INDICES if code in rows), "")
+    holiday = last_night_holiday(datetime.now(CST).date())
     brief = {
         "indices": indices,
         "movers": movers[:MOVERS_SHOWN],
         "close_date": _close_date(stamp),
         "stamp": stamp,
+        "holiday": holiday,
     }
     logger.warning(
-        "Overnight tape %s: %d indices, %d movers, stamp %s",
+        "Overnight tape %s: %d indices, %d movers, stamp %s, holiday %s",
         brief["close_date"] or "(no date)",
         len(indices),
         len(brief["movers"]),
         stamp or "(none)",
+        (holiday or {}).get("zh") or "(none)",
     )
     return brief
