@@ -9,6 +9,7 @@ Rules:
 - Different angles are not separate events: the policy text, the market reaction, the sector read-through and the company statement are four angles of one event and belong in one group
 - Two headlines that give different totals, different players or different wording for the same transaction are the same event, not two events; group them
 - Only split when the two items describe genuinely different events, not different framings of one event
+- A wire story that leads with the same fact and then tacks on a second one ("bank loans for buybacks hit 600bn, and province Y issues a computing plan") is still the same event as the item on that first fact alone; group them
 - Err on the side of merging items that describe the same event"""
 
 TOPIC_DEDUP_USER = """The following news items have already been sorted by importance score (descending). Identify which items are duplicates of each other.
