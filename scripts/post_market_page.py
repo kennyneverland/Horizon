@@ -14,8 +14,10 @@ from __future__ import annotations
 import html as _html
 import json
 import re
+import sys
 from typing import Any, Dict, List
 
+import catalysts
 from lianban_extra import EXTRA_CSS, high_position, render_sections
 
 
@@ -172,6 +174,132 @@ def _dissent_html(dis: Dict[str, Any]) -> str:
     if not blocks:
         return ""
     return f"<h3>与第三方复盘结论对比</h3><div class='dissent'>{''.join(blocks)}</div>"
+
+
+# 可转债与可交换债的代码段：沪市 11x / 132，深市 12x。龙虎榜「净买额前 15」
+# 里混进转债，读者没法跟个股比涨跌幅，也看不出它属于哪条线。
+_BOND_PREFIX = ("110", "111", "113", "118", "132", "123", "127", "128")
+
+
+def _is_bond(code: Any) -> bool:
+    return str(code or "").strip().startswith(_BOND_PREFIX)
+
+
+def _num(value: Any) -> str:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return ""
+    return str(int(number)) if number == int(number) else f"{number:.1f}"
+
+
+# 面板标签 → kpi 字段 → 今日值单位 → 变化量单位
+_PANEL_FIELDS = (
+    ("涨停", "limit_up", "", ""),
+    ("跌停", "limit_down", "", ""),
+    ("连板", "lianban", "", ""),
+    ("最高板", "max_board", "板", "板"),
+    ("封板率", "seal_rate_pct", "%", "点"),
+)
+
+
+def _panel_fix(payload: Dict[str, Any]) -> None:
+    """把盘面条的「较昨日」改成东财口径重算。
+
+    六个数字已经换成东财，而这一行仍是源站卡片的原文：11-27 卡片印连板 24，
+    同一行写「+15（昨 14）」——14+15=29，读者怎么算都不平。这里按东财今日值与
+    东财上一交易日重写 value/sub，_panel_html 据此反算昨值，两套数不再并排。
+    拿不到上一交易日就清空 sub，整行不印：宁可不印，不印对不上的。
+    """
+    rows = (payload.get("extra") or {}).get("panel") or []
+    if not rows:
+        return
+    kpi = payload.get("kpi") or {}
+    prev = payload.get("breadth_prev") or {}
+    for row in rows:
+        name = str(row.get("label") or "").replace(" ", "")
+        if name == "新高/新低63日":
+            # 源站的 63/2 没单位，读者不知道哪个是新高的家数。
+            hit = re.match(r"^\s*(\d+)\s*/\s*(\d+)\s*$", str(row.get("value") or ""))
+            if hit:
+                row["value"] = f"{hit.group(1)} 家 / {hit.group(2)} 家"
+            continue
+        if name == "炸板":
+            today, before = kpi.get("zhaban"), prev.get("zhaban")
+            up_t, up_p = kpi.get("limit_up"), prev.get("limit_up")
+            if None in (today, before, up_t, up_p) or not (up_t + today) or not (up_p + before):
+                row["sub"] = ""
+                continue
+            row["value"] = _num(today)
+            row["sub"] = (
+                f"率 {today / (up_t + today) * 100:.1f}% · "
+                f"昨 {before / (up_p + before) * 100:.1f}%"
+            )
+            continue
+        for label, field, unit, delta_unit in _PANEL_FIELDS:
+            if name != label:
+                continue
+            today, before = kpi.get(field), prev.get(field)
+            if today is None or before is None:
+                row["sub"] = ""
+                break
+            delta = float(today) - float(before)
+            row["value"] = f"{_num(today)}{unit}"
+            # 变化为 0 时印「较前值 +0板」是噪音，直接写持平。
+            row["sub"] = "较前值 " + ("持平" if not delta else f"{delta:+g}{delta_unit}")
+            break
+
+
+_BADGE = re.compile(r"^(?P<base>[^（(]+)[（(]对应当日题材\s*(?P<ref>[^）)]+)[）)]\s*$")
+
+
+def _strip_badge(theme: str) -> str:
+    """蓄势题材后面那句「（对应当日题材 X）」只在真同义时保留。
+
+    11-27 出现「快递概念（对应当日题材 先进封装）」，两个词一个字都不重，
+    是模型硬套的；这种括号只会误导，去掉。
+    """
+    text = str(theme or "").strip()
+    hit = _BADGE.match(text)
+    if not hit:
+        return text
+    base, ref = hit.group("base").strip(), hit.group("ref").strip()
+    if base and ref and (base in ref or ref in base or len(set(base) & set(ref)) >= 2):
+        return text
+    return base
+
+
+def _theme_members(payload: Dict[str, Any]) -> Dict[str, set]:
+    """题材 → 当日逐只成员。用来挡「活跃」里硬凑进来的票。"""
+    out: Dict[str, set] = {}
+    for card in payload.get("theme_watch") or []:
+        theme = str(card.get("theme") or "")
+        names = {
+            _loose(m.get("name"))
+            for m in (card.get("members") or [])
+            if str(m.get("name") or "").strip()
+        }
+        if theme and names:
+            out[_loose(theme)] = names
+    return out
+
+
+def _catalyst_html(payload: Dict[str, Any]) -> str:
+    """今日催化：盘中的政策与产业消息，命中题材的挂当日涨幅。"""
+    doc = payload.get("catalysts")
+    if not doc:
+        # post_market 还没把这一步接进来时（或单测里），页面自己取一次；
+        # 取不到就整块不印，不影响其余内容。
+        extra = payload.get("extra") or {}
+        try:
+            doc = catalysts.collect(
+                str((payload.get("kpi") or {}).get("date") or ""),
+                extra.get("strength_em") or extra.get("strength") or [],
+            )
+        except Exception as exc:  # noqa: BLE001 - 少一块不该让页面失败
+            print(f"catalysts unavailable: {exc}", file=sys.stderr)
+            return ""
+    return catalysts.render_html(doc)
 
 
 def _pct_class(raw: str) -> str:
@@ -412,6 +540,7 @@ def _focus_html(
     meta: Dict[str, Dict[str, Any]],
     pos: Dict[str, Dict[str, Any]],
     lhb: Dict[str, Dict[str, str]],
+    members: Dict[str, set] | None = None,
 ) -> str:
     """明日关注分三类，每类是一组「题材 → 该题材的重点个股」。
 
@@ -423,6 +552,7 @@ def _focus_html(
     prove it again tomorrow.
     """
     loose_meta = {_loose(k): v for k, v in meta.items()}
+    members = members or {}
     blocks = []
     for bucket in _FOCUS_ORDER:
         items = focus.get(bucket) or []
@@ -430,8 +560,11 @@ def _focus_html(
             continue
         groups = []
         for item in items:
-            theme = str(item.get("theme") or "")
+            theme = _strip_badge(str(item.get("theme") or ""))
             info = meta.get(theme) or loose_meta.get(_loose(theme)) or {}
+            # 主线与活跃的票必须真属于这条题材：11-27「金融 11 家涨停」下面挂了
+            # 九阳股份（净水概念）和兴欣新材（光刻胶），是模型拿龙虎榜凑的。
+            allowed = members.get(_loose(theme))
             # 蓄势的题材是票自己的板块，不是当日涨停线，不挂涨停家数
             chip = (
                 f"<span class='tag'>{info['count']} 家涨停</span>"
@@ -441,6 +574,8 @@ def _focus_html(
             rows = []
             for st in item.get("stocks") or []:
                 key = (st.get("name") or "").replace(" ", "")
+                if bucket != "蓄势" and allowed is not None and _loose(key) not in allowed:
+                    continue
                 hit = pos.get(key) or {}
                 bits = []
                 if hit.get("today"):
@@ -497,7 +632,11 @@ def _lhb_html(payload: Dict[str, Any]) -> str:
         return ""
     concepts = payload.get("concepts") or {}
     rows = []
-    for x in items[:15]:
+    for x in items:
+        if len(rows) >= 15:
+            break
+        if _is_bond(x.get("code")):
+            continue
         hit = concepts.get(x.get("code") or "") or {}
         themes = list(hit.get("themes") or [])
         labels = [t for t in themes[:3]]
@@ -563,6 +702,8 @@ def _renqi_html(payload: Dict[str, Any]) -> str:
     rows = doc.get("rows") or []
     if not rows:
         return ""
+    # 历史只有一两天时，连续上榜／近30日／近1年恒等于 1，印出来是废话。
+    enough = int(doc.get("history_days") or 0) >= 5
     items = []
     for r in rows:
         concepts = [str(x) for x in (r.get("concepts") or []) if x]
@@ -583,9 +724,13 @@ def _renqi_html(payload: Dict[str, Any]) -> str:
             f"<div class='line-h'><b>{_esc(r.get('rank'))} {_esc(r.get('name'))}</b>"
             f"<span class='{_pct_class(r.get('pct') or '')}'>{_esc(r.get('pct') or '')}</span></div>"
             f"<div class='line-n'>{_esc(sub)}</div>"
-            f"<div class='line-n'>连续上榜 <b>{r.get('streak', 1)}</b> 天 · "
-            f"近30日 <b>{r.get('d30', 1)}</b> 次 · 近1年 <b>{r.get('d365', 1)}</b> 次</div>"
-            "</li>"
+            + (
+                f"<div class='line-n'>连续上榜 <b>{r.get('streak', 1)}</b> 天 · "
+                f"近30日 <b>{r.get('d30', 1)}</b> 次 · 近1年 <b>{r.get('d365', 1)}</b> 次</div>"
+                if enough
+                else ""
+            )
+            + "</li>"
         )
     hint = (
         "自建榜单，来源：同花顺人气日榜、东方财富人气榜；先按同时上榜的来源数排序，"
@@ -688,28 +833,37 @@ def _next_day_block(payload: Dict[str, Any], read: Any) -> str:
     if not isinstance(read, dict):
         return ""
     focus = read.get("focus") or {}
+    members = _theme_members(payload)
     buckets: Dict[str, List[Dict[str, Any]]] = {}
     for bucket in ("主线", "活跃", "蓄势"):
         rows = []
         for item in focus.get(bucket) or []:
             if not isinstance(item, dict):
                 continue
-            theme = str(item.get("theme") or "").strip()
+            # 与页面同一条规则：假括号去掉，非本题材成员的票不写进这份 JSON——
+            # 明早早报读的就是它，错的名字会顺着传下去。
+            theme = _strip_badge(str(item.get("theme") or "").strip())
             if not theme:
+                continue
+            allowed = members.get(_loose(theme))
+            stocks = []
+            for s in (item.get("stocks") or []):
+                if not isinstance(s, dict):
+                    continue
+                name = str(s.get("name") or "").strip()
+                if not name:
+                    continue
+                if bucket != "蓄势" and allowed is not None and _loose(name) not in allowed:
+                    continue
+                stocks.append({"name": name, "tag": str(s.get("tag") or "").strip()})
+            if not stocks and bucket != "蓄势":
                 continue
             rows.append(
                 {
                     "theme": theme,
                     "badge": str(item.get("badge") or "").strip(),
                     "signal": str(item.get("signal") or "").strip(),
-                    "stocks": [
-                        {
-                            "name": str(s.get("name") or "").strip(),
-                            "tag": str(s.get("tag") or "").strip(),
-                        }
-                        for s in (item.get("stocks") or [])
-                        if isinstance(s, dict) and str(s.get("name") or "").strip()
-                    ],
+                    "stocks": stocks,
                 }
             )
         if rows:
@@ -813,7 +967,12 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         stale = bool(day.get("date") and dates and day.get("date") != dates[0])
     picks = payload.get("filter") or {}
     concepts = payload.get("concepts") or {}
+    # 盘面重算必须排在 render_sections 之前：那一块直接读 payload 里的卡片数据。
+    _panel_fix(payload)
     extra = render_sections(payload)
+    # 卡片名是源站字段直出，换成读者看得懂的写法（值已带「家」）。
+    extra["panel"] = extra.get("panel", "").replace(">新高/新低63日<", ">63日新高 / 新低<")
+    catalyst_html = _catalyst_html(payload)
     date = kpi.get("date") or ""
 
     line_rows = []
@@ -948,7 +1107,11 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
         focus = read.get("focus") or {}
         if focus:
             focus_html = _focus_html(
-                focus, _theme_meta(payload), _filter_pos(payload), _lhb_map(payload)
+                focus,
+                _theme_meta(payload),
+                _filter_pos(payload),
+                _lhb_map(payload),
+                _theme_members(payload),
             )
         elif watch:
             # Replies written before the three-bucket contract still render.
@@ -1024,6 +1187,7 @@ footer{{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
 <h2>盘面</h2>
 <div class="stats">{stat_html}</div>
 {extra['panel']}
+{catalyst_html}
 {extra['overseas']}
 {extra['signals']}
 {insight_html}
