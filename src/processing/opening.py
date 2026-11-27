@@ -443,12 +443,17 @@ async def fetch_opening(
 
 
 def _delta(today: Optional[int], prev: Optional[int]) -> str:
+    """与前值的差，写成「多 5 只／少 3 只」，不写「+5」。
+
+    这三个字夹在两句数字中间（「上一交易日同期 24 只，+5」），读者得自己判断
+    是比谁多、多的是什么单位；写成「多 5 只」就不用回头找主语。
+    """
     if today is None or prev is None:
         return ""
     diff = today - prev
     if diff == 0:
         return "持平"
-    return f"{'+' if diff > 0 else ''}{diff}"
+    return f"多 {diff} 只" if diff > 0 else f"少 {-diff} 只"
 
 
 def render_block(data: Optional[Dict[str, Any]], labels: Optional[Dict[str, str]] = None) -> str:
@@ -486,6 +491,9 @@ def render_block(data: Optional[Dict[str, Any]], labels: Optional[Dict[str, str]
         d = _delta(sealed, prev_sealed)
         text += f"，上一交易日同期 {prev_sealed} 只" + (f"，{d}" if d else "")
     lines.append(text)
+    # 三段各占一段。Markdown 里没有空行就是同一段的软换行，封板、炸板、连板
+    # 会糊成一整句（「…，+5 炸板 7 只…」），读的人分不清哪个数属于哪件事。
+    lines.append("")
 
     # 炸板池没取到的那天，这一行整行不印：0 会被读成「今天没人炸板」。
     broken = today.get("broken_open")
@@ -496,6 +504,7 @@ def render_block(data: Optional[Dict[str, Any]], labels: Optional[Dict[str, str]
             d = _delta(broken, prev_broken)
             text += f"，上一交易日同期 {prev_broken} 只" + (f"，{d}" if d else "")
         lines.append(text)
+        lines.append("")
 
     heights = today.get("heights") or {}
     top = today.get("top_boards") or []
