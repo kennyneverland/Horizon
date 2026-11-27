@@ -138,6 +138,51 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      # 日历、开盘快照、主线基线原先只活在 Actions 缓存里，三处都会静默出错：
+      # 缓存 7 天不用就清，长假后第一个交易日既找不到「昨日同刻」的开盘读数，
+      # 也读不到昨日日历事件；mainline_snapshot 更是每天重写却从不提交，仓库里
+      # 那份停在 2026-11-18，连板网不可达时兜底读的是八天前的基线，日志不报警。
+      # 三者合计约 3.5 KB/天，先全量提交，暂不做滚动清理。
+      - name: Commit daily archives
+        if: always()
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          paths=""
+          for p in data/calendar data/opening data/mainline_snapshot.json; do
+            if [ -e "$p" ]; then paths="$paths $p"; fi
+          done
+          if [ -z "$paths" ]; then
+            echo "archives: 三个路径都不存在，跳过"
+            exit 0
+          fi
+          if [ -z "$(git status --porcelain $paths 2>/dev/null)" ]; then
+            echo "archives: 今天没有新的日历/开盘/主线快照"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            # runner 是浅克隆，rebase 找不到共同祖先；--mixed 让索引对齐远端，
+            # 再只暂存这三个路径，别人在这期间推的改动一个不碰。
+            git fetch -q --depth=1 origin main
+            git reset -q --mixed FETCH_HEAD
+            git add $paths
+            if git diff --cached --quiet; then
+              echo "archives: 远端已包含今天这几份，无需再提交"
+              exit 0
+            fi
+            git commit -q -m "chore(archives): 落盘 $(TZ=Asia/Shanghai date +%F) 日历/开盘快照与主线基线"
+            if git push -q origin HEAD:main; then
+              echo "archives: 已提交 $(git rev-parse --short HEAD)"
+              exit 0
+            fi
+            echo "archives: 第 ${attempt} 次推送被拒，重试" >&2
+            sleep 3
+          done
+          echo "::warning::日历/开盘/主线快照没能提交，下一天会再试"
+          exit 0
+
       - name: Set current date as environment variable
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
