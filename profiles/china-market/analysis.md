@@ -28,6 +28,7 @@ Score **5 or below** regardless of coverage, unless the item names one of those 
 
 - Business operations at a single consumer brand, retailer or non-listed company with no stated effect on a listed issuer, a sector cost structure, or a tradable theme.
 - Labour, HR, workplace or lifestyle stories that cannot be priced into an A-share or Hong Kong name.
+- An overseas issuer's own share price, valuation or quarterly results (a US, Japanese or Korean listed company) when the item names no A-share or Hong Kong carrier and states no concrete read-through to one. Such an item belongs to finance-news or the hardware profile; the same overseas event is welcome here only when the transmission to a named Chinese peer is spelled out.
 
 These preferences shift scores within the 7-10 band. Keep the credibility bar: reported facts must stay distinguishable from forecasts, market chatter, and unverified retellings, and rumor or stock-touting content should not score high merely because it is topical.
 
