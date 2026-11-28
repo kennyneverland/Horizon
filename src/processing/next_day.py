@@ -31,6 +31,11 @@ from datetime import date as _date
 from datetime import timedelta
 from typing import Any, Dict, Iterable, List, Optional
 
+try:  # 包内导入
+    from . import session as _session
+except ImportError:  # 以单文件方式导入（脚本、独立用例）
+    import session as _session  # type: ignore[no-redef]
+
 logger = logging.getLogger(__name__)
 
 BRIEF_URL = "https://kennyneverland.github.io/Horizon/post-market/{date}.html"
@@ -101,13 +106,37 @@ def _get(url: str, timeout: float = 20.0) -> str:
     return raw.decode("utf-8", "replace")
 
 
-def load(day: str, base: str = BRIEF_URL, lookback: int = LOOKBACK_DAYS) -> Optional[Dict[str, Any]]:
+def load(
+    day: str,
+    base: str = BRIEF_URL,
+    lookback: int = LOOKBACK_DAYS,
+    trading_day: Optional[bool] = None,
+) -> Optional[Dict[str, Any]]:
     """The most recent brief published before ``day``, or None.
 
     ``day`` is the digest's own date. The brief for the previous session is what
     the reader saw last night, so the walk starts one day back and stops at the
     first page that carries the block — a Monday digest reaches back to Friday.
+
+    ``trading_day`` says whether ``day`` itself is a session. On a day the market
+    is closed there is no 「今天要关注什么」 to answer: the block would just read
+    last night's brief back under a date that never opened (2026-11-28, a
+    Saturday, did exactly that). Not passed, the calendar decides: weekends from
+    the weekday, weekday holidays from ``session.opened`` — only the limit-up
+    pool knows those, and the morning's opening block has already asked it.
     """
+    if trading_day is None:
+        try:
+            trading_day = _date.fromisoformat(day).weekday() < 5
+        except (TypeError, ValueError):
+            trading_day = True
+        # 星期几认不出工作日休市（元旦、国庆）。开盘块当天落了快照就是开市，
+        # 没落才问一次东财——问不到（None）时维持星期几的判断，不替它下结论。
+        if trading_day and _session.opened(day) is False:
+            trading_day = False
+    if not trading_day:
+        logger.info("next-day brief skipped: %s is not a trading day", day)
+        return None
     for back in range(1, lookback + 1):
         target = _shift(day, back)
         if not target:
