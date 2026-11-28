@@ -1,0 +1,56 @@
+{
+ "date": "20261127",
+ "fetched_at": "2026-11-27T09:40:22+08:00",
+ "today": {
+  "sealed_open": 29,
+  "broken_open": 7,
+  "auction": 9,
+  "total_sealed": 29,
+  "total_broken": 7,
+  "heights": {
+   "2": 9,
+   "3": 1,
+   "1": 17,
+   "4": 2
+  },
+  "max_board": 4,
+  "top_boards": [
+   {
+    "name": "利君股份",
+    "code": "002651",
+    "lbc": 4,
+    "hybk": "航空装备"
+   },
+   {
+    "name": "全筑股份",
+    "code": "603030",
+    "lbc": 4,
+    "hybk": "装修装饰"
+   },
+   {
+    "name": "证通电子",
+    "code": "002197",
+    "lbc": 3,
+    "hybk": "计算机设"
+   },
+   {
+    "name": "常山北明",
+    "code": "000158",
+    "lbc": 2,
+    "hybk": "IT服务Ⅱ"
+   },
+   {
+    "name": "鹿山新材",
+    "code": "603051",
+    "lbc": 2,
+    "hybk": "化学制品"
+   },
+   {
+    "name": "山鹰国际",
+    "code": "600567",
+    "lbc": 2,
+    "hybk": "造纸"
+   }
+  ]
+ }
+}
