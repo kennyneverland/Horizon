@@ -1330,6 +1330,21 @@ def _pct_class(raw: str) -> str:
     return "up" if text.startswith("+") else ("down" if text.startswith("-") else "")
 
 
+def _row_by_prefix(panel: Dict[str, Dict[str, Any]], prefix: str) -> Tuple[str, Dict[str, Any]]:
+    """The row whose label starts with prefix, together with the label itself.
+
+    The source site stamps the as-of date into the label (融资余额11-18). Matching
+    the full label loses the row the day the date rolls over; matching the prefix
+    keeps it, and returning the source label keeps the as-of date on the page.
+    """
+    if prefix in panel:
+        return prefix, panel[prefix]
+    for key, row in panel.items():
+        if key.startswith(prefix):
+            return key, row
+    return "", {}
+
+
 def _panel_html(payload: Dict[str, Any]) -> str:
     """The strip above the fold: what moved versus yesterday, and the breadth
     numbers the KPI grid has no room for."""
@@ -1353,8 +1368,8 @@ def _panel_html(payload: Dict[str, Any]) -> str:
         changes.append(f"炸板{_esc(zb['sub'])}")
 
     rows = []
-    for label in ("昨涨停今表现", "情绪周期", "新高/新低63日", "两市成交", "融资余额11-18"):
-        row = panel.get(label)
+    for prefix in ("昨涨停今表现", "情绪周期", "新高/新低63日", "两市成交", "融资余额"):
+        label, row = _row_by_prefix(panel, prefix)
         if not row:
             continue
         rows.append(

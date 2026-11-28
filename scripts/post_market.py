@@ -52,6 +52,7 @@ from mainline_matrix import build as build_matrix  # noqa: E402
 from src.processing import eastmoney, market_calendar, session  # noqa: E402
 from lianban_extra import (  # noqa: E402
     _prev_value,
+    _row_by_prefix,
     _strength_sorted,
     collect_extra,
     fetch_overseas,
@@ -1284,7 +1285,7 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
     yl_sub = yl.get("sub", "")
     yl_median = re.search(r"中位\s*(-?[\d.]+)%", yl_sub)
     yl_red = re.search(r"翻红\s*([\d.]+)%", yl_sub)
-    margin = panel.get("融资余额11-18") or {}
+    margin = _row_by_prefix(panel, "融资余额")[1]
 
     strength = {x["name"]: x for x in (extra.get("strength") or [])}
 
