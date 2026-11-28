@@ -3,6 +3,8 @@
 import asyncio
 from datetime import datetime, timezone
 
+import pytest
+
 from src.ai.summarizer import DailySummarizer
 from src.models import (
     ArtifactSource,
@@ -18,6 +20,23 @@ from src.models import (
 
 def _run_async(coro):
     return asyncio.run(coro)
+
+
+@pytest.fixture(autouse=True)
+def _offline_render(monkeypatch):
+    """渲染链不碰网络：三个取数入口在 summarizer 命名空间里直接顶掉。
+
+    2026-11-28 之前这些测试在 CI 上真去打新浪、东财与早盘页——日志里
+    「Pre-market brief is dated …」「Asia open …（no open prints）」就是那两次调用。
+    网络慢就拖时间、源站抽风就变红，跟被测的渲染逻辑无关。
+    这里返回 None 等价于「取不到」，与运行时的降级路径一致。
+    """
+
+    async def _unavailable(*args, **kwargs):
+        return None
+
+    for name in ("fetch_premarket", "fetch_asia_open", "fetch_overnight"):
+        monkeypatch.setattr(f"src.ai.summarizer.{name}", _unavailable)
 
 
 def _make_item(idx: int) -> ContentItem:
@@ -478,3 +497,23 @@ def test_generate_summary_preserves_normal_http_links():
     assert "[Important Item 1](https://example.com/items/1)" in result
     assert "[Discussion](https://example.com/discuss?id=1#comments)" in result
     assert 'href="https://docs.example.com/path?q=one&amp;lang=en"' in result
+
+
+def test_render_does_not_touch_network(monkeypatch):
+    """断网也能渲染：socket.connect 直接抛错，渲染链不得依赖真实连接。
+
+    这条锁住「渲染测试是离线的」这个前提。如果哪天有人在渲染路径里绕过
+    summarizer 里那三个入口直接发请求，这里会红，而不是在 CI 上慢慢超时。
+    """
+    import socket
+
+    def _boom(*args, **kwargs):
+        raise AssertionError("渲染链不该发起网络连接")
+
+    monkeypatch.setattr(socket.socket, "connect", _boom)
+    result = _run_async(
+        DailySummarizer().generate_summary(
+            [_make_item(1)], date="2026-04-25", total_fetched=1, language="zh"
+        )
+    )
+    assert "从 1 条内容中筛选出 1 条重要资讯" in result
