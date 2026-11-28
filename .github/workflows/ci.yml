@@ -2,7 +2,7 @@ name: localized-tests
 
 # 本地化守卫：不碰网络、不调真实模型，红了就是代码真的坏了。
 # test_summarizer 已在 #16 跟随当前渲染、并恢复统计行引用块，16 条全绿，从「参考」升回 required。
-# 七组任一缺失或失败即红：过期契约不许再被静默放过。
+# 八组任一缺失或失败即红：过期契约不许再被静默放过。
 
 on:
   push:
@@ -43,6 +43,7 @@ jobs:
             tests/test_market_closed.py
             tests/test_next_day_lookback.py
             tests/test_post_market_metrics.py
+            tests/test_lianban_calendar_states.py
           )
           for f in "${required[@]}"; do
             if [ ! -f "$f" ]; then

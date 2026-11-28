@@ -17,8 +17,6 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
 import src.processing.lianban_calendar as calendar
 
 
