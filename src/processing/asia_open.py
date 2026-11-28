@@ -35,7 +35,7 @@ import json
 import logging
 import re
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 
@@ -240,19 +240,25 @@ async def _from_sina(
 
 async def _from_sina_hk(
     client: httpx.AsyncClient, today: str
-) -> List[Dict[str, Any]]:
+) -> Tuple[List[Dict[str, Any]], List[str]]:
     """``rt_hkHSI`` / ``rt_hkHSTECH``: 2 open, 3 prev, 17 date.
 
     Unlike the ``b_*`` feeds these carry the session date as ``YYYY/MM/DD``.
     An opening print only exists once the 09:30 bell has rung; before that the
     open field is a zero, and a zero open is no row at all — the previous close
     under a "今日开盘" header is the mix-up this block exists to avoid.
+
+    Returns ``(rows, closed)``: ``closed`` names the indices whose session date
+    is older than today, which is Hong Kong telling us it did not open. A feed
+    that answers with no date at all is a failed call, not a holiday, and is
+    left out of both.
     """
     codes = ",".join(code for _, code in HK)
     response = await client.get(SINA_URL + codes, headers=SINA_HEADERS)
     response.raise_for_status()
     parsed = dict(_SINA_RE.findall(response.content.decode("gbk", "replace")))
     rows: List[Dict[str, Any]] = []
+    closed: List[str] = []
     for label, code in HK:
         parts = (parsed.get(code) or "").split(",")
         if len(parts) < 19:
@@ -262,7 +268,11 @@ async def _from_sina_hk(
         if not day or not prev or prev <= 0:
             continue
         open_price = _num(parts[2])
-        if day != today or not open_price or open_price <= 0:
+        if day != today:
+            if day < today:
+                closed.append(label)
+            continue
+        if not open_price or open_price <= 0:
             logger.warning("Asia open: %s has no opening print for %s", label, today)
             continue
         rows.append(
@@ -273,13 +283,19 @@ async def _from_sina_hk(
                 "mode": "open",
             }
         )
-    return rows
+    return rows, closed
 
 
 async def _from_twse(
     client: httpx.AsyncClient, today: str
-) -> List[Dict[str, Any]]:
-    """Taiwan's own quote: ``o`` open, ``y`` previous close, ``d`` date."""
+) -> Tuple[List[Dict[str, Any]], bool]:
+    """Taiwan's own quote: ``o`` open, ``y`` previous close, ``d`` date.
+
+    Returns ``(rows, closed)``. ``closed`` is True only when the exchange
+    answered with a session date older than today — a holiday, not a failed
+    call. An empty body or a missing previous close says nothing about whether
+    the market opened, so it stays ``False``.
+    """
     response = await client.get(
         TWSE_URL,
         params={"ex_ch": "tse_t00.tw", "json": "1", "delay": "0"},
@@ -293,15 +309,18 @@ async def _from_twse(
     row = rows[0]
     raw_day = str(row.get("d") or "")
     if len(raw_day) != 8 or not raw_day.isdigit():
-        return []
+        return [], False
     day = f"{raw_day[:4]}-{raw_day[4:6]}-{raw_day[6:8]}"
     prev = _num(row.get("y"))
     if not prev or prev <= 0:
-        return []
+        return [], False
     open_price = _num(row.get("o"))
-    if day != today or not open_price or open_price <= 0:
+    if day != today:
+        # 休市日台交所停更，``d`` 停在上一交易日：日期更早就说明今天没开市。
+        return [], day < today
+    if not open_price or open_price <= 0:
         logger.warning("Asia open: %s has no opening print for %s", TWSE_LABEL, today)
-        return []
+        return [], False
     return [
         {
             "name": TWSE_LABEL,
@@ -309,7 +328,7 @@ async def _from_twse(
             "pct": (open_price / prev - 1) * 100,
             "mode": "open",
         }
-    ]
+    ], False
 
 
 async def _wait_until(hour: int, minute: int) -> None:
@@ -337,6 +356,16 @@ async def fetch_asia_open(
     groups fail independently — losing Taiwan must not take the Nikkei row with
     it — and a source that answers with a print dated before today is treated as
     not having opened yet, not as a quote.
+
+    ``closed`` names the markets that answered with an older session date. Until
+    2026-11-28 those markets simply vanished from the row: a reader could not
+    tell a Japanese holiday from a broken feed, and the digest said nothing at
+    all. The row now carries them as ``closed`` so the renderer can print
+    「日经225 因勤劳感谢日休市」 in the place the number would have been.
+
+    A market is only listed as closed when a date was actually returned for it.
+    No date means the call failed, which is not evidence of a holiday — those
+    stay out of both lists and the log keeps the warning.
     """
     if at is not None:
         await _wait_until(*at)
@@ -346,6 +375,7 @@ async def fetch_asia_open(
         timeout=TIMEOUT_SECONDS, follow_redirects=True
     ) as client:
         rows: List[Dict[str, Any]] = []
+        closed: List[Dict[str, str]] = []
         session_days = await _sina_session_days(client)
         for attempt in (1, 2):
             for source, fetch in (("eastmoney", _from_eastmoney), ("sina", _from_sina)):
@@ -361,19 +391,41 @@ async def fetch_asia_open(
                 break
             if attempt == 1:
                 await asyncio.sleep(RETRY_SECONDS)
+        # 东京与首尔走同一份新浪旁证：报价日期停在上一交易日就是今天没开市。
+        # 这一层判在取数之后，因为东财与新浪两条路谁答上来都行，只有都没给出
+        # 当日开盘价时，才轮到「是不是休市」这个问题。
+        got = {str(row["name"]) for row in rows}
+        for label, _, _ in ASIA:
+            if label in got:
+                continue
+            session = session_days.get(label)
+            if session and session < today:
+                closed.append({"name": label, "session": session})
         for source, fetch in (("twse", _from_twse), ("sina-hk", _from_sina_hk)):
             try:
-                rows.extend(await fetch(client, today))
+                extra_rows, shut = await fetch(client, today)
             except Exception as exc:  # noqa: BLE001 - one market must not sink the row
                 logger.warning("Asia open via %s failed: %s", source, exc)
-        if not rows:
+                continue
+            rows.extend(extra_rows)
+            if shut is True:
+                closed.append({"name": TWSE_LABEL, "session": ""})
+            elif isinstance(shut, list):
+                closed.extend({"name": name, "session": ""} for name in shut)
+        if not rows and not closed:
             logger.warning("Asia open tape unavailable for %s; block skipped", today)
             return None
         logger.warning(
-            "Asia open %s: %s",
+            "Asia open %s: %s%s",
             today,
             " ".join(
                 f"{row['name']} {row['last']:,.2f} {row['pct']:+.2f}%" for row in rows
+            )
+            or "(no open prints)",
+            (
+                " | closed: " + "、".join(item["name"] for item in closed)
+                if closed
+                else ""
             ),
         )
-        return {"rows": rows, "source": "mixed", "date": today}
+        return {"rows": rows, "closed": closed, "source": "mixed", "date": today}

@@ -42,9 +42,17 @@ BRIEF_URL = "https://kennyneverland.github.io/Horizon/post-market/{date}.html"
 BLOCK_RE = re.compile(
     r'<script[^>]*id="next-day-brief"[^>]*>(.*?)</script>', re.S
 )
-# A long weekend is the widest gap the digest should still look back across;
-# beyond that the brief is describing a different week.
-LOOKBACK_DAYS = 5
+# 回看几天。周末只需 3 天，这个上限是给长假的。
+#
+# 2027 年春节 2/5（周五）至 2/13（周六）放假，2/14 周日调休上班但 A 股不开市，
+# 2/15 周一开市，节前最后一个交易日是 2/4——相隔 11 天。所以 5 天不够，10 天
+# 也不够：10 天只回到 2/5，那天是休市日，站点上没有可读的晚报。取 12，在
+# 11 天之外留一天余量；国庆 7 天假只需 8 天，同样覆盖。
+#
+# 回看越远，拿到的那份晚报越旧。这件事不靠上限控制，靠页面上的来源日期：
+# render_matrix 已经把「据 X 月 X 日晚报」印在块头，读者自己看得见是哪一天的
+# 判断，不需要这里替它猜「多久以前还算数」。
+LOOKBACK_DAYS = 12
 BUCKET_ORDER = ("主线", "活跃", "蓄势")
 # 晚报「蓄势」用的是板块名，早报用的是连板网题材库的名字，两套口径字面不通。
 # 这张表只收两类对应：晚报自己写明了的（「轻工制造（对应当日题材 家电）」），
@@ -141,6 +149,11 @@ def load(
         target = _shift(day, back)
         if not target:
             return None
+        # 晚报周末不出（workflow 只跑周一到周五），周末那两天不用发请求。
+        # 长假回看时省掉的不是一两次：2027 年春节那 11 天里有 4 天是周末，
+        # 12 次请求降到 8 次。休市版页面即使存在也没有三类桶，跳过不影响结果。
+        if _date.fromisoformat(target).weekday() >= 5:
+            continue
         try:
             page = _get(base.format(date=target))
         except Exception as exc:  # noqa: BLE001 - a missing brief is not an error
