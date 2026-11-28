@@ -3,7 +3,7 @@ name: localized-tests
 # 本地化守卫：不碰网络、不调真实模型，红了就是代码真的坏了。
 # test_summarizer 归类为「参考」：它断言的是旧渲染格式（> 从 N 条筛选、**「背景」**、
 # # Kenny's Horizon Daily、Tags 折进 <details>），当前实现已全变，6 条恒红。
-# 它不阻塞合并，修它的事记在 A5。
+# 参考步骤不阻塞合并，但会把失败摘要写进 run summary，不静默；修它记在 A5。
 
 on:
   push:
@@ -51,4 +51,15 @@ jobs:
 
       - name: Upstream render tests (reference only)
         continue-on-error: true
-        run: python -m pytest tests/test_summarizer.py -q --no-header --tb=short
+        shell: bash
+        run: |
+          set +e
+          python -m pytest tests/test_summarizer.py -q --no-header --tb=no | tee /tmp/render.txt
+          {
+            echo '### 渲染测试（参考，不阻塞合并）'
+            echo ''
+            echo '```'
+            tail -n 8 /tmp/render.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
