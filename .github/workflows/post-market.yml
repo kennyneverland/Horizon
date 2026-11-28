@@ -1,9 +1,8 @@
 name: Post Market Brief
 
-# This job fetches mainline.html itself; it does not read the matrix job's
-# artifact, so the two can run in either order. 18:30 Asia/Shanghai. The data
-# is on the site by then — the close is in, the limit-up list, the dragon-tiger
-# board and the three screens are all up — and
+# The matrix job records the close; this one reads it. 10:30 UTC is 18:30
+# Asia/Shanghai. The data is on the site by then — the close is in, the
+# limit-up list, the dragon-tiger board and the three screens are all up — and
 # only the "final" stamp lags, to 21:30:0x (11-16 21:30:07, 11-18 21:30:06,
 # 11-19 21:30:15, 11-20 21:30:14, 11-23 21:30:09). So the brief no longer waits
 # for that stamp: post_market.py reads the third-party review straight off the
@@ -14,7 +13,7 @@ name: Post Market Brief
 # have no session to report on anyway.
 on:
   schedule:
-    - cron: '0 12 * * 1-5'
+    - cron: '30 10 * * 1-5'
   workflow_dispatch:
     inputs:
       date:
@@ -29,40 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # 兜底 cron 的去重闸。准点的主路径是 Cloudflare Worker 到点调
-  # workflow_dispatch；下面那条 cron 只在外部定时器没起来时替补，所以触发后
-  # 先问一句今天是不是已经有了。手动 dispatch 一律放行——回补和重跑不能被
-  # 自己挡住。判定逻辑与测试在 scripts/dispatch_guard.py。
-  guard:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    permissions:
-      actions: read
-      contents: read
-    outputs:
-      skip: ${{ steps.chk.outputs.skip }}
-    steps:
-      - uses: actions/checkout@v6
-      # 这一步只回答"该不该跑"，出任何意外都必须放行：闸坏了顶多多推一次，
-      # 闸误判成"跳过"就是当天不出报。脚本还没上传时也走放行分支。
-      - name: Decide whether the fallback cron should run
-        id: chk
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GUARD_WORKFLOW_FILE: post-market.yml
-          GUARD_PRODUCT_URL: "https://kennyneverland.github.io/Horizon/post-market/{date}.html"
-        run: |
-          if [ -f scripts/dispatch_guard.py ]; then
-            python3 scripts/dispatch_guard.py
-          else
-            echo "::warning::scripts/dispatch_guard.py 不存在，跳过去重闸，按放行处理"
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-
   brief:
-    needs: guard
-    if: needs.guard.outputs.skip != 'true'
     runs-on: ubuntu-24.04
     # The step below carries its own 18-minute ceiling; this one only has to be
     # large enough that the step is always the thing that gives up first. The
@@ -119,6 +85,13 @@ jobs:
       # numbers under today's name and push them to WeChat. A weekend dispatch
       # fails it on its own — there is no Saturday or Sunday session.
       #
+      # 休市日是个例外，2026-11-28 加：这一天站点不会出新页，旧逻辑于是把整份
+      # 晚报跳过，读者连「今天为什么没有盘」都收不到。现在先问一次东财涨停池的
+      # 报价日期（与 scripts/post_market.py 同一判据），是休市就放行，由 Python
+      # 出休市版——只留外盘参考与今日人气榜，诗句位置写休市原因。真正决定出
+      # 交易日版还是休市版的仍然是 Python 那一闸，这里只是别让 workflow 提前
+      # 把整个 job 掐掉。
+      #
       # TARGET is what the page will be filed under: today by default, or the
       # date passed to a manual dispatch so a missed evening can be backfilled.
       - name: Check lianban has a page for the target close
@@ -137,8 +110,17 @@ jobs:
           if [ "$DATE_PART" = "$TARGET" ]; then
             echo "ok=true" >> "$GITHUB_OUTPUT"
           else
-            echo "ok=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::lianban's latest page is '$DATE_PART', not '$TARGET' — the brief is skipped"
+            # 站点没有这一天的页：要么是流水线滑了一天（该跳过），要么是那天
+            # 休市（该出休市版）。判据只认报价日期，不认日历。
+            CLOSED=$(python -c "import sys;sys.path.insert(0,'.');from src.processing import session;print('yes' if session.opened('$TARGET') is False else 'no')" 2>/dev/null || echo no)
+            if [ "$CLOSED" = "yes" ]; then
+              echo "ok=true" >> "$GITHUB_OUTPUT"
+              echo "closed=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::$TARGET 休市：出休市版，不印盘面与题材"
+            else
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              echo "::warning::lianban's latest page is '$DATE_PART', not '$TARGET' — the brief is skipped"
+            fi
           fi
 
       # continue-on-error: a failed WeChat push used to return 1 here, which
@@ -189,7 +171,6 @@ jobs:
       # Only deploy when the page actually exists: if the build died before
       # writing HTML, publishing an empty docs/ would be worse than a 404.
       - name: Deploy to GitHub Pages
-        id: deploy
         if: steps.fresh.outputs.ok == 'true' && hashFiles('docs/post-market/*.html') != ''
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -200,49 +181,11 @@ jobs:
           publish_branch: gh-pages
           enable_jekyll: true
 
-      # 连板网的「最新大盘信号」是站点不定期更新的结构判断，不是当日信号。每变一次
-      # 落一个 data/signals/<日期>_<时刻>.json，旧的从不覆盖，`ls data/signals` 就是
-      # 一份更新履历。放在部署之后：页面没出去就不记账，否则第二天会把一版没发过的
-      # 内容当成已发而隐藏。continue-on-error——记账失败顶多下一期重出一次，不能
-      # 因此把一次已经发出去的晚报判成失败。
-      - name: Record the signal version
-        if: steps.fresh.outputs.ok == 'true' && steps.deploy.outcome == 'success'
-        continue-on-error: true
-        run: |
-          set -euo pipefail
-          if [ -z "$(git status --porcelain data/signals data/renqi 2>/dev/null)" ]; then
-            echo "signals: 内容没变，没有新版本要记"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for attempt in 1 2 3; do
-            # runner 是浅克隆，rebase 找不到共同祖先；直接把 HEAD 挪到远端最新提交。
-            # 必须是 --mixed 不是 --soft：--soft 会连旧索引一起留下，别人在这期间推的
-            # 改动会被我们的提交原样改回去（模拟里 config.github.json 就被回滚了）。
-            # --mixed 让索引对齐远端，再只暂存 data/signals，其余改动一个不碰。
-            git fetch -q --depth=1 origin main
-            git reset -q --mixed FETCH_HEAD
-            git add data/signals data/renqi
-            if git diff --cached --quiet; then
-              echo "signals: 远端已包含这一版，无需再提交"
-              exit 0
-            fi
-            git commit -q -m "chore(signals): 记录最新大盘信号 ${TARGET}"
-            if git push -q origin HEAD:main; then
-              echo "signals: 已提交 $(git rev-parse --short HEAD)"
-              exit 0
-            fi
-            echo "signals: 第 ${attempt} 次推送被拒，重试" >&2
-            sleep 3
-          done
-          echo "::warning::信号版本没能提交，下一期会重出一次"
-          exit 0
-
       # 长图版：页面已经部署完再拍，拍到的就是这一期；文字版推送在 Python 里，
       # 这里只多发一条纯图消息。浏览器上一步已装好，不再重复下载。
       - name: Push long image
-        if: steps.fresh.outputs.ok == 'true'
+        # 休市版只有一段说明、外盘与榜单，拍成长图没有可看的东西，跳过。
+        if: steps.fresh.outputs.ok == 'true' && steps.fresh.outputs.closed != 'true'
         env:
           HORIZON_WEBHOOK_URL: ${{ secrets.HORIZON_WEBHOOK_URL }}
           OSS_ENDPOINT: ${{ secrets.OSS_ENDPOINT }}
