@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -43,3 +44,34 @@ def test_fetch_overseas_does_not_raise_when_data_missing(monkeypatch):
     monkeypatch.setattr(mod, "_overseas_get", lambda *args, **kwargs: "")
     result = mod.fetch_overseas("")
     assert isinstance(result, list)
+
+
+# 盘面 as-of 标签：源站把数据日期写进标签（融资余额11-18）。写死这个日期，
+# 日更之后取值就空了——盘面少一行、margin_balance 变 None，不抛异常也不进
+# payload["errors"]。下面三条拦的是这件事，外加一条拦"又写死回去"。
+
+
+def test_row_by_prefix_keeps_dated_label():
+    mod = _load()
+    label, row = mod._row_by_prefix({"融资余额11-19": {"value": "1.9万亿", "sub": "较前值"}}, "融资余额")
+    assert label == "融资余额11-19" and row["value"] == "1.9万亿"
+
+
+def test_row_by_prefix_missing_is_empty():
+    mod = _load()
+    assert mod._row_by_prefix({}, "融资余额") == ("", {})
+
+
+def test_panel_html_renders_dated_row():
+    mod = _load()
+    payload = {"extra": {"panel": [{"label": "融资余额11-19", "value": "1.9万亿", "sub": "较前值+0.3%"}]}}
+    html = mod._panel_html(payload)
+    assert "融资余额11-19" in html, "日期滚动后这一行不该整行消失，as-of 也不该被抹掉"
+    assert "1.9万亿" in html
+
+
+def test_no_hardcoded_asof_label():
+    pattern = re.compile(r'["\']融资余额\d{1,2}-\d{1,2}["\']')
+    code = (ROOT / "scripts" / "post_market.py").read_text(encoding="utf-8")
+    body = re.sub(r'"""[\s\S]*?"""', "", code)  # 注释里举例不算
+    assert not pattern.search(body), "取值标签又写死了 as-of 日期"
