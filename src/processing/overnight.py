@@ -8,9 +8,11 @@ because the US market does not trade over the weekend. The block therefore
 needs no freshness gate — it only has to print which session the numbers
 belong to.
 
-The US ticker → A-share theme map is lianban's own, lifted from the five
-sessions to 2026-11-20, so the labels stay the ones the reader already saw
-rather than ones invented here.
+The US ticker → A-share theme map used to live here too, as a fixed seventeen
+ticker list with hand-copied themes. It is gone: the digest now prints the map
+only from lianban's morning page, which ranks it by that day's heat, and prints
+nothing when that page is missing. A fixed list looks like a read on the A-share
+main line while saying nothing about it.
 """
 
 from __future__ import annotations
@@ -41,30 +43,6 @@ INDICES = (
     ("道琼斯", "gb_dji"),
     ("标普500", "gb_inx"),
 )
-
-# (Sina code, label, A-share themes) — themes as lianban mapped them.
-MOVERS = (
-    ("gb_amd", "AMD", ("半导体", "国产芯片")),
-    ("gb_smci", "超微电脑", ("英伟达概念", "液冷概念")),
-    ("gb_crwv", "CoreWeave", ("东数西算", "液冷概念")),
-    ("gb_vrt", "维谛VRT", ("液冷概念",)),
-    ("gb_cohr", "相干COHR", ("CPO概念", "消费电子")),
-    ("gb_crdo", "Credo", ("铜缆高速连接", "CPO概念")),
-    ("gb_sndk", "闪迪", ("存储芯片",)),
-    ("gb_asts", "ASTS", ("卫星互联网", "商业航天")),
-    ("gb_ionq", "IonQ", ("量子科技",)),
-    ("gb_achr", "Archer", ("低空经济",)),
-    ("gb_joby", "Joby", ("低空经济",)),
-    ("gb_wrd", "文远知行", ("无人驾驶",)),
-    ("gb_pony", "小马智行", ("无人驾驶",)),
-    ("gb_smr", "NuScale", ("核电",)),
-    ("gb_fslr", "第一太阳能", ("光伏设备",)),
-    ("gb_crcl", "Circle", ("数字货币", "跨境支付")),
-    ("gb_avav", "AeroVironment", ("无人机", "军工")),
-)
-
-# lianban showed six, ordered by how far the stock moved.
-MOVERS_SHOWN = 6
 
 _LINE_RE = re.compile(r'var hq_str_(gb_\w+)="([^"]*)";')
 
@@ -207,7 +185,7 @@ def last_night_holiday(today: date) -> Optional[Dict[str, str]]:
 
 async def fetch_overnight(url: str = SINA_URL) -> Optional[Dict[str, Any]]:
     """One GET per run; any failure returns None and the digest drops the block."""
-    codes = [code for _, code in INDICES] + [code for code, _, _ in MOVERS]
+    codes = [code for _, code in INDICES]
     try:
         async with httpx.AsyncClient(timeout=TIMEOUT_SECONDS, follow_redirects=True) as client:
             response = await client.get(url + ",".join(codes), headers=HEADERS)
@@ -226,28 +204,18 @@ async def fetch_overnight(url: str = SINA_URL) -> Optional[Dict[str, Any]]:
         logger.warning("Overnight tape parsed empty; block skipped")
         return None
 
-    movers: List[Dict[str, Any]] = []
-    for code, label, themes in MOVERS:
-        row = rows.get(code)
-        if not row:
-            continue
-        movers.append({"ticker": label, "pct": row["pct"], "themes": list(themes)})
-    movers.sort(key=lambda mover: abs(mover["pct"]), reverse=True)
-
     stamp = next((rows[code]["stamp"] for _, code in INDICES if code in rows), "")
     holiday = last_night_holiday(datetime.now(CST).date())
     brief = {
         "indices": indices,
-        "movers": movers[:MOVERS_SHOWN],
         "close_date": _close_date(stamp),
         "stamp": stamp,
         "holiday": holiday,
     }
     logger.warning(
-        "Overnight tape %s: %d indices, %d movers, stamp %s, holiday %s",
+        "Overnight tape %s: %d indices, stamp %s, holiday %s",
         brief["close_date"] or "(no date)",
         len(indices),
-        len(brief["movers"]),
         stamp or "(none)",
         (holiday or {}).get("zh") or "(none)",
     )
