@@ -147,7 +147,7 @@ def parse(page: str, day: str, cutoff: str = CUTOFF) -> List[Dict[str, Any]]:
 
 
 async def fetch_page(client) -> str:
-    """抓一次日历页。当天落盘和昨日兜底共用这一份，不重复请求。"""
+    """抓一次日历页。当天落盘和昨日兜底共用同一份，不重复请求。"""
     resp = await client.get(CALENDAR_URL, headers={"User-Agent": UA})
     resp.raise_for_status()
     return resp.text
@@ -158,7 +158,6 @@ async def fetch_calendar(client) -> Optional[str]:
 
     ``None`` 与「页面取到、但没有三星事件」是两件事：前者不知道那天有没有事件，
     后者是确定的「没有」。以前两者都返回空串，早报日志就把「没取到」讲成「没有」。
-    当天落盘和昨日兜底共用这一份页面，不重复请求。
     """
     try:
         return await fetch_page(client)
