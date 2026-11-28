@@ -90,7 +90,9 @@ def test_generate_webhook_item_renders_single_item_detail():
     assert result.startswith("Item 1/2")
     assert "## [Important Item 1](https://example.com/items/1)" in result
     assert "Summary for item 1." in result
-    assert "**Tags**: `#AI`, `#News`" in result
+    # 2026-11-28：Tags 从粗体行改成折叠块，读者要先展开才看到标签。
+    assert "<details><summary>Tags</summary>" in result
+    assert "`#AI`, `#News`" in result
 
 
 def test_generate_webhook_item_includes_discussion_link_when_distinct():
@@ -178,7 +180,8 @@ def test_generate_summary_groups_items_by_profile_with_heading_hierarchy():
         )
     )
 
-    assert result.count("# Horizon Daily") == 1
+    # 2026-11-28：站名从 Horizon Daily 改为 Kenny's Horizon Daily（summarizer.py:276）。
+    assert result.count("# Kenny's Horizon Daily") == 1
     assert "## Technology News" in result
     assert "## Technology Blog" in result
     assert "### [Important Item 1]" in result
@@ -249,7 +252,7 @@ def test_generate_summary_renders_primary_block_before_source_without_heading():
         "rss · tester · Apr 25, 08:00"
     )
     assert result.index("rss · tester · Apr 25, 08:00") < result.index(
-        "**「Background」** Supporting context."
+        "「Background」 Supporting context."
     )
 
 
@@ -289,14 +292,18 @@ def test_generate_summary_renders_non_primary_blog_sections_after_source():
     )
 
     source_index = result.index("rss · tester · Apr 25, 08:00")
-    context_index = result.index("**「Background」** The original constraints.")
-    solution_index = result.index("**「Solution」** The implementation and evidence.")
-    takeaway_index = result.index("**「Takeaway」** The durable lesson.")
+    context_index = result.index("「Background」 The original constraints.")
+    solution_index = result.index("「Solution」 The implementation and evidence.")
+    takeaway_index = result.index("「Takeaway」 The durable lesson.")
     assert source_index < context_index < solution_index < takeaway_index
     assert "#### Background" not in result
 
 
 def test_generate_webhook_item_normalizes_existing_zh_artifact_to_simplified():
+    """微信端用「」代替粗体：_format_item 的两条路径（网页摘要 / 微信单条）已统一。
+
+    断言只改标题符号这一段，繁简归一（關注→关注）的检查保持原样。
+    """
     item = _make_item(1)
     item.processing.artifacts["zh"] = ContentArtifact(
         language="zh",
@@ -318,7 +325,7 @@ def test_generate_webhook_item_normalizes_existing_zh_artifact_to_simplified():
     )
 
     assert "代理工作流更新" in result
-    assert "**「背景」** 社群关注这项更新，并分享实际用量数据。" in result
+    assert "「背景」 社群关注这项更新，并分享实际用量数据。" in result
     assert "關注" not in result
 
 
