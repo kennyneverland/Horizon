@@ -727,6 +727,34 @@ ROTATION_RULE = (
 # moved, and what happens next. The names to watch are a separate structure —
 # three buckets, because "already running", "not yet moving" and "moved today"
 # are three different bets, and a flat list makes the reader sort them himself.
+def _payload_date(payload: Dict[str, Any]) -> str:
+    """晚报的交易日。payload 顶层没有 date，日期挂在 kpi 下。"""
+    return str(((payload or {}).get("kpi") or {}).get("date") or (payload or {}).get("date") or "")
+
+
+def _is_friday(date: Any) -> bool:
+    """当天是不是周五。认不出日期就按不是处理，不凭空加规则。"""
+    try:
+        return datetime.strptime(str(date or "")[:10], "%Y-%m-%d").weekday() == 4
+    except (ValueError, TypeError):
+        return False
+
+
+def _friday_poem_rule(date: Any) -> str:
+    """周五固定自创一首。
+
+    一周最后一天的盘面由自己写四句，不借古人的句子——这是排期上的规矩，不是
+    每天可选的偏好，所以只在周五把这段接进 prompt，别的日子一个字都不出现。
+    """
+    if not _is_friday(date):
+        return ""
+    return (
+        "\n- **今天是周五：这一首必须自创。**不许引用现成诗句，也不许摘古人半句；"
+        "poem_from 固定写 《无题》、poem_by 固定写 周鼎（今）、poem_year 留空。"
+        "四句七言，第一、二、四句押韵，顺着起承转合写今天的盘面。"
+    )
+
+
 SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，不是数据播报。
 
 你会收到一份结构化 JSON：六个分类指数的涨跌、当日情绪与市场宽度、与前一日的变化、昨日涨停股今日表现、60 个交易日的宽度分布与今天所处的分位、产业线趋势、当日题材的驱动与龙头、主力资金流向、三张选股模板的候选、龙虎榜、外盘、当日盘中的政策与产业快讯（catalysts）、第三方信源自己的次日推演与复盘正文。
@@ -782,14 +810,14 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 - 禁止买卖建议、目标价、仓位、点位、任何荐股语气。
 - 禁止"综上所述""值得关注""后市可期""静待方向选择"这类空话。
 - 禁止复述页面上已有的表格。
-- poem 是开篇引子：必须是同一首诗里**相连的两句**，10 到 28 字，只给诗句本身，不加作者、不加书名号、不加解释。不许从两首诗里各取一句拼起来。出处拆成三项：poem_from 是《诗名》（带书名号）、poem_year 是创作年份（四位数字，拿不准就留空，绝对不许猜或编）、poem_by 是「诗人（朝代）」，例如 杜甫（唐）。
-- 选句的依据是你自己写的那四段：从盘面总结、重点信号、变动归因、趋势展望里体现的涨跌结构、资金去向、情绪阶段、市场宽度中，找出当天的内在气质，再按这个气质去找相符的两句——诗句要和这四段的判断站在一起，不能与你自己写的盘面结论相反。退潮、普涨、分化、缩量各有各的句子，不要用放之四海皆可的励志句。优先用现成的真实诗句，一个字都不许改；实在找不到气质相符的，就自己写两句七言——每句七个字、两句共十四字，两句要押同一个韵、意思连贯，仍须贴合上面四段的判断，不要写成通用励志句。自创时 poem_from 固定写 《无题》、poem_by 固定写 周鼎（今）、poem_year 留空，不许署别的名字，也不许写成「佚名」。
+- poem 是开篇引子：优先用同一首诗里**完整的四句**（一首绝句全首，七绝 28 字或五绝 20 字）；整首气质对不上时，允许退到同一首诗里**相连的两句**（10 到 28 字）。只给诗句本身，不加作者、不加书名号、不加解释。不许从两首诗里各取一句拼起来，也不许把不相连的句子拼在一起。诗句连写，句间只用原诗的逗号句号，不要换行。出处拆成三项：poem_from 是《诗名》（带书名号）、poem_year 是创作年份（四位数字，拿不准就留空，绝对不许猜或编）、poem_by 是「诗人（朝代）」，例如 杜甫（唐）。
+- 选句的依据是你自己写的那四段：从盘面总结、重点信号、变动归因、趋势展望里体现的涨跌结构、资金去向、情绪阶段、市场宽度中，找出当天的内在气质，再按这个气质去找相符的一首——整首（退到两句时就是这两句）要和这四段的判断站在一起，不能与你自己写的盘面结论相反。退潮、普涨、分化、缩量各有各的句子，不要用放之四海皆可的励志句。优先用现成的真实诗句，一个字都不许改；实在找不到气质相符的，就自己写四句七言（一首七绝）——每句七个字、四句共二十八字，第一、二、四句押同一个韵，四句顺着起承转合走，仍须贴合上面四段的判断，不要写成通用励志句。自创时 poem_from 固定写 《无题》、poem_by 固定写 周鼎（今）、poem_year 留空，不许署别的名字，也不许写成「佚名」。{friday}
 - 禁止编造样本量、命中率、历史概率与形态统计；除了 next_day_base_rate 与 pct_rank_60d，任何统计数字都不许出现在正文里。
 - 输入里没有的东西就写"数据未提供"，不要用推测补齐，也不要把"没有这个消息"写成"没有催化"。
 
 【输出格式】
 只输出一个 JSON 对象，不要 markdown 代码块，不要任何解释文字：
-{{"poem": "同一首诗中相连的两句，10 到 28 字，必须真实存在、能查到，只给诗句本身",
+{{"poem": "同一首诗的完整四句（七绝 28 字或五绝 20 字）；整首对不上时取相连的两句（10 到 28 字）。必须真实存在、能查到，只给诗句本身，句间用原诗标点连写",
  "poem_from": "只给书名号里的题名，例如 《登高》；自己写的固定填 《无题》",
  "poem_year": "这首诗的创作年份，四位数字，例如 767；拿不准就留空字符串，不要猜",
  "poem_by": "诗人（朝代），例如 杜甫（唐）；自己写的固定填 周鼎（今）",
@@ -1331,10 +1359,17 @@ def build_model_input(payload: Dict[str, Any]) -> Dict[str, Any]:
         }
         for label, block in (payload.get("filter") or {}).items()
     }
-    overseas = {
-        g["label"]: {x["name"]: x["pct"] for x in g["items"]}
-        for g in (extra.get("overseas") or [])
-    }
+    # 休市那一组只有 note 没有 items：给模型的是原因本身，不是一个空对象。
+    # 空对象等于告诉它「有这一栏但没数」，它会顺着补上隔夜涨跌——那正是页面
+    # 已经删掉的旧数据。短名与页面同一套（亚太／美股），期指标签原样带时点。
+    overseas: Dict[str, Any] = {}
+    for _g in extra.get("overseas") or []:
+        _label = str(_g.get("label") or "").split(" · ")[0]
+        _items = {x["name"]: x["pct"] for x in (_g.get("items") or [])}
+        if _items:
+            overseas[_label] = _items
+        elif _g.get("note"):
+            overseas[_label] = str(_g["note"])
     # 双保险：parse_day_review 已把没过当日校验的正文清空，这里再按凭证挡一次，
     # 防止别的路径把 ai_review 直接塞进 payload。旧缓存没有 date_verified
     # 字段（None），按可信处理，免得回补历史日期时整段消失。
@@ -1607,7 +1642,7 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
     body = {
         "model": conf.get("model") or "qwen3.8-flash",
         "messages": [
-            {"role": "system", "content": SUMMARY_PROMPT.format(rule=ROTATION_RULE)},
+            {"role": "system", "content": SUMMARY_PROMPT.format(rule=ROTATION_RULE, friday=_friday_poem_rule(_payload_date(payload)))},
             {"role": "user", "content": json.dumps(build_model_input(payload), ensure_ascii=False)},
         ],
         "temperature": 0.4,
@@ -1662,6 +1697,15 @@ def llm_read(payload: Dict[str, Any], conf: Dict[str, Any], timeout: float = 420
         )
     read = _parse_read(str(text or ""))
     _prune_focus_lhb(read, payload)
+    # 周五要求自创，模型仍引了现成诗句时只留痕，不改写：把别人的句子署成自己的
+    # 名字比少一首诗糟得多，宁可让日志暴露这件事。
+    if _is_friday(_payload_date(payload)):
+        got = _clean_poem_from(read.get("poem_from"))
+        if got != "《无题》":
+            print(
+                f"poem: Friday needs a self-composed piece, got {got or '(empty)'}",
+                file=sys.stderr,
+            )
     return read
 
 
@@ -1892,7 +1936,9 @@ def _clean_poem(raw: Any) -> str:
     text = re.sub(r"^《[^》]{1,20}》\s*", "", text)
     text = text.strip().strip("「」“”\"'《》")
     text = re.sub(r"[（(][^）)]{0,20}[）)]\s*$", "", text).strip()
-    return text[:40]
+    # 整首绝句是四句连写（28 字加三个标点），模型可能带换行或空格：换行留着会
+    # 把推送里的 ## 标题截断，所以压成一行；40 字装不下带标点的七绝，放到 48。
+    return re.sub(r"\s+", "", text)[:48]
 
 
 def _clean_poem_from(raw: Any) -> str:
@@ -1991,6 +2037,18 @@ def _focus_markdown(
     return out
 
 
+def _poem_lines(poem: str) -> List[str]:
+    """按句切开，每两句合成一行。
+
+    整首绝句四句：手机上四行诗会把开篇撑到半屏，两句一行正好两行。两句的
+    旧格式切出来仍是一行，不因这次改动变形。
+    """
+    parts = [x for x in re.findall(r"[^，。！？；]+[，。！？；]?", poem) if x.strip()]
+    if len(parts) <= 1:
+        return [poem] if poem else []
+    return ["".join(parts[i : i + 2]) for i in range(0, len(parts), 2)]
+
+
 def _poem_markdown(read: Dict[str, Any]) -> str:
     """诗句块：诗句写成引用块里的二级标题，出处三行跟在下面。
 
@@ -2002,7 +2060,15 @@ def _poem_markdown(read: Dict[str, Any]) -> str:
     poem = _clean_poem(read.get("poem"))
     if not poem:
         return ""
-    lines = [f"> ## 「{poem}」"]
+    # 四句分两行。微信的标题只占一行，四句挤在一个 ## 里会在句中折断；两行都
+    # 写成 ## 才能让字号一致。两句的旧格式仍是一行。
+    rows = _poem_lines(poem)
+    if len(rows) > 1:
+        lines = [f"> ## 「{rows[0]}"]
+        lines += [f"> ## {x}" for x in rows[1:-1]]
+        lines.append(f"> ## {rows[-1]}」")
+    else:
+        lines = [f"> ## 「{poem}」"]
     ann: List[str] = []
     src = _clean_poem_from(read.get("poem_from"))
     if src:
@@ -2572,9 +2638,17 @@ def _overseas_lines(payload: Dict[str, Any]) -> List[str]:
     out: List[str] = []
     for g in sorted(groups, key=_key):
         items = [f"{x['name']} {x['pct']}" for x in (g.get("items") or []) if x.get("name")]
-        if not items:
-            continue
         label = str(g.get("label") or "").split(" · ")[0]
+        if not items:
+            # 休市那一组只有原因没有数：照页面同一条口径，不印旧数据。
+            note = str(g.get("note") or "")
+            if note:
+                for word, shown in order:
+                    if word in label:
+                        label = shown
+                        break
+                out.append(f"**{label}** {note}")
+            continue
         for word, shown in order:
             if word in label:
                 label = shown

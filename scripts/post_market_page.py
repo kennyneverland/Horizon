@@ -76,7 +76,16 @@ def _poem_text(raw: Any) -> str:
     text = re.sub(r"^《[^》]{1,20}》\s*", "", text)
     text = text.strip().strip("「」“”\"'《》")
     text = re.sub(r"[（(][^）)]{0,20}[）)]\s*$", "", text).strip()
-    return text[:40]
+    # 整首绝句四句连写，模型可能带换行或空格；页面按句自己断行，这里先压平。
+    return re.sub(r"\s+", "", text)[:48]
+
+
+def _poem_lines(poem: str) -> List[str]:
+    """按句切开，每两句一行：四句诗排四行会把开篇撑到半屏。"""
+    parts = [x for x in re.findall(r"[^，。！？；]+[，。！？；]?", poem) if x.strip()]
+    if len(parts) <= 1:
+        return [poem] if poem else []
+    return ["".join(parts[i : i + 2]) for i in range(0, len(parts), 2)]
 
 
 def _poem_from(raw: Any) -> str:
@@ -1078,9 +1087,11 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
             if ann
             else ""
         )
+        # 四句分两行，两句的旧格式仍是一行。
+        rows = "<br>".join(_esc(x) for x in _poem_lines(poem))
         poem_html = (
             "<div class='read poem-block'>"
-            f"<p class='poem'>「{_esc(poem)}」</p>{from_html}</div>"
+            f"<p class='poem'>「{rows}」</p>{from_html}</div>"
         )
     verdict_html = ""
     if read.get("headline"):

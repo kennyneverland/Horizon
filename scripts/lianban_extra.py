@@ -21,6 +21,7 @@ import re
 import sys
 import time
 import urllib.request
+from datetime import date as _date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
 
@@ -512,7 +513,7 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
                 groups.append({"label": "亚太", "items": items})
         except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
             print(f"overseas(asia) failed: {exc}", file=sys.stderr)
-        return groups + _us_overseas()
+        return groups + _us_overseas(date)
 
     items: List[Dict[str, Any]] = []
     by_code: Dict[str, Dict[str, Any]] = {}
@@ -544,11 +545,84 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
     if items:
         groups.append({"label": "亚太", "items": items})
 
-    return groups + _us_overseas()
+    return groups + _us_overseas(date)
 
 
-def _us_overseas() -> List[Dict[str, Any]]:
+# 昨夜美股休市时，前一交易日的涨跌对今晚的读者没有增量信息：那是隔了一个
+# 假期的旧值，印出来还得让读者自己换算日期。只报原因、不报数——与早报
+# overnight_closed 同一条口径。节假日表在早报那边按规则算，不维护年表。
+try:  # 单独跑本模块时没有 src 包，退回原行为（照常打印数据）
+    from src.processing.overnight import _us_holiday as _us_holiday_table
+except Exception as _exc:  # noqa: BLE001
+    # 不静默：拿不到节假日表就等于这条判断没生效，日志里要能看见。
+    print(f"overseas: holiday table unavailable: {_exc}", file=sys.stderr)
+    _us_holiday_table = None  # type: ignore[assignment]
+
+
+def _expected_us_close(today: str = "") -> str:
+    """晚报出稿时，最近一次美股收盘应落在哪个北京日期。
+
+    美东一个交易日收盘在次日凌晨 05:00（北京），所以周二到周六的晚报看到的
+    就是当天早上那次收盘；周一没有新的收盘，最近一次落在上周六早上。
+    """
+    try:
+        day = (
+            datetime.strptime(today[:10], "%Y-%m-%d").date()
+            if today
+            else datetime.now().date()
+        )
+    except (ValueError, TypeError):
+        return ""
+    weekday = day.weekday()  # 0=周一
+    back = 2 if weekday == 0 else (1 if weekday == 6 else 0)
+    return (day - timedelta(days=back)).strftime("%Y-%m-%d")
+
+
+def _us_holiday_note(
+    today: str = "", quote_date: str = "", now: Optional[_date] = None
+) -> str:
+    """昨夜美股没开市时返回一行原因，否则空串。
+
+    判据是**报价日期**，不是日历：新浪 gb_ 的 [3] 是报价时间（北京），正常
+    交易日里它应当等于 _expected_us_close()。对不上就说明前一交易日没有收盘。
+    这样两种情形都不会误判——晚报在美股开盘后（22:30 之后）跑时报价就是当天
+    实时值，日期对得上，照常打印；而临时休市（国葬、飓风）不在节假日表里，
+    也照样能判出来，只是说「休市」不给原因，不编一个。
+    """
+    expected = _expected_us_close(today)
+    if not expected or not quote_date or quote_date == expected:
+        return ""
+    # 重跑历史某天时，报价仍是跑的那一刻的值，日期必然对不上——那不是休市，
+    # 只是新浪没有按日期的历史接口。只有「就是今天」才下休市结论。
+    try:
+        day = (
+            datetime.strptime(today[:10], "%Y-%m-%d").date()
+            if today
+            else datetime.now().date()
+        )
+    except (ValueError, TypeError):
+        return ""
+    if day != (now or datetime.now().date()):
+        return ""
+    # 措辞跟着「该看哪一天」走：周二到周六看昨夜，周一看上一交易日（上周五）——
+    # 周日的夜里本来就不开市，说「昨夜休市」是句废话。
+    weekday = day.weekday()
+    ref = day - timedelta(days=3 if weekday == 0 else 1)
+    prefix = "美股上一交易日" if weekday == 0 else "昨夜美股"
+    reason = ""
+    if _us_holiday_table is not None:
+        try:
+            reason = str((_us_holiday_table(ref) or {}).get("zh") or "").strip()
+        except Exception:  # noqa: BLE001 - 查表失败就只说休市
+            reason = ""
+    return f"{prefix}因{reason}休市" if reason else f"{prefix}休市"
+
+
+def _us_overseas(today: str = "") -> List[Dict[str, Any]]:
     """前夜美股与今日期指：新浪 hq 的实时值。
+
+    昨夜休市（感恩节这类）时不印那三个旧数，只给一行原因：隔了一个假期的
+    涨跌对今晚没有增量信息，读者也不该自己去做日期换算。
 
     这两组时点差一整个交易日：道指／标普／纳综是上一交易日的收盘，期指是出稿
     那一刻的实时盘。所以拆成两组返回，期指那组连报价时间一起写进标签
@@ -563,12 +637,17 @@ def _us_overseas() -> List[Dict[str, Any]]:
         )
         rows = dict(re.findall(r'var hq_str_(\w+)="([^"]*)";', raw))
         cash: List[Dict[str, Any]] = []
+        # [3] 是报价时间（北京时间）；取最新那一只的日期，用来判断昨夜有没有收盘。
+        quote_date = ""
         for name, code in _SINA_US:
             parts = (rows.get(code) or "").split(",")
             if len(parts) < 3 or not parts[2]:
                 continue
             value = float(parts[2])
             cash.append({"name": name, "pct": _pct(value), "up": value >= 0})
+            when = parts[3] if len(parts) > 3 else ""
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}", when or ""):
+                quote_date = max(quote_date, when[:10])
         fut: List[Dict[str, Any]] = []
         stamp = ""
         for name, code in _SINA_FUT:
@@ -588,7 +667,10 @@ def _us_overseas() -> List[Dict[str, Any]]:
             if re.fullmatch(r"\d{2}:\d{2}:\d{2}", shown or ""):
                 stamp = max(stamp, shown)
         groups: List[Dict[str, Any]] = []
-        if cash:
+        note = _us_holiday_note(today, quote_date)
+        if note:
+            groups.append({"label": "美股", "items": [], "note": note})
+        elif cash:
             groups.append({"label": "美股", "items": cash})
         if fut:
             # 标签直接写成最终显示名并带上报价时间：post_market 那边的推送渲染只
@@ -1203,6 +1285,7 @@ EXTRA_CSS = """
 .chip{display:inline-flex;align-items:baseline;gap:4px;padding:3px 8px;border:1px solid #e9ebec;border-radius:6px;font-size:12.5px}
 .chip i{font-style:normal;color:#4c5866}
 .chip b{font-weight:600;font-variant-numeric:tabular-nums}
+.ovn{font-size:12.5px;color:#8a94a6}
 @media (max-width:360px){.zjg{grid-template-columns:1fr}}
 """
 
@@ -1479,6 +1562,14 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
     # 标签把时点写在脸上，免得把隔夜的跌幅当成今天亚太的。
     rows = []
     for group in sorted(groups, key=overseas_order):
+        note = str(group.get("note") or "")
+        if note and not group.get("items"):
+            # 休市：只报原因，不印隔了一个假期的旧数。
+            rows.append(
+                f"<div class='ovr'><span class='ovl'>{_esc(overseas_label(group))}</span>"
+                f"<span class='ovn'>{_esc(note)}</span></div>"
+            )
+            continue
         chips = "".join(
             f"<span class='chip'><i>{_esc(x['name'])}</i>"
             f"<b class='{'up' if x['up'] else 'down'}'>{_esc(x['pct'])}</b></span>"
