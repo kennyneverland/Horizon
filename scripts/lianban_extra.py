@@ -321,19 +321,6 @@ def parse_flows(page: str) -> Dict[str, List[Dict[str, str]]]:
     return out
 
 
-def parse_overseas(page: str) -> List[Dict[str, Any]]:
-    """``[{label, items: [{name, pct, up}]}]`` — 隔夜美股与亚太，按页面分组。"""
-    out = []
-    for label, body in _OV_GROUP_RE.findall(page):
-        items = [
-            {"name": _clean(n), "pct": _clean(p), "up": cls == "up"}
-            for n, cls, p in _OV_ITEM_RE.findall(body)
-        ]
-        if items:
-            out.append({"label": _clean(label), "items": items})
-    return out
-
-
 _EM_ULIST = "https://push2.eastmoney.com/api/qt/ulist.np/get"
 _EM_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 # 东财 ulist：f3 是涨跌幅×100，f12 是代码（不含市场号）
@@ -507,7 +494,7 @@ def _asia_on(date: str) -> Tuple[List[Dict[str, Any]], List[str]]:
 def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
     """外盘参考：亚太走东财（台湾走台交所），前夜美股与期指走新浪 hq。
 
-    原先是解析连板网当天页面的 DOM（见 parse_overseas），但连板网报价更新滞后，
+    原先是解析连板网当天页面的 DOM，但连板网报价更新滞后，
     晚报 21:40 出稿时可能还是下午的旧值；页面一改版整块还会直接丢失。东财与新浪
     都是稳定接口，也不占连板网的浏览配额。取不到就返回空，宁缺不错。
 

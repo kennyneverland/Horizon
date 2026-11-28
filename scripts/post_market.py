@@ -44,7 +44,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# scripts/ 只作兜底放末尾：这 5 个模块只住在 scripts/ 下，仓库根置顶供 `from src...` 解析。
+sys.path.append(str(Path(__file__).resolve().parent))
 # 东财客户端住在 digest 包里（早报的日历块也用它），从脚本目录再上一层才够得着。
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mainline_matrix import build as build_matrix  # noqa: E402

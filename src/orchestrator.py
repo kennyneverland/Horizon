@@ -48,6 +48,10 @@ from .processing.digest_rules import (
 from .processing.tools import ToolRegistry
 
 
+# 仓库根：发布目录、模板等一律以此为锚，不押当前工作目录。
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
 _TRACKING_QUERY_PARAMETERS = {
     "_ga",
     "dclid",
@@ -556,10 +560,8 @@ class HorizonOrchestrator:
 
                 # Copy to docs/ for GitHub Pages
                 try:
-                    from pathlib import Path
-
                     post_filename = f"{today}-summary-{lang}.md"
-                    posts_dir = Path("docs/_posts")
+                    posts_dir = _REPO_ROOT / "docs" / "_posts"
                     posts_dir.mkdir(parents=True, exist_ok=True)
 
                     dest_path = safe_output_path(posts_dir, post_filename)
