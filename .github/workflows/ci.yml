@@ -1,9 +1,8 @@
 name: localized-tests
 
 # 本地化守卫：不碰网络、不调真实模型，红了就是代码真的坏了。
-# test_summarizer 归类为「参考」：断言曾长期停在旧渲染格式（> 从 N 条筛选、**「背景」**、
-# # Horizon Daily、Tags 写成粗体行），而实现早已变成折叠块与「」。
-# 参考步骤不阻塞合并，但会把失败摘要与契约日期写进 run summary，不静默。
+# test_summarizer 已在 #16 跟随当前渲染、并恢复统计行引用块，16 条全绿，从「参考」升回 required。
+# 三组任一缺失或失败即红：过期契约不许再被静默放过。
 
 on:
   push:
@@ -37,6 +36,7 @@ jobs:
           set -euo pipefail
           # 缺一个就红。误删测试不该让 CI 变绿——这正是 A1 在消灭的那类静默。
           required=(
+            tests/test_summarizer.py
             tests/test_module_resolution.py
             tests/test_lianban_extra_constants.py
           )
@@ -48,20 +48,3 @@ jobs:
           done
           printf 'running: %s\n' "${required[*]}"
           python -m pytest "${required[@]}" -q --no-header
-
-      - name: Upstream render tests (reference only)
-        continue-on-error: true
-        shell: bash
-        run: |
-          set +e
-          python -m pytest tests/test_summarizer.py -q --no-header --tb=no | tee /tmp/render.txt
-          {
-            echo '### 渲染测试（参考，不阻塞合并）'
-            echo ''
-            echo '契约最后更新 2026-08-01，此后三个半月无人运行；断言的格式已与当前实现脱节。'
-            echo ''
-            echo '```'
-            tail -n 8 /tmp/render.txt
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit 0
