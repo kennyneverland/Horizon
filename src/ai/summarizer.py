@@ -487,13 +487,13 @@ class DailySummarizer:
             # 写任何固定时刻都会与正文对不上。
             header = (
                 f"# 新闻早报 {date} {_weekday_cn(date, long=True)}\n\n"
-                f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
+                f"> {labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
                 "---\n\n"
             )
         else:
             header = (
                 f"# {labels['header']} - {date}\n\n"
-                f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
+                f"> {labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
                 "---\n\n"
             )
 
@@ -931,13 +931,13 @@ class DailySummarizer:
             header = (
                 "# Kenny's Horizon\n\n"
                 f"# 新闻早报 {date} {_weekday_cn(date, long=True)}\n\n"
-                f"从 {total_fetched} 条内容中筛选出 {len(items)} 条重要资讯。\n\n"
+                f"> 从 {total_fetched} 条内容中筛选出 {len(items)} 条重要资讯。\n\n"
                 "下面会按内容逐条发送详情，你可以只看感兴趣的标题。\n\n"
             )
         else:
             header = (
                 f"# {labels['header']} - {date}\n\n"
-                f"Selected {len(items)} important items from {total_fetched} fetched items.\n\n"
+                f"> Selected {len(items)} important items from {total_fetched} fetched items.\n\n"
                 "Details will be sent item by item so you can read only the topics you care about.\n\n"
             )
 
