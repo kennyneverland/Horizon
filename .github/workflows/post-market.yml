@@ -66,6 +66,20 @@ jobs:
           restore-keys: |
             stock-concepts-
 
+      # 晚报要判两次开市：gate 一次、post_market.py 一次。判据是「当天有没有
+      # 开盘快照」，而快照由早报 09:40 写进 data/opening，随 opening-<run_id>
+      # 缓存保存。这里只恢复、不保存：晚报从不写这个目录，存一份一模一样的副本
+      # 只会白占缓存条目。恢复到了，session.opened() 当天直接返回 True，不再
+      # 问一次东财（pagesize=1，很轻，但每天两次没必要）。
+      # 回补旧日期时缓存里没有那天，opened() 照旧问东财，判据不变。
+      - name: Restore the opening snapshot
+        uses: actions/cache/restore@v4
+        with:
+          path: data/opening
+          key: opening-${{ github.run_id }}
+          restore-keys: |
+            opening-
+
       # 主线强度 and 主力资金动向 have no JSON endpoint: the only way to read them
       # is to let the page's own script run. Everything else in the brief is
       # stdlib except the overseas tape, which needs httpx — Eastmoney drops
