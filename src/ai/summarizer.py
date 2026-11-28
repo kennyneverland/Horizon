@@ -26,10 +26,6 @@ _WEEKDAYS_CN = ("周一", "周二", "周三", "周四", "周五", "周六", "周
 _WEEKDAYS_CN_LONG = (
     "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日",
 )
-# 早报标题固定写这个值；实际起跑是 09:02（Cloudflare Worker 准点，cron 10:20 兜底），
-# 数据则陆续齐备：09:25 早盘页定稿、09:30 港股开盘、09:40 开盘异动 —— 标题上的
-# 固定值与正文任何一块都不对应。
-DIGEST_CLOCK = "09:30"
 # 早间要闻补充挂在这个板块的新闻之后，作为它的子板块。
 CHINA_MARKET_PROFILE = "china-market"
 
@@ -487,8 +483,10 @@ class DailySummarizer:
             return self._generate_empty_summary(date, total_fetched, labels, language)
 
         if language == "zh":
+            # 标题只写日期与星期：早报 09:02 起跑、数据到 09:40 才齐，
+            # 写任何固定时刻都会与正文对不上。
             header = (
-                f"# 新闻早报 {date} {_weekday_cn(date, long=True)} {DIGEST_CLOCK}\n\n"
+                f"# 新闻早报 {date} {_weekday_cn(date, long=True)}\n\n"
                 f"{labels['selected_items'].format(total=total_fetched, selected=len(items))}\n\n"
                 "---\n\n"
             )
@@ -932,7 +930,7 @@ class DailySummarizer:
             # 推送正文的第一屏就是这个标题：品牌一行、刊期一行。
             header = (
                 "# Kenny's Horizon\n\n"
-                f"# 新闻早报 {date} {_weekday_cn(date, long=True)} {DIGEST_CLOCK}\n\n"
+                f"# 新闻早报 {date} {_weekday_cn(date, long=True)}\n\n"
                 f"从 {total_fetched} 条内容中筛选出 {len(items)} 条重要资讯。\n\n"
                 "下面会按内容逐条发送详情，你可以只看感兴趣的标题。\n\n"
             )
@@ -1130,7 +1128,7 @@ class DailySummarizer:
     ) -> str:
         """Generate summary when no high-scoring items were found."""
         header = (
-            f"# 新闻早报 {date} {_weekday_cn(date, long=True)} {DIGEST_CLOCK}"
+            f"# 新闻早报 {date} {_weekday_cn(date, long=True)}"
             if language == "zh"
             else f"# {labels['header']} - {date}"
         )
