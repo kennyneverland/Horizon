@@ -386,6 +386,15 @@ def render_matrix(result: Dict[str, Any], labels: Optional[Dict[str, str]] = Non
     title = labels.get("title") or "今日建议关注题材"
 
     lines = [f"### {title}", ""]
+    # 这一块讲的是「上一场收盘之后该怎么看」，不是今天盘面的读数。晚报的「当日」
+    # 到了早报已经变成前一天，不写明来源日期，读者会拿它去对今天的涨停。
+    source = str(result.get("source_date") or "")
+    if source:
+        try:
+            short = _date.fromisoformat(source).strftime("%m-%d")
+        except ValueError:
+            short = source
+        lines.extend([f"*据 {short} 晚报，不是今日盘面*", ""])
     order = ["主线", "蓄势", "活跃"]
     grouped: Dict[str, List[Dict[str, Any]]] = {name: [] for name in order}
     for row in rows:
