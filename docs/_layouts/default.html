@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8">
     {%- if page.lang == "zh" and page.date %}
-    <title>{{ site.title }}</title>
+    <title>{{ page.date | date: "%m-%d" }} 中文 · {{ site.title }}</title>
     {%- elsif page.lang == "en" and page.date %}
-    <title>{{ site.title }}</title>
+    <title>{{ page.date | date: "%m-%d" }} EN · {{ site.title }}</title>
     {%- elsif page.title %}
     <title>{{ page.title }} | {{ site.title }}</title>
     {%- else %}
