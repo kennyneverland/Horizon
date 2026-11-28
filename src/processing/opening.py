@@ -262,6 +262,16 @@ async def _pool(
             except Exception:  # noqa: BLE001 - a garbled body is a failed read
                 data = {}
             if data:
+                # 东财对非交易日不报错：请求周六或周日，它照样回最近交易日的池子，
+                # 只在 qdate 里说明这份数据是哪天的。不校验就会把周五的盘当成今天
+                # 的开盘印出来（2026-11-28 周六就这样写了一整块，还落了快照）。
+                got = str(data.get("qdate") or "")
+                if got and got != str(date):
+                    logger.warning(
+                        "Opening block: asked %s, pool answered %s; no data for the day",
+                        date, got,
+                    )
+                    return None
                 return data.get("pool") or []
         if attempt >= attempts:
             return None
