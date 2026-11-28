@@ -248,6 +248,7 @@ def test_generate_summary_renders_primary_block_before_source_without_heading():
     )
 
     assert "#### Summary" not in result
+    # 2026-11-28：非主块标题由 **粗体** 改为「」，与微信端单条渲染统一（_format_item 两条路径）。
     assert result.index("Primary explanation.") < result.index(
         "rss · tester · Apr 25, 08:00"
     )
@@ -291,6 +292,7 @@ def test_generate_summary_renders_non_primary_blog_sections_after_source():
         )
     )
 
+    # 2026-11-28：三个非主块同样改成「」包标题；顺序断言未动，只换标题符号。
     source_index = result.index("rss · tester · Apr 25, 08:00")
     context_index = result.index("「Background」 The original constraints.")
     solution_index = result.index("「Solution」 The implementation and evidence.")
