@@ -26,8 +26,9 @@ _WEEKDAYS_CN = ("周一", "周二", "周三", "周四", "周五", "周六", "周
 _WEEKDAYS_CN_LONG = (
     "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日",
 )
-# 早报的固定出刊时刻。定时在 09:30 起跑，标题写的就是这个时刻而不是运行时刻，
-# 否则手动重跑一次，标题里的时间就跟着变了。
+# 早报标题固定写这个值；实际起跑是 09:02（Cloudflare Worker 准点，cron 10:20 兜底），
+# 数据则陆续齐备：09:25 早盘页定稿、09:30 港股开盘、09:40 开盘异动 —— 标题上的
+# 固定值与正文任何一块都不对应。
 DIGEST_CLOCK = "09:30"
 # 早间要闻补充挂在这个板块的新闻之后，作为它的子板块。
 CHINA_MARKET_PROFILE = "china-market"
@@ -740,7 +741,7 @@ class DailySummarizer:
         # 这句注解释的是上面那几行美股数据，所以只在有美股行的时候才挂。
         if indices_line or movers_line:
             lines.append(f"*{note}*")
-        # 09:30 这一跑，东京与首尔已交易一个半小时、台北半小时、香港刚开盘，
+        # 到了 09:30 这一刻，东京与首尔已交易一个半小时、台北半小时、香港刚开盘，
         # 所以这行给的是各市场今日的开盘价，是全天唯一当日的数据。
         if asia_line:
             lines.append(asia_line)
@@ -841,7 +842,7 @@ class DailySummarizer:
         already answered what happened today, and what the reader needs then is
         tomorrow's list, not today's. The calendar page lists the whole day —
         new listings, ex-rights dates and unlocks, with the amount or the plan
-        attached — and keeps today's group through the session, so a 09:30 run
+        attached — and keeps today's group through the session, so the morning run
         sees the full set. The morning page's own list is not read at all: it
         carries unlocks only and no amounts.
         """
