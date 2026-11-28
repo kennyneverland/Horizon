@@ -22,7 +22,7 @@ import sys
 import time
 import urllib.request
 from datetime import date as _date, datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlencode
 
 try:  # httpx 由 workflow 装上；缺失时退回 urllib，不让整篇因为一个可选块崩掉
@@ -451,15 +451,21 @@ def _em_single_pct(secid: str) -> Optional[float]:
         return None
 
 
-def _asia_on(date: str) -> List[Dict[str, Any]]:
+def _asia_on(date: str) -> Tuple[List[Dict[str, Any]], List[str]]:
     """按目标日期取亚太五个指数（含台湾加权）的收盘涨跌幅。
 
     重跑历史日期时实时接口对不上：那天早收盘了，ulist 返回的 f3 是空的，整组
     被过滤掉，页面上就只剩美股。这里改走 K 线，beg=end=当天，只取 f51（日期）
     与 f59（涨跌幅）。拿不到那天的就跳过，宁缺不错。
+
+    返回 ``(items, missing)``：``missing`` 是当天没有 K 线的市场。这一格过去
+    是直接消失的——2026-11-23 日本勤劳感谢日，日经那一格没有了，读者分不清
+    是休市还是接口断了。名字交给调用方，它才知道该印「今日休市」还是「因某节
+    休市」，也才有资格判断这到底是休市还是整批取数失败。
     """
     day = date.replace("-", "")
     items: List[Dict[str, Any]] = []
+    missing: List[str] = []
     for name, secid in _EM_ASIA_HIST:
         query = urlencode(
             {
@@ -480,18 +486,22 @@ def _asia_on(date: str) -> List[Dict[str, Any]]:
             klines = (json.loads(raw).get("data") or {}).get("klines") or []
         except Exception as exc:  # noqa: BLE001 - 少一个指数不该拖垮整块
             print(f"overseas({name}@{date}) failed: {exc}", file=sys.stderr)
+            missing.append(name)
             continue
         if not klines:
+            missing.append(name)
             continue
         parts = str(klines[-1]).split(",")
         if len(parts) < 2 or not parts[0].startswith(date):
+            missing.append(name)
             continue
         try:
             value = float(parts[1])
         except ValueError:
+            missing.append(name)
             continue
         items.append({"name": name, "pct": _pct(value), "up": value >= 0})
-    return items
+    return items, missing
 
 
 def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
@@ -508,9 +518,25 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
 
     if date:
         try:
-            items = _asia_on(date)
+            items, missing = _asia_on(date)
+            # 只有「至少一个市场取到了当天数据」时，缺的那些才判为休市：五个
+            # 全缺是接口断了，不是五个市场一起放假。这条规则不需要节假日表，
+            # 也照样能认出临时休市（台风、国葬），只是那种日子说「今日休市」
+            # 不给原因——查不到就说查不到。
+            note = ""
+            if items and missing:
+                note = "、".join(_asia_closed_line(name, date) for name in missing)
             if items:
-                groups.append({"label": "亚太", "items": items})
+                group: Dict[str, Any] = {"label": "亚太", "items": items}
+                if note:
+                    group["note"] = note
+                groups.append(group)
+            elif missing:
+                print(
+                    f"overseas(asia) {date}: every market missing ({'、'.join(missing)});"
+                    " treated as a failed call, not a holiday",
+                    file=sys.stderr,
+                )
         except Exception as exc:  # noqa: BLE001 - 少一块也不该拖垮整篇
             print(f"overseas(asia) failed: {exc}", file=sys.stderr)
         return groups + _us_overseas(date)
@@ -546,6 +572,22 @@ def fetch_overseas(date: str = "") -> List[Dict[str, Any]]:
         groups.append({"label": "亚太", "items": items})
 
     return groups + _us_overseas(date)
+
+
+def _asia_closed_line(name: str, date: str) -> str:
+    """「日经 因勤劳感谢日休市」；查不到原因时「日经 今日休市」。
+
+    日历表与早报共用一份（``src.processing.market_calendar``），单独跑本模块
+    时没有 src 包，退回「今日休市」——不编一个节日名。
+    """
+    try:
+        from src.processing import market_calendar as cal
+    except Exception:  # noqa: BLE001 - 拿不到表就只说休市
+        return f"{name} 今日休市"
+    try:
+        return cal.closed_line(name, date)
+    except Exception:  # noqa: BLE001 - 表坏了也不该让外盘整块消失
+        return f"{name} 今日休市"
 
 
 # 昨夜美股休市时，前一交易日的涨跌对今晚的读者没有增量信息：那是隔了一个
@@ -1575,6 +1617,10 @@ def _overseas_html(payload: Dict[str, Any]) -> str:
             f"<b class='{'up' if x['up'] else 'down'}'>{_esc(x['pct'])}</b></span>"
             for x in group["items"]
         )
+        # 有数也有休市说明：2026-11-28 起，亚太那一组可能一部分市场开了、
+        # 一部分没开。说明跟在数字后面，不占掉这一组的位置。
+        if note:
+            chips += f"<span class='ovn'>{_esc(note)}</span>"
         rows.append(
             f"<div class='ovr'><span class='ovl'>{_esc(overseas_label(group))}</span>{chips}</div>"
         )

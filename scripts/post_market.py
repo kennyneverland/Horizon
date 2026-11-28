@@ -48,11 +48,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 # 东财客户端住在 digest 包里（早报的日历块也用它），从脚本目录再上一层才够得着。
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mainline_matrix import build as build_matrix  # noqa: E402
-from src.processing import eastmoney  # noqa: E402
+from src.processing import eastmoney, market_calendar, session  # noqa: E402
 from lianban_extra import (  # noqa: E402
     _prev_value,
     _strength_sorted,
     collect_extra,
+    fetch_overseas,
     high_position,
     parse_signals,
     pct_text,
@@ -408,6 +409,12 @@ def _fill_focus_position(payload: Dict[str, Any], read: Any) -> None:
 _PCT_2PLUS_RE = re.compile(r"(\d+\.\d{2,})%")
 # 活跃块的 tag 形如「食品安全 · 龙虎榜」，把来源那半截去掉只剩题材。
 _LHB_TAG_RE = re.compile(r"龙虎榜")
+# 「（对应当日题材 X）」是晚报内部的说法，搬到早报就指代错位（2026-11-28 早报
+# 把「快递概念（对应当日题材 先进封装）」整串当题材名印了出来）。提示词已经不
+# 让模型写，这里再兜一层：模型不照做时也不能漏到页面和 next-day-brief 里。
+_CROSS_REF_RE = re.compile(r"[（(]\s*对应当日题材[^）)]*[）)]")
+# 股权关系不是业务归属：这类标签只说明持股，不说明它属于哪条产业线。
+_EQUITY_TAG_RE = re.compile(r"参股|持股|参控|控股|举牌")
 
 
 def _round_review_pct(doc: Dict[str, Any]) -> Dict[str, Any]:
@@ -553,6 +560,11 @@ def _prune_focus_lhb(focus: Dict[str, Any], payload: Dict[str, Any]) -> None:
                 + list(cone.get("concepts") or [])
             )
             labels = [x for x in labels if x]
+            # 股权标签不算题材证据。「参股金融」只说明这家公司持有金融机构的股份，
+            # 不说明它是金融股：2026-11-27「金融」下面挂的九阳股份（tag 写「智能
+            # 家居」，注释自己写着「虽非纯金融」）就是靠这个概念标签过闸的。剔掉
+            # 这一路，它的 sector（家电）和概念（智能家居）都对不上金融，就该走。
+            labels = [x for x in labels if not _EQUITY_TAG_RE.search(str(x))]
             # tag 是模型自己写的归属（「食品安全 · 龙虎榜」），它跟组头打架就已经
             # 是自相矛盾，不必等索引。索引命中则优先信索引——索引没覆盖的票，
             # 常常是 tag 写窄了而不是写错了。
@@ -794,7 +806,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
 【明日关注，分三类】
 第 5、6 段取消，改由结构化字段 focus 承载：三类题材，每类下面挂该题材的重点个股。三类是读者明天开盘的三种看法，边界必须守住，同一只票、同一条题材只许出现在一类里。
 
-- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；当这个题材名与某条当日题材或产业线明显同义时（例如「厨房小家电」与「家电」、「华为概念」与「云计算数据中心」），写成"sector（对应当日题材 X）"。个股只能从这 5 只里取，不许拿别的候选表补。sector 相同的票合成一条题材，给 3 条题材，把 5 只票按 sector 分到 3 条里（2/2/1 或 3/1/1）；票池只有 5 只，凑不满 3 只就少写，绝对不许为了凑数编一只进来。优选蓄势当日为空时，这一类给空数组，不要凑。
+- 蓄势：票池就是 candidates 的「优选蓄势」前 5 只（total 是当日共选了多少只，你只看到前 5）。这一类的题材取这些票的 sector，sector 为空或只是宽泛标签时用 themes——它们本来就不在当日主线上，题材就是"它自己所属的板块"，不要硬套当日题材名；只写这个板块名本身，不要加「（对应当日题材 X）」这类括注——晚报的「当日」指的是今天，早报把这段读回去时「当日」已经变成第二天，读者会拿它去对第二天的盘。个股只能从这 5 只里取，不许拿别的候选表补。sector 相同的票合成一条题材，给 3 条题材，把 5 只票按 sector 分到 3 条里（2/2/1 或 3/1/1）；票池只有 5 只，凑不满 3 只就少写，绝对不许为了凑数编一只进来。优选蓄势当日为空时，这一类给空数组，不要凑。
 - 主线：题材从 theme_watch 取，且必须是已经有连续性的线——streak、连续天数、share_of_all_limit_up_pct 里能看出它不是第一天；个股优先从「主线强攻」候选表的前 5 只里取——那 5 只是主线资金聚集处的最强个体，用它们的 sector／themes 对上题材，对上就放进来；5 只不够填满 3 只时，再从该题材的 members 里补；仍不够就少写，stocks 可以是 0 到 3 只，不许从「优选蓄势」「放量上攻」或龙虎榜凑一只填进去。members 为空表示当日没有逐只明细，这条题材就只写 signal。给 3 条题材，每条 3 只。
 - 活跃：题材也从 theme_watch 取，但取的是今天刚动、持续性还没验证的线——新上榜、首板集中、streak 只有 1、或板块在跌而个股突围。个股有三个来源：该题材的 members；「放量上攻」里 sector 对得上的票；以及龙虎榜 lhb 里的个股。「主线强攻」那 5 只归主线类，不要拿到活跃里来。lhb 这一路要挑净额为正、且上榜原因指向涨幅偏离／换手／振幅的——那是「今天刚动」最直接的证据；净额为负的是资金在出，只能当风险提示，不要当候选。龙虎榜的票，只要 theme、themes 或 sector 能对上某条活跃题材就放进去，tag 里标明「龙虎榜」。三者都空、对不上任何题材的，最多允许另起一条题材名为「龙虎榜净买入」——只收净额为正、涨跌幅为正的票，2 只以内，signal 里必须写明这几只没有题材归属、只是资金面信号；这条题材可以没有，但一旦有，就不许往里塞有归属的票。除此之外不许为个股单独造题材。给 3 条题材，每条 3 只。监管异动（异常波动公告提醒）不在活跃候选之内：那份名单只说明交易所已经盯上它，不是「今天刚动」的证据，不要拿它补票，也不要在正文里把这些票写成活跃或明日方向。
 
@@ -830,7 +842,7 @@ SUMMARY_PROMPT = """你是 A 股收盘复盘的主笔，写的是盘后洞察，
  ],
  "focus": {{
   "蓄势": [
-   {{"theme": "该票在候选表里的 sector 题材标签；与当日题材同义时写成 sector（对应当日题材 X）",
+   {{"theme": "该票在候选表里的 sector 题材标签，只写板块名，不加括注",
     "signal": "这个题材明天确认或证伪的信号，一句话，不超过 40 字",
     "stocks": [{{"name": "个股名，只能来自优选蓄势前 5",
                "tag": "它在题材里的角色，如 收敛最紧的一档；不超过 14 字",
@@ -1590,7 +1602,7 @@ def _parse_read(text: str) -> Dict[str, Any]:
                     for item in raw_focus.get(bucket) or []:
                         if not isinstance(item, dict):
                             continue
-                        theme = str(item.get("theme") or "").strip()
+                        theme = _CROSS_REF_RE.sub("", str(item.get("theme") or "")).strip()
                         stocks = []
                         for st in item.get("stocks") or []:
                             if isinstance(st, dict):
@@ -2653,7 +2665,13 @@ def _overseas_lines(payload: Dict[str, Any]) -> List[str]:
             if word in label:
                 label = shown
                 break
-        out.append(f"**{label}** " + " · ".join(items))
+        line = f"**{label}** " + " · ".join(items)
+        # 有数也有休市说明：亚太可能一部分市场开了、一部分没开。说明跟在
+        # 数字后面，不占掉这一组的位置，也不让读者以为整组都休市。
+        note = str(g.get("note") or "")
+        if note:
+            line += f"（{note}）"
+        out.append(line)
     return out
 
 
@@ -2937,6 +2955,136 @@ def parse_day_review(page: str, date: str, payload: Dict[str, Any]) -> Dict[str,
     return base
 
 
+def _stamp(date: str) -> str:
+    """``2026-11-20`` → ``11月20日``。
+
+    Server酱 的 title 只收 32 个字符，完整写法「Kenny's Horizon 2026-11-20
+    盘后洞察晚报」是 33 个字符，被砍掉的正好是「晚报」的「报」。日期改写成
+    「11月20日」省 4 个字符，落在 29，产品名一个字不动。
+    """
+    match = re.fullmatch(r"\d{4}-(\d{2})-(\d{2})", date or "")
+    if not match:
+        return date
+    return f"{int(match.group(1))}月{int(match.group(2))}日"
+
+
+def _closed(day: str) -> tuple:
+    """``(是否休市, 原因)``。
+
+    判据与早报同一条，只认报价日期：东财涨停池当天有池子就是开市，回的是更早
+    的日期就是休市。日历只用来补「为什么」，判定不看它——周末、临时休市（台风、
+    国葬）都不在任何一张年表里，但报价日期上一眼就能看出来。
+
+    问不到（网络、限流）时不下结论：晚报多印一份的代价，比在交易日漏掉整份
+    晚报小得多。所以 ``None`` 按开市处理，日志留一行。
+    """
+    try:
+        state = session.opened(day)
+    except Exception as exc:  # noqa: BLE001 - 判不出来就照常出稿
+        print(f"session probe {day} failed: {exc}", file=sys.stderr)
+        return False, ""
+    if state is False:
+        return True, market_calendar.reason(day, "CN")
+    if state is None:
+        print(
+            f"session probe {day}: unknown, publishing as a trading day",
+            file=sys.stderr,
+        )
+    return False, ""
+
+
+def closed_markdown(payload: Dict[str, Any]) -> str:
+    """休市日的推文正文：一句原因，加外盘与人气榜，别的一概不印。
+
+    顺序照抄交易日那份：先交代今天为什么没有盘，再给还在动的东西。盘面、
+    题材、龙虎榜、资金面、研判全部缺席——它们每一块都以「今天交易过」为前提，
+    拿上一交易日的数顶上去，读者读到的是昨天。
+    """
+    closed = payload.get("closed") or {}
+    line = str(closed.get("line") or "国内股市今日休市")
+    chunks = [
+        f"## {line}",
+        "",
+        "今日没有盘面可复盘：盘面、题材、龙虎榜与研判均不出，以下两块不受休市影响。",
+    ]
+    overseas = _overseas_lines(payload)
+    if overseas:
+        chunks.append("## 外盘参考\n\n" + "\n".join(_pack(overseas)))
+    renqi = renqi_push_lines(payload.get("renqi") or {})
+    if renqi:
+        chunks.append("## 今日人气榜\n\n" + "\n".join(_pack(renqi)))
+    return "\n\n".join(chunks)
+
+
+def _publish_closed(args: argparse.Namespace, day: str, reason: str) -> int:
+    """休市日的那一份：写页面、推送，只留不受休市影响的部分。
+
+    2026-11-28 之前晚报没有这道闸。休市日 18:30 照跑，``date`` 从连板网/东财
+    取到上一交易日，于是把昨天那份页面重写一遍、再把昨天的判断推一次：读者
+    收到旧数据，站点上那一天的文件还被覆盖了一次。现在休市日走这条路——页面
+    写休市日自己的文件名，历史页一个字节都不动。
+
+    休市日仍然出稿，因为还有东西在动：亚太与美股照常开市，人气榜按自然日累积。
+    诗句、盘面、题材、龙虎榜、资金面这些必须以当日交易为前提的块，一律不印。
+    """
+    payload: Dict[str, Any] = {
+        "date": day,
+        "closed": {"reason": reason, "line": market_calendar.cn_closed_line(day)},
+        "extra": {},
+        "errors": [],
+    }
+    # 外盘与早报同一份口径：当日亚太 + 前夜美股 + 今日期指。
+    try:
+        payload["extra"]["overseas"] = fetch_overseas(day)
+    except Exception as exc:  # noqa: BLE001 - 少一块不挡这一份
+        payload["errors"].append(f"overseas: {exc}")
+    # 人气榜不依赖当日涨停：它数的是「今天谁被看得最多」，休市日照常给。
+    try:
+        payload["renqi"] = collect_renqi(day)
+    except Exception as exc:  # noqa: BLE001
+        payload["errors"].append(f"renqi: {exc}")
+        payload["renqi"] = {}
+    for err in payload["errors"]:
+        print(f"source failed: {err}", file=sys.stderr)
+
+    page_url = f"{args.base_url.rstrip('/')}/{day}.html"
+    html = render_html(payload, {}, page_url)
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    day_path = out_dir / f"{day}.html"
+    day_path.write_text(html, encoding="utf-8")
+    (out_dir / "index.html").write_text(html, encoding="utf-8")
+    print(f"page: {day_path} ({len(html.encode('utf-8'))} B)")
+    print(f"closed: {day} {payload['closed']['line']}")
+
+    if args.no_push:
+        print("push skipped (--no-push)")
+        return 0
+
+    hook = os.environ.get("HORIZON_WEBHOOK_URL", "").strip()
+    if not hook:
+        print("HORIZON_WEBHOOK_URL not set; push skipped", file=sys.stderr)
+        return 0
+    title = f"Kenny's Horizon {_stamp(day)} 休市提示"
+    if len(title) > 32:
+        print(f"warning: title {len(title)} chars > 32, Server酱 will cut it", file=sys.stderr)
+    desp = closed_markdown(payload)
+    print(
+        f"push: title={len(title)} chars / {len(title.encode('utf-8'))} bytes, "
+        f"desp={len(desp)} chars"
+    )
+    ok = push_webhook(hook, title, desp, short=payload["closed"]["line"])
+    print(f"push: {'ok' if ok else 'failed'}")
+    if not ok:
+        try:
+            Path(".push-failed").write_text(
+                f"{day} {datetime.now(timezone.utc).isoformat()}\n", encoding="utf-8"
+            )
+        except OSError as exc:  # noqa: BLE001 - a marker must not mask the real error
+            print(f"push marker not written: {exc}", file=sys.stderr)
+    return 0 if ok else 1
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Post-close brief: matrix, screens, written read")
     parser.add_argument("--out-dir", default="docs/post-market")
@@ -2958,7 +3106,21 @@ def main(argv: Optional[List[str]] = None) -> int:
         action="store_true",
         help="write newly fetched tickers back into the concept index",
     )
+    parser.add_argument(
+        "--ignore-holiday",
+        action="store_true",
+        help="休市闸关掉：按交易日出稿（调试、补历史时用）",
+    )
     args = parser.parse_args(argv)
+
+    # 今天开不开市，先答这一问。休市日按 date 取回来的每个数都是上一交易日的：
+    # 页面会盖掉那天自己的文件，推送也会把昨天的判断再发一遍。这一闸排在
+    # collect() 之前，省掉一整套取数，也避免把上一交易日的题材写进概念缓存。
+    today = args.date or _shanghai_today()
+    if not args.ignore_holiday:
+        closed, reason = _closed(today)
+        if closed:
+            return _publish_closed(args, today, reason)
 
     payload = collect(
         no_browser=args.no_browser,
@@ -3171,10 +3333,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     # 「Kenny's Horizon 2026-11-20 盘后洞察晚报」是 33 个字符，被砍掉的正好是
     # 「晚报」的「报」。日期改写成「11月20日」省 4 个字符，落在 29，产品名
     # 一个字不动，也不会因为哪天改了文案又悄悄超限——超了就在日志里喊一声。
-    stamp = date
-    _md = re.fullmatch(r"\d{4}-(\d{2})-(\d{2})", date or "")
-    if _md:
-        stamp = f"{int(_md.group(1))}月{int(_md.group(2))}日"
+    stamp = _stamp(date)
     title = f"Kenny's Horizon {stamp} 盘后洞察晚报"
     if len(title) > 32:
         print(f"warning: title {len(title)} chars > 32, Server酱 will cut it", file=sys.stderr)

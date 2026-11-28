@@ -953,6 +953,58 @@ def _next_day_block(payload: Dict[str, Any], read: Any) -> str:
     )
 
 
+def _closed_html(payload: Dict[str, Any], page_url: str, closed: Dict[str, Any]) -> str:
+    """休市日的一页：交代原因，只留外盘参考与今日人气榜。
+
+    版式与交易日的页面同一套 CSS，读者从微信点进来不会觉得换了个站。诗句原来
+    的位置留给休市那一句——那一天没有盘可复，写诗是硬凑，但那个位置不能空：
+    读者翻到那里，要的正是「今天为什么没有盘」。
+
+    盘面、今日催化、信号、四段研判、第三方复盘、资金、主线、龙虎榜、监管、
+    明日关注、选股参考一律不印。它们每一块都以「今天交易过」为前提。
+    """
+    date = str(payload.get("date") or "")
+    line = str(closed.get("line") or "国内股市今日休市")
+    overseas = render_sections(payload).get("overseas") or ""
+    renqi = _renqi_html(payload)
+    desc = f"{date} {line}：盘面、题材与研判不出，外盘参考与今日人气榜照常。"
+    cover_url = (
+        page_url.split("/post-market/")[0] + "/assets/cover.png"
+        if "/post-market/" in page_url
+        else ""
+    )
+    return f"""<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kenny's Horizon {_esc(date)} 休市提示 | Kenny's Horizon</title>
+<meta name="description" content="{_esc(desc)}">
+<meta property="og:title" content="Horizon 休市提示：{_esc(date)}">
+<meta property="og:description" content="{_esc(desc)}">
+<meta property="og:url" content="{_esc(page_url)}">
+<meta property="og:image" content="{_esc(cover_url)}">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#7a3b1e">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>{_PAGE_CSS}{EXTRA_CSS}{_THEME_OVERRIDE}
+footer{{margin-top:34px;padding-top:16px;border-top:1px solid #eff0f1;
+  font-size:12px;line-height:1.8;color:#98a2b3}}
+</style></head><body>
+<header class="page-header">
+<h1 class="project-name">Kenny's Horizon {_esc(date)} 休市提示</h1>
+</header>
+<main>
+<div class='read poem-block'><p class='poem'>「{_esc(line)}」</p></div>
+<div class='read verdict-block'><p class='verdict'>今日没有盘面可复盘：盘面、题材、龙虎榜与研判均不出。下面只保留不受休市影响的两块。</p></div>
+{overseas}
+{renqi}
+<footer>
+本报告由 Kenny’s Horizon 智能体基于市场信息自动生成，不构成任何投资建议。
+</footer>
+</main></body></html>"""
+
+
 def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     """One self-contained page wearing the daily digest's clothes.
 
@@ -962,6 +1014,9 @@ def render_html(payload: Dict[str, Any], read: Any, page_url: str) -> str:
     table, because at 430pt a table either shrinks the type or scrolls sideways,
     and both lose the comparison it exists to make.
     """
+    closed = payload.get("closed") or {}
+    if closed:
+        return _closed_html(payload, page_url, closed)
     kpi = payload.get("kpi") or {}
     matrix = payload.get("matrix") or {}
     day = matrix.get("day") or {}
