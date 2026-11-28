@@ -13,7 +13,7 @@ from .localization import normalize_language
 from ..models import ContentItem
 from ..processing.ashare_themes import NEGATIVE, NEUTRAL, POSITIVE, source_footer
 from ..processing.conduction import direction_note
-from ..processing import next_day
+from ..processing import market_calendar, next_day, session
 from ..processing.asia_open import OPEN_BELL as ASIA_OPEN_BELL, fetch_asia_open
 from ..processing.overnight import fetch_overnight
 from ..processing.premarket import PAGE_READY as PREMARKET_READY, fetch_premarket
@@ -44,6 +44,14 @@ def _weekday_cn(date: str, *, long: bool = False) -> str:
     except (TypeError, ValueError):
         return ""
     return (_WEEKDAYS_CN_LONG if long else _WEEKDAYS_CN)[day.weekday()]
+
+
+def _is_weekend(date: str) -> bool:
+    """周六、周日；解析不了按工作日处理（宁可多印一块，不要因为日期格式少印）。"""
+    try:
+        return datetime.strptime(str(date)[:10], "%Y-%m-%d").weekday() >= 5
+    except (TypeError, ValueError):
+        return False
 
 
 _CJK = r"[\u4e00-\u9fff\u3400-\u4dbf]"
@@ -281,6 +289,9 @@ LABELS = {
         "overnight_asof": "US close {date}",
         "calendar": "Today's calendar",
         "asia_open": "Asia open",
+        "asia_closed": "Asia closed today",
+        "cn_closed": "China A-shares closed today ({reason}); opening moves and today's themes are not printed",
+        "cn_closed_noreason": "China A-shares closed today; opening moves and today's themes are not printed",
         "premarket_note": "Backdrop only; the map is not a recommendation",
         "overnight_closed": "US market closed yesterday for {reason}",
         "selected_items": "From {total} items, {selected} important content pieces were selected",
@@ -310,6 +321,9 @@ LABELS = {
         "overnight_asof": "美东 {date} 收盘",
         "calendar": "今日日历",
         "asia_open": "亚太今日开盘",
+        "asia_closed": "亚太今日休市",
+        "cn_closed": "**今日 A 股休市（{reason}）**：开盘异动与今日关注题材不印",
+        "cn_closed_noreason": "**今日 A 股休市**：开盘异动与今日关注题材不印",
         "opening_title": "开盘异动",
         "premarket_note": "隔夜情绪参考，非题材推荐",
         "overnight_closed": "昨夜美股因{reason}休市",
@@ -546,14 +560,37 @@ class DailySummarizer:
                 )
 
         toc = "\n\n".join(toc_sections) + "\n\n---\n\n"
-        premarket = await self._overnight_block(labels, brief) if language == "zh" else ""
-        opening_block = await self._opening_block(labels, date, opening_snapshot) if language == "zh" else ""
+        # 今天开不开市，是这一屏最先要回答的问题：休市时开盘异动与题材判断都
+        # 没有内容可给，日历与隔夜外围照旧。判据只认报价日期——开盘块当天落了
+        # 快照就是开市，没落才问一次东财；问不到是 None，不是休市。
+        trading: Optional[bool] = None
+        if language == "zh":
+            trading = True if opening_snapshot else self._trading_day(date)
+            if trading is None:
+                # 判不出来时两块的处理不一样：开盘块自己有 qdate 校验，取不到
+                # 就当天空着，可以照试；题材块读的是昨晚晚报，没有第二道校验，
+                # 只能不印——把昨日判断印在今天的标题下，比少一块更糟。
+                logger.warning(
+                    "Session state for %s unknown; today's themes withheld", date
+                )
+        banner = self._closed_banner(labels, date, trading) if language == "zh" else ""
+        premarket = (
+            await self._overnight_block(labels, brief, date) if language == "zh" else ""
+        )
+        opening_block = (
+            await self._opening_block(labels, date, opening_snapshot)
+            if language == "zh" and trading is not False
+            else ""
+        )
         calendar = self._calendar_block(labels, brief) if language == "zh" else ""
         # 晚报只读一次：三类桶和「市场载体」都要用，分两处各拉一遍没必要。
+        # trading_day 在这里传进去，省掉 load 内部再问一次东财。
         self._brief_doc = None
         if language == "zh":
             try:
-                self._brief_doc = await asyncio.to_thread(next_day.load, date)
+                self._brief_doc = await asyncio.to_thread(
+                    next_day.load, date, trading_day=bool(trading)
+                )
             except Exception as exc:  # noqa: BLE001 - 拿不到晚报不该拖垮早报
                 logger.warning("Next-day brief unavailable: %s", exc)
         nextday = await self._next_day_block(items, date) if language == "zh" else ""
@@ -564,7 +601,7 @@ class DailySummarizer:
             block.rstrip() for block in (calendar, opening_block, nextday) if block.strip()
         )
         body = (
-            header + premarket
+            header + banner + premarket
             + (aux + "\n\n---\n\n" if aux else "")
             + toc + "".join(body_sections)
         )
@@ -610,7 +647,7 @@ class DailySummarizer:
         return "\n\n---\n\n" + block
 
     async def _overnight_block(
-        self, labels: dict, brief: Optional[dict] = None
+        self, labels: dict, brief: Optional[dict] = None, date: str = ""
     ) -> str:
         """Overnight US tape as backdrop, printed above the table of contents.
 
@@ -619,10 +656,12 @@ class DailySummarizer:
         (median rank 575), so the block carries the move and the map and says
         in one line that it is not a recommendation.
 
-        盘面与映射优先取早盘页：那张表是连板网按当天题材热度自己排的，还带
-        「当日热度第N」——题材当天有没有进热度榜，是它比固定票单多出来的东西。
-        新浪那份是固定票单按涨跌幅排的，只在早盘页取不到（周末、限流）时兜底，
-        另外还负责给出美东收盘日期，早盘页不带这个日期。
+        映射只取早盘页：那张表是连板网按当天题材热度自己排的，还带「当日热度
+        第N」——题材当天有没有进热度榜，是它比固定票单多出来的东西。取不到就不
+        印这一行，不用固定票单顶替（2026-11-28 周六印的就是固定票单，看着像隔夜
+        在给 A 股指路，其实跟当天主线无关）。
+
+        新浪那份仍要拉：五个指数和「美东 X 收盘」这个日期只有它给，早盘页不带。
         """
         # 亚太开盘与新浪互不依赖：一边断了，另一边照常。
         # 港股 09:30 开盘：早报 09:02 起跑，不等到这一刻就会印成「（未开盘）」。
@@ -650,15 +689,14 @@ class DailySummarizer:
             close = (sina or {}).get("close_date") or ""
             if not indices and sina:
                 indices = sina.get("indices") or []
-            if not mapping and sina:
-                mapping = [
-                    {
-                        "us": row["ticker"],
-                        "pct": row["pct"],
-                        "themes": [{"name": name, "rank": 0} for name in row["themes"]],
-                    }
-                    for row in (sina.get("movers") or [])
-                ]
+            # 映射只认早盘页。那张表是连板网当天自己排的：票、题材、以及题材后面
+            # 的「当日热度第N」都是当天的。新浪那份是 17 只固定票单加一张写死的
+            # 题材表，只在早盘页取不到时兜底，印出来却像「隔夜在给 A 股指路」——
+            # 2026-11-28 周六就是这样：早盘页挂着周五快照被日期校验丢弃，于是轮到
+            # 了固定票单，同一只票永远挂同一组题材，跟当天 A 股主线没有关系。
+            # 没有早盘页，这一行就不印；周末更不印（那天没有「隔夜」可言）。
+            if _is_weekend(date):
+                mapping = []
 
         indices_line = ""
         if indices:
@@ -693,7 +731,8 @@ class DailySummarizer:
         if movers_line:
             lines.append(movers_line)
 
-        if not lines and not asia:
+        asia_line = self._asia_line(asia, labels, date)
+        if not lines and not asia_line:
             return ""
         note = labels["premarket_note"]
         if close:
@@ -703,13 +742,71 @@ class DailySummarizer:
             lines.append(f"*{note}*")
         # 09:30 这一跑，东京与首尔已交易一个半小时、台北半小时、香港刚开盘，
         # 所以这行给的是各市场今日的开盘价，是全天唯一当日的数据。
-        if asia:
-            tape = " ｜ ".join(
-                f"{_escape_markdown(row['name'])} {row['last']:,.2f} {row['pct']:+.2f}%"
-                for row in asia["rows"]
-            )
-            lines.append(f"{labels['asia_open']}：{tape}")
+        if asia_line:
+            lines.append(asia_line)
         return "\n\n".join(lines) + "\n\n---\n\n"
+
+    @staticmethod
+    def _asia_line(asia: Optional[dict], labels: dict, date: str) -> str:
+        """亚太那一行：开市的给开盘价，休市的给原因。
+
+        休市的市场过去是直接从这一行里消失的——2026-11-23 日本勤劳感谢日，
+        日经那一格没有出现，读者分不清是休市还是取数断了。现在它留在原位，
+        写成「日经225 因勤劳感谢日休市」；查不到原因就写「今日休市」，不编。
+
+        整行标题跟着内容走：一个开盘价都没有时，标题不能再叫「今日开盘」。
+        """
+        if not asia:
+            return ""
+        rows = asia.get("rows") or []
+        closed = asia.get("closed") or []
+        bits = [
+            f"{_escape_markdown(row['name'])} {row['last']:,.2f} {row['pct']:+.2f}%"
+            for row in rows
+        ]
+        for item in closed:
+            name = str(item.get("name") or "").strip()
+            if name:
+                bits.append(
+                    _escape_markdown(market_calendar.closed_line(name, date))
+                )
+        if not bits:
+            return ""
+        head = labels["asia_open"] if rows else labels["asia_closed"]
+        return f"{head}：{' ｜ '.join(bits)}"
+
+    @staticmethod
+    def _trading_day(date: str) -> Optional[bool]:
+        """今天 A 股开不开市。``None`` 是判不出来，不是休市。
+
+        判据与开盘块同一条：东财涨停池当天落了快照就是开市；没落才问一次
+        池子的报价日期。问不到就是 ``None``——调用方按「不印」处理，因为把
+        昨日晚报的判断印在今天的标题下，比少印一块更糟。
+        """
+        try:
+            return session.opened(date)
+        except Exception as exc:  # noqa: BLE001 - 判不出来不等于休市
+            logger.warning("Session probe failed for %s: %s", date, exc)
+            return None
+
+    @staticmethod
+    def _closed_banner(labels: dict, date: str, trading: Optional[bool]) -> str:
+        """今天 A 股休市时的一行提示，开市或判不出来时为空。
+
+        这块解释的是「下面为什么少了两块」。没有它，读者看到的是早报突然
+        不印开盘异动和题材，分不清是休市还是任务失败。
+        """
+        if trading is not False:
+            return ""
+        # 周末本来就不开市，读者不会以为是任务失败——2026-11-28 那份周六早报
+        # 印的是「周末版」，不该多一行「今日休市」。提示只给工作日休市：那才是
+        # 「今天该开盘却没开」的那种意外。
+        if _is_weekend(date):
+            return ""
+        why = market_calendar.reason(date, "CN")
+        key = "cn_closed" if why else "cn_closed_noreason"
+        text = labels[key].format(reason=why) if why else labels[key]
+        return f"{text}\n\n---\n\n"
 
     async def _opening_block(
         self, labels: dict, date: str, snapshot: Optional[Dict] = None
@@ -1013,9 +1110,14 @@ class DailySummarizer:
             ]
 
         if analysis and analysis.tags:
+            # 标签是英文 hashtag，30 条每条末尾挂一行，对中文读者是噪音：他要看的是
+            # 这条讲了什么，不是 #Federal Reserve policy。收进 <details>，跟参考链接
+            # 一个处理，需要时点开，不要它占正文。
             tags_str = ", ".join(_format_tags(analysis.tags))
-            lines.append("")
-            lines.append(f"{labels['tags']}: {tags_str}")
+            lines += [
+                "",
+                f'<details><summary>{labels["tags"]}</summary>\n\n{tags_str}\n\n</details>',
+            ]
 
         lines.append("")
         lines.append("---")
