@@ -16,7 +16,7 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from ..models import GoogleNewsConfig
 
@@ -153,13 +153,47 @@ async def fetch_page(client) -> str:
     return resp.text
 
 
-async def fetch_events(client, day: str, cutoff: str = CUTOFF) -> List[Dict[str, Any]]:
-    """抓日历页并解析。取不到就返回空，早报照常出。"""
+async def fetch_calendar(client) -> Optional[str]:
+    """抓一次日历页；取不到返回 ``None``。
+
+    ``None`` 与「页面取到、但没有三星事件」是两件事：前者不知道那天有没有事件，
+    后者是确定的「没有」。以前两者都返回空串，早报日志就把「没取到」讲成「没有」。
+    """
     try:
-        return parse(await fetch_page(client), day, cutoff)
+        return await fetch_page(client)
     except Exception as exc:  # noqa: BLE001 - 少一份日历，不能拖垮早报
-        logger.warning("连板网日历取不到（%s）：%s", day, exc)
-        return []
+        logger.warning("连板网日历取不到：%s", exc)
+        return None
+
+
+def archive_exists(day: str, root: Path = CALENDAR_DIR) -> bool:
+    """那天有没有留过存档。
+
+    没有存档时，「无事件」只说明第二天没东西可读，不说明那天真的没有三星事件。
+    """
+    try:
+        return (Path(root) / f"{day}.json").is_file()
+    except OSError:
+        return False
+
+
+def calendar_note(
+    day: str, count: int, page_ok: bool, archived: bool
+) -> Tuple[str, str]:
+    """日志该写哪一种「没有」——三种情形不许共用一句话。
+
+    * ``count`` 有数：正常注入；
+    * 页面取到了、或存档在：这时说「无事件」是确定的结论；
+    * 页面取不到、也没有存档：这次只是没取到，不能据此判断那天没有事件。
+    """
+    if count:
+        return "dim", f"日历事件进检索：{day} {count} 条"
+    if page_ok or archived:
+        return "dim", f"日历无 {day} 三星事件，跳过注入"
+    return (
+        "yellow",
+        f"日历页取不到、{day} 也没有存档：本次未注入，不能据此判断昨日无事件",
+    )
 
 
 def to_queries(

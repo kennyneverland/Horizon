@@ -21,7 +21,9 @@ from .collection_window import collection_hours
 from .models import AIProvider
 from .processing import ashare_brief
 from .processing.lianban_calendar import (
-    fetch_page,
+    archive_exists,
+    calendar_note,
+    fetch_calendar,
     load_events,
     parse,
     save_events,
@@ -102,23 +104,30 @@ class _SourceCappedOrchestrator(HorizonOrchestrator):
         now = datetime.now(timezone(timedelta(hours=8)))
         today = now.strftime("%Y-%m-%d")
         yesterday = (now - timedelta(days=1)).strftime("%Y-%m-%d")
-        page = ""
+        page = None
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                page = await fetch_page(client)
-        except Exception as exc:  # noqa: BLE001 - 少一份日历，不能拖垮抓取
-            self.console.print(f"[yellow]日历页抓取失败：{exc}[/yellow]")
-        if page:
+                page = await fetch_calendar(client)
+        except Exception as exc:  # noqa: BLE001 - 客户端都建不起来，同样只是「没取到」
+            self.console.print(f"[yellow]日历客户端不可用：{exc}[/yellow]")
+        page_ok = page is not None
+        if page_ok:
             today_events = parse(page, today)
             if today_events and save_events(today_events, today):
                 self.console.print(
                     f"[dim]日历落盘：{today} {len(today_events)} 条[/dim]"
                 )
         events = load_events(yesterday)
-        if not events and page:
+        if not events and page_ok:
             events = parse(page, yesterday)
         if not events:
-            self.console.print(f"[dim]日历无昨日事件（{yesterday}），跳过注入[/dim]")
+            # 三种「没有」不能共用一句话：页面取到了、昨日确实没有三星，这是确定的
+            # 结论；页面取不到、也没有存档，只是这次没取到——讲成「无事件」，下次读
+            # 日志的人会以为那天真的没有数据落地。
+            level, text = calendar_note(
+                yesterday, 0, page_ok, archive_exists(yesterday)
+            )
+            self.console.print(f"[{level}]{text}[/{level}]")
             return
         existing = {query.query for query in sources.queries}
         for query in to_queries(events):
